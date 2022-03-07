@@ -1,6 +1,7 @@
 package main
 
 import (
+	"HomegrownDB/command"
 	"bufio"
 	"fmt"
 	"os"
@@ -14,6 +15,7 @@ func main() {
 		fmt.Print("db > ")
 		buffer, _ = reader.ReadString('\004')
 		fmt.Println(buffer)
+		command.Handle(buffer)
 	}
 }
 

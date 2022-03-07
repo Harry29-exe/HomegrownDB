@@ -1,11 +1,15 @@
 package command
 
-import "HomegrownDB/sql/parser"
+import "HomegrownDB/sql"
 
-func Handle(command string) {
-	if command[0] == '.' {
-		handleMeta(command)
+func Handle(command *string) {
+	if (*command)[0] == '.' {
+		handleMetaCommand(command)
 	} else {
-		sqlStatement := parser.ParseSql(command)
+		delegateSqlCommand(command)
 	}
+}
+
+func delegateSqlCommand(command *string) {
+	sql.HandleSqlCommand(command)
 }

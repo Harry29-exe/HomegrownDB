@@ -1,5 +1,5 @@
 package command
 
-func handleMeta(command string) {
+func handleMetaCommand(command *string) {
 
 }

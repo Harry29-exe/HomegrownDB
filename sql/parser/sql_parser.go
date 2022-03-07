@@ -6,14 +6,14 @@ const (
 	INSERT SqlCommandType = iota
 	SELECT
 	DELETE
-	SET
+	UPDATE
 )
 
 type SqlCommand struct {
 	commandType SqlCommandType
 }
 
-func ParseSql(sql string) SqlCommand {
+func ParseSql(sql *string) SqlCommand {
 	printType(DELETE)
 	return SqlCommand{}
 }
