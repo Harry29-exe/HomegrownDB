@@ -1,19 +1,19 @@
 package sql
 
 type Table struct {
-	fields  []Field
+	cols    []Column
 	name    string
 	byteLen uint32
 	rows    uint64
 }
 
-type Field struct {
+type Column struct {
 	name    string
-	fType   FieldType
+	fType   ColumnType
 	byteLen uint16
 }
 
-type FieldType = uint16
+type ColumnType = uint16
 
 type Row struct {
 	data  []byte

@@ -2,7 +2,7 @@ package command
 
 import "HomegrownDB/sql"
 
-func Handle(command *string) {
+func Handle(command string) {
 	if (*command)[0] == '.' {
 		handleMetaCommand(command)
 	} else {
