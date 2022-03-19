@@ -1,0 +1,3 @@
+| string(with len prefix) table name | uint16 column_count | string(with len prefix) column_name   | uint16 column_len  | uint16 column_type | uint16 flag_count | []uint16 flag_code |
+|             2+x bytes              |        2 bytes      |               2+x bytes               |       2 bytes      |       2 bytes      |       2 bytes     |     x * 2 bytes    |
+                                     |                                              column_count times                                                          |
