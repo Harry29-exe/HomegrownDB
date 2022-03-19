@@ -24,17 +24,8 @@ func ParseSql(sql string) SqlParseTree {
 	for _, char := range sql {
 		switch {
 		case char < 91 && char > 64:
-			if
+
 		}
 	}
-	printType(DELETE)
 	return SqlParseTree{}
-}
-
-func startsWithKeyword(str string) {
-
-}
-
-func printType(t SqlCommandType) {
-
 }
