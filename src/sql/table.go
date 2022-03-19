@@ -1,25 +1,22 @@
 package sql
 
 type Table struct {
-	cols    []Column
+	columns map[string]Column
 	name    string
 	byteLen uint32
-	rows    uint64
 }
 
 type Column struct {
 	name    string
 	fType   ColumnType
+	offset  uint32
 	byteLen uint16
 }
 
 type ColumnType = uint16
 
-type Row struct {
-	data  []byte
-	table *Table
-}
+type Row = []byte
 
-func Serialize() {
-
+func (t *Table) GetOffset(columnName string) uint32 {
+	return t.columns[columnName].offset
 }

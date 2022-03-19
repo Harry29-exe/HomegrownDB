@@ -1,22 +1,21 @@
 package main
 
 import (
-	"HomegrownDB/command"
-	"bufio"
 	"fmt"
-	"os"
 )
 
 func main() {
-	reader := bufio.NewReader(os.Stdin)
-	buffer := ""
-
-	for {
-		fmt.Print("db > ")
-		buffer, _ = reader.ReadString('\004')
-		fmt.Println(buffer)
-		command.Handle(buffer)
-	}
+	s := "\000"
+	fmt.Println([]byte(s))
+	//reader := bufio.NewReader(os.Stdin)
+	//buffer := ""
+	//
+	//for {
+	//	fmt.Print("db > ")
+	//	buffer, _ = reader.ReadString('\004')
+	//	fmt.Println(buffer)
+	//	command.Handle(buffer)
+	//}
 }
 
 func PrintUsageInfo() {
