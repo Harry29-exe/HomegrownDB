@@ -100,3 +100,24 @@ func (ts *tableSerializer) serializeColumn(column *Column) {
 	ts.serializer.Bool(column.Nullable)
 	ts.serializer.Bool(column.Autoincrement)
 }
+
+type TableBuilder struct {
+	columns []Column
+	Table   Table
+}
+
+func NewTableBuilder() *TableBuilder {
+	return &TableBuilder{}
+}
+
+func (tb *TableBuilder) AddColumn(column *Column) {
+
+}
+
+func (tb *TableBuilder) AddNewColumn(
+	name string,
+	columnType ColumnType,
+	nullable bool,
+	autoincrement bool) {
+
+}
