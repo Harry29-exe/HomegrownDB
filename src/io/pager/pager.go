@@ -1,8 +1,10 @@
 package pager
 
-import "HomegrownDB/sql"
+import (
+	"HomegrownDB/sql/schema"
+)
 
-type LocalPager[T sql.Table] struct {
+type LocalPager[T schema.Table] struct {
 	table T
 	cache map[uint32]Page[T]
 }
