@@ -16,7 +16,7 @@ type ColumnType struct {
 	Code        ColumnTypeCode
 	IsFixedSize bool
 	// IsFixedSize true then this describes max size of column
-	// where 0 means no max size
+	// where 0 means no max size otherwise it describes size od column
 	ByteLen uint32
 
 	LobStatus IsLOB

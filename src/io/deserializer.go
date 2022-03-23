@@ -7,8 +7,8 @@ type Deserializer struct {
 	pointer uint64
 }
 
-func NewDeserializer(data []byte) Deserializer {
-	return Deserializer{
+func NewDeserializer(data []byte) *Deserializer {
+	return &Deserializer{
 		data:    data,
 		pointer: 0,
 	}

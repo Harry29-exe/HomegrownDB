@@ -11,32 +11,32 @@ type Table struct {
 	byteLen  uint32
 }
 
-func ReadTable(rawData []byte) *Table {
-	tr := tableReader{
+func DeserializeTable(rawData []byte) *Table {
+	td := tableDeserializer{
 		deserializer: io.NewDeserializer(rawData),
 		table:        Table{},
 	}
 
-	tr.table.objectId = tr.deserializer.Uint64()
-	tr.table.name = tr.deserializer.MdString()
-	tr.readColumns()
+	td.table.objectId = td.deserializer.Uint64()
+	td.table.name = td.deserializer.MdString()
+	td.readColumns()
 
-	return &tr.table
+	return &td.table
 }
 
-type tableReader struct {
-	deserializer io.Deserializer
+type tableDeserializer struct {
+	deserializer *io.Deserializer
 	table        Table
 }
 
-func (tr *tableReader) readColumns() {
-	columnCount := tr.deserializer.Uint16()
+func (td *tableDeserializer) readColumns() {
+	columnCount := td.deserializer.Uint16()
 
 	var columnOffset int32 = 0
 	var column Column
 	for i := uint16(0); i < columnCount; i++ {
-		column = tr.readColumn(columnOffset)
-		tr.table.columns[column.Name] = column
+		column = td.readColumn(columnOffset)
+		td.table.columns[column.Name] = column
 
 		if columnOffset > -1 && column.Type.IsFixedSize {
 			columnOffset += int32(column.Type.ByteLen)
@@ -46,20 +46,57 @@ func (tr *tableReader) readColumns() {
 	}
 }
 
-func (tr *tableReader) readColumn(offset int32) Column {
-	colName := tr.deserializer.MdString()
-	colTypeCode := tr.deserializer.MdString()
-	colTypeArgc := tr.deserializer.Uint8()
+func (td *tableDeserializer) readColumn(offset int32) Column {
+	colName := td.deserializer.MdString()
+	colTypeCode := td.deserializer.MdString()
+	colTypeArgc := td.deserializer.Uint8()
 	var colTypeArgv = make([]int32, colTypeArgc)
 	for i := byte(0); i < colTypeArgc; i++ {
-		colTypeArgv[i] = tr.deserializer.Int32()
+		colTypeArgv[i] = td.deserializer.Int32()
 	}
 
 	return Column{
 		Name:          colName,
-		Type:          GetColumnType(colTypeCode, colTypeArgv),
+		Type:          *GetColumnType(colTypeCode, colTypeArgv),
 		Offset:        offset,
-		Nullable:      tr.deserializer.Bool(),
-		Autoincrement: tr.deserializer.Bool(),
+		Nullable:      td.deserializer.Bool(),
+		Autoincrement: td.deserializer.Bool(),
 	}
+}
+
+type tableSerializer struct {
+	serializer *io.Serializer
+	table      *Table
+}
+
+func SerializeTable(table Table) []byte {
+	serializer := io.NewSerializer()
+	ts := tableSerializer{
+		serializer: serializer,
+		table:      &table,
+	}
+
+	serializer.Uint64(table.objectId)
+	serializer.MdString(table.name)
+
+	columnCount := uint16(len(table.columns))
+	serializer.Uint16(columnCount)
+	for _, column := range table.columns {
+		ts.serializeColumn(&column)
+	}
+
+	return ts.serializer.GetBytes()
+}
+
+func (ts *tableSerializer) serializeColumn(column *Column) {
+	ts.serializer.MdString(column.Name)
+
+	columnType := column.Type
+	ts.serializer.MdString(columnType.Code)
+	ts.serializer.Uint32(columnType.ByteLen)
+	ts.serializer.Bool(columnType.IsFixedSize)
+	ts.serializer.Uint8(columnType.LobStatus)
+
+	ts.serializer.Bool(column.Nullable)
+	ts.serializer.Bool(column.Autoincrement)
 }

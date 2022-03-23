@@ -31,6 +31,6 @@ func readDBSchema(dbHomePath string) {
 			panic("File " + dbsystem.TableInfoFilename + " for table " + tableName + " does not exist.")
 		}
 
-		schemaTables[tableName] = *ReadTable(data)
+		schemaTables[tableName] = *DeserializeTable(data)
 	}
 }

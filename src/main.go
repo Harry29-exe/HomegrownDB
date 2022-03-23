@@ -1,21 +1,19 @@
 package main
 
 import (
+	"HomegrownDB/sql/schema"
 	"fmt"
 )
 
 func main() {
-	s := "\000"
-	fmt.Println([]byte(s))
-	//reader := bufio.NewReader(os.Stdin)
-	//buffer := ""
-	//
-	//for {
-	//	fmt.Print("db > ")
-	//	buffer, _ = reader.ReadString('\004')
-	//	fmt.Println(buffer)
-	//	command.Handle(buffer)
-	//}
+	s := schema.GetColumnType(schema.Int2, nil)
+	s1 := *s
+
+	s.IsFixedSize = false
+	print(s.IsFixedSize)
+	print((*s).IsFixedSize)
+	print(s1.IsFixedSize)
+
 }
 
 func PrintUsageInfo() {
