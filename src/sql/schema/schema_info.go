@@ -2,6 +2,7 @@ package schema
 
 import (
 	"HomegrownDB/dbsystem"
+	"HomegrownDB/utils"
 	"io/ioutil"
 	"os"
 )
@@ -11,6 +12,17 @@ type DBSchema struct {
 }
 
 var schema DBSchema
+
+var dbObjectIdCounter = utils.NewLockCounter(uint64(0))
+var lobIdCounter = utils.NewLockCounter(uint64(0))
+
+func GetNextDbObjectId() uint64 {
+	return dbObjectIdCounter.IncrementAndGet()
+}
+
+func GetNextLobId() uint64 {
+	return lobIdCounter.IncrementAndGet()
+}
 
 func readDBSchema(dbHomePath string) {
 	home := dbsystem.GetDBHomePath()

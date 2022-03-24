@@ -6,9 +6,14 @@ import (
 
 type Table struct {
 	objectId uint64
-	columns  map[string]Column
+	columns  map[string]*Column
+	colList  []*Column
 	name     string
 	byteLen  uint32
+}
+
+func (t *Table) GetColumn(name string) Column {
+	return *t.columns[name]
 }
 
 func DeserializeTable(rawData []byte) *Table {
@@ -33,10 +38,11 @@ func (td *tableDeserializer) readColumns() {
 	columnCount := td.deserializer.Uint16()
 
 	var columnOffset int32 = 0
-	var column Column
+	var column *Column
 	for i := uint16(0); i < columnCount; i++ {
 		column = td.readColumn(columnOffset)
 		td.table.columns[column.Name] = column
+		td.table.colList = append(td.table.colList, column)
 
 		if columnOffset > -1 && column.Type.IsFixedSize {
 			columnOffset += int32(column.Type.ByteLen)
@@ -46,7 +52,7 @@ func (td *tableDeserializer) readColumns() {
 	}
 }
 
-func (td *tableDeserializer) readColumn(offset int32) Column {
+func (td *tableDeserializer) readColumn(offset int32) *Column {
 	colName := td.deserializer.MdString()
 	colTypeCode := td.deserializer.MdString()
 	colTypeArgc := td.deserializer.Uint8()
@@ -55,7 +61,7 @@ func (td *tableDeserializer) readColumn(offset int32) Column {
 		colTypeArgv[i] = td.deserializer.Int32()
 	}
 
-	return Column{
+	return &Column{
 		Name:          colName,
 		Type:          *GetColumnType(colTypeCode, colTypeArgv),
 		Offset:        offset,
@@ -82,7 +88,7 @@ func SerializeTable(table Table) []byte {
 	columnCount := uint16(len(table.columns))
 	serializer.Uint16(columnCount)
 	for _, column := range table.columns {
-		ts.serializeColumn(&column)
+		ts.serializeColumn(column)
 	}
 
 	return ts.serializer.GetBytes()
@@ -99,25 +105,4 @@ func (ts *tableSerializer) serializeColumn(column *Column) {
 
 	ts.serializer.Bool(column.Nullable)
 	ts.serializer.Bool(column.Autoincrement)
-}
-
-type TableBuilder struct {
-	columns []Column
-	Table   Table
-}
-
-func NewTableBuilder() *TableBuilder {
-	return &TableBuilder{}
-}
-
-func (tb *TableBuilder) AddColumn(column *Column) {
-
-}
-
-func (tb *TableBuilder) AddNewColumn(
-	name string,
-	columnType ColumnType,
-	nullable bool,
-	autoincrement bool) {
-
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"HomegrownDB/sql/schema"
+	"HomegrownDB/utils"
 	"fmt"
 )
 
@@ -14,6 +15,12 @@ func main() {
 	print((*s).IsFixedSize)
 	print(s1.IsFixedSize)
 
+	counter := utils.NewLockCounter(0)
+	println("\n")
+	val0 := counter.GetAndIncrement()
+	println(val0)
+	val2 := counter.IncrementAndGet()
+	println(val2)
 }
 
 func PrintUsageInfo() {
