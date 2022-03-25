@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/sql/schema"
 )
 
-func DeserializeTable(rawData []byte) *DbTable {
+func DeserializeDbTable(rawData []byte) *DbTable {
 	td := tableDeserializer{
 		deserializer: io.NewDeserializer(rawData),
 		table:        DbTable{},
@@ -64,7 +64,7 @@ type tableSerializer struct {
 	table      *DbTable
 }
 
-func SerializeTable(table DbTable) []byte {
+func SerializeDbTable(table DbTable) []byte {
 	serializer := io.NewSerializer()
 	ts := tableSerializer{
 		serializer: serializer,
