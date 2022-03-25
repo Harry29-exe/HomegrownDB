@@ -1,10 +1,10 @@
 package pager
 
 import (
-	"HomegrownDB/sql/schema"
+	"HomegrownDB/sql/schema/dbtable"
 )
 
-type LocalPager[T schema.Table] struct {
+type LocalPager[T dbtable.DbTable] struct {
 	table T
 	cache map[uint32]Page[T]
 }

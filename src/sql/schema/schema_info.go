@@ -40,9 +40,12 @@ func readDBSchema(dbHomePath string) {
 		tableName := table.Name()
 		data, err := os.ReadFile(tablesDir + "/" + tableName + "/" + dbsystem.TableInfoFilename)
 		if err != nil {
-			panic("File " + dbsystem.TableInfoFilename + " for table " + tableName + " does not exist.")
+			panic("File " + dbsystem.TableInfoFilename + " for dbtable " + tableName + " does not exist.")
 		}
 
-		schemaTables[tableName] = *DeserializeTable(data)
+		parsedTable, err := DeserializeTable(data)
+		schemaTables[tableName] = parsedTable
 	}
+
+	//todo finish
 }

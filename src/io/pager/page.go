@@ -1,12 +1,13 @@
 package pager
 
-import (
-	"HomegrownDB/sql/schema"
-)
-
 const PageSize uint32 = 8192
 
-type Page[T schema.Table] struct {
-	lastModified uint64
-	rows         []byte
+type Page struct {
+	pageHash       int8
+	lastRowPointer InPagePointer
+	lastRowStart   InPagePointer
+	rowPointers    []InPagePointer
+	rows           []byte
 }
+
+type InPagePointer = uint16

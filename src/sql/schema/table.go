@@ -2,107 +2,31 @@ package schema
 
 import (
 	"HomegrownDB/io"
+	"HomegrownDB/sql/schema/dbtable"
+	"errors"
 )
 
-type Table struct {
-	objectId uint64
-	columns  map[string]*Column
-	colList  []*Column
-	name     string
-	byteLen  uint32
+type Table interface {
+	GetColumn(name string) Column
 }
 
-func (t *Table) GetColumn(name string) Column {
-	return *t.columns[name]
-}
+func DeserializeTable(rawData []byte) (Table, error) {
+	deserializer := io.NewDeserializer(rawData)
+	implName := deserializer.MdString()
 
-func DeserializeTable(rawData []byte) *Table {
-	td := tableDeserializer{
-		deserializer: io.NewDeserializer(rawData),
-		table:        Table{},
-	}
-
-	td.table.objectId = td.deserializer.Uint64()
-	td.table.name = td.deserializer.MdString()
-	td.readColumns()
-
-	return &td.table
-}
-
-type tableDeserializer struct {
-	deserializer *io.Deserializer
-	table        Table
-}
-
-func (td *tableDeserializer) readColumns() {
-	columnCount := td.deserializer.Uint16()
-
-	var columnOffset int32 = 0
-	var column *Column
-	for i := uint16(0); i < columnCount; i++ {
-		column = td.readColumn(columnOffset)
-		td.table.columns[column.Name] = column
-		td.table.colList = append(td.table.colList, column)
-
-		if columnOffset > -1 && column.Type.IsFixedSize {
-			columnOffset += int32(column.Type.ByteLen)
-		} else {
-			columnOffset = -1
-		}
+	switch implName {
+	case dbtable.TableImplName:
+		return dbtable.DeserializeTable(rawData), nil
+	default:
+		return nil, errors.New("no such table implementation")
 	}
 }
 
-func (td *tableDeserializer) readColumn(offset int32) *Column {
-	colName := td.deserializer.MdString()
-	colTypeCode := td.deserializer.MdString()
-	colTypeArgc := td.deserializer.Uint8()
-	var colTypeArgv = make([]int32, colTypeArgc)
-	for i := byte(0); i < colTypeArgc; i++ {
-		colTypeArgv[i] = td.deserializer.Int32()
+func SerializeTable(table Table) ([]byte, error) {
+	switch t := table.(type) {
+	case *dbtable.DbTable:
+		return dbtable.SerializeTable(*t), nil
+	default:
+		return nil, errors.New("can not find type of table implementation")
 	}
-
-	return &Column{
-		Name:          colName,
-		Type:          *GetColumnType(colTypeCode, colTypeArgv),
-		Offset:        offset,
-		Nullable:      td.deserializer.Bool(),
-		Autoincrement: td.deserializer.Bool(),
-	}
-}
-
-type tableSerializer struct {
-	serializer *io.Serializer
-	table      *Table
-}
-
-func SerializeTable(table Table) []byte {
-	serializer := io.NewSerializer()
-	ts := tableSerializer{
-		serializer: serializer,
-		table:      &table,
-	}
-
-	serializer.Uint64(table.objectId)
-	serializer.MdString(table.name)
-
-	columnCount := uint16(len(table.columns))
-	serializer.Uint16(columnCount)
-	for _, column := range table.columns {
-		ts.serializeColumn(column)
-	}
-
-	return ts.serializer.GetBytes()
-}
-
-func (ts *tableSerializer) serializeColumn(column *Column) {
-	ts.serializer.MdString(column.Name)
-
-	columnType := column.Type
-	ts.serializer.MdString(columnType.Code)
-	ts.serializer.Uint32(columnType.ByteLen)
-	ts.serializer.Bool(columnType.IsFixedSize)
-	ts.serializer.Uint8(columnType.LobStatus)
-
-	ts.serializer.Bool(column.Nullable)
-	ts.serializer.Bool(column.Autoincrement)
 }
