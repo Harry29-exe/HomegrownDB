@@ -1,18 +1,16 @@
 package dbtable
 
-import "HomegrownDB/sql/schema"
-
 type TableBuilder struct {
 	table   *DbTable
-	columns []*schema.Column
+	columns []*Column
 }
 
 func NewTableBuilder(tableName string) *TableBuilder {
 	return &TableBuilder{
 		table: &DbTable{
 			objectId: 0,
-			columns:  map[string]*schema.Column{},
-			colList:  make([]*schema.Column, 8),
+			columns:  map[string]*Column{},
+			colList:  make([]*Column, 8),
 			name:     tableName,
 			byteLen:  0,
 		},
@@ -44,17 +42,17 @@ func (tb *TableBuilder) Build() *DbTable {
 	return nil
 }
 
-func (tb *TableBuilder) AddColumn(column *schema.Column) {
+func (tb *TableBuilder) AddColumn(column *Column) {
 	tb.columns = append(tb.columns, column)
 }
 
 func (tb *TableBuilder) AddNewColumn(
 	name string,
-	columnType schema.ColumnType,
+	columnType ColumnType,
 	nullable bool,
 	autoincrement bool) {
 
-	column := &schema.Column{
+	column := &Column{
 		Name:          name,
 		Type:          columnType,
 		Offset:        tb.calcNewColOffset(),
@@ -68,7 +66,7 @@ func (tb *TableBuilder) AddNewColumn(
 func (tb *TableBuilder) calcNewColOffset() int32 {
 	lastCol := tb.table.colList[len(tb.table.colList)]
 	if lastCol.Offset < 0 || !lastCol.Type.IsFixedSize ||
-		lastCol.Type.LobStatus != schema.NEVER {
+		lastCol.Type.LobStatus != NEVER {
 		return -1
 	}
 

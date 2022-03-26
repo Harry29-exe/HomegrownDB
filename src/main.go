@@ -1,13 +1,13 @@
 package main
 
 import (
-	"HomegrownDB/sql/schema"
+	"HomegrownDB/sql/schema/dbtable"
 	"HomegrownDB/utils"
 	"fmt"
 )
 
 func main() {
-	s := schema.GetColumnType(schema.Int2, nil)
+	s := dbtable.GetColumnType(dbtable.Int2, nil)
 	s1 := *s
 
 	s.IsFixedSize = false

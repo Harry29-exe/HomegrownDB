@@ -1,9 +1,12 @@
-package schema
+package dbtable
 
 // ColumnType describes column data structure as int or string
 type ColumnType struct {
-	Code        ColumnTypeCode
-	IsFixedSize bool
+	Code ColumnTypeCode
+	// LenPrefixSize describes how long is column prefix describing
+	// how long column data is, if LenPrefixSize is 0 this mean column is
+	// fixed size and does not have len prefix
+	LenPrefixSize uint8
 	// IsFixedSize true then this describes max size of column
 	// where 0 means no max size otherwise it describes size od column
 	ByteLen uint32
@@ -20,6 +23,15 @@ const (
 	ALWAYS
 )
 
+func GetColumnType(code ColumnTypeCode, args []int32) *ColumnType {
+	factoryFun, ok := columnTypeMap[code]
+	if !ok {
+		panic("There is not column type with code: " + code)
+	}
+
+	return factoryFun(args)
+}
+
 type ColumnTypeCode = string
 
 const (
@@ -31,15 +43,6 @@ const (
 	Bool    ColumnTypeCode = "bool"
 	BLOB    ColumnTypeCode = "blob"
 )
-
-func GetColumnType(code ColumnTypeCode, args []int32) *ColumnType {
-	factoryFun, ok := columnTypeMap[code]
-	if !ok {
-		panic("There is not column type with code: " + code)
-	}
-
-	return factoryFun(args)
-}
 
 type columnTypeFactory = func(args []int32) *ColumnType
 
@@ -60,10 +63,10 @@ var columnTypeMap = map[ColumnTypeCode]columnTypeFactory{
 		}
 
 		return &ColumnType{
-			Code:        Char,
-			IsFixedSize: true,
-			ByteLen:     strLen,
-			LobStatus:   SOMETIMES,
+			Code:          Char,
+			LenPrefixSize: 0,
+			ByteLen:       strLen,
+			LobStatus:     SOMETIMES,
 		}
 	},
 	Varchar: func(args []int32) *ColumnType {
@@ -73,10 +76,10 @@ var columnTypeMap = map[ColumnTypeCode]columnTypeFactory{
 		}
 
 		return &ColumnType{
-			Code:        Varchar,
-			IsFixedSize: false,
-			ByteLen:     strLen,
-			LobStatus:   SOMETIMES,
+			Code:          Varchar,
+			LenPrefixSize: 0,
+			ByteLen:       strLen,
+			LobStatus:     SOMETIMES,
 		}
 	},
 	Bool: func(args []int32) *ColumnType {
@@ -84,19 +87,19 @@ var columnTypeMap = map[ColumnTypeCode]columnTypeFactory{
 	},
 	BLOB: func(args []int32) *ColumnType {
 		return &ColumnType{
-			Code:        BLOB,
-			IsFixedSize: false,
-			ByteLen:     0,
-			LobStatus:   ALWAYS,
+			Code:          BLOB,
+			LenPrefixSize: 0,
+			ByteLen:       0,
+			LobStatus:     ALWAYS,
 		}
 	},
 }
 
 func createSimpleColumnType(code ColumnTypeCode, byteLen uint32) *ColumnType {
 	return &ColumnType{
-		Code:        code,
-		IsFixedSize: true,
-		ByteLen:     byteLen,
-		LobStatus:   NEVER,
+		Code:          code,
+		LenPrefixSize: 0,
+		ByteLen:       byteLen,
+		LobStatus:     NEVER,
 	}
 }

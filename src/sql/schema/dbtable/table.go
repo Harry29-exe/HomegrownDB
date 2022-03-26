@@ -14,29 +14,55 @@ type DbTable struct {
 	byteLen  uint32
 }
 
-func (t *DbTable) GetColumn(name string) Column {
-	return *t.columns[name]
+func (t *DbTable) GetColumnId(name string) ColumnId {
+	return t.columns[name].Id
 }
 
-func (t *DbTable) ParseRow(row []byte) ParsedRow {
+func (t *DbTable) GetColumnsIds(names []string) []ColumnId {
+	colIds := make([]ColumnId, 0, len(names))
+	for i, name := range names {
+		colIds[i] = t.columns[name].Id
+	}
+
+	return colIds
+}
+
+func (t *DbTable) ParseRow(row []byte) Tuple {
 	for column := range t.columns {
 
 	}
 }
 
-func parseColumn(column *Column, row []byte) []byte {
+func (t *DbTable) RetrieveColumn(columnId ColumnId, row []byte) TupleColumn {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *DbTable) RetrieveColumns(columnsIDs []ColumnId, row []byte) []TupleColumn {
+	//TODO implement me
+	panic("implement me")
+}
+
+func parseColumn(column *Column, row []byte) *TupleColumn {
 	colType := column.Type
-	if colType.IsFixedSize {
+	switch colType.LobStatus {
+	case NEVER:
 
 	}
 }
 
-func (t *DbTable) ParseColumn(columnId uint16, row []byte) []byte {
-	//TODO implement me
-	panic("implement me")
-}
+func parseNonLobColumn(column *Column, row []byte) *TupleColumn {
+	colType := column.Type
+	if colType.LenPrefixSize == 0 {
+		return &TupleColumn{
+			IsPointer: false,
+			Data:      row[:colType.ByteLen],
+		}
+	}
 
-func (t *DbTable) ParseColumns(columnsIDs []uint16, row []byte) [][]byte {
-	//TODO implement me
-	panic("implement me")
+	colLen := row[:colType.LenPrefixSize]
+	return &TupleColumn{
+		IsPointer: false,
+		Data:      row[colType.LenPrefixSize : colType.LenPrefixSize+colLen],
+	}
 }

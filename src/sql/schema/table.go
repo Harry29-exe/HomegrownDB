@@ -7,16 +7,15 @@ import (
 )
 
 type Table interface {
-	GetColumn(name string) Column
-	ParseRow(row []byte) ParsedRow
+	GetColumnId(name string) ColumnId
+	GetColumnsIds(names []string) []ColumnId
+	ParseRow(row []byte) Tuple
 
-	ParseColumn(columnId uint16, row []byte) []byte
-	ParseColumns(columnsIDs []uint16, row []byte) [][]byte
+	RetrieveColumn(columnId ColumnId, row []byte) TupleColumn
+	RetrieveColumns(columnsIDs []ColumnId, row []byte) []TupleColumn
 }
 
-type ParsedRow interface {
-	GetColumn(id int16) []byte
-}
+type ColumnId = uint16
 
 func DeserializeTable(rawData []byte) (Table, error) {
 	deserializer := io.NewDeserializer(rawData)

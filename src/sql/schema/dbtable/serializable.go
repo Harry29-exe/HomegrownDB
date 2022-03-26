@@ -2,7 +2,6 @@ package dbtable
 
 import (
 	"HomegrownDB/io"
-	"HomegrownDB/sql/schema"
 )
 
 func DeserializeDbTable(rawData []byte) *DbTable {
@@ -23,17 +22,18 @@ type tableDeserializer struct {
 	table        DbTable
 }
 
+//todo add null support when calc offset
 func (td *tableDeserializer) readColumns() {
 	columnCount := td.deserializer.Uint16()
 
 	var columnOffset int32 = 0
-	var column *schema.Column
+	var column *Column
 	for i := uint16(0); i < columnCount; i++ {
 		column = td.readColumn(columnOffset)
 		td.table.columns[column.Name] = column
 		td.table.colList = append(td.table.colList, column)
 
-		if columnOffset > -1 && column.Type.IsFixedSize {
+		if columnOffset > -1 && column.Type.LenPrefixSize == 0 {
 			columnOffset += int32(column.Type.ByteLen)
 		} else {
 			columnOffset = -1
@@ -41,7 +41,7 @@ func (td *tableDeserializer) readColumns() {
 	}
 }
 
-func (td *tableDeserializer) readColumn(offset int32) *schema.Column {
+func (td *tableDeserializer) readColumn(offset int32) *Column {
 	colName := td.deserializer.MdString()
 	colTypeCode := td.deserializer.MdString()
 	colTypeArgc := td.deserializer.Uint8()
@@ -50,9 +50,9 @@ func (td *tableDeserializer) readColumn(offset int32) *schema.Column {
 		colTypeArgv[i] = td.deserializer.Int32()
 	}
 
-	return &schema.Column{
+	return &Column{
 		Name:          colName,
-		Type:          *schema.GetColumnType(colTypeCode, colTypeArgv),
+		Type:          *GetColumnType(colTypeCode, colTypeArgv),
 		Offset:        offset,
 		Nullable:      td.deserializer.Bool(),
 		Autoincrement: td.deserializer.Bool(),
@@ -83,13 +83,13 @@ func SerializeDbTable(table DbTable) []byte {
 	return ts.serializer.GetBytes()
 }
 
-func (ts *tableSerializer) serializeColumn(column *schema.Column) {
+func (ts *tableSerializer) serializeColumn(column *Column) {
 	ts.serializer.MdString(column.Name)
 
 	columnType := column.Type
 	ts.serializer.MdString(columnType.Code)
 	ts.serializer.Uint32(columnType.ByteLen)
-	ts.serializer.Bool(columnType.IsFixedSize)
+	ts.serializer.Uint8(columnType.LenPrefixSize)
 	ts.serializer.Uint8(columnType.LobStatus)
 
 	ts.serializer.Bool(column.Nullable)
