@@ -1,23 +1,28 @@
 package dbtable
 
+import (
+	"HomegrownDB/sql/schema/difinitions"
+	"HomegrownDB/sql/schema/impl"
+)
+
 type TableBuilder struct {
-	table   *DbTable
-	columns []*Column
+	table   *impl.DbTable
+	columns []*difinitions.Column
 }
 
 func NewTableBuilder(tableName string) *TableBuilder {
 	return &TableBuilder{
-		table: &DbTable{
+		table: &impl.DbTable{
 			objectId: 0,
-			columns:  map[string]*Column{},
-			colList:  make([]*Column, 8),
+			columns:  map[string]*difinitions.Column{},
+			colList:  make([]*difinitions.Column, 8),
 			name:     tableName,
 			byteLen:  0,
 		},
 	}
 }
 
-func (tb *TableBuilder) Build() *DbTable {
+func (tb *TableBuilder) Build() *impl.DbTable {
 	//fixedSizeCols := make([]*schema.Column, 0, len(tb.columns))
 	//fixedColsLen := uint32(0)
 	//nonFixedSizeCols := make([]*schema.Column, 0, len(tb.columns))
@@ -42,17 +47,17 @@ func (tb *TableBuilder) Build() *DbTable {
 	return nil
 }
 
-func (tb *TableBuilder) AddColumn(column *Column) {
+func (tb *TableBuilder) AddColumn(column *difinitions.Column) {
 	tb.columns = append(tb.columns, column)
 }
 
 func (tb *TableBuilder) AddNewColumn(
 	name string,
-	columnType ColumnType,
+	columnType difinitions.ColumnType,
 	nullable bool,
 	autoincrement bool) {
 
-	column := &Column{
+	column := &difinitions.Column{
 		Name:          name,
 		Type:          columnType,
 		Offset:        tb.calcNewColOffset(),

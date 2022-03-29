@@ -1,4 +1,4 @@
-package schema
+package rawdata
 
 import "HomegrownDB/io"
 
@@ -7,7 +7,7 @@ type Tuple struct {
 	ModifiedByTx     uint32
 	TxCommandCounter uint32
 	Id               TupleId
-	columns          []TupleColumn
+	columns          []ColumnValue
 }
 
 type TupleId struct {
@@ -15,9 +15,9 @@ type TupleId struct {
 	LinePointer uint16
 }
 
-type TupleColumn struct {
-	IsPointer bool
-	Data      []byte
+type ColumnValue interface {
+	Value() any
+	AsBytes() []byte
 }
 
 func ParseTupleHeader(data []byte) *Tuple {

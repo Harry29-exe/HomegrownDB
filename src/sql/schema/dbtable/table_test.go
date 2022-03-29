@@ -1,8 +1,8 @@
 package dbtable_test
 
 import (
-	. "HomegrownDB/sql/schema"
 	. "HomegrownDB/sql/schema/dbtable"
+	. "HomegrownDB/sql/schema/difinitions"
 	"testing"
 )
 

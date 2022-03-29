@@ -1,7 +1,9 @@
-package dbtable
+package impl
 
 import (
 	"HomegrownDB/io"
+	"HomegrownDB/sql/schema/dbtable"
+	"HomegrownDB/sql/schema/difinitions"
 )
 
 func DeserializeDbTable(rawData []byte) *DbTable {
@@ -27,7 +29,7 @@ func (td *tableDeserializer) readColumns() {
 	columnCount := td.deserializer.Uint16()
 
 	var columnOffset int32 = 0
-	var column *Column
+	var column *difinitions.Column
 	for i := uint16(0); i < columnCount; i++ {
 		column = td.readColumn(columnOffset)
 		td.table.columns[column.Name] = column
@@ -41,7 +43,7 @@ func (td *tableDeserializer) readColumns() {
 	}
 }
 
-func (td *tableDeserializer) readColumn(offset int32) *Column {
+func (td *tableDeserializer) readColumn(offset int32) *difinitions.Column {
 	colName := td.deserializer.MdString()
 	colTypeCode := td.deserializer.MdString()
 	colTypeArgc := td.deserializer.Uint8()
@@ -50,9 +52,9 @@ func (td *tableDeserializer) readColumn(offset int32) *Column {
 		colTypeArgv[i] = td.deserializer.Int32()
 	}
 
-	return &Column{
+	return &difinitions.Column{
 		Name:          colName,
-		Type:          *GetColumnType(colTypeCode, colTypeArgv),
+		Type:          *dbtable.GetColumnType(colTypeCode, colTypeArgv),
 		Offset:        offset,
 		Nullable:      td.deserializer.Bool(),
 		Autoincrement: td.deserializer.Bool(),
@@ -83,7 +85,7 @@ func SerializeDbTable(table DbTable) []byte {
 	return ts.serializer.GetBytes()
 }
 
-func (ts *tableSerializer) serializeColumn(column *Column) {
+func (ts *tableSerializer) serializeColumn(column *difinitions.Column) {
 	ts.serializer.MdString(column.Name)
 
 	columnType := column.Type

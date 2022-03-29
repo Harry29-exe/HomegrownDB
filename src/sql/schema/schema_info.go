@@ -2,13 +2,15 @@ package schema
 
 import (
 	"HomegrownDB/dbsystem"
+	"HomegrownDB/sql/schema/difinitions"
+	"HomegrownDB/sql/schema/providers"
 	"HomegrownDB/utils"
 	"io/ioutil"
 	"os"
 )
 
 type DBSchema struct {
-	tables map[string]Table
+	tables map[string]difinitions.Table
 }
 
 var schema DBSchema
@@ -34,7 +36,7 @@ func readDBSchema(dbHomePath string) {
 			"does not exist in directory: " + dbsystem.GetDBHomePath())
 	}
 
-	schemaTables := map[string]Table{}
+	schemaTables := map[string]difinitions.Table{}
 
 	for _, table := range tables {
 		tableName := table.Name()
@@ -43,7 +45,7 @@ func readDBSchema(dbHomePath string) {
 			panic("File " + dbsystem.TableInfoFilename + " for dbtable " + tableName + " does not exist.")
 		}
 
-		parsedTable, err := DeserializeTable(data)
+		parsedTable, err := providers.DeserializeTable(data)
 		schemaTables[tableName] = parsedTable
 	}
 

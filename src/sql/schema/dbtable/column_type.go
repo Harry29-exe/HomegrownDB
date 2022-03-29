@@ -1,7 +1,9 @@
 package dbtable
 
+import "HomegrownDB/sql/schema/difinitions"
+
 // ColumnType describes column data structure as int or string
-type ColumnType struct {
+type ColumnType2 struct {
 	Code ColumnTypeCode
 	// LenPrefixSize describes how long is column prefix describing
 	// how long column data is, if LenPrefixSize is 0 this mean column is
@@ -23,13 +25,14 @@ const (
 	ALWAYS
 )
 
-func GetColumnType(code ColumnTypeCode, args []int32) *ColumnType {
-	factoryFun, ok := columnTypeMap[code]
-	if !ok {
-		panic("There is not column type with code: " + code)
-	}
-
-	return factoryFun(args)
+func GetColumnType(code ColumnTypeCode, args []int32) *difinitions.ColumnType {
+	return nil
+	//factoryFun, ok := columnTypeMap[code]
+	//if !ok {
+	//	panic("There is not column type with code: " + code)
+	//}
+	//
+	//return factoryFun(args)
 }
 
 type ColumnTypeCode = string
@@ -44,62 +47,62 @@ const (
 	BLOB    ColumnTypeCode = "blob"
 )
 
-type columnTypeFactory = func(args []int32) *ColumnType
+type columnTypeFactory = func(args []int32) *difinitions.ColumnType
 
-var columnTypeMap = map[ColumnTypeCode]columnTypeFactory{
-	Int2: func(args []int32) *ColumnType {
-		return createSimpleColumnType(Int2, 2)
-	},
-	Int4: func(args []int32) *ColumnType {
-		return createSimpleColumnType(Int4, 4)
-	},
-	Int8: func(args []int32) *ColumnType {
-		return createSimpleColumnType(Int8, 8)
-	},
-	Char: func(args []int32) *ColumnType {
-		var strLen uint32 = 1
-		if len(args) > 0 {
-			strLen = uint32(args[0])
-		}
-
-		return &ColumnType{
-			Code:          Char,
-			LenPrefixSize: 0,
-			ByteLen:       strLen,
-			LobStatus:     SOMETIMES,
-		}
-	},
-	Varchar: func(args []int32) *ColumnType {
-		var strLen uint32 = 1
-		if len(args) > 1 {
-			strLen = uint32(args[0])
-		}
-
-		return &ColumnType{
-			Code:          Varchar,
-			LenPrefixSize: 0,
-			ByteLen:       strLen,
-			LobStatus:     SOMETIMES,
-		}
-	},
-	Bool: func(args []int32) *ColumnType {
-		return createSimpleColumnType(Bool, 1)
-	},
-	BLOB: func(args []int32) *ColumnType {
-		return &ColumnType{
-			Code:          BLOB,
-			LenPrefixSize: 0,
-			ByteLen:       0,
-			LobStatus:     ALWAYS,
-		}
-	},
-}
-
-func createSimpleColumnType(code ColumnTypeCode, byteLen uint32) *ColumnType {
-	return &ColumnType{
-		Code:          code,
-		LenPrefixSize: 0,
-		ByteLen:       byteLen,
-		LobStatus:     NEVER,
-	}
-}
+//var columnTypeMap = map[ColumnTypeCode]columnTypeFactory{
+//	Int2: func(args []int32) *ColumnType {
+//		return createSimpleColumnType(Int2, 2)
+//	},
+//	Int4: func(args []int32) *ColumnType {
+//		return createSimpleColumnType(Int4, 4)
+//	},
+//	Int8: func(args []int32) *ColumnType {
+//		return createSimpleColumnType(Int8, 8)
+//	},
+//	Char: func(args []int32) *ColumnType {
+//		var strLen uint32 = 1
+//		if len(args) > 0 {
+//			strLen = uint32(args[0])
+//		}
+//
+//		return &ColumnType{
+//			Code:          Char,
+//			LenPrefixSize: 0,
+//			ByteLen:       strLen,
+//			LobStatus:     SOMETIMES,
+//		}
+//	},
+//	Varchar: func(args []int32) *ColumnType {
+//		var strLen uint32 = 1
+//		if len(args) > 1 {
+//			strLen = uint32(args[0])
+//		}
+//
+//		return &ColumnType{
+//			Code:          Varchar,
+//			LenPrefixSize: 0,
+//			ByteLen:       strLen,
+//			LobStatus:     SOMETIMES,
+//		}
+//	},
+//	Bool: func(args []int32) *ColumnType {
+//		return createSimpleColumnType(Bool, 1)
+//	},
+//	BLOB: func(args []int32) *ColumnType {
+//		return &ColumnType{
+//			Code:          BLOB,
+//			LenPrefixSize: 0,
+//			ByteLen:       0,
+//			LobStatus:     ALWAYS,
+//		}
+//	},
+//}
+//
+//func createSimpleColumnType(code ColumnTypeCode, byteLen uint32) *ColumnType {
+//	return &ColumnType{
+//		Code:          code,
+//		LenPrefixSize: 0,
+//		ByteLen:       byteLen,
+//		LobStatus:     NEVER,
+//	}
+//}
