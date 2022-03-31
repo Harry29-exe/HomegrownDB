@@ -1,6 +1,8 @@
 package rawdata
 
-import "HomegrownDB/io"
+import (
+	"HomegrownDB/io/bparse"
+)
 
 type Tuple struct {
 	CreatedByTx      uint32
@@ -21,7 +23,7 @@ type ColumnValue interface {
 }
 
 func ParseTupleHeader(data []byte) *Tuple {
-	deserializer := io.NewDeserializer(data)
+	deserializer := bparse.NewDeserializer(data)
 	return &Tuple{
 		CreatedByTx:      deserializer.Uint32(),
 		ModifiedByTx:     deserializer.Uint32(),

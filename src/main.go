@@ -1,26 +1,15 @@
 package main
 
 import (
-	"HomegrownDB/sql/schema/dbtable"
-	"HomegrownDB/utils"
+	"HomegrownDB/sql/schema/column/types"
 	"fmt"
 )
 
 func main() {
-	s := dbtable.GetColumnType(dbtable.Int2, nil)
-	s1 := *s
+	col := types.Int2Column{}
+	serializedColumn := col.Serialize()
 
-	s.IsFixedSize = false
-	print(s.IsFixedSize)
-	print((*s).IsFixedSize)
-	print(s1.IsFixedSize)
-
-	counter := utils.NewLockCounter(0)
-	println("\n")
-	val0 := counter.GetAndIncrement()
-	println(val0)
-	val2 := counter.IncrementAndGet()
-	println(val2)
+	print(serializedColumn)
 }
 
 func PrintUsageInfo() {

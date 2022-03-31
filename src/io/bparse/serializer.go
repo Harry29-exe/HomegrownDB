@@ -1,4 +1,4 @@
-package io
+package bparse
 
 import "encoding/binary"
 
@@ -14,6 +14,10 @@ func NewSerializer() *Serializer {
 
 func (s *Serializer) GetBytes() []byte {
 	return s.buffer
+}
+
+func (s *Serializer) Append(bytes []byte) {
+	s.buffer = append(s.buffer, bytes...)
 }
 
 func (s *Serializer) SmString(str string) {

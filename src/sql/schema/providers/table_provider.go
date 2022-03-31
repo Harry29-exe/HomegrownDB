@@ -1,28 +1,27 @@
 package providers
 
 import (
-	"HomegrownDB/io"
-	. "HomegrownDB/sql/schema/difinitions"
-	"HomegrownDB/sql/schema/impl"
+	"HomegrownDB/io/bparse"
+	"HomegrownDB/sql/schema/table"
 	"errors"
 )
 
-func DeserializeTable(rawData []byte) (Table, error) {
-	deserializer := io.NewDeserializer(rawData)
+func DeserializeTable(rawData []byte) (table.Table, error) {
+	deserializer := bparse.NewDeserializer(rawData)
 	implName := deserializer.MdString()
 
 	switch implName {
-	case impl.TableImplName:
-		return impl.DeserializeDbTable(rawData), nil
+	case table.TableImplName:
+		return table.DeserializeDbTable(rawData), nil
 	default:
 		return nil, errors.New("no such table implementation")
 	}
 }
 
-func SerializeTable(table Table) ([]byte, error) {
+func SerializeTable(table table.Table) ([]byte, error) {
 	switch t := table.(type) {
-	case *impl.DbTable:
-		return impl.SerializeDbTable(*t), nil
+	case *table.DbTable:
+		return table.SerializeDbTable(*t), nil
 	default:
 		return nil, errors.New("can not find type of table implementation")
 	}

@@ -1,4 +1,4 @@
-package io
+package bparse
 
 import "encoding/binary"
 
