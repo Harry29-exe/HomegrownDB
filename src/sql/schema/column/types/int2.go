@@ -8,6 +8,8 @@ import (
 	"errors"
 )
 
+const Int2 = "Int2"
+
 func NewInt2Column(name string, nullable bool) column.Definition {
 	return &Int2Column{
 		name:     name,
