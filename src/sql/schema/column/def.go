@@ -1,5 +1,7 @@
 package column
 
+type Type = string
+
 // Definition describes column properties and provides parser
 type Definition interface {
 	Name() string

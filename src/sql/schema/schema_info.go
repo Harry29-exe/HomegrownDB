@@ -9,11 +9,15 @@ import (
 	"os"
 )
 
-type DBSchema struct {
+type dbSchema struct {
 	tables map[string]table.Table
 }
 
-var schema DBSchema
+var _ dbSchema
+
+func (db *dbSchema) GetTable(name string) table.Table {
+	return db.tables[name]
+}
 
 var dbObjectIdCounter = utils.NewLockCounter(uint64(0))
 var lobIdCounter = utils.NewLockCounter(uint64(0))

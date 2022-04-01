@@ -8,16 +8,20 @@ import (
 	"errors"
 )
 
-const Int2 = "Int2"
+const Int2 column.Type = "Int2"
 
-func NewInt2Column(name string, nullable bool) column.Definition {
+func NewInt2Column(args column.Args) column.Definition {
+	name, err := args.Name()
+	if err != nil {
+		panic("No column name")
+	}
+	nullable, _ := args.Nullable()
+
 	return &Int2Column{
-		name:     name,
-		nullable: nullable,
-		parser: &int2Parser{
-			columnIsNullable: nullable,
-		},
-		serializer: &int2Serializer{},
+		name:       name,
+		nullable:   nullable,
+		parser:     &int2Parser{nullable},
+		serializer: &int2Serializer{nullable},
 	}
 }
 
@@ -169,7 +173,7 @@ func (v *int2Value) Equals(value *any) bool {
 	case int16:
 		return *v.value == data
 	default:
-		panic("Type of argument and column value are different")
+		panic("TYPE of argument and column value are different")
 	}
 }
 
@@ -209,6 +213,6 @@ func (v *int2Value) Compare(value *any) int {
 			return 0
 		}
 	default:
-		panic("Type of argument value and column value are different")
+		panic("TYPE of argument value and column value are different")
 	}
 }
