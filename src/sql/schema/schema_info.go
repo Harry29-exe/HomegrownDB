@@ -1,10 +1,10 @@
 package schema
 
 import (
+	"HomegrownDB/datastructs"
 	"HomegrownDB/dbsystem"
 	"HomegrownDB/sql/schema/providers"
 	"HomegrownDB/sql/schema/table"
-	"HomegrownDB/utils"
 	"io/ioutil"
 	"os"
 )
@@ -19,8 +19,8 @@ func (db *dbSchema) GetTable(name string) table.Table {
 	return db.tables[name]
 }
 
-var dbObjectIdCounter = utils.NewLockCounter(uint64(0))
-var lobIdCounter = utils.NewLockCounter(uint64(0))
+var dbObjectIdCounter = datastructs.NewLockCounter(uint64(0))
+var lobIdCounter = datastructs.NewLockCounter(uint64(0))
 
 func GetNextDbObjectId() uint64 {
 	return dbObjectIdCounter.IncrementAndGet()
