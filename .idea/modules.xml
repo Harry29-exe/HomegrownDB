@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Datastruct/.idea/Datastruct.iml" filepath="$PROJECT_DIR$/../Datastruct/.idea/Datastruct.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/HomegrownDB.iml" filepath="$PROJECT_DIR$/.idea/HomegrownDB.iml" />
     </modules>
   </component>
