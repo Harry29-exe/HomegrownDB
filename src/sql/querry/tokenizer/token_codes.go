@@ -8,6 +8,8 @@ import (
 type TokenCode = uint16
 
 const (
+	/* -- KEYWORDS --*/
+
 	Select TokenCode = iota
 	From
 	Where
@@ -17,15 +19,24 @@ const (
 	Create
 	Drop
 	Table
+	And
+	Or
+	On
+
+	/* -- Non space break characters -- */
 
 	Comma
 	Dot
 	Semicolon
 
+	/* -- Values like string, int, float -- */
+
 	Integer
 	Float
-
 	SqlTextValue
+
+	/* -- Other -- */
+
 	Text
 )
 
@@ -49,4 +60,7 @@ var keywordMap = map[string]TokenCode{
 	"CREATE": Create,
 	"DROP":   Drop,
 	"TABLE":  Table,
+	"AND":    And,
+	"OR":     Or,
+	"On":     On,
 }

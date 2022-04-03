@@ -25,13 +25,16 @@ type basicTokenizer struct {
 func newBasicTokenizer(str string) *basicTokenizer {
 	chars := []rune(str)
 	charsLen := len(chars)
-	return &basicTokenizer{
+	bt := &basicTokenizer{
 		str:         str,
 		chars:       chars,
 		pointer:     0,
 		len:         uint(charsLen),
 		futureToken: make([]rune, 0, charsLen/10),
 	}
+
+	bt.skipWhiteSpaces()
+	return bt
 }
 
 func isIn(char rune, chars []rune) bool {
@@ -52,6 +55,18 @@ func (t *basicTokenizer) Next() (Token, error) {
 	switch {
 	case isNonSpaceBreak(firstTokenChar):
 		return t.tokenizeNonSpaceBreak()
+	case unicode.IsDigit(firstTokenChar):
+		return t.tokenizeNumber()
+	case firstTokenChar == '\'':
+		return t.tokenizeSqlString()
+	case unicode.IsDigit(firstTokenChar):
+		token, err := t.tokenizeNumber()
+		if err != nil {
+			return t.tokenizeString()
+		}
+		return token, nil
+	default:
+		return t.tokenizeString()
 	}
 }
 
@@ -59,8 +74,15 @@ func (t *basicTokenizer) HasNext() bool {
 	return t.pointer < t.len
 }
 
-func (t *basicTokenizer) tryParseNumber() {
-
+func (t *basicTokenizer) tokenizeNumber() (token Token, err error) {
+	for _, char := range t.futureToken {
+		if char == '.' {
+			token, err = NewFloatToken(string(t.futureToken))
+			return
+		}
+	}
+	token, err = NewIntegerToken(string(t.futureToken))
+	return
 }
 
 func (t *basicTokenizer) tokenizeNonSpaceBreak() (Token, error) {
@@ -77,16 +99,24 @@ func (t *basicTokenizer) tokenizeNonSpaceBreak() (Token, error) {
 }
 
 func (t *basicTokenizer) tokenizeString() (Token, error) {
-	switch t.futureToken[0] {
-	case :
-		
+	keywordToken, err := KeywordToToken(string(t.futureToken))
+	if err == nil {
+		return keywordToken, nil
 	}
+
+	return NewTextToken(string(t.futureToken)), nil
+}
+
+func (t *basicTokenizer) tokenizeSqlString() (Token, error) {
+	return NewSqlTextValueToken(string(t.futureToken))
 }
 
 func (t *basicTokenizer) createFutureToken() error {
 	futureTokenStart := t.pointer
 
-	t.pointer++
+	if t.pointer >= t.len {
+		return errors.New("tokenizer has no more tokens")
+	}
 	nextChar := t.chars[t.pointer]
 
 	for !isBreak(nextChar) {
@@ -95,11 +125,33 @@ func (t *basicTokenizer) createFutureToken() error {
 		}
 
 		t.pointer++
+		if t.pointer >= t.len {
+			break
+		}
 		nextChar = t.chars[t.pointer]
 	}
 
-	t.pointer++
+	if t.pointer == futureTokenStart {
+		t.pointer++
+	}
 	t.futureToken = t.chars[futureTokenStart:t.pointer]
 
+	t.skipWhiteSpaces()
 	return nil
+}
+
+func (t *basicTokenizer) skipWhiteSpaces() {
+	if t.pointer >= t.len {
+		return
+	}
+
+	char := t.chars[t.pointer]
+	for unicode.IsSpace(char) {
+		t.pointer++
+		if t.pointer >= t.len {
+			break
+		}
+
+		char = t.chars[t.pointer]
+	}
 }

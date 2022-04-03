@@ -1,5 +1,7 @@
 package tokenizer
 
+import "strconv"
+
 type Token interface {
 	Code() TokenCode
 	Value() string
@@ -61,21 +63,53 @@ func (t *TextToken) Value() string {
 	return t.value
 }
 
-type SqlTextValueToken struct {
-	code  TokenCode
-	value string
-	Str   string
-}
-
-func NewSqlTextValueToken(value string) *SqlTextValueToken {
+func NewSqlTextValueToken(value string) (*SqlTextValueToken, error) {
 	firstChar, lastChar := value[0], value[len(value)-1]
 	if firstChar != '\'' || lastChar != '\'' {
 		panic("given value can not be value of SqlTextValueToken because it does not have \"'\" signs on first and last position")
 	}
 
 	return &SqlTextValueToken{
-		code:  SqlTextValue,
-		value: value,
-		Str:   value[1 : len(value)-1],
+		Token:  NewBasicToken(SqlTextValue, value),
+		RawStr: value[1 : len(value)-1],
+	}, nil
+}
+
+type SqlTextValueToken struct {
+	Token
+	RawStr string // RawStr is string inside quotation marks
+}
+
+func NewIntegerToken(value string) (*IntegerToken, error) {
+	int, err := strconv.Atoi(value)
+	if err != nil {
+		return nil, err
 	}
+
+	return &IntegerToken{
+		Token: NewBasicToken(Integer, value),
+		Int:   int,
+	}, nil
+}
+
+type IntegerToken struct {
+	Token
+	Int int
+}
+
+func NewFloatToken(value string) (*FloatToken, error) {
+	float, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return &FloatToken{
+		Token: NewBasicToken(Integer, value),
+		Float: float,
+	}, nil
+}
+
+type FloatToken struct {
+	Token
+	Float float64
 }
