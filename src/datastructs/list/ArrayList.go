@@ -10,7 +10,7 @@ package list
 //	data []T
 //}
 //
-//func (a *ArrayList[T]) Get(object T) T {
+//func (a *ArrayList[T]) Next(object T) T {
 //	for _, elem := range a.data{
 //		if elem == object {
 //
