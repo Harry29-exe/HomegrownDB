@@ -18,12 +18,15 @@ func TestTokenizerWithBasicSelectQuery(t *testing.T) {
 	}
 
 	tester.assertNextBasicToken(tokenizer.Select, "sElECt")
+	tester.assertNextBasicToken(tokenizer.SpaceBreak, " ")
 	tester.assertNextBasicToken(tokenizer.Text, "table_alias")
+	tester.assertNextBasicToken(tokenizer.Dot, ".")
 	tok := tester.testTokenizer
 	for tok.HasNext() {
 		next, _ := tok.Next()
 		print("[", next.Code(), "-", next.Value(), "]")
 	}
+
 }
 
 type tokenizerTester struct {
@@ -42,8 +45,8 @@ func (tt tokenizerTester) assertNextBasicToken(code tokenizer.TokenCode, value s
 	tt.passTokenizerError(err)
 	switch {
 	case token.Value() != value:
-		tt.t.Error("Tokenizer contains invalid value for select. Should contain: \""+value+"\"",
-			"contains: \""+token.Value()+"\"")
+		tt.t.Error("Tokenizer contains invalid token code: expected: \""+value+"\"",
+			"actual: \""+token.Value()+"\"")
 	case token.Code() != code:
 		tt.t.Error("Token should has: "+strconv.Itoa(int(code))+
 			"  code instead has ", strconv.Itoa(int(token.Code())))

@@ -53,6 +53,8 @@ func (t *basicTokenizer) Next() (Token, error) {
 	}
 	firstTokenChar := t.futureToken[0]
 	switch {
+	case unicode.IsSpace(firstTokenChar):
+		return t.tokenizeSpaceBreak()
 	case isNonSpaceBreak(firstTokenChar):
 		return t.tokenizeNonSpaceBreak()
 	case unicode.IsDigit(firstTokenChar):
@@ -85,6 +87,10 @@ func (t *basicTokenizer) tokenizeNumber() (token Token, err error) {
 	return
 }
 
+func (t *basicTokenizer) tokenizeSpaceBreak() (Token, error) {
+	return NewBasicToken(SpaceBreak, " "), nil
+}
+
 func (t *basicTokenizer) tokenizeNonSpaceBreak() (Token, error) {
 	switch t.futureToken[0] {
 	case ',':
@@ -112,12 +118,17 @@ func (t *basicTokenizer) tokenizeSqlString() (Token, error) {
 }
 
 func (t *basicTokenizer) createFutureToken() error {
-	futureTokenStart := t.pointer
-
 	if t.pointer >= t.len {
 		return errors.New("tokenizer has no more tokens")
 	}
+
+	futureTokenStart := t.pointer
 	nextChar := t.chars[t.pointer]
+	if unicode.IsSpace(nextChar) {
+		t.pointer++
+		t.futureToken = t.chars[futureTokenStart:t.pointer]
+		t.skipWhiteSpaces()
+	}
 
 	for !isBreak(nextChar) {
 		if unicode.IsControl(nextChar) {
@@ -136,7 +147,7 @@ func (t *basicTokenizer) createFutureToken() error {
 	}
 	t.futureToken = t.chars[futureTokenStart:t.pointer]
 
-	t.skipWhiteSpaces()
+	//t.skipWhiteSpaces()
 	return nil
 }
 

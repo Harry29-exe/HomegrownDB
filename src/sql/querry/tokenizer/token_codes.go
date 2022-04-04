@@ -23,8 +23,9 @@ const (
 	Or
 	On
 
-	/* -- Non space break characters -- */
+	/* -- break characters -- */
 
+	SpaceBreak
 	Comma
 	Dot
 	Semicolon
