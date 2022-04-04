@@ -1,12 +1,20 @@
 package parser
 
-import "HomegrownDB/sql/querry/tokenizer"
+import (
+	"HomegrownDB/sql/querry/parser/parsetree"
+	"HomegrownDB/sql/querry/tokenizer"
+)
 
-type cache struct {
-	tokenizer    tokenizer.Tokenizer
-	currentToken tokenizer.Token
+type context struct {
+	tokenizer tokenizer.Tokenizer
+	nextToken tokenizer.Token
+	root      parsetree.Node
 }
 
-func Parse(query string) {
+type partialParser interface {
+	parse(ctx *context) error
+}
+
+func Parse(query string) parsetree.NodeType {
 
 }
