@@ -117,6 +117,7 @@ func (t *basicTokenizer) tokenizeSqlString() (Token, error) {
 	return NewSqlTextValueToken(string(t.futureToken))
 }
 
+//todo add support for sql text eg. 'some text'
 func (t *basicTokenizer) createFutureToken() error {
 	if t.pointer >= t.len {
 		return errors.New("tokenizer has no more tokens")

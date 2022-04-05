@@ -65,3 +65,43 @@ var keywordMap = map[string]TokenCode{
 	"OR":     Or,
 	"On":     On,
 }
+
+func ToString(code TokenCode) string {
+	str, ok := tokenNamesMap[code]
+	if ok {
+		return str
+	}
+	return ""
+}
+
+var tokenNamesMap = map[TokenCode]string{
+	Select: "SELECT",
+	From:   "From",
+	Where:  "Where",
+	Join:   "Join",
+	Update: "Update",
+	Delete: "Delete",
+	Create: "Create",
+	Drop:   "Drop",
+	Table:  "Table",
+	And:    "And",
+	Or:     "Or",
+	On:     "On",
+
+	/* -- break characters -- */
+
+	SpaceBreak: "SpaceBreak",
+	Comma:      "Comma",
+	Dot:        "Dot",
+	Semicolon:  "Semicolon",
+
+	/* -- Values like string, int, float -- */
+
+	Integer:      "Integer",
+	Float:        "Float",
+	SqlTextValue: "SqlTextValue",
+
+	/* -- Other -- */
+
+	Text: "Text",
+}
