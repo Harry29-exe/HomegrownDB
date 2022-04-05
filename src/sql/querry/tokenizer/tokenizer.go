@@ -1,13 +1,13 @@
 package tokenizer
 
 import (
-	"HomegrownDB/sql/querry/tokenizer/token"
+	. "HomegrownDB/sql/querry/tokenizer/token"
 	"errors"
 	"unicode"
 )
 
 type Tokenizer interface {
-	Next() (token.Token, error) //Next returns token, if there is no more tokens returns nil, if tokenizer encoders illegal char it returns error
+	Next() (Token, error) //Next returns token, if there is no more tokens returns nil, if tokenizer encoders illegal char it returns error
 	HasNext() bool
 }
 
@@ -47,7 +47,7 @@ func isIn(char rune, chars []rune) bool {
 	return false
 }
 
-func (t *basicTokenizer) Next() (token.Token, error) {
+func (t *basicTokenizer) Next() (Token, error) {
 	err := t.createFutureToken()
 	if err != nil {
 		return nil, err
@@ -77,45 +77,45 @@ func (t *basicTokenizer) HasNext() bool {
 	return t.pointer < t.len
 }
 
-func (t *basicTokenizer) tokenizeNumber() (token token.Token, err error) {
+func (t *basicTokenizer) tokenizeNumber() (token Token, err error) {
 	for _, char := range t.futureToken {
 		if char == '.' {
-			token, err = token.NewFloatToken(string(t.futureToken))
+			token, err = NewFloatToken(string(t.futureToken))
 			return
 		}
 	}
-	token, err = token.NewIntegerToken(string(t.futureToken))
+	token, err = NewIntegerToken(string(t.futureToken))
 	return
 }
 
-func (t *basicTokenizer) tokenizeSpaceBreak() (token.Token, error) {
-	return token.NewBasicToken(token.SpaceBreak, " "), nil
+func (t *basicTokenizer) tokenizeSpaceBreak() (Token, error) {
+	return NewBasicToken(SpaceBreak, " "), nil
 }
 
-func (t *basicTokenizer) tokenizeNonSpaceBreak() (token.Token, error) {
+func (t *basicTokenizer) tokenizeNonSpaceBreak() (Token, error) {
 	switch t.futureToken[0] {
 	case ',':
-		return token.NewBasicToken(token.Comma, string(t.futureToken)), nil
+		return NewBasicToken(Comma, string(t.futureToken)), nil
 	case '.':
-		return token.NewBasicToken(token.Dot, string(t.futureToken)), nil
+		return NewBasicToken(Dot, string(t.futureToken)), nil
 	case ';':
-		return token.NewBasicToken(token.Semicolon, string(t.futureToken)), nil
+		return NewBasicToken(Semicolon, string(t.futureToken)), nil
 	default:
 		panic("unknown non-space character")
 	}
 }
 
-func (t *basicTokenizer) tokenizeString() (token.Token, error) {
-	keywordToken, err := token.KeywordToToken(string(t.futureToken))
+func (t *basicTokenizer) tokenizeString() (Token, error) {
+	keywordToken, err := KeywordToToken(string(t.futureToken))
 	if err == nil {
 		return keywordToken, nil
 	}
 
-	return token.NewTextToken(string(t.futureToken)), nil
+	return NewTextToken(string(t.futureToken)), nil
 }
 
-func (t *basicTokenizer) tokenizeSqlString() (token.Token, error) {
-	return token.NewSqlTextValueToken(string(t.futureToken))
+func (t *basicTokenizer) tokenizeSqlString() (Token, error) {
+	return NewSqlTextValueToken(string(t.futureToken))
 }
 
 //todo add support for sql text eg. 'some text'
