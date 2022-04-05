@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/sql/querry/parser/defs"
 	"HomegrownDB/sql/querry/parser/helpers"
 	"HomegrownDB/sql/querry/parser/ptree"
-	"HomegrownDB/sql/querry/tokenizer"
+	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
 var Field fieldParser = fieldParser{}
@@ -16,7 +16,7 @@ func (f fieldParser) Parse(source defs.TokenSource) (ptree.Node, error) {
 	source.Checkpoint()
 
 	tableToken, err := helpers.CurrentToken(source).
-		HasCode(tokenizer.Text).
+		HasCode(token.Text).
 		IsTextToken().
 		DontStartWithDigit().
 		AsciiOnly().
@@ -28,7 +28,7 @@ func (f fieldParser) Parse(source defs.TokenSource) (ptree.Node, error) {
 	}
 
 	_, err = helpers.NextToken(source).
-		HasCode(tokenizer.Dot).
+		HasCode(token.Dot).
 		Check()
 
 	if err != nil {

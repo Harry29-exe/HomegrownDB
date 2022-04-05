@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/sql/querry/parser/helpers"
 	"HomegrownDB/sql/querry/parser/ptree"
 	"HomegrownDB/sql/querry/parser/sqlerr"
-	"HomegrownDB/sql/querry/tokenizer"
+	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
 var Fields fieldsParser = fieldsParser{}
@@ -21,8 +21,8 @@ func (p fieldsParser) Parse(source defs.TokenSource) (ptree.Node, error) {
 	//TODO change NextToken to CurrentToken
 
 	for {
-		if parsingToken.Code() != tokenizer.Text {
-			return nil, sqlerr.NewSyntaxError(tokenizer.TextStr, parsingToken.Value(), source)
+		if parsingToken.Code() != token.Text {
+			return nil, sqlerr.NewSyntaxError(token.TextStr, parsingToken.Value(), source)
 		}
 
 		field, err := Field.Parse(source)
@@ -36,9 +36,9 @@ func (p fieldsParser) Parse(source defs.TokenSource) (ptree.Node, error) {
 		}
 
 		parsingToken = source.Next()
-		if parsingToken.Code() == tokenizer.SpaceBreak {
+		if parsingToken.Code() == token.SpaceBreak {
 			_, err := helpers.NextToken(source).
-				HasCode(tokenizer.Comma).
+				HasCode(token.Comma).
 				Check()
 			if err != nil {
 				source.Rollback()

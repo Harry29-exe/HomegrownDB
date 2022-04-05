@@ -3,11 +3,12 @@ package parser
 import (
 	"HomegrownDB/sql/querry/parser/defs"
 	tk "HomegrownDB/sql/querry/tokenizer"
+	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
 func NewTokenSource(query string) defs.TokenSource {
 	return &tokenSource{
-		tokenCache:  make([]tk.Token, 0, 10),
+		tokenCache:  make([]token.Token, 0, 10),
 		currentLen:  0,
 		pointer:     0,
 		tokenizer:   tk.NewTokenizer(query),
@@ -16,7 +17,7 @@ func NewTokenSource(query string) defs.TokenSource {
 }
 
 type tokenSource struct {
-	tokenCache []tk.Token
+	tokenCache []token.Token
 	currentLen uint16
 	pointer    uint16
 
@@ -25,7 +26,7 @@ type tokenSource struct {
 	checkpoints []uint16
 }
 
-func (t *tokenSource) Next() tk.Token {
+func (t *tokenSource) Next() token.Token {
 	t.pointer++
 	if t.pointer < t.currentLen {
 		return t.tokenCache[t.pointer]
@@ -45,7 +46,7 @@ func (t *tokenSource) Next() tk.Token {
 	}
 }
 
-func (t *tokenSource) Prev() tk.Token {
+func (t *tokenSource) Prev() token.Token {
 	if t.pointer < 0 {
 		return nil
 	}
@@ -54,11 +55,11 @@ func (t *tokenSource) Prev() tk.Token {
 	return t.tokenCache[t.pointer]
 }
 
-func (t *tokenSource) Current() tk.Token {
+func (t *tokenSource) Current() token.Token {
 	return t.tokenCache[t.pointer]
 }
 
-func (t *tokenSource) History() []tk.Token {
+func (t *tokenSource) History() []token.Token {
 	return t.tokenCache[0 : t.pointer+1]
 }
 

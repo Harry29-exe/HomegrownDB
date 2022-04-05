@@ -3,7 +3,7 @@ package helpers
 import (
 	"HomegrownDB/sql/querry/parser/defs"
 	"HomegrownDB/sql/querry/parser/sqlerr"
-	tk "HomegrownDB/sql/querry/tokenizer"
+	token2 "HomegrownDB/sql/querry/tokenizer/token"
 )
 
 func NextToken(source defs.TokenSource) *tokenChecker {
@@ -24,37 +24,37 @@ func CurrentToken(source defs.TokenSource) *tokenChecker {
 
 type tokenChecker struct {
 	source defs.TokenSource
-	token  tk.Token
+	token  token2.Token
 	err    error
 }
 
-func (tc *tokenChecker) Check() (tk.Token, error) {
+func (tc *tokenChecker) Check() (token2.Token, error) {
 	if tc.err != nil {
 		return nil, tc.err
 	}
 	return tc.token, nil
 }
 
-func (tc *tokenChecker) HasCode(code tk.TokenCode) *tokenChecker {
+func (tc *tokenChecker) HasCode(code token2.Code) *tokenChecker {
 	if tc.err != nil {
 		return tc
 	}
 
 	if tc.token.Code() != code {
-		tc.err = sqlerr.NewSyntaxError(tk.ToString(code), tc.token.Value(), tc.source)
+		tc.err = sqlerr.NewSyntaxError(token2.ToString(code), tc.token.Value(), tc.source)
 	}
 
 	return tc
 }
 
 func (tc *tokenChecker) IsTextToken() *textTokenChecker {
-	tc.HasCode(tk.Text)
+	tc.HasCode(token2.Text)
 	if tc.err != nil {
 		return nilTextTokenChecker(tc)
 	}
 
 	switch textToken := tc.token.(type) {
-	case *tk.TextToken:
+	case *token2.TextToken:
 		return &textTokenChecker{
 			tokenChecker: tc,
 			textToken:    textToken,

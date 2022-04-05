@@ -2,7 +2,7 @@ package helpers
 
 import (
 	"HomegrownDB/sql/querry/parser/sqlerr"
-	tk "HomegrownDB/sql/querry/tokenizer"
+	tk "HomegrownDB/sql/querry/tokenizer/token"
 )
 
 // textTokenChecker is specialization of tokenChecker

@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/sql/querry/parser/defs"
 	"HomegrownDB/sql/querry/parser/helpers"
 	"HomegrownDB/sql/querry/parser/ptree"
-	"HomegrownDB/sql/querry/tokenizer"
+	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
 var From fromParser = fromParser{}
@@ -17,7 +17,7 @@ func (p fromParser) Parse(source defs.TokenSource) (ptree.Node, error) {
 	source.Checkpoint()
 
 	_, err := helpers.CurrentToken(source).
-		HasCode(tokenizer.From).
+		HasCode(token.From).
 		Check()
 	if err != nil {
 		return nil, err

@@ -2,6 +2,7 @@ package tokenizer_test
 
 import (
 	"HomegrownDB/sql/querry/tokenizer"
+	"HomegrownDB/sql/querry/tokenizer/token"
 	"strconv"
 	"testing"
 )
@@ -17,10 +18,10 @@ func TestTokenizerWithBasicSelectQuery(t *testing.T) {
 		testTokenizer: tokenizer.NewTokenizer(query),
 	}
 
-	tester.assertNextBasicToken(tokenizer.Select, "sElECt")
-	tester.assertNextBasicToken(tokenizer.SpaceBreak, " ")
-	tester.assertNextBasicToken(tokenizer.Text, "table_alias")
-	tester.assertNextBasicToken(tokenizer.Dot, ".")
+	tester.assertNextBasicToken(token.Select, "sElECt")
+	tester.assertNextBasicToken(token.SpaceBreak, " ")
+	tester.assertNextBasicToken(token.Text, "table_alias")
+	tester.assertNextBasicToken(token.Dot, ".")
 	tok := tester.testTokenizer
 	for tok.HasNext() {
 		next, _ := tok.Next()
@@ -40,7 +41,7 @@ func (tt *tokenizerTester) passTokenizerError(err error) {
 	}
 }
 
-func (tt tokenizerTester) assertNextBasicToken(code tokenizer.TokenCode, value string) {
+func (tt tokenizerTester) assertNextBasicToken(code token.Code, value string) {
 	token, err := tt.testTokenizer.Next()
 	tt.passTokenizerError(err)
 	switch {
