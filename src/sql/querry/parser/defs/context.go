@@ -1,7 +1,7 @@
-package common
+package defs
 
 import (
-	"HomegrownDB/sql/querry/parser/parsetree"
+	"HomegrownDB/sql/querry/parser/ptree"
 	"HomegrownDB/sql/querry/tokenizer"
 )
 
@@ -9,8 +9,8 @@ import (
 // and return it while Prev moves pointer one token back and return it.
 // If either method reach array end it returns nil without changing pointer
 type TokenSource interface {
-	Next() tokenizer.Token      // Next move pointer forwards and returns
-	Prev() tokenizer.Token      // Prev move pointer backwards and returns
+	Next() tokenizer.Token      // Next move pointer forwards and returns, if source has no more tokens it returns nil
+	Prev() tokenizer.Token      // Prev move pointer backwards and returns, if source has no more tokens it returns nil
 	Current() tokenizer.Token   // Current returns token which has been returned with last method
 	History() []tokenizer.Token // History returns all token from beginning to the one that Next would return
 
@@ -20,5 +20,18 @@ type TokenSource interface {
 }
 
 type Parser interface {
-	Parse(source TokenSource) (parsetree.Node, error)
+	Parse(source TokenSource) (ptree.Node, error)
+}
+
+type ParserPrototype struct {
+	Root ptree.Node
+}
+
+func (p *ParserPrototype) Attach(node ptree.Node, err error) error {
+	if err != nil {
+		return err
+	}
+
+	err = p.Root.AddChild(node)
+	return err
 }

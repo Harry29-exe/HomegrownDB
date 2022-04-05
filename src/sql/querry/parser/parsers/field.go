@@ -1,20 +1,21 @@
-package leaf
+package parsers
 
 import (
-	"HomegrownDB/sql/querry/parser/common"
-	"HomegrownDB/sql/querry/parser/parsetree"
+	"HomegrownDB/sql/querry/parser/defs"
+	"HomegrownDB/sql/querry/parser/helpers"
+	"HomegrownDB/sql/querry/parser/ptree"
 	"HomegrownDB/sql/querry/tokenizer"
 )
 
-var FieldParser fieldParser = fieldParser{}
+var Field fieldParser = fieldParser{}
 
 type fieldParser struct{}
 
 // Parse todo add support for field without table alias
-func (f fieldParser) Parse(source common.TokenSource) (parsetree.Node, error) {
+func (f fieldParser) Parse(source defs.TokenSource) (ptree.Node, error) {
 	source.Checkpoint()
 
-	tableToken, err := common.CheckNextToken(source).
+	tableToken, err := helpers.CurrentToken(source).
 		HasCode(tokenizer.Text).
 		IsTextToken().
 		DontStartWithDigit().
@@ -26,7 +27,7 @@ func (f fieldParser) Parse(source common.TokenSource) (parsetree.Node, error) {
 		return nil, err
 	}
 
-	_, err = common.CheckNextToken(source).
+	_, err = helpers.NextToken(source).
 		HasCode(tokenizer.Dot).
 		Check()
 
@@ -35,7 +36,7 @@ func (f fieldParser) Parse(source common.TokenSource) (parsetree.Node, error) {
 		return nil, err
 	}
 
-	columnToken, err := common.CheckNextToken(source).
+	columnToken, err := helpers.NextToken(source).
 		IsTextToken().
 		DontStartWithDigit().
 		AsciiOnly().
@@ -47,7 +48,7 @@ func (f fieldParser) Parse(source common.TokenSource) (parsetree.Node, error) {
 	}
 
 	source.Commit()
-	return parsetree.NewFieldNode(parsetree.FieldNodeValue{
+	return ptree.NewFieldNode(ptree.FieldNodeValue{
 		TableAlias: tableToken.Value(),
 		FieldName:  columnToken.Value(),
 		FieldAlias: "",

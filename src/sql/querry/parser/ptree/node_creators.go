@@ -1,4 +1,4 @@
-package parsetree
+package ptree
 
 func NewSelectNode() Node {
 	return &basicNode{

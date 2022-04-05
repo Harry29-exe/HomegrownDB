@@ -1,4 +1,4 @@
-package parsetree
+package ptree
 
 type FieldNodeValue struct {
 	TableAlias string

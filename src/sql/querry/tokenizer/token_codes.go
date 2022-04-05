@@ -74,34 +74,66 @@ func ToString(code TokenCode) string {
 	return ""
 }
 
-var tokenNamesMap = map[TokenCode]string{
-	Select: "SELECT",
-	From:   "From",
-	Where:  "Where",
-	Join:   "Join",
-	Update: "Update",
-	Delete: "Delete",
-	Create: "Create",
-	Drop:   "Drop",
-	Table:  "Table",
-	And:    "And",
-	Or:     "Or",
-	On:     "On",
+const (
+	SelectStr = "SELECT"
+	FromStr   = "FROM"
+	WhereStr  = "WHERE"
+	JoinStr   = "JOIN"
+	UpdateStr = "UPDATE"
+	DeleteStr = "DELETE"
+	CreateStr = "CREATE"
+	DropStr   = "DROP"
+	TableStr  = "TABLE"
+	AndStr    = "AND"
+	OrStr     = "OR"
+	OnStr     = "ON"
 
 	/* -- break characters -- */
 
-	SpaceBreak: "SpaceBreak",
-	Comma:      "Comma",
-	Dot:        "Dot",
-	Semicolon:  "Semicolon",
+	SpaceBreakStr = "SpaceBreak"
+	CommaStr      = "Comma"
+	DotStr        = "Dot"
+	SemicolonStr  = "Semicolon"
 
 	/* -- Values like string, int, float -- */
 
-	Integer:      "Integer",
-	Float:        "Float",
-	SqlTextValue: "SqlTextValue",
+	IntegerStr      = "Integer"
+	FloatStr        = "Float"
+	SqlTextValueStr = "SqlTextValue"
 
 	/* -- Other -- */
 
-	Text: "Text",
+	TextStr = "Text"
+)
+
+var tokenNamesMap = map[TokenCode]string{
+	Select: SelectStr,
+	From:   FromStr,
+	Where:  WhereStr,
+	Join:   JoinStr,
+	Update: UpdateStr,
+	Delete: DeleteStr,
+	Create: CreateStr,
+	Drop:   DropStr,
+	Table:  TableStr,
+	And:    AndStr,
+	Or:     OrStr,
+	On:     OnStr,
+
+	/* -- break characters -- */
+
+	SpaceBreak: SpaceBreakStr,
+	Comma:      CommaStr,
+	Dot:        DotStr,
+	Semicolon:  SemicolonStr,
+
+	/* -- Values like string, int, float -- */
+
+	Integer:      IntegerStr,
+	Float:        FloatStr,
+	SqlTextValue: SqlTextValueStr,
+
+	/* -- Other -- */
+
+	Text: TextStr,
 }

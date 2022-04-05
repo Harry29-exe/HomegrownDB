@@ -1,14 +1,14 @@
-package parsetree_test
+package ptree_test
 
 import (
-	"HomegrownDB/sql/querry/parser/parsetree"
+	"HomegrownDB/sql/querry/parser/ptree"
 	"testing"
 )
 
 func TestNewSelectNode(t *testing.T) {
-	node := parsetree.NewSelectNode()
+	node := ptree.NewSelectNode()
 
-	illegalToAddNode := parsetree.NewSelectNode()
+	illegalToAddNode := ptree.NewSelectNode()
 	err := node.AddChild(illegalToAddNode)
 	if err == nil {
 		t.Error("select node did returned error when adding illegal node")
@@ -18,8 +18,8 @@ func TestNewSelectNode(t *testing.T) {
 		t.FailNow()
 	}
 
-	fieldsNode := parsetree.NewFieldsNode()
-	if fieldsNode.Type() != parsetree.Fields {
+	fieldsNode := ptree.NewFieldsNode()
+	if fieldsNode.Type() != ptree.Fields {
 		t.FailNow()
 	}
 	err = node.AddChild(fieldsNode)

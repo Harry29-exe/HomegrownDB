@@ -1,4 +1,4 @@
-package parsetree
+package ptree
 
 import (
 	"errors"
@@ -73,7 +73,7 @@ func (l *leafNode) Children() []Node {
 }
 
 func (l *leafNode) AddChild(node Node) error {
-	return errors.New("leaf node does not supports adding children")
+	return errors.New("leafs node does not supports adding children")
 }
 
 func (l *leafNode) Value() any {
