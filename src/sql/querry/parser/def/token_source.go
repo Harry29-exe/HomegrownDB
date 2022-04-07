@@ -1,4 +1,4 @@
-package parsers
+package def
 
 import (
 	"HomegrownDB/sql/querry/tokenizer/token"

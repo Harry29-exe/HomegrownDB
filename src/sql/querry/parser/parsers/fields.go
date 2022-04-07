@@ -1,6 +1,7 @@
 package parsers
 
 import (
+	"HomegrownDB/sql/querry/parser/def"
 	"HomegrownDB/sql/querry/parser/helpers"
 	"HomegrownDB/sql/querry/parser/sqlerr"
 	"HomegrownDB/sql/querry/tokenizer/token"
@@ -8,15 +9,29 @@ import (
 
 var Fields fieldsParser = fieldsParser{}
 
-type fieldsParser struct{}
+type fieldsParser struct {
+	helpers.ParserHelper
+}
 
 // Parse creates ptree.Fields ptree.Node from token sequence like following:
-/* table_alias1.col1, table_alias1.col1, table_alias1.col1 */
-func (p fieldsParser) Parse(source TokenSource) (*FieldsNode, error) {
+//
+// "table_alias1.col1, table_alias1.col1, table_alias1.col1"
+//
+// It does not support whitespace at the start of TokenSource,
+// nor it does not parse any chars after
+//
+// Because of it there are potentials gotchas as following sentences won't
+// return error but won't be fully parsed either:
+//
+// "table1.col1.col2, table2.col1" - will be parsed to second dot and returned
+//
+// "table1.col1,, table2.col2 - will be parsed to first comma and returned
+func (p fieldsParser) Parse(source def.TokenSource) (*FieldsNode, error) {
+	p.Init(source)
 	source.Checkpoint()
+
 	parsingToken := source.Current()
 	fields := FieldsNode{Fields: make([]*FieldNode, 0, 5)}
-	//TODO change NextToken to CurrentToken
 
 	for {
 		if parsingToken.Code() != token.Text {
@@ -29,12 +44,13 @@ func (p fieldsParser) Parse(source TokenSource) (*FieldsNode, error) {
 		}
 		fields.AddField(field)
 
-		err = helpers.SkipBreaks(source).
+		err = p.SkipBreaks().
 			Type(token.SpaceBreak).
 			TypeMinMax(token.Comma, 1, 1).
-			SkipFromCurrent()
+			SkipFromNext()
+
 		if err != nil {
-			return nil, err
+			return &fields, nil
 		}
 	}
 }

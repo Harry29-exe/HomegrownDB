@@ -1,11 +1,11 @@
 package sqlerr
 
 import (
-	"HomegrownDB/sql/querry/parser/parsers"
+	"HomegrownDB/sql/querry/parser/def"
 	"strings"
 )
 
-func NewSyntaxError(expected string, actual string, source parsers.TokenSource) *syntaxError {
+func NewSyntaxError(expected string, actual string, source def.TokenSource) *syntaxError {
 	return &syntaxError{
 		expected:     expected,
 		actual:       actual,
@@ -25,7 +25,7 @@ func (s *syntaxError) Error() string {
 		s.currentQuery + " <- here "
 }
 
-func NewSyntaxTextError(reason string, source parsers.TokenSource) *syntaxTextError {
+func NewSyntaxTextError(reason string, source def.TokenSource) *syntaxTextError {
 	return &syntaxTextError{
 		reason:       reason,
 		currentQuery: recreateQuery(source),
@@ -41,7 +41,7 @@ func (s *syntaxTextError) Error() string {
 	return s.currentQuery + " <- " + s.reason
 }
 
-func recreateQuery(source parsers.TokenSource) string {
+func recreateQuery(source def.TokenSource) string {
 	tokens := source.History()
 	strBuilder := strings.Builder{}
 	for _, token := range tokens {

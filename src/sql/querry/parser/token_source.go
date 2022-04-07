@@ -1,12 +1,12 @@
 package parser
 
 import (
-	"HomegrownDB/sql/querry/parser/parsers"
+	"HomegrownDB/sql/querry/parser/def"
 	tk "HomegrownDB/sql/querry/tokenizer"
 	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
-func NewTokenSource(query string) parsers.TokenSource {
+func NewTokenSource(query string) def.TokenSource {
 	return &tokenSource{
 		tokenCache:  make([]token.Token, 0, 10),
 		currentLen:  0,

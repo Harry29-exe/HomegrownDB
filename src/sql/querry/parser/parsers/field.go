@@ -1,20 +1,24 @@
 package parsers
 
 import (
+	"HomegrownDB/sql/querry/parser/def"
 	"HomegrownDB/sql/querry/parser/helpers"
 	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
 var Field fieldParser = fieldParser{}
 
-type fieldParser struct{}
+type fieldParser struct {
+	helpers.ParserHelper
+}
 
 // Parse todo add support for field without table alias
-func (f fieldParser) Parse(source TokenSource) (*FieldNode, error) {
+func (f fieldParser) Parse(source def.TokenSource) (*FieldNode, error) {
+	f.Init(source)
 	source.Checkpoint()
 
-	tableToken, err := helpers.CurrentToken(source).
-		HasCode(token.Text).
+	tableToken, err := f.Current().
+		Has(token.Text).
 		IsTextToken().
 		DontStartWithDigit().
 		AsciiOnly().
@@ -28,13 +32,13 @@ func (f fieldParser) Parse(source TokenSource) (*FieldNode, error) {
 	err = helpers.SkipBreaks(source).
 		Type(token.SpaceBreak).
 		TypeMinMax(token.Dot, 1, 1).
-		ShipFromNext()
+		SkipFromNext()
 	if err != nil {
 		source.Rollback()
 		return nil, err
 	}
 
-	columnToken, err := helpers.CurrentToken(source).
+	columnToken, err := helpers.Current(source).
 		IsTextToken().
 		DontStartWithDigit().
 		AsciiOnly().
@@ -49,7 +53,7 @@ func (f fieldParser) Parse(source TokenSource) (*FieldNode, error) {
 	return &FieldNode{
 		TableAlias: tableToken.Value(),
 		FieldName:  columnToken.Value(),
-		FieldAlias: "",
+		FieldAlias: columnToken.Value(),
 	}, nil
 }
 
