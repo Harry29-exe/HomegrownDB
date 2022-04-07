@@ -6,14 +6,6 @@ import (
 	"testing"
 )
 
-type testTokenSource struct {
-	tokens    []token.Token
-	tokensLen uint16
-	pointer   uint16
-
-	checkpoints []uint16
-}
-
 func newTestTokenSource(tokens []token.Token) *testTokenSource {
 	return &testTokenSource{
 		tokens:      tokens,
@@ -21,6 +13,19 @@ func newTestTokenSource(tokens []token.Token) *testTokenSource {
 		pointer:     0,
 		checkpoints: make([]uint16, 0, 5),
 	}
+}
+
+type parseResult[T any] struct {
+	node       T
+	pointerPos uint16
+}
+
+type testTokenSource struct {
+	tokens    []token.Token
+	tokensLen uint16
+	pointer   uint16
+
+	checkpoints []uint16
 }
 
 func tokenizeToTestSource(str string, t *testing.T) *testTokenSource {

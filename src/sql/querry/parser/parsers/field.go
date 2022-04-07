@@ -29,16 +29,13 @@ func (f fieldParser) Parse(source def.TokenSource) (*FieldNode, error) {
 		return nil, err
 	}
 
-	err = helpers.SkipBreaks(source).
-		Type(token.SpaceBreak).
-		TypeMinMax(token.Dot, 1, 1).
-		SkipFromNext()
+	err = f.NextIs(token.Dot)
 	if err != nil {
 		source.Rollback()
 		return nil, err
 	}
 
-	columnToken, err := helpers.Current(source).
+	columnToken, err := f.Next().
 		IsTextToken().
 		DontStartWithDigit().
 		AsciiOnly().
