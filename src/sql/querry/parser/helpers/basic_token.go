@@ -1,12 +1,12 @@
 package helpers
 
 import (
-	"HomegrownDB/sql/querry/parser/defs"
+	"HomegrownDB/sql/querry/parser/parsers"
 	"HomegrownDB/sql/querry/parser/sqlerr"
 	token2 "HomegrownDB/sql/querry/tokenizer/token"
 )
 
-func NextToken(source defs.TokenSource) *tokenChecker {
+func NextToken(source parsers.TokenSource) *tokenChecker {
 	return &tokenChecker{
 		source: source,
 		token:  source.Next(),
@@ -14,7 +14,7 @@ func NextToken(source defs.TokenSource) *tokenChecker {
 	}
 }
 
-func CurrentToken(source defs.TokenSource) *tokenChecker {
+func CurrentToken(source parsers.TokenSource) *tokenChecker {
 	return &tokenChecker{
 		source: source,
 		token:  source.Current(),
@@ -23,7 +23,7 @@ func CurrentToken(source defs.TokenSource) *tokenChecker {
 }
 
 type tokenChecker struct {
-	source defs.TokenSource
+	source parsers.TokenSource
 	token  token2.Token
 	err    error
 }

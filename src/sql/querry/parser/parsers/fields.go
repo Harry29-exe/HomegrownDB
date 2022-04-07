@@ -1,9 +1,7 @@
 package parsers
 
 import (
-	"HomegrownDB/sql/querry/parser/defs"
 	"HomegrownDB/sql/querry/parser/helpers"
-	"HomegrownDB/sql/querry/parser/ptree"
 	"HomegrownDB/sql/querry/parser/sqlerr"
 	"HomegrownDB/sql/querry/tokenizer/token"
 )
@@ -14,10 +12,10 @@ type fieldsParser struct{}
 
 // Parse creates ptree.Fields ptree.Node from token sequence like following:
 /* table_alias1.col1, table_alias1.col1, table_alias1.col1 */
-func (p fieldsParser) Parse(source defs.TokenSource) (ptree.Node, error) {
+func (p fieldsParser) Parse(source TokenSource) (*FieldsNode, error) {
 	source.Checkpoint()
 	parsingToken := source.Current()
-	fieldsToken := ptree.NewFieldsNode()
+	fields := FieldsNode{Fields: make([]*FieldNode, 0, 5)}
 	//TODO change NextToken to CurrentToken
 
 	for {
@@ -29,21 +27,22 @@ func (p fieldsParser) Parse(source defs.TokenSource) (ptree.Node, error) {
 		if err != nil {
 			return nil, err
 		}
+		fields.AddField(field)
 
-		err = fieldsToken.AddChild(field)
+		err = helpers.SkipBreaks(source).
+			Type(token.SpaceBreak).
+			TypeMinMax(token.Comma, 1, 1).
+			SkipFromCurrent()
 		if err != nil {
 			return nil, err
 		}
-
-		parsingToken = source.Next()
-		if parsingToken.Code() == token.SpaceBreak {
-			_, err := helpers.NextToken(source).
-				HasCode(token.Comma).
-				Check()
-			if err != nil {
-				source.Rollback()
-				return nil, err
-			}
-		}
 	}
+}
+
+type FieldsNode struct {
+	Fields []*FieldNode
+}
+
+func (f *FieldsNode) AddField(field *FieldNode) {
+	f.Fields = append(f.Fields, field)
 }

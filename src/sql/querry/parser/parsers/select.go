@@ -1,7 +1,6 @@
 package parsers
 
 import (
-	"HomegrownDB/sql/querry/parser/defs"
 	"HomegrownDB/sql/querry/parser/helpers"
 	"HomegrownDB/sql/querry/parser/ptree"
 	"HomegrownDB/sql/querry/tokenizer/token"
@@ -9,11 +8,9 @@ import (
 
 var Select selectParser = selectParser{}
 
-type selectParser struct {
-	defs.ParserPrototype
-}
+type selectParser struct{}
 
-func (s selectParser) Parse(source defs.TokenSource) (ptree.Node, error) {
+func (s selectParser) Parse(source TokenSource) (ptree.Node, error) {
 	source.Checkpoint()
 
 	// Select
@@ -23,7 +20,7 @@ func (s selectParser) Parse(source defs.TokenSource) (ptree.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	s.Root = ptree.NewSelectNode()
+	selectNode := SelectNode{}
 
 	err = helpers.SkipBreaks(source).
 		TypeMax(token.SpaceBreak, 2).
@@ -39,6 +36,11 @@ func (s selectParser) Parse(source defs.TokenSource) (ptree.Node, error) {
 		return nil, err
 	}
 
-	// From
+	// Table
 	err = s.Attach()
+}
+
+type SelectNode struct {
+	Fields FieldsNode
+	Tables
 }

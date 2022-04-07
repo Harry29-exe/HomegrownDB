@@ -1,7 +1,6 @@
-package defs
+package parsers
 
 import (
-	"HomegrownDB/sql/querry/parser/ptree"
 	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
@@ -17,21 +16,4 @@ type TokenSource interface {
 	Checkpoint() // Checkpoint creates new checkpoint for parser to rollback
 	Commit()     // Commit deletes last checkpoint
 	Rollback()   // Rollback to last checkpoint and removes this checkpoint
-}
-
-type Parser interface {
-	Parse(source TokenSource) (ptree.Node, error)
-}
-
-type ParserPrototype struct {
-	Root ptree.Node
-}
-
-func (p *ParserPrototype) Attach(node ptree.Node, err error) error {
-	if err != nil {
-		return err
-	}
-
-	err = p.Root.AddChild(node)
-	return err
 }

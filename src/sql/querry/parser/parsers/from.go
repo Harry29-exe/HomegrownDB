@@ -1,19 +1,17 @@
 package parsers
 
 import (
-	"HomegrownDB/sql/querry/parser/defs"
 	"HomegrownDB/sql/querry/parser/helpers"
 	"HomegrownDB/sql/querry/parser/ptree"
 	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
-var From fromParser = fromParser{}
+var Tables tablesParser = tablesParser{}
 
-type fromParser struct {
-	defs.ParserPrototype
+type tablesParser struct {
 }
 
-func (p fromParser) Parse(source defs.TokenSource) (ptree.Node, error) {
+func (p tablesParser) Parse(source TokenSource) (*TablesNode, error) {
 	source.Checkpoint()
 
 	_, err := helpers.CurrentToken(source).
@@ -24,4 +22,8 @@ func (p fromParser) Parse(source defs.TokenSource) (ptree.Node, error) {
 	}
 	p.Root = ptree.NewFromNode()
 
+}
+
+type TablesNode struct {
+	Tables []TableNode
 }
