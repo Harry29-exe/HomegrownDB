@@ -1,15 +1,16 @@
 package main
 
 import (
-	"HomegrownDB/sql/schema/column/types"
 	"fmt"
 )
 
 func main() {
-	col := types.Int2Column{}
-	serializedColumn := col.Serialize()
+	array := []int{0, 1, 2, 3, 4, 5}
 
-	print(serializedColumn)
+	for _, integer := range array[1:] {
+		print(integer)
+	}
+
 }
 
 func PrintUsageInfo() {

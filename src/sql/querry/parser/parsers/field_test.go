@@ -27,7 +27,7 @@ func TestField_Parse_ShouldParse(t *testing.T) {
 	}
 
 	for i, sentence := range sentences {
-		source := tokenizeToTestSource(sentence, t)
+		source := testSource(sentence, t)
 
 		//when
 		result, err := Field.Parse(source)
@@ -72,7 +72,7 @@ func TestField_Parse_ShouldReturnError(t *testing.T) {
 	}
 
 	for i, sentence := range sentences {
-		source := tokenizeToTestSource(sentence, t)
+		source := testSource(sentence, t)
 		//when
 		_, err := Field.Parse(source)
 

@@ -17,8 +17,8 @@ func Next(source source.TokenSource) *tokenChecker {
 func NextSequence(source source.TokenSource, codes ...token.Code) error {
 	for _, code := range codes {
 		next := source.Next()
-		if next.Code() == code {
-			return sqlerr.NewTokenSyntaxError(code, token.Nil, source)
+		if next.Code() != code {
+			return sqlerr.NewTokenSyntaxError(code, next.Code(), source)
 		}
 	}
 
@@ -31,6 +31,22 @@ func Current(source source.TokenSource) *tokenChecker {
 		token:  source.Current(),
 		err:    nil,
 	}
+}
+
+func CurrentSequence(source source.TokenSource, codes ...token.Code) error {
+	currentToken := source.Current()
+	if currentToken.Code() != codes[0] {
+		return sqlerr.NewTokenSyntaxError(codes[0], currentToken.Code(), source)
+	}
+
+	for _, code := range codes[1:] {
+		next := source.Next()
+		if next.Code() != code {
+			return sqlerr.NewTokenSyntaxError(code, next.Code(), source)
+		}
+	}
+
+	return nil
 }
 
 func NextIs(source source.TokenSource, code token.Code) error {

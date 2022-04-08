@@ -19,7 +19,7 @@ func TestFields_Parse_ShouldParseString(t *testing.T) {
 	}
 
 	for _, sentence := range correctSentences {
-		source := tokenizeToTestSource(sentence, t)
+		source := testSource(sentence, t)
 
 		//when
 		fieldsNode, err := parsers.Fields.Parse(source)
@@ -52,7 +52,7 @@ func TestFields_Parse_ShouldReturnError(t *testing.T) {
 	}
 
 	for _, sentence := range badSentences {
-		source := tokenizeToTestSource(sentence, t)
+		source := testSource(sentence, t)
 
 		//when
 		_, err := parsers.Fields.Parse(source)
@@ -60,7 +60,8 @@ func TestFields_Parse_ShouldReturnError(t *testing.T) {
 		//then
 		if err == nil {
 			t.Error(
-				"Fields parser did not returned error when parsing invalid sequence:\n",
+				"Fields parser did not returned error when "+
+					"parsing invalid sequence:\n",
 				sentence)
 		}
 	}
