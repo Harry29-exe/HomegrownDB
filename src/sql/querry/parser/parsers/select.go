@@ -35,15 +35,20 @@ func (s selectParser) Parse(source source.TokenSource) (*SelectNode, error) {
 		return nil, err
 	}
 
-	err = s.NextIs(token.SpaceBreak)
+	// From
+	err = s.NextSequence(token.SpaceBreak, token.From, token.SpaceBreak, token.Text)
 	if err != nil {
 		return nil, err
 	}
-	//todo create NextSequence
-	err = s.NextIs(token.From)
 
-	//// Table
-	//err = s.Attach()
+	// Tables
+	tables, err := Tables.Parse(source)
+	if err != nil {
+		return nil, err
+	}
+	selectNode.Tables = tables
+
+	source.Commit()
 	return &selectNode, nil
 }
 

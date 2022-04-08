@@ -47,6 +47,5 @@ func _tableParserPositiveTest(t *testing.T, sentence testSentence, expectedNode 
 
 	CorrectSentenceParserTestIsSuccessful(
 		t, source, sentence,
-		err,
-		*output == expectedNode, expectedNode, *output)
+		err, expectedNode, *output)
 }

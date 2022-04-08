@@ -27,9 +27,7 @@ func TestField_Parse_ShouldParse(t *testing.T) {
 		//then
 		CorrectSentenceParserTestIsSuccessful(
 			t, source, sentence,
-			err,
-			*result == expectedResult,
-			expectedResult, *result)
+			err, expectedResult, *result)
 	}
 }
 

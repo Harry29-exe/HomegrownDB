@@ -3,6 +3,7 @@ package parsers_test
 import (
 	"HomegrownDB/sql/querry/tokenizer"
 	"HomegrownDB/sql/querry/tokenizer/token"
+	"reflect"
 	"testing"
 )
 
@@ -36,7 +37,6 @@ func CorrectSentenceParserTestIsSuccessful(
 	source *testTokenSource,
 	sentence testSentence,
 	parseErr error,
-	nodesEquals bool,
 	expectedNode any,
 	actualNode any,
 ) bool {
@@ -48,7 +48,7 @@ func CorrectSentenceParserTestIsSuccessful(
 
 	// test pointer position
 	if source.pointer != sentence.pointerPos {
-		ParserErr.PointerPosDiffers(t, source.pointer, sentence.pointerPos, sentence.str)
+		ParserErr.PointerPosDiffers(t, sentence.pointerPos, source.pointer, sentence.str)
 		return false
 	}
 
@@ -59,7 +59,8 @@ func CorrectSentenceParserTestIsSuccessful(
 	}
 
 	// test nodes equals
-	if !nodesEquals {
+
+	if !reflect.DeepEqual(expectedNode, actualNode) {
 		ParserErr.OutputDiffers(t, expectedNode, actualNode, sentence.str)
 		return false
 	}
@@ -129,14 +130,14 @@ type parserError struct{}
 func (p parserError) OutputDiffers(t *testing.T, expected, output any, sentence string) {
 	t.Error("Received output is different from expected one. "+
 		"Expected: ", expected, "actual: ", output,
-		". In sentence:\n\"", sentence, "\"")
+		"\nIn sentence:\""+sentence+"\"")
 	t.Fail()
 }
 
 func (p parserError) PointerPosDiffers(t *testing.T, expected, actual uint16, sentence string) {
-	t.Error("TokenSource pointer position is different than"+
+	t.Error("TokenSource pointer position is different than",
 		"expected. Expected: ", expected, " actual: ", actual,
-		".In sentence:\n\"", sentence, "\"")
+		"\nIn sentence:\""+sentence+"\"")
 	t.Fail()
 }
 

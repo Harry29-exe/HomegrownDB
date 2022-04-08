@@ -51,6 +51,7 @@ func (p fieldsParser) Parse(source source.TokenSource) (*FieldsNode, error) {
 			SkipFromNext()
 
 		if err != nil {
+			source.Commit()
 			return &fields, nil
 		}
 	}

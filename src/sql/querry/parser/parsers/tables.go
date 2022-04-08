@@ -13,7 +13,7 @@ type tablesParser struct {
 }
 
 // Parse table declarations which are usually found after FROM keyword
-//
+// todo add tests
 func (t tablesParser) Parse(source source.TokenSource) (*TablesNode, error) {
 	t.Init(source)
 	source.Checkpoint()
@@ -26,13 +26,12 @@ func (t tablesParser) Parse(source source.TokenSource) (*TablesNode, error) {
 		}
 		tables.Tables = append(tables.Tables, table)
 
-		source.CommitAndCheckpoint()
 		err = t.SkipBreaks().
 			Type(token.SpaceBreak).
 			TypeExactly(token.Comma, 1).
 			SkipFromNext()
 		if err != nil {
-			source.Rollback()
+			source.Commit()
 			return &tables, nil
 		}
 	}
