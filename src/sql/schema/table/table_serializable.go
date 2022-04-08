@@ -27,7 +27,7 @@ func (td *tableDeserializer) readColumns() {
 	//columnCount := td.deserializer.Uint16()
 	//
 	//var columnOffset int32 = 0
-	//var column *definitions.Column
+	//var column *source.Column
 	//for i := uint16(0); i < columnCount; i++ {
 	//	column = td.readColumn(columnOffset)
 	//	td.table.colNameIdMap[column.Name] = column

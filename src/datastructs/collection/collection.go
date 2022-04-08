@@ -19,4 +19,4 @@ type Iterator[T any] interface {
 	Next() T
 }
 
-type Equals[T] = func(val1, val2 T) bool
+type Equals[T any] func(val1, val2 T) bool

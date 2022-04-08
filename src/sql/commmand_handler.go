@@ -1,5 +1,5 @@
 package sql
 
-func HandleSqlCommand(sqlCommand *string) {
+func HandleSqlCommand(sqlCommand string) {
 
 }
