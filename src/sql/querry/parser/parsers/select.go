@@ -8,23 +8,22 @@ import (
 
 var Select selectParser = selectParser{}
 
-type selectParser struct{}
+type selectParser struct {
+	helpers.ParserHelper
+}
 
 func (s selectParser) Parse(source def.TokenSource) (*SelectNode, error) {
 	source.Checkpoint()
+	s.Init(source)
 
 	// Select
-	_, err := helpers.Current(source).
-		Has(token.Select).
-		Check()
+	err := s.CurrentIs(token.Select)
 	if err != nil {
 		return nil, err
 	}
 	selectNode := SelectNode{}
 
-	err = helpers.SkipBreaks(source).
-		Type(token.SpaceBreak).
-		SkipFromNext()
+	err = s.NextIs(token.SpaceBreak)
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +33,13 @@ func (s selectParser) Parse(source def.TokenSource) (*SelectNode, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err = s.NextIs(token.SpaceBreak)
+	if err != nil {
+		return nil, err
+	}
+	//todo create NextSequence
+	err = s.NextIs(token.From)
 
 	//// Table
 	//err = s.Attach()
