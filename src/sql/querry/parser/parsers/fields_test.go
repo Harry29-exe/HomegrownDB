@@ -19,7 +19,7 @@ func TestFields_Parse_ShouldParseString(t *testing.T) {
 	}
 
 	for _, sentence := range correctSentences {
-		source := testSource(sentence, t)
+		source := createTestTokenSource(sentence, t)
 
 		//when
 		fieldsNode, err := parsers.Fields.Parse(source)
@@ -52,7 +52,7 @@ func TestFields_Parse_ShouldReturnError(t *testing.T) {
 	}
 
 	for _, sentence := range badSentences {
-		source := testSource(sentence, t)
+		source := createTestTokenSource(sentence, t)
 
 		//when
 		_, err := parsers.Fields.Parse(source)

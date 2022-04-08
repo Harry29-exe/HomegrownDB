@@ -26,11 +26,8 @@ func (t tableParser) Parse(source source.TokenSource) (*TableNode, error) {
 		return nil, err
 	}
 
-	source.Commit()
-	source.Checkpoint()
 	err = t.NextSequence(token.SpaceBreak, token.Text)
 	if err != nil {
-		source.Rollback()
 		return &TableNode{name.Value(), name.Value()}, nil
 	}
 

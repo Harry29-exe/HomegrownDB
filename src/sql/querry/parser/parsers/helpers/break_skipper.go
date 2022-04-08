@@ -113,6 +113,15 @@ func (b *breaksSkipper) TypeMinMax(code token.Code, min, max int16) *breaksSkipp
 	return b
 }
 
+func (b *breaksSkipper) TypeExactly(code token.Code, occurrences int16) *breaksSkipper {
+	b.breakTypes[code] = &breakType{
+		maxOccurrences: occurrences,
+		minOccurrences: occurrences,
+	}
+
+	return b
+}
+
 func (b *breaksSkipper) breakTypesToStr() string {
 	builder := strings.Builder{}
 

@@ -67,6 +67,10 @@ func (t *tokenSource) Checkpoint() {
 	t.checkpoints = append(t.checkpoints, t.pointer)
 }
 
+func (t *tokenSource) CommitAndCheckpoint() {
+	t.checkpoints[len(t.checkpoints)-1] = t.pointer
+}
+
 func (t *tokenSource) Commit() {
 	lastIndex := len(t.checkpoints) - 1
 	t.checkpoints = t.checkpoints[0:lastIndex]

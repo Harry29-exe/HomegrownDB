@@ -20,24 +20,7 @@ func TestTable_Parse_ShouldParse(t *testing.T) {
 	}
 
 	for _, sentence := range sentences {
-		source := testSource(sentence.str, t)
-		output, err := parsers.Table.Parse(source)
-
-		if err != nil {
-			t.Error("Table parser returned error: ", err)
-			t.Fail()
-			continue
-		}
-
-		if *output != expectedNode {
-			ParserErr.OutputDiffers(t, expectedNode, *output, sentence.str)
-		}
-		if sentence.pointerPos != source.pointer {
-			ParserErr.PointerPosDiffers(t,
-				sentence.pointerPos,
-				source.pointer,
-				sentence.str)
-		}
+		_tableParserPositiveTest(t, sentence, expectedNode)
 	}
 }
 
@@ -55,23 +38,15 @@ func TestTable_Parse_ShouldParse2(t *testing.T) {
 	}
 
 	for _, sentence := range sentences {
-		source := testSource(sentence.str, t)
-		output, err := parsers.Table.Parse(source)
-
-		if err != nil {
-			t.Error("Table parser returned error: ", err)
-			t.Fail()
-			continue
-		}
-
-		if *output != expectedNode {
-			ParserErr.OutputDiffers(t, expectedNode, *output, sentence.str)
-		}
-		if sentence.pointerPos != source.pointer {
-			ParserErr.PointerPosDiffers(t,
-				sentence.pointerPos,
-				source.pointer,
-				sentence.str)
-		}
+		_tableParserPositiveTest(t, sentence, expectedNode)
 	}
+}
+func _tableParserPositiveTest(t *testing.T, sentence testSentence, expectedNode parsers.TableNode) {
+	source := createTestTokenSource(sentence.str, t)
+	output, err := parsers.Table.Parse(source)
+
+	CorrectSentenceParserTestIsSuccessful(
+		t, source, sentence,
+		err,
+		*output == expectedNode, expectedNode, *output)
 }

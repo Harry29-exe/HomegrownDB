@@ -7,6 +7,7 @@ import (
 )
 
 func Next(source source.TokenSource) *tokenChecker {
+	source.Checkpoint()
 	return &tokenChecker{
 		source: source,
 		token:  source.Next(),
@@ -15,17 +16,22 @@ func Next(source source.TokenSource) *tokenChecker {
 }
 
 func NextSequence(source source.TokenSource, codes ...token.Code) error {
+	source.Checkpoint()
 	for _, code := range codes {
 		next := source.Next()
 		if next.Code() != code {
-			return sqlerr.NewTokenSyntaxError(code, next.Code(), source)
+			err := sqlerr.NewTokenSyntaxError(code, next.Code(), source)
+			source.Rollback()
+			return err
 		}
 	}
 
+	source.Commit()
 	return nil
 }
 
 func Current(source source.TokenSource) *tokenChecker {
+	source.Checkpoint()
 	return &tokenChecker{
 		source: source,
 		token:  source.Current(),
@@ -39,32 +45,18 @@ func CurrentSequence(source source.TokenSource, codes ...token.Code) error {
 		return sqlerr.NewTokenSyntaxError(codes[0], currentToken.Code(), source)
 	}
 
+	source.Checkpoint()
 	for _, code := range codes[1:] {
 		next := source.Next()
 		if next.Code() != code {
-			return sqlerr.NewTokenSyntaxError(code, next.Code(), source)
+			err := sqlerr.NewTokenSyntaxError(code, next.Code(), source)
+			source.Rollback()
+			return err
 		}
 	}
 
+	source.Commit()
 	return nil
-}
-
-func NextIs(source source.TokenSource, code token.Code) error {
-	_, err := Next(source).Has(code).Check()
-	return err
-}
-
-func (h *ParserHelper) NextIs(code token.Code) error {
-	return NextIs(h.source, code)
-}
-
-func CurrentIs(source source.TokenSource, code token.Code) error {
-	_, err := Current(source).Has(code).Check()
-	return err
-}
-
-func (h *ParserHelper) CurrentIs(code token.Code) error {
-	return CurrentIs(h.source, code)
 }
 
 type tokenChecker struct {
@@ -75,8 +67,10 @@ type tokenChecker struct {
 
 func (tc *tokenChecker) Check() (token.Token, error) {
 	if tc.err != nil {
+		tc.source.Rollback()
 		return nil, tc.err
 	}
+	tc.source.Commit()
 	return tc.token, nil
 }
 

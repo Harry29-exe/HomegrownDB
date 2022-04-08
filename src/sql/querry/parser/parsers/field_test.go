@@ -7,72 +7,42 @@ import (
 
 func TestField_Parse_ShouldParse(t *testing.T) {
 	//given
-	sentences, expectedResults := []string{
-		"t1.col1",   //fully parsed
-		"t2a2.col2", //fully parsed
-		"t2.col2 FROM ",
-	}, []parseResult[FieldNode]{
-		{
-			node:       FieldNode{TableAlias: "t1", FieldName: "col1", FieldAlias: "col1"},
-			pointerPos: uint16(2),
-		},
-		{
-			node:       FieldNode{TableAlias: "t2a2", FieldName: "col2", FieldAlias: "col2"},
-			pointerPos: uint16(2),
-		},
-		{
-			node:       FieldNode{TableAlias: "t2", FieldName: "col2", FieldAlias: "col2"},
-			pointerPos: uint16(2),
-		},
+	sentences := []testSentence{
+		{"t1.col1", 2},
+		{"t1.col1, t2.col2", 2},
+		{"t1.col1 FROM ", 2},
+	}
+	expectedResult := FieldNode{
+		TableAlias: "t1",
+		FieldName:  "col1",
+		FieldAlias: "col1",
 	}
 
-	for i, sentence := range sentences {
-		source := testSource(sentence, t)
+	for _, sentence := range sentences {
+		source := createTestTokenSource(sentence.str, t)
 
 		//when
 		result, err := Field.Parse(source)
 
 		//then
-		if err != nil {
-			t.Error("Field parser returned following error:\n",
-				err,
-				"when given valid sentence:\n\n",
-				sentence)
-			t.Fail()
-		}
-
-		expectedResult := expectedResults[i]
-		if *result != expectedResult.node {
-			t.Error("result: ", *result, " does not match expected value: ",
-				expectedResults[i].node,
-				"\nafter parsing sentence: ", sentence)
-			t.Fail()
-		}
-
-		if expectedResult.pointerPos != source.pointer {
-			t.Error("after parsing following sentence: ", sentence,
-				"\npointer doesn't end up in expected position. Expected: ",
-				expectedResult.pointerPos, " Real: ", source.pointer)
-			t.Fail()
-		}
+		CorrectSentenceParserTestIsSuccessful(
+			t, source, sentence,
+			err,
+			*result == expectedResult,
+			expectedResult, *result)
 	}
 }
 
 func TestField_Parse_ShouldReturnError(t *testing.T) {
 	//given
-	sentences := []string{
-		"t1.2",
-		"t1,col1",
-		"t1 .col1",
-	}
-	expectedPointerPos := []uint16{
-		0,
-		0,
-		0,
+	sentences := []testSentence{
+		{"t1.2", 0},
+		{"t1,col1", 0},
+		{"t1 .col1", 0},
 	}
 
-	for i, sentence := range sentences {
-		source := testSource(sentence, t)
+	for _, sentence := range sentences {
+		source := createTestTokenSource(sentence.str, t)
 		//when
 		_, err := Field.Parse(source)
 
@@ -82,10 +52,10 @@ func TestField_Parse_ShouldReturnError(t *testing.T) {
 			t.Fail()
 		}
 
-		if source.pointer != expectedPointerPos[i] {
+		if source.pointer != sentence.pointerPos {
 			t.Error("after parsing following sentence: ", sentence,
 				"\npointer doesn't end up in expected position. Expected: ",
-				expectedPointerPos[i], " Real: ", source.pointer)
+				sentence.pointerPos, " Real: ", source.pointer)
 			t.Fail()
 		}
 	}

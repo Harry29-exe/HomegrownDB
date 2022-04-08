@@ -3,6 +3,7 @@ package parsers
 import (
 	"HomegrownDB/sql/querry/parser/parsers/helpers"
 	"HomegrownDB/sql/querry/parser/parsers/source"
+	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
 var Tables tablesParser = tablesParser{}
@@ -17,12 +18,26 @@ func (t tablesParser) Parse(source source.TokenSource) (*TablesNode, error) {
 	t.Init(source)
 	source.Checkpoint()
 
-	//if {
-	//
-	//}
-	panic("not implemented")
+	tables := TablesNode{Tables: make([]*TableNode, 0, 3)}
+	for {
+		table, err := Table.Parse(source)
+		if err != nil {
+			return nil, err
+		}
+		tables.Tables = append(tables.Tables, table)
+
+		source.CommitAndCheckpoint()
+		err = t.SkipBreaks().
+			Type(token.SpaceBreak).
+			TypeExactly(token.Comma, 1).
+			SkipFromNext()
+		if err != nil {
+			source.Rollback()
+			return &tables, nil
+		}
+	}
 }
 
 type TablesNode struct {
-	Tables []TableNode
+	Tables []*TableNode
 }
