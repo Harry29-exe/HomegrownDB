@@ -30,7 +30,8 @@ func TestFields_Parse_ShouldParseString(t *testing.T) {
 
 		//then
 		if len(fieldsNode.Fields) != 3 {
-			t.Error("Len(FieldsNode.Fields) should equal 3 instead was:", len(fieldsNode.Fields))
+			t.Error("Len(FieldsNode.Fields) should equal 3 instead was:",
+				len(fieldsNode.Fields))
 			t.FailNow()
 		}
 		for i, field := range fieldsNode.Fields {

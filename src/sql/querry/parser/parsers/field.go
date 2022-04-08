@@ -1,8 +1,8 @@
 package parsers
 
 import (
-	"HomegrownDB/sql/querry/parser/def"
-	"HomegrownDB/sql/querry/parser/helpers"
+	"HomegrownDB/sql/querry/parser/parsers/helpers"
+	"HomegrownDB/sql/querry/parser/parsers/source"
 	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
@@ -13,7 +13,7 @@ type fieldParser struct {
 }
 
 // Parse todo add support for field without table alias
-func (f fieldParser) Parse(source def.TokenSource) (*FieldNode, error) {
+func (f fieldParser) Parse(source source.TokenSource) (*FieldNode, error) {
 	f.Init(source)
 	source.Checkpoint()
 

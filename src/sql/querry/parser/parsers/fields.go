@@ -1,8 +1,8 @@
 package parsers
 
 import (
-	"HomegrownDB/sql/querry/parser/def"
-	"HomegrownDB/sql/querry/parser/helpers"
+	"HomegrownDB/sql/querry/parser/parsers/helpers"
+	"HomegrownDB/sql/querry/parser/parsers/source"
 	"HomegrownDB/sql/querry/parser/sqlerr"
 	"HomegrownDB/sql/querry/tokenizer/token"
 )
@@ -27,7 +27,7 @@ type fieldsParser struct {
 // "table1.col1.col2, table2.col1" - will be parsed to second dot and returned
 //
 // "table1.col1,, table2.col2" - will be parsed to first comma and returned
-func (p fieldsParser) Parse(source def.TokenSource) (*FieldsNode, error) {
+func (p fieldsParser) Parse(source source.TokenSource) (*FieldsNode, error) {
 	p.Init(source)
 	source.Checkpoint()
 

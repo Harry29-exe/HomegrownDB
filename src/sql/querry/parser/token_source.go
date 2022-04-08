@@ -1,12 +1,12 @@
 package parser
 
 import (
-	"HomegrownDB/sql/querry/parser/def"
+	"HomegrownDB/sql/querry/parser/parsers/source"
 	tk "HomegrownDB/sql/querry/tokenizer"
 	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
-func NewTokenSource(query string) def.TokenSource {
+func NewTokenSource(query string) source.TokenSource {
 	return &tokenSource{
 		tokenCache:  make([]token.Token, 0, 10),
 		currentLen:  0,
@@ -42,13 +42,13 @@ func (t *tokenSource) Next() token.Token {
 		return next
 	} else {
 		t.pointer--
-		return nil
+		return token.NilToken()
 	}
 }
 
 func (t *tokenSource) Prev() token.Token {
 	if t.pointer < 0 {
-		return nil
+		return token.NilToken()
 	}
 
 	t.pointer--

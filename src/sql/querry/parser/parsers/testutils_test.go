@@ -49,7 +49,7 @@ func (t *testTokenSource) Next() token.Token {
 		return t.tokens[t.pointer]
 	}
 	t.pointer--
-	return nil
+	return token.NilToken()
 }
 
 func (t *testTokenSource) Prev() token.Token {
@@ -58,7 +58,7 @@ func (t *testTokenSource) Prev() token.Token {
 		return t.tokens[t.pointer]
 	}
 
-	return nil
+	return token.NilToken()
 }
 
 func (t *testTokenSource) Current() token.Token {

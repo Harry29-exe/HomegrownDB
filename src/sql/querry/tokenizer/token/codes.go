@@ -39,6 +39,7 @@ const (
 	/* -- Other -- */
 
 	Text
+	Nil
 )
 
 var breakCodes = map[Code]bool{

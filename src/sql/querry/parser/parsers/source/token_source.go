@@ -1,4 +1,4 @@
-package def
+package source
 
 import (
 	"HomegrownDB/sql/querry/tokenizer/token"
@@ -6,7 +6,7 @@ import (
 
 // TokenSource array like structure where Next moves pointer one token forward
 // and return it while Prev moves pointer one token back and return it.
-// If either method reach array end it returns nil without changing pointer
+// If method reach array's end it returns token with code token.Nil without changing pointer
 type TokenSource interface {
 	Next() token.Token      // Next move pointer forwards and returns, if source has no more tokens it returns nil
 	Prev() token.Token      // Prev move pointer backwards and returns, if source has no more tokens it returns nil

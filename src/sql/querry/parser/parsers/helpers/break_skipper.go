@@ -1,14 +1,14 @@
 package helpers
 
 import (
-	"HomegrownDB/sql/querry/parser/def"
+	"HomegrownDB/sql/querry/parser/parsers/source"
 	"HomegrownDB/sql/querry/parser/sqlerr"
 	"HomegrownDB/sql/querry/tokenizer/token"
 	"math"
 	"strings"
 )
 
-func SkipBreaks(source def.TokenSource) *breaksSkipper {
+func SkipBreaks(source source.TokenSource) *breaksSkipper {
 	return &breaksSkipper{
 		breakTypes: map[token.Code]*breakType{},
 		source:     source,
@@ -21,7 +21,7 @@ func (h *ParserHelper) SkipBreaks() *breaksSkipper {
 
 type breaksSkipper struct {
 	breakTypes map[token.Code]*breakType
-	source     def.TokenSource
+	source     source.TokenSource
 }
 
 type breakType struct {
@@ -47,7 +47,7 @@ func (b *breaksSkipper) skip(fromCurrent bool) error {
 		currentToken = b.source.Next()
 	}
 
-	for currentToken != nil && token.IsBreak(currentToken.Code()) {
+	for token.IsBreak(currentToken.Code()) {
 		breakType, ok := b.breakTypes[currentToken.Code()]
 		if !ok {
 			err := sqlerr.NewSyntaxError(b.breakTypesToStr(), currentToken.Value(), b.source)

@@ -1,8 +1,8 @@
 package parsers
 
 import (
-	"HomegrownDB/sql/querry/parser/def"
-	"HomegrownDB/sql/querry/parser/helpers"
+	"HomegrownDB/sql/querry/parser/parsers/helpers"
+	"HomegrownDB/sql/querry/parser/parsers/source"
 	"HomegrownDB/sql/querry/tokenizer/token"
 )
 
@@ -12,7 +12,7 @@ type selectParser struct {
 	helpers.ParserHelper
 }
 
-func (s selectParser) Parse(source def.TokenSource) (*SelectNode, error) {
+func (s selectParser) Parse(source source.TokenSource) (*SelectNode, error) {
 	source.Checkpoint()
 	s.Init(source)
 
@@ -29,6 +29,7 @@ func (s selectParser) Parse(source def.TokenSource) (*SelectNode, error) {
 	}
 
 	// Fields
+	source.Next()
 	selectNode.Fields, err = Fields.Parse(source)
 	if err != nil {
 		return nil, err

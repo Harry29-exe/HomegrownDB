@@ -1,16 +1,25 @@
 package parsers
 
-import "HomegrownDB/sql/querry/parser/def"
+import (
+	"HomegrownDB/sql/querry/parser/parsers/helpers"
+	"HomegrownDB/sql/querry/parser/parsers/source"
+)
 
 var Tables tablesParser = tablesParser{}
 
 type tablesParser struct {
+	helpers.ParserHelper
 }
 
-func (p tablesParser) Parse(source def.TokenSource) (*TablesNode, error) {
+// Parse table declarations which are usually found after FROM keyword
+//
+func (t tablesParser) Parse(source source.TokenSource) (*TablesNode, error) {
+	t.Init(source)
 	source.Checkpoint()
 
-	//todo implement me
+	//if {
+	//
+	//}
 	panic("not implemented")
 }
 

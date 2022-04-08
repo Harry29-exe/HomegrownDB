@@ -29,15 +29,22 @@ func (b *BasicToken) Value() string {
 	return b.value
 }
 
+func NilToken() Token {
+	return &BasicToken{
+		code:  Nil,
+		value: "",
+	}
+}
+
 func NewIntegerToken(value string) (*IntegerToken, error) {
-	int, err := strconv.Atoi(value)
+	integer, err := strconv.Atoi(value)
 	if err != nil {
 		return nil, err
 	}
 
 	return &IntegerToken{
 		Token: NewBasicToken(Integer, value),
-		Int:   int,
+		Int:   integer,
 	}, nil
 }
 
