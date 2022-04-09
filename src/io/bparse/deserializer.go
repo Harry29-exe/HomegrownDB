@@ -16,7 +16,7 @@ func NewDeserializer(data []byte) *Deserializer {
 
 // SmString read string with 1 byte length prefix
 func (d *Deserializer) SmString() string {
-	strLen := d.data[0]
+	strLen := d.data[d.pointer]
 	d.pointer++
 
 	pointer := d.pointer
@@ -26,7 +26,7 @@ func (d *Deserializer) SmString() string {
 
 // MdString read string with 2 bytes length prefix
 func (d *Deserializer) MdString() string {
-	strLen := binary.LittleEndian.Uint16(d.data[0:2])
+	strLen := binary.LittleEndian.Uint16(d.data[d.pointer : d.pointer+2])
 	d.pointer += 2
 
 	pointer := d.pointer

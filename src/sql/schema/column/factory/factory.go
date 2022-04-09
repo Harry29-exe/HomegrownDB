@@ -5,6 +5,7 @@ import (
 	"HomegrownDB/sql/schema/column/types"
 )
 
+// todo add errors for definition creation
 func CreateDefinition(args column.Args) column.Definition {
 	columnType, err := args.Type()
 	if err != nil {

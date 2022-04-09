@@ -10,8 +10,11 @@ type Definition interface {
 	DataParser() DataParser
 	DataSerializer() DataSerializer
 
-	// Serialize should save all important data to
+	// Serialize should save all important data to byte stream.
+	// It has to start with MdString of column.Type.
 	Serialize() []byte
+	// Deserialize takes the same data that Serialize returned
+	// and set this column definitions to match given data
 	Deserialize(data []byte)
 }
 

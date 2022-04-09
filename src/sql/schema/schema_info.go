@@ -3,7 +3,6 @@ package schema
 import (
 	"HomegrownDB/datastructs"
 	"HomegrownDB/dbsystem"
-	"HomegrownDB/sql/schema/providers"
 	"HomegrownDB/sql/schema/table"
 	"io/ioutil"
 	"os"

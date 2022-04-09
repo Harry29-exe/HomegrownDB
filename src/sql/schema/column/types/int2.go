@@ -10,7 +10,7 @@ import (
 
 const Int2 column.Type = "Int2"
 
-func NewInt2Column(args column.Args) column.Definition {
+func NewInt2Column(args column.Args) *Int2Column {
 	name, err := args.Name()
 	if err != nil {
 		panic("No column name")
@@ -50,13 +50,22 @@ func (c *Int2Column) DataSerializer() column.DataSerializer {
 }
 
 func (c *Int2Column) Serialize() []byte {
-	//TODO implement me
-	panic("implement me")
+	serializer := bparse.NewSerializer()
+	serializer.MdString(Int2)
+	serializer.MdString(c.name)
+	serializer.Bool(c.nullable)
+
+	return serializer.GetBytes()
 }
 
 func (c *Int2Column) Deserialize(data []byte) {
-	//TODO implement me
-	panic("implement me")
+	deserializer := bparse.NewDeserializer(data)
+	//skip Column Type
+	_ = deserializer.MdString()
+	c.name = deserializer.MdString()
+	c.nullable = deserializer.Bool()
+	c.serializer = &int2Serializer{columnIsNullable: c.nullable}
+	c.parser = &int2Parser{columnIsNullable: c.nullable}
 }
 
 type int2Parser struct {
@@ -68,7 +77,7 @@ func (i *int2Parser) Skip(data []byte) []byte {
 }
 
 func (i *int2Parser) Parse(data []byte) (column.Value, []byte) {
-	v, next := bparse.Serialize.Int2(data)
+	v, next := bparse.Deserialize.Int2(data)
 	value := NewInt2Value(&v)
 
 	return value, next
