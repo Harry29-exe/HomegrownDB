@@ -4,10 +4,10 @@ import (
 	"HomegrownDB/io/bparse"
 )
 
-func DeserializeDbTable(rawData []byte) *DBTable {
+func DeserializeDbTable(rawData []byte) *Table {
 	td := tableDeserializer{
 		deserializer: bparse.NewDeserializer(rawData),
-		table:        DBTable{},
+		table:        Table{},
 	}
 
 	td.table.objectId = td.deserializer.Uint64()
@@ -19,7 +19,7 @@ func DeserializeDbTable(rawData []byte) *DBTable {
 
 type tableDeserializer struct {
 	deserializer *bparse.Deserializer
-	table        DBTable
+	table        Table
 }
 
 //todo add null support when calc offset

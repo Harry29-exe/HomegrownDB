@@ -87,29 +87,16 @@ type int2Serializer struct {
 	columnIsNullable bool
 }
 
-func (s *int2Serializer) Serialize(data []byte) ([]byte, error) {
-	if data == nil {
-		if s.columnIsNullable {
-			return make([]byte, 0), nil
-		}
-		return nil, errors.New("column can not be null")
-	}
-
-	return data, nil
+func (s *int2Serializer) Serialize(data []byte) (column.DataToSave, error) {
+	return column.NewDataToSave(data, column.Tuple), nil
 }
 
-func (s *int2Serializer) SerializeValue(value *any) ([]byte, error) {
-	if value == nil {
-		if s.columnIsNullable {
-			return make([]byte, 0), nil
-		}
-		return nil, errors.New("column can not be null")
-	}
-
-	switch data := (*value).(type) {
+func (s *int2Serializer) SerializeValue(value any) (column.DataToSave, error) {
+	switch data := value.(type) {
 	case int16:
 		asBytes := make([]byte, 0, 2)
 		binary.LittleEndian.PutUint16(asBytes, uint16(data))
+		return column.NewDataToSave(asBytes, column.Tuple), nil
 	}
 
 	return nil, errors.New("value argument is not pointer to int16 type")

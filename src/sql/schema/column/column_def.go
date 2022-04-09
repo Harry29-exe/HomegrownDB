@@ -2,7 +2,7 @@ package column
 
 type Type = string
 
-// Definition describes column properties and provides parser
+// Definition describes column properties and provides parser and serializer
 type Definition interface {
 	Name() string
 	Nullable() bool
@@ -10,37 +10,65 @@ type Definition interface {
 	DataParser() DataParser
 	DataSerializer() DataSerializer
 
-	// Serialize should save all important data to byte stream.
+	// Serialize should save all important Data to byte stream.
 	// It has to start with MdString of column.Type.
 	Serialize() []byte
-	// Deserialize takes the same data that Serialize returned
-	// and set this column definitions to match given data
+	// Deserialize takes the same Data that Serialize returned
+	// and set this column definitions to match given Data
 	Deserialize(data []byte)
 }
 
+// DataParser to parse raw data obtained from disc,
+// it's usually obtained from column.Definition
 type DataParser interface {
 	Skip(data []byte) []byte
 	Parse(data []byte) (Value, []byte)
 }
 
+// DataSerializer to serialize data incoming from either from outside
+// or data processed by internal functions, it's usually obtained from
+// column.Definition
 type DataSerializer interface {
-	Serialize(data []byte) ([]byte, error)
-	SerializeValue(value *any) ([]byte, error)
-	//todo method serialize as lob while standard Serialize return error if value is to large to be serialized in standard way
+	// Serialize takes Data for serialization and returns DataToSave,
+	// if error occurred it returns nil, error
+	Serialize(data []byte) (DataToSave, error)
+	// SerializeValue takes value check if it's of supported type for serialization and
+	// returns DataToSave, if error occurred it returns nil, error
+	SerializeValue(value any) (DataToSave, error)
 }
 
-type Value interface {
-	AsBytes() []byte
-	Value() any
-	IsNull() bool
-
-	EqualsBytes(value []byte) bool
-	Equals(value *any) bool
-
-	// CompareBytes returns 0 if this.value == value,
-	// -1 if this.value < value and 1 if this.value > value
-	CompareBytes(value []byte) int
-	// Compare returns 0 if this.value == value,
-	// -1 if this.value < value and 1 if this.value > value
-	Compare(value *any) int
+// DataToSave data created by DataSerializer, contains data
+// that should be saved to disc and information where exactly
+// on disc data should be saved
+type DataToSave interface {
+	Data() []byte
+	StorePlace() DataStoragePlace
 }
+
+func NewDataToSave(data []byte, storePlace DataStoragePlace) DataToSave {
+	return &dataToSave{
+		data:       data,
+		storePlace: storePlace,
+	}
+}
+
+type dataToSave struct {
+	data       []byte
+	storePlace DataStoragePlace
+}
+
+func (d *dataToSave) Data() []byte {
+	return d.data
+}
+
+func (d *dataToSave) StorePlace() DataStoragePlace {
+	return d.storePlace
+}
+
+type DataStoragePlace = uint8
+
+const (
+	Tuple DataStoragePlace = iota
+	Background
+	Lob
+)
