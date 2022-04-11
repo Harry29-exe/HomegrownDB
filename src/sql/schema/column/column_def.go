@@ -15,7 +15,7 @@ type Definition interface {
 	Serialize() []byte
 	// Deserialize takes the same Data that Serialize returned
 	// and set this column definitions to match given Data
-	Deserialize(data []byte)
+	Deserialize(data []byte) (subsequent []byte)
 }
 
 // DataParser to parse raw data obtained from disc,

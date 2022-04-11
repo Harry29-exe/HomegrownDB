@@ -6,15 +6,14 @@ import (
 	"HomegrownDB/sql/schema/column/types"
 )
 
-func DeserializeColumnDefinition(serializedData []byte) column.Definition {
+func DeserializeColumnDefinition(serializedData []byte) (col column.Definition, subsequent []byte) {
 	deserialized := bparse.NewDeserializer(serializedData)
 	columnCode := deserialized.MdString()
 
 	switch columnCode {
 	case types.Int2:
 		colDef := &types.Int2Column{}
-		colDef.Deserialize(serializedData)
-		return colDef
+		return colDef, colDef.Deserialize(serializedData)
 	default:
 		panic("Unknown type to deserialize")
 	}

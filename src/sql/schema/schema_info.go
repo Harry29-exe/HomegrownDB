@@ -9,12 +9,12 @@ import (
 )
 
 type dbSchema struct {
-	tables map[string]table.Table
+	tables map[string]table.Definition
 }
 
 var _ dbSchema
 
-func (db *dbSchema) GetTable(name string) table.Table {
+func (db *dbSchema) GetTable(name string) table.Definition {
 	return db.tables[name]
 }
 
@@ -39,16 +39,16 @@ func readDBSchema(dbHomePath string) {
 			"does not exist in directory: " + dbsystem.GetDBHomePath())
 	}
 
-	schemaTables := map[string]table.Table{}
+	schemaTables := map[string]table.Definition{}
 
-	for _, table := range tables {
-		tableName := table.Name()
+	for _, tableInfo := range tables {
+		tableName := tableInfo.Name()
 		data, err := os.ReadFile(tablesDir + "/" + tableName + "/" + dbsystem.TableInfoFilename)
 		if err != nil {
 			panic("File " + dbsystem.TableInfoFilename + " for dbtable " + tableName + " does not exist.")
 		}
 
-		parsedTable, err := providers.DeserializeTable(data)
+		parsedTable := table.Deserializer.Deserialize(data)
 		schemaTables[tableName] = parsedTable
 	}
 

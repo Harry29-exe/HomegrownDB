@@ -88,3 +88,11 @@ func (d *Deserializer) Int64() int64 {
 
 	return int64(binary.LittleEndian.Uint64(d.data[pointer:d.pointer]))
 }
+
+func (d *Deserializer) IsEmpty() bool {
+	return d.pointer >= uint64(len(d.data))
+}
+
+func (d *Deserializer) RemainedData() []byte {
+	return d.data[d.pointer:]
+}

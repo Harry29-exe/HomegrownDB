@@ -3,14 +3,23 @@ package tuple
 import (
 	"HomegrownDB/io/bparse"
 	"HomegrownDB/sql/schema/column"
+	"HomegrownDB/sql/schema/table"
 )
+
+func ParseTuple(data []byte, table *table.Definition) *Tuple {
+	tuple := parseTupleHeader(data)
+
+}
 
 type Tuple struct {
 	CreatedByTx      uint32
 	ModifiedByTx     uint32
 	TxCommandCounter uint32
 	Id               Id
-	columns          []column.Value
+
+	nullBitmap
+
+	columns []Column
 }
 
 type Id struct {
@@ -18,7 +27,13 @@ type Id struct {
 	LinePointer uint16
 }
 
-func ParseTupleHeader(data []byte) *Tuple {
+type Column struct {
+	value       column.Value
+	dataToParse []byte
+	isParsed    bool
+}
+
+func parseTupleHeader(data []byte) *Tuple {
 	deserializer := bparse.NewDeserializer(data)
 	return &Tuple{
 		CreatedByTx:      deserializer.Uint32(),

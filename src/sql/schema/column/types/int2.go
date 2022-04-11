@@ -58,7 +58,7 @@ func (c *Int2Column) Serialize() []byte {
 	return serializer.GetBytes()
 }
 
-func (c *Int2Column) Deserialize(data []byte) {
+func (c *Int2Column) Deserialize(data []byte) []byte {
 	deserializer := bparse.NewDeserializer(data)
 	//skip Column Type
 	_ = deserializer.MdString()
@@ -66,6 +66,8 @@ func (c *Int2Column) Deserialize(data []byte) {
 	c.nullable = deserializer.Bool()
 	c.serializer = &int2Serializer{columnIsNullable: c.nullable}
 	c.parser = &int2Parser{columnIsNullable: c.nullable}
+
+	return deserializer.RemainedData()
 }
 
 type int2Parser struct {
