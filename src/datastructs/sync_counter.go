@@ -8,38 +8,37 @@ type SyncCounter[T Number] interface {
 	Get() T
 }
 
-type LockCounter[T Number] struct {
-	value T
-	lock  sync.Mutex
+func NewUint64SyncCounter(startVal uint64) SyncCounter[uint64] {
+	return newUint64Counter(startVal)
 }
 
-func (l *LockCounter[T]) GetAndIncrement() T {
-	l.lock.Lock()
-	defer l.lock.Unlock()
-	value := l.value
-	l.value++
+func newUint64Counter(startVal uint64) *uint64LockCounter {
+	return &uint64LockCounter{
+		mutex: sync.Mutex{},
+		value: startVal,
+	}
+}
 
+type uint64LockCounter struct {
+	mutex sync.Mutex
+	value uint64
+}
+
+func (u *uint64LockCounter) GetAndIncrement() uint64 {
+	value := u.value
+	u.mutex.Lock()
+	u.value++
+	u.mutex.Unlock()
 	return value
 }
 
-func (l *LockCounter[T]) IncrementAndGet() T {
-	l.lock.Lock()
-	defer l.lock.Unlock()
-	l.value++
-
-	return l.value
+func (u *uint64LockCounter) IncrementAndGet() uint64 {
+	u.mutex.Lock()
+	u.value++
+	u.mutex.Unlock()
+	return u.value
 }
 
-func (l *LockCounter[T]) Get() T {
-	return l.value
-}
-
-func NewLockCounter[T Number](startValue T) *LockCounter[T] {
-	value := startValue * 2
-	println(value)
-
-	return &LockCounter[T]{
-		value: startValue,
-		lock:  sync.Mutex{},
-	}
+func (u *uint64LockCounter) Get() uint64 {
+	return u.value
 }
