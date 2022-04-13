@@ -1,10 +1,10 @@
 package node
 
 import (
-	"HomegrownDB/dbsystem/page/tuple"
+	"HomegrownDB/dbsystem/page"
 )
 
 type Node interface {
 	HasNext() bool
-	Next() tuple.Tuple
+	Next() page.Tuple
 }

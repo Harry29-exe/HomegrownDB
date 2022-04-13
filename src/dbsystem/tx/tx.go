@@ -6,7 +6,7 @@ type Tx struct {
 	Status Status
 }
 
-type Id = uint64
+type Id = uint32
 
 type IsolationLevel = uint8
 

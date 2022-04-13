@@ -24,3 +24,28 @@ func (d deserializer) Int2(data []byte) (value int16, subsequent []byte) {
 	subsequent = data[2:]
 	return
 }
+
+func (d deserializer) Int4(data []byte) (value int32, subsequent []byte) {
+	value = int32(binary.LittleEndian.Uint32(data[:4]))
+	subsequent = data[4:]
+	return
+}
+
+func (d deserializer) UInt4(data []byte) (value uint32, subsequent []byte) {
+	value = binary.LittleEndian.Uint32(data[:4])
+	subsequent = data[4:]
+	return
+}
+
+func (d deserializer) Int8(data []byte) (value int64, subsequent []byte) {
+	value = int64(binary.LittleEndian.Uint64(data[:8]))
+	subsequent = data[8:]
+	return
+}
+
+func (d deserializer) SmBytes(data []byte) (value []byte, subsequent []byte) {
+	indexAfterVal := uint16(data[0]) + 2
+	value = data[1:indexAfterVal]
+	subsequent = data[indexAfterVal:]
+	return
+}

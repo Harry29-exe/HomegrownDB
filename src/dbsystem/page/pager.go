@@ -1,13 +1,5 @@
 package page
 
-type PageId struct {
-	tableId    uint64
-	nodeNumber uint32
-	pageNumber uint32
-}
-
-
-
 func ()  {
 	
 }

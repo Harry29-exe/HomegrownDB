@@ -1,57 +1,32 @@
 package main
 
 import (
-	"fmt"
+	"sync"
 )
 
 func main() {
-	t := test{myMap: map[string]int{}}
-	fmt.Println(t)
+	wg := sync.WaitGroup{}
+	println("started")
 
-	t.Add("5", 5)
-	fmt.Println(t)
+	rwMutex := sync.RWMutex{}
 
-	t.Rename("super name")
-	fmt.Println(t)
+	wg.Add(1)
+	go func() {
+		rwMutex.RLock()
+		println("locked r")
+		rwMutex.Lock()
+		println("locked w")
 
-	var tI1 ITest = test{myMap: map[string]int{}}
-	tI2 := tI1.Rename("cool name")
-	tI1.Add("4", 4)
-	fmt.Println(tI1)
-	fmt.Println(tI2)
-	tI3 := tI2
+		println("doing something")
 
-	switch val := tI2.(type) {
-	case test:
-		val.name = "changed"
-	}
+		rwMutex.Unlock()
+		println("unlocked w")
 
-	fmt.Println("---")
-	fmt.Println(tI2)
-	fmt.Println(tI3)
-}
+		rwMutex.Unlock()
+		println("unlocked r")
+		wg.Done()
+	}()
 
-type ITest interface {
-	Rename(str string) ITest
-	Add(str string, i int)
-}
-
-type test struct {
-	myMap map[string]int
-	name  string
-}
-
-func (t test) Rename(str string) ITest {
-	t.name = str
-	return t
-}
-
-func (t test) Add(str string, i int) {
-	t.myMap[str] = i
-}
-
-func PrintUsageInfo() {
-	fmt.Println(
-		"Database console ready.\n" +
-			"Write command and sent it using ctrl+d")
+	wg.Wait()
+	println("finished")
 }

@@ -1,32 +1,25 @@
 package schema
 
 import (
-	"HomegrownDB/datastructs"
 	"HomegrownDB/dbsystem"
-	table2 "HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/schema/table"
 	"io/ioutil"
 	"os"
 )
 
-type dbSchema struct {
-	tables map[string]table2.Definition
+var Tables = initTables()
+
+type tables struct {
+	definitions table.Definition
 }
 
-var _ dbSchema
+func (t tables) Definition(name string) table.Definition {
 
-func (db *dbSchema) GetTable(name string) table2.Definition {
-	return db.tables[name]
 }
 
-var dbObjectIdCounter = datastructs.NewLockCounter(uint64(0))
-var lobIdCounter = datastructs.NewLockCounter(uint64(0))
-
-func GetNextDbObjectId() uint64 {
-	return dbObjectIdCounter.IncrementAndGet()
-}
-
-func GetNextLobId() uint64 {
-	return lobIdCounter.IncrementAndGet()
+func initTables() *tables {
+	//todo implement reading files
+	return &tables{}
 }
 
 func readDBSchema(dbHomePath string) {
@@ -39,7 +32,7 @@ func readDBSchema(dbHomePath string) {
 			"does not exist in directory: " + dbsystem.GetDBHomePath())
 	}
 
-	schemaTables := map[string]table2.Definition{}
+	schemaTables := map[string]table.Definition{}
 
 	for _, tableInfo := range tables {
 		tableName := tableInfo.Name()
@@ -48,7 +41,7 @@ func readDBSchema(dbHomePath string) {
 			panic("File " + dbsystem.TableInfoFilename + " for dbtable " + tableName + " does not exist.")
 		}
 
-		parsedTable := table2.Deserializer.Deserialize(data)
+		parsedTable := table.Deserializer.Deserialize(data)
 		schemaTables[tableName] = parsedTable
 	}
 
