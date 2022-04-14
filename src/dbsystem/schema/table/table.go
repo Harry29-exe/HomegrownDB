@@ -9,10 +9,15 @@ import (
 
 type table struct {
 	objectId     uint64
-	colNameIdMap map[string]ColumnId
-	columns      map[ColumnId]column.Definition
+	tableId      Id
+	colNameIdMap map[string]column.OrderId
+	columns      map[column.OrderId]column.Definition
 	columnsCount uint16
 	name         string
+}
+
+func (t *table) TableId() Id {
+	return t.tableId
 }
 
 func (t *table) ObjectId() uint64 {
@@ -41,17 +46,22 @@ func (t *table) Deserialize(tableDef []byte) {
 	t.columnsCount = deserializer.Uint16()
 
 	data := deserializer.RemainedData()
-	for i := ColumnId(0); i < t.columnsCount; i++ {
+	for i := column.OrderId(0); i < t.columnsCount; i++ {
 		t.columns[i], data = factory.DeserializeColumnDefinition(data)
 	}
 }
 
-func (t *table) ColumnId(name string) ColumnId {
+// NullBitmapLen returns number of bytes in tuple that constitute null bitmap
+func (t *table) NullBitmapLen() uint16 {
+	return t.columnsCount / 8
+}
+
+func (t *table) ColumnId(name string) column.OrderId {
 	return t.colNameIdMap[name]
 }
 
-func (t *table) ColumnsIds(names []string) []ColumnId {
-	colIds := make([]ColumnId, 0, len(names))
+func (t *table) ColumnsIds(names []string) []column.OrderId {
+	colIds := make([]column.OrderId, 0, len(names))
 	for i, name := range names {
 		colIds[i] = t.colNameIdMap[name]
 	}
@@ -59,7 +69,11 @@ func (t *table) ColumnsIds(names []string) []ColumnId {
 	return colIds
 }
 
-func (t *table) ColumnParsers(ids []ColumnId) []column.DataParser {
+func (t *table) ColumnParser(id column.OrderId) column.DataParser {
+	return t.columns[id].DataParser()
+}
+
+func (t *table) ColumnParsers(ids []column.OrderId) []column.DataParser {
 	parsers := make([]column.DataParser, 0, len(ids))
 	for i, id := range ids {
 		parsers[i] = t.columns[id].DataParser()
@@ -68,7 +82,11 @@ func (t *table) ColumnParsers(ids []ColumnId) []column.DataParser {
 	return parsers
 }
 
-func (t *table) ColumnSerializers(ids []ColumnId) []column.DataSerializer {
+func (t *table) ColumnSerializer(id column.OrderId) column.DataSerializer {
+	return t.columns[id].DataSerializer()
+}
+
+func (t *table) ColumnSerializers(ids []column.OrderId) []column.DataSerializer {
 	serializers := make([]column.DataSerializer, 0, len(ids))
 	for i, id := range ids {
 		serializers[i] = t.columns[id].DataSerializer()
@@ -95,7 +113,7 @@ func (t *table) RemoveColumn(name string) error {
 		return errors.New("column does not contain column with name: " + name)
 	}
 
-	newNameColIdMap := map[string]ColumnId{}
+	newNameColIdMap := map[string]column.OrderId{}
 	for colName, colId := range t.colNameIdMap {
 		if colId < colToRemoveId {
 			newNameColIdMap[colName] = colId
@@ -105,7 +123,7 @@ func (t *table) RemoveColumn(name string) error {
 	}
 	t.colNameIdMap = newNameColIdMap
 
-	newColumnMap := map[ColumnId]column.Definition{}
+	newColumnMap := map[column.OrderId]column.Definition{}
 	for colId, col := range t.columns {
 		if colId < colToRemoveId {
 			newColumnMap[colId] = col

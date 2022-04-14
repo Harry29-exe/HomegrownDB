@@ -5,6 +5,7 @@ import (
 )
 
 type Definition interface {
+	TableId() Id
 	ObjectId() uint64
 	// Serialize table info, so it can be saved to disc and
 	// later deserialize into table object
@@ -12,24 +13,28 @@ type Definition interface {
 	// Deserialize overrides all table info with deserialized data
 	// from provided byte slice
 	Deserialize(tableDef []byte)
+	NullBitmapLen() uint16
 
-	ColumnId(name string) ColumnId
-	ColumnsIds(names []string) []ColumnId
+	ColumnId(name string) column.OrderId
+	ColumnsIds(names []string) []column.OrderId
 
-	ColumnParsers(ids []ColumnId) []column.DataParser
-	ColumnSerializers(ids []ColumnId) []column.DataSerializer
+	ColumnParser(id column.OrderId) column.DataParser
+	ColumnParsers(ids []column.OrderId) []column.DataParser
+	ColumnSerializer(id column.OrderId) column.DataSerializer
+	ColumnSerializers(ids []column.OrderId) []column.DataSerializer
 
 	AddColumn(definition column.Definition) error
 	RemoveColumn(name string) error
 }
 
-type ColumnId = uint16
+type Id = uint32
 
-func NewDefinition(name string, objId uint64) Definition {
+func NewDefinition(name string, tableId Id, objId uint64) Definition {
 	return &table{
+		tableId:      tableId,
 		objectId:     objId,
-		colNameIdMap: map[string]ColumnId{},
-		columns:      map[ColumnId]column.Definition{},
+		colNameIdMap: map[string]column.OrderId{},
+		columns:      map[column.OrderId]column.Definition{},
 		columnsCount: 0,
 		name:         name,
 	}

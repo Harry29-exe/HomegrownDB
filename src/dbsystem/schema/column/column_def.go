@@ -18,6 +18,9 @@ type Definition interface {
 	Deserialize(data []byte) (subsequent []byte)
 }
 
+// OrderId describes order of column in table
+type OrderId = uint16
+
 // DataParser to parse raw data obtained from disc,
 // it's usually obtained from column.Definition
 type DataParser interface {

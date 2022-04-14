@@ -1,7 +1,5 @@
 package command
 
-import "HomegrownDB/sql"
-
 func Handle(command string) {
 	if command[0] == '.' {
 		handleMetaCommand(command)
@@ -11,5 +9,5 @@ func Handle(command string) {
 }
 
 func delegateSqlCommand(command string) {
-	sql.HandleSqlCommand(command)
+	//sql.HandleSqlCommand(command)
 }

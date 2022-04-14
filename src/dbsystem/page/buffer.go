@@ -1,29 +1,25 @@
 package page
 
 import (
-	"encoding/binary"
-	"encoding/gob"
 	"sync"
 )
 
-var Buffer = &buffer{map[PageId]uint64{}}
+var Buffer = &buffer{
+	pageIdBufferId:  map[Tag]BufferId{},
+	descriptorArray: make([]bufferDescriptor, 0, bufferSize),
+	pageBufferArray: make([]byte, 0, Size*bufferSize),
+}
 
 const bufferSize = 10_000
 
 type buffer struct {
-	pageIdBufferId  map[PageId]BufferId
+	pageIdBufferId  map[Tag]BufferId
 	descriptorArray []bufferDescriptor
-	pageBufferArray[]
+	pageBufferArray []byte
 }
 
 type BufferId = uint64
 
 type bufferDescriptor struct {
 	mutex sync.RWMutex
-}
-
-func we() {
-	binary.LittleEndian.Uint16()
-	binary.BigEndian.Uint64()
-	gob.Encoder{}
 }

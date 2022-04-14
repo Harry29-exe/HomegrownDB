@@ -18,6 +18,10 @@ func (p parser) Int2(data []byte) (value int16) {
 	return int16(binary.LittleEndian.Uint16(data[:2]))
 }
 
+func (p parser) UInt2(data []byte) (value uint16) {
+	return binary.LittleEndian.Uint16(data[:2])
+}
+
 func (p parser) Int4(data []byte) (value int32) {
 	return int32(binary.LittleEndian.Uint32(data[:4]))
 }

@@ -9,14 +9,14 @@ type Page struct {
 	page  []byte
 }
 
-type Id struct {
-	PageId      uint32
-	LinePointer uint16
+type Id = uint32
+type Tag struct {
+	PageId  Id
+	TableId table.Id
 }
 
 func (p Page) Tuple(tupleIndex uint16) Tuple {
-	//TODO implement me
-	panic("implement me")
+
 }
 
 func (p Page) TupleCount() uint16 {

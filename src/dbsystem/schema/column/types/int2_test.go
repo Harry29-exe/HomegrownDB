@@ -32,7 +32,7 @@ func TestInt2Column_Serializable(t *testing.T) {
 	columnDef := createInt2(name, false)
 
 	serialized := columnDef.Serialize()
-	deserialized := factory2.DeserializeColumnDefinition(serialized)
+	deserialized, _ := factory2.DeserializeColumnDefinition(serialized)
 	recreatedDef, ok := deserialized.(*types.Int2Column)
 	if !ok {
 		t.Errorf("Can not cast result")
