@@ -37,7 +37,7 @@ const (
 
 	/* -- Other -- */
 
-	TextStr = "Text"
+	TextStr = "Identifier"
 )
 
 var tokenNamesMap = map[Code]string{
@@ -69,5 +69,5 @@ var tokenNamesMap = map[Code]string{
 
 	/* -- Other -- */
 
-	Text: TextStr,
+	Identifier: TextStr,
 }

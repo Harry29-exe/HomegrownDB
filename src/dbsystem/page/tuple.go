@@ -27,6 +27,8 @@ type TupleId struct {
 
 type TupleIndex = uint16
 
+type InTuplePtr = uint16
+
 func (t Tuple) CreatedByTx() tx.Id {
 	return bparse.Parse.UInt4(t.data[tupleTxId:])
 }
@@ -43,8 +45,8 @@ func (t Tuple) TxCommandCounter() uint16 {
 // TupleId of this tuple if its newest version
 func (t Tuple) TID() TupleId {
 	return TupleId{
-		PageId:      bparse.Parse.UInt4(t.data[tuplePageId:]),
-		LinePointer: bparse.Parse.UInt2(t.data[tupleLinePointer:]),
+		PageId:        bparse.Parse.UInt4(t.data[tuplePageId:]),
+		InPagePointer: bparse.Parse.UInt2(t.data[tupleLinePointer:]),
 	}
 }
 

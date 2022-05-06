@@ -9,7 +9,7 @@ type TextToken struct {
 
 func NewTextToken(value string) *TextToken {
 	token := TextToken{
-		code:    Text,
+		code:    Identifier,
 		value:   value,
 		IsAscii: true,
 	}

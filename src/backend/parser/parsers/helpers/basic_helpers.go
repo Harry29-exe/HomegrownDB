@@ -90,7 +90,7 @@ func (tc *tokenChecker) Has(code token2.Code) *tokenChecker {
 }
 
 func (tc *tokenChecker) IsTextToken() *textTokenChecker {
-	tc.Has(token2.Text)
+	tc.Has(token2.Identifier)
 	if tc.err != nil {
 		return nilTextTokenChecker(tc)
 	}
@@ -102,7 +102,7 @@ func (tc *tokenChecker) IsTextToken() *textTokenChecker {
 			textToken:    textToken,
 		}
 	default:
-		tc.err = sqlerr.NewSyntaxError("Text", tc.token.Value(), tc.source)
+		tc.err = sqlerr.NewSyntaxError("Identifier", tc.token.Value(), tc.source)
 		return nilTextTokenChecker(tc)
 	}
 }

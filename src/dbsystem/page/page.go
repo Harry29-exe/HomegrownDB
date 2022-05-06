@@ -3,22 +3,30 @@ package page
 import (
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/io/bparse"
+	"crypto/md5"
 	"encoding/binary"
 	"errors"
 	"fmt"
 )
 
+//todo add handling for inserting into empty page
 const Size uint16 = 8192
 
 func CreateEmptyPage(tableDef table.Definition) Page {
-	page := make([]byte, Size)
-	page[page]
-	//todo implement
-	
-	return Page{
+	rawPage := make([]byte, Size)
+	uint16Zero := make([]byte, 2)
+	binary.LittleEndian.PutUint16(uint16Zero, 0)
+
+	copy(rawPage[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
+	copy(rawPage[poPtrToLastTuple:poPtrToLastTuple+InPagePointerSize], uint16Zero)
+
+	page := Page{
 		table: tableDef,
-		page:  ,
+		page:  rawPage,
 	}
+	page.updateHash()
+
+	return page
 }
 
 type Page struct {
@@ -46,28 +54,21 @@ func (p Page) Tuple(tIndex TupleIndex) Tuple {
 	}
 }
 
-func (p Page) LastTuplePtr() InPagePointer {
-	pointerToLastPointer := bparse.Parse.UInt2(
-		p.page[poLastTuplePtrPtr : poLastTuplePtrPtr+InPagePointerSize])
-
-	return bparse.Parse.UInt2(p.page[pointerToLastPointer:InPagePointerSize])
-}
-
 func (p Page) TupleCount() uint16 {
-	lastPointer := p.LastTuplePtr()
+	lastPointer := p.lastTuplePtr()
 	if lastPointer == 0 {
 		return 0
 	}
 
-	firstPointer := poFirstTuplePtr
+	firstPointer := poPtrToFirstTuple
 
 	return (lastPointer-InPagePointer(firstPointer))/2 + 1
 }
 
 func (p Page) FreeSpace() uint16 {
-	lastTuplePtr := p.LastTuplePtr()
+	lastTuplePtr := p.lastTuplePtr()
 	lastTuplePtrPtr := binary.LittleEndian.Uint16(
-		p.page[poLastTuplePtrPtr : poLastTuplePtrPtr+InPagePointerSize])
+		p.page[poPrtToLastTuplePtr : poPrtToLastTuplePtr+InPagePointerSize])
 
 	return lastTuplePtr - (lastTuplePtrPtr + InPagePointerSize - 1)
 }
@@ -81,7 +82,7 @@ func (p Page) InsertTuple(tuple []byte) error {
 	}
 
 	// copy tuple
-	lastTuplePtr := p.LastTuplePtr()
+	lastTuplePtr := p.lastTuplePtr()
 	newTuplePtr := lastTuplePtr - tupleLen
 	copy(p.page[newTuplePtr:lastTuplePtr], tuple)
 
@@ -89,20 +90,36 @@ func (p Page) InsertTuple(tuple []byte) error {
 	tupleLenBytes := make([]byte, 0, 2)
 	binary.LittleEndian.PutUint16(tupleLenBytes, tupleLen)
 
-	lastTuplePtrPtr := p.lastTuplePtrPtr()
+	lastTuplePtrPtr := p.ptrToLastTuplePtr()
 	newTuplePtrPtr := lastTuplePtrPtr + InPagePointerSize
 	copy(p.page[newTuplePtrPtr:newTuplePtrPtr+InPagePointerSize], tupleLenBytes)
 
 	// reassign last pointer pointer
-	copy(p.page[poLastTuplePtrPtr:poLastTuplePtrPtr+InPagePointerSize],
+	copy(p.page[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize],
 		tupleLenBytes)
 
 	return nil
 }
 
+func (p Page) UpdateTuple(tIndex TupleIndex, tuple []byte) {
+	//todo
+
+}
+
+func (p Page) lastTuplePtr() InPagePointer {
+	pointerToLastPointer := bparse.Parse.UInt2(
+		p.page[poPrtToLastTuplePtr : poPrtToLastTuplePtr+InPagePointerSize])
+
+	if pointerToLastPointer == 0 {
+		return 0
+	}
+
+	return bparse.Parse.UInt2(p.page[pointerToLastPointer:InPagePointerSize])
+}
+
 func (p Page) tupleEnd(index TupleIndex) InPagePointer {
 	tuplePtr := p.tuplePtr(index)
-	if tuplePtr == p.LastTuplePtr() {
+	if tuplePtr == p.lastTuplePtr() {
 		return Size
 	}
 
@@ -111,28 +128,32 @@ func (p Page) tupleEnd(index TupleIndex) InPagePointer {
 }
 
 func (p Page) tuplePtr(index TupleIndex) InPagePointer {
-	ptrStart := poFirstTuplePtr + InPagePointerSize*index
+	ptrStart := poPtrToFirstTuple + InPagePointerSize*index
 	return bparse.Parse.UInt2(p.page[ptrStart : ptrStart+InPagePointerSize])
 }
 
-func (p Page) lastTuplePtrPtr() InPagePointer {
+func (p Page) ptrToLastTuplePtr() InPagePointer {
 	return binary.LittleEndian.Uint16(
-		p.page[poLastTuplePtr : poLastTuplePtr+InPagePointerSize])
+		p.page[poPtrToLastTuple : poPtrToLastTuple+InPagePointerSize])
 }
 
 func (p Page) updateHash() {
-	//TODO implement me
-	panic("not yet implemented")
+	hash := md5.Sum(p.page[poPageHash+pageHashLen:])
+	copy(p.page[poPageHash:poPageHash+pageHashLen], hash[0:pageHashLen])
 }
 
 type InPagePointer = uint16
 
 const InPagePointerSize = 2
 
-//page offsets
+// po - page offset to
 const (
-	poPageHash        = 0                     // offset to page hash
-	poLastTuplePtrPtr = poPageHash + 8        // offset to pointer pointing to last tuple pointer
-	poLastTuplePtr    = poLastTuplePtrPtr + 2 // offset to pointer pointing to last tuple start
-	poFirstTuplePtr   = poLastTuplePtr + 2    // offset to first of many tuple pointers
+	poPageHash          = 0                        // offset to page hash
+	poPrtToLastTuplePtr = poPageHash + pageHashLen // offset to pointer pointing to last tuple pointer
+	poPtrToLastTuple    = poPrtToLastTuplePtr + 2  // offset to pointer pointing to last tuple start
+	poPtrToFirstTuple   = poPtrToLastTuple + 2     // offset to first of many tuple pointers
+)
+
+const (
+	pageHashLen = 8
 )

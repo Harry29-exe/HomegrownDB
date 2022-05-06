@@ -38,7 +38,7 @@ const (
 
 	/* -- Other -- */
 
-	Text
+	Identifier
 	Nil
 )
 

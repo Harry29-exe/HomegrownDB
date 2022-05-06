@@ -35,7 +35,7 @@ func (p fieldsParser) Parse(source source.TokenSource) (*FieldsNode, error) {
 	fields := FieldsNode{Fields: make([]*FieldNode, 0, 5)}
 
 	for {
-		if parsingToken.Code() != token2.Text {
+		if parsingToken.Code() != token2.Identifier {
 			return nil, sqlerr.NewSyntaxError(token2.TextStr, parsingToken.Value(), source)
 		}
 

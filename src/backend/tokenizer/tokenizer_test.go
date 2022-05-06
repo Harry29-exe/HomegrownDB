@@ -20,7 +20,7 @@ func TestTokenizerWithBasicSelectQuery(t *testing.T) {
 
 	tester.assertNextBasicToken(token.Select, "sElECt")
 	tester.assertNextBasicToken(token.SpaceBreak, " ")
-	tester.assertNextBasicToken(token.Text, "table_alias")
+	tester.assertNextBasicToken(token.Identifier, "table_alias")
 	tester.assertNextBasicToken(token.Dot, ".")
 	tok := tester.testTokenizer
 	for tok.HasNext() {

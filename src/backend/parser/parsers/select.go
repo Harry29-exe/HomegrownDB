@@ -36,7 +36,7 @@ func (s selectParser) Parse(source source.TokenSource) (*SelectNode, error) {
 	}
 
 	// From
-	err = s.NextSequence(token.SpaceBreak, token.From, token.SpaceBreak, token.Text)
+	err = s.NextSequence(token.SpaceBreak, token.From, token.SpaceBreak, token.Identifier)
 	if err != nil {
 		return nil, err
 	}

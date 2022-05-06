@@ -18,7 +18,7 @@ func (f fieldParser) Parse(source source.TokenSource) (*FieldNode, error) {
 	source.Checkpoint()
 
 	tableToken, err := f.Current().
-		Has(token.Text).
+		Has(token.Identifier).
 		IsTextToken().
 		DontStartWithDigit().
 		AsciiOnly().

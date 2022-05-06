@@ -26,7 +26,7 @@ func (t tableParser) Parse(source source.TokenSource) (*TableNode, error) {
 		return nil, err
 	}
 
-	err = t.NextSequence(token.SpaceBreak, token.Text)
+	err = t.NextSequence(token.SpaceBreak, token.Identifier)
 	if err != nil {
 		source.Commit()
 		return &TableNode{name.Value(), name.Value()}, nil

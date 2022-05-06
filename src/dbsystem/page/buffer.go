@@ -7,7 +7,7 @@ import (
 var Buffer = &buffer{
 	pageIdBufferId:  map[Tag]BufferId{},
 	descriptorArray: make([]bufferDescriptor, 0, bufferSize),
-	pageBufferArray: make([]byte, 0, Size*bufferSize),
+	pageBufferArray: make([]byte, 0, int64(Size)*bufferSize),
 }
 
 const bufferSize = 10_000
