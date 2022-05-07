@@ -32,6 +32,11 @@ func TestCreateEmptyPage(t *testing.T) {
 		"Newly created tuple updated non existing tuple with index 0", t)
 }
 
+func TestPage_Tuple(t *testing.T) {
+	testPage := page.CreateEmptyPage()
+
+}
+
 var pUtils pageUtils = pageUtils{}
 
 type pageUtils struct{}

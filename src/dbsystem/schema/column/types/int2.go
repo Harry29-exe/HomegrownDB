@@ -90,7 +90,7 @@ type int2Serializer struct {
 }
 
 func (s *int2Serializer) Serialize(data []byte) (column2.DataToSave, error) {
-	return column2.NewDataToSave(data, column2.Tuple), nil
+	return column2.NewDataToSave(data, column2.StoreInTuple), nil
 }
 
 func (s *int2Serializer) SerializeValue(value any) (column2.DataToSave, error) {
@@ -98,7 +98,7 @@ func (s *int2Serializer) SerializeValue(value any) (column2.DataToSave, error) {
 	case int16:
 		asBytes := make([]byte, 0, 2)
 		binary.LittleEndian.PutUint16(asBytes, uint16(data))
-		return column2.NewDataToSave(asBytes, column2.Tuple), nil
+		return column2.NewDataToSave(asBytes, column2.StoreInTuple), nil
 	}
 
 	return nil, errors.New("value argument is not pointer to int16 type")

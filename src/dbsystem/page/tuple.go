@@ -9,14 +9,7 @@ import (
 
 type Tuple struct {
 	data []byte
-	//CreatedByTx      uint32
-	//ModifiedByTx     uint32
-	//TxCommandCounter uint32
-	//Id               Id
-	//
-	//nullBitmap uint16
-	//
-	//columns []Column
+
 	table table.Definition
 }
 

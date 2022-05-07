@@ -71,7 +71,7 @@ func (d *dataToSave) StorePlace() DataStoragePlace {
 type DataStoragePlace = uint8
 
 const (
-	Tuple DataStoragePlace = iota
-	Background
-	Lob
+	StoreInTuple DataStoragePlace = iota
+	StoreInBackground
+	StoreInLob
 )

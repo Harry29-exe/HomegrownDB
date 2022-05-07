@@ -14,7 +14,9 @@ type Definition interface {
 	// from provided byte slice
 	Deserialize(tableDef []byte)
 	NullBitmapLen() uint16
+	ColumnCount() uint16
 
+	ColumnName(columnId column.OrderId) string
 	ColumnId(name string) column.OrderId
 	ColumnsIds(names []string) []column.OrderId
 
@@ -34,7 +36,8 @@ func NewDefinition(name string, tableId Id, objId uint64) Definition {
 		tableId:      tableId,
 		objectId:     objId,
 		colNameIdMap: map[string]column.OrderId{},
-		columns:      map[column.OrderId]column.Definition{},
+		columnsNames: []string{},
+		columns:      []column.Definition{},
 		columnsCount: 0,
 		name:         name,
 	}

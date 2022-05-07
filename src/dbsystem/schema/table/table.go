@@ -11,7 +11,8 @@ type table struct {
 	objectId     uint64
 	tableId      Id
 	colNameIdMap map[string]column.OrderId
-	columns      map[column.OrderId]column.Definition
+	columnsNames []string
+	columns      []column.Definition
 	columnsCount uint16
 	name         string
 }
@@ -54,6 +55,14 @@ func (t *table) Deserialize(tableDef []byte) {
 // NullBitmapLen returns number of bytes in tuple that constitute null bitmap
 func (t *table) NullBitmapLen() uint16 {
 	return t.columnsCount / 8
+}
+
+func (t *table) ColumnCount() uint16 {
+	return t.columnsCount
+}
+
+func (t *table) ColumnName(columnId column.OrderId) string {
+	return t.columnsNames[columnId]
 }
 
 func (t *table) ColumnId(name string) column.OrderId {
@@ -123,15 +132,16 @@ func (t *table) RemoveColumn(name string) error {
 	}
 	t.colNameIdMap = newNameColIdMap
 
-	newColumnMap := map[column.OrderId]column.Definition{}
-	for colId, col := range t.columns {
-		if colId < colToRemoveId {
-			newColumnMap[colId] = col
-		} else if colId > colToRemoveId {
-			newColumnMap[colId-1] = col
-		}
-	}
-	t.columns = newColumnMap
+	newColumnNames := make([]string, t.columnsCount-1)
+	copy(newColumnNames[0:colToRemoveId], t.columnsNames[0:colToRemoveId])
+	copy(newColumnNames[colToRemoveId:], t.columnsNames[colToRemoveId+1:])
+	t.columnsNames = newColumnNames
+
+	newColumns := make([]column.Definition, t.columnsCount-1)
+	copy(newColumns[0:colToRemoveId], t.columns[0:colToRemoveId])
+	copy(newColumns[colToRemoveId:], t.columns[colToRemoveId+1:])
+	t.columns = newColumns
 	t.columnsCount--
+
 	return nil
 }
