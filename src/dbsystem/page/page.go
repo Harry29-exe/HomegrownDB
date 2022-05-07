@@ -1,5 +1,9 @@
 package page
 
+// For better understanding of struct Page
+// it's recommended to view page.doc.svg diagram
+// which shows how page's binary representations looks like
+
 import (
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/io/bparse"
@@ -101,9 +105,19 @@ func (p Page) InsertTuple(tuple []byte) error {
 	return nil
 }
 
-func (p Page) UpdateTuple(tIndex TupleIndex, tuple []byte) {
-	//todo
+func (p Page) UpdateTuple(tIndex TupleIndex, newTuple []byte) {
+	if tIndex <= p.TupleCount() {
+		panic(fmt.Sprintf("page does not contains tuple with index %d", tIndex))
+	}
 
+	tuplePtr := p.tuplePtr(tIndex)
+	prevTuplePtr := p.tuplePtr(tIndex - 1)
+	tuple := p.page[tuplePtr:prevTuplePtr]
+	if len(tuple) != len(newTuple) {
+		panic("When updating tuple it's len must me identical")
+	}
+
+	copy(tuple, newTuple)
 }
 
 func (p Page) lastTuplePtr() InPagePointer {
