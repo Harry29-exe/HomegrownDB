@@ -14,7 +14,6 @@ import (
 )
 
 //todo add handling for inserting into empty page
-const Size uint16 = 8192
 
 func CreateEmptyPage(tableDef table.Definition) Page {
 	rawPage := make([]byte, Size)
@@ -38,7 +37,6 @@ type Page struct {
 	page  []byte
 }
 
-type Id = uint32
 type Tag struct {
 	PageId  Id
 	TableId table.Id

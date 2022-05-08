@@ -13,7 +13,7 @@ type Definition interface {
 	// Deserialize overrides all table info with deserialized data
 	// from provided byte slice
 	Deserialize(tableDef []byte)
-	NullBitmapLen() uint16
+	BitmapLen() uint16
 	ColumnCount() uint16
 
 	ColumnName(columnId column.OrderId) string

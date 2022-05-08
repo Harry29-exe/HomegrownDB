@@ -13,3 +13,9 @@ type WPage interface {
 	UpdateTuple(tIndex TupleIndex, tuple []byte)
 	DeleteTuple(tIndex TupleIndex)
 }
+
+type Id = uint32
+
+const IdSize = 4
+
+const Size uint16 = 8192

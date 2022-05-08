@@ -25,7 +25,7 @@ func (tc tupleCreator) CreateTuple(tableDef table.Definition, columnValues map[s
 	}
 
 	//initialize bitmap
-	bitmapLen := tableDef.NullBitmapLen()
+	bitmapLen := tableDef.BitmapLen()
 	nullBitmap := make([]byte, bitmapLen)
 	colCounter := 0
 	for currentByte := uint16(0); currentByte < bitmapLen; currentByte++ {
@@ -71,7 +71,7 @@ func (tc tupleCreator) CreateTuple(tableDef table.Definition, columnValues map[s
 		}
 	}
 
-	//todo add created_by_tx created/updated by txid amout of command executed
+	// todo add created_by_tx created/updated by txid amout of command executed
 	// and columns
 	panic("not implemented")
 }

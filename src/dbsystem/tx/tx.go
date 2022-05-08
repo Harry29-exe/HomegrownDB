@@ -6,7 +6,13 @@ type Tx struct {
 	Status Status
 }
 
-type Id = uint32
+type Id = int32
+type Counter = uint16
+
+const (
+	IdSize             = 4
+	CommandCounterSize = 2
+)
 
 type IsolationLevel = uint8
 

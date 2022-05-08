@@ -53,7 +53,7 @@ func (t *table) Deserialize(tableDef []byte) {
 }
 
 // NullBitmapLen returns number of bytes in tuple that constitute null bitmap
-func (t *table) NullBitmapLen() uint16 {
+func (t *table) BitmapLen() uint16 {
 	return t.columnsCount / 8
 }
 
