@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/backend/tokenizer/token"
 )
 
-var Field fieldParser = fieldParser{}
+var Field = fieldParser{}
 
 type fieldParser struct {
 	helpers.ParserHelper

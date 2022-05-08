@@ -1,6 +1,6 @@
 package bparse
 
-var Bit bitUtils = bitUtils{}
+var Bit = bitUtils{}
 
 type bitUtils struct{}
 

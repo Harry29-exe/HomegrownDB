@@ -6,7 +6,7 @@ const dbHomeVarName = "HOMEGROWN_DB_HOME"
 const TableDirname = "tables"
 const TableInfoFilename = "info"
 
-var dbHomePath string = ""
+var dbHomePath = ""
 
 //readDBHome()
 

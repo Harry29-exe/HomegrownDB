@@ -37,6 +37,6 @@ func TestPage_Tuple(t *testing.T) {
 
 }
 
-var pUtils pageUtils = pageUtils{}
+var pUtils = pageUtils{}
 
 type pageUtils struct{}

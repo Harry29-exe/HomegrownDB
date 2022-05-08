@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/backend/tokenizer/token"
 )
 
-var Select selectParser = selectParser{}
+var Select = selectParser{}
 
 type selectParser struct {
 	helpers.ParserHelper

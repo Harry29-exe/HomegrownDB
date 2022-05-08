@@ -48,7 +48,7 @@ func (t Tuple) TID() TID {
 }
 
 func (t Tuple) IsNull(id column.OrderId) bool {
-	var byteNumber uint16 = id / 8
+	var byteNumber = id / 8
 	value := t.data[toNullBitmap+byteNumber]
 	divRest := id % 8
 	return value&nullBitmapMasks[divRest] > 0

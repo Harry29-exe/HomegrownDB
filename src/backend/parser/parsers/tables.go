@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/backend/tokenizer/token"
 )
 
-var Tables tablesParser = tablesParser{}
+var Tables = tablesParser{}
 
 type tablesParser struct {
 	helpers.ParserHelper

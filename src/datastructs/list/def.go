@@ -1,9 +1,5 @@
 package list
 
-import (
-//. "HomegrownDB/datastructs/collection"
-)
-
 //type List[T any] interface {
 //	Collection[T]
 //	GetAt(index Number) T

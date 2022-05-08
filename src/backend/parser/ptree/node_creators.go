@@ -9,7 +9,7 @@ func NewSelectNode() Node {
 	}
 }
 
-var acceptedBySelectNode AcceptedNodes = []NodeType{Fields, From, Where}
+var acceptedBySelectNode = []NodeType{Fields, From, Where}
 
 func NewFromNode() Node {
 	return &basicNode{
@@ -20,7 +20,7 @@ func NewFromNode() Node {
 	}
 }
 
-var acceptedByFromNode AcceptedNodes = []NodeType{Table}
+var acceptedByFromNode = []NodeType{Table}
 
 func NewFieldsNode() Node {
 	return &basicNode{
@@ -31,7 +31,7 @@ func NewFieldsNode() Node {
 	}
 }
 
-var acceptedByFieldsNode AcceptedNodes = []NodeType{Field}
+var acceptedByFieldsNode = []NodeType{Field}
 
 func NewFieldNode(value FieldNodeValue) Node {
 	return &leafNode{
