@@ -2,6 +2,7 @@ package page_test
 
 import (
 	"HomegrownDB/dbsystem/page"
+	"HomegrownDB/dbsystem/schema/column/factory"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/testutils"
 	"fmt"
@@ -40,3 +41,8 @@ func TestPage_Tuple(t *testing.T) {
 var pUtils = pageUtils{}
 
 type pageUtils struct{}
+
+func (u pageUtils) testTable() *table.Definition {
+	def := table.NewDefinition("test_table", 12, 20)
+	def.AddColumn(factory.CreateDefinition())
+}

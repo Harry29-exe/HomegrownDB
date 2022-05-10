@@ -1,16 +1,16 @@
 package types
 
 import (
-	column2 "HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/io/bparse"
 	"bytes"
 	"encoding/binary"
 	"errors"
 )
 
-const Int2 column2.Type = "Int2"
+const Int2 column.Type = "Int2"
 
-func NewInt2Column(args column2.Args) *Int2Column {
+func NewInt2Column(args column.Args) *Int2Column {
 	name, err := args.Name()
 	if err != nil {
 		panic("No column name")
@@ -41,11 +41,11 @@ func (c *Int2Column) Nullable() bool {
 	return c.nullable
 }
 
-func (c *Int2Column) DataParser() column2.DataParser {
+func (c *Int2Column) DataParser() column.DataParser {
 	return c.parser
 }
 
-func (c *Int2Column) DataSerializer() column2.DataSerializer {
+func (c *Int2Column) DataSerializer() column.DataSerializer {
 	return c.serializer
 }
 
@@ -78,7 +78,7 @@ func (i *int2Parser) Skip(data []byte) []byte {
 	return data[:2]
 }
 
-func (i *int2Parser) Parse(data []byte) (column2.Value, []byte) {
+func (i *int2Parser) Parse(data []byte) (column.Value, []byte) {
 	v, next := bparse.Deserialize.Int2(data)
 	value := NewInt2Value(&v)
 
@@ -89,16 +89,16 @@ type int2Serializer struct {
 	columnIsNullable bool
 }
 
-func (s *int2Serializer) Serialize(data []byte) (column2.DataToSave, error) {
-	return column2.NewDataToSave(data, column2.StoreInTuple), nil
+func (s *int2Serializer) Serialize(data []byte) (column.DataToSave, error) {
+	return column.NewDataToSave(data, column.StoreInTuple), nil
 }
 
-func (s *int2Serializer) SerializeValue(value any) (column2.DataToSave, error) {
+func (s *int2Serializer) SerializeValue(value any) (column.DataToSave, error) {
 	switch data := value.(type) {
 	case int16:
 		asBytes := make([]byte, 0, 2)
 		binary.LittleEndian.PutUint16(asBytes, uint16(data))
-		return column2.NewDataToSave(asBytes, column2.StoreInTuple), nil
+		return column.NewDataToSave(asBytes, column.StoreInTuple), nil
 	}
 
 	return nil, errors.New("value argument is not pointer to int16 type")
