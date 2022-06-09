@@ -12,12 +12,6 @@ var Buffer = &buffer{
 
 const bufferSize = 10_000
 
-type buffer struct {
-	pageIdBufferId  map[Tag]BufferId
-	descriptorArray []bufferDescriptor
-	pageBufferArray []byte
-}
-
 type BufferId = uint64
 
 type bufferDescriptor struct {
