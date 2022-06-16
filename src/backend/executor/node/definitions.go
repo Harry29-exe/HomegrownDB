@@ -1,10 +1,10 @@
 package node
 
 import (
-	"HomegrownDB/dbsystem/page"
+	"HomegrownDB/dbsystem/buffer"
 )
 
 type Node interface {
 	HasNext() bool
-	Next() page.Tuple
+	Next() buffer.Tuple
 }

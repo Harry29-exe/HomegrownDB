@@ -1,4 +1,4 @@
-package page
+package buffer
 
 // For better understanding of struct Page
 // it's recommended to view page.doc.svg diagram
@@ -37,8 +37,8 @@ type Page struct {
 	page  []byte
 }
 
-type Tag struct {
-	PageId  Id
+type PageTag struct {
+	PageId  PageId
 	TableId table.Id
 }
 
@@ -75,8 +75,8 @@ func (p Page) FreeSpace() uint16 {
 	return lastTuplePtr - (lastTuplePtrPtr + InPagePointerSize - 1)
 }
 
-func (p Page) InsertTuple(tuple []byte) error {
-	tupleLen := uint16(len(tuple))
+func (p Page) InsertTuple(tuple Tuple) error {
+	tupleLen := uint16(len(tuple.data))
 
 	if tupleLen+InPagePointerSize > p.FreeSpace() {
 		return errors.New(fmt.Sprintf("cannot fit tuple of size: %d to page with free space: %d",
@@ -86,10 +86,10 @@ func (p Page) InsertTuple(tuple []byte) error {
 	// copy tuple
 	lastTuplePtr := p.lastTuplePtr()
 	newTuplePtr := lastTuplePtr - tupleLen
-	copy(p.page[newTuplePtr:lastTuplePtr], tuple)
+	copy(p.page[newTuplePtr:lastTuplePtr], tuple.data)
 
 	// create new tuple pointer
-	tupleLenBytes := make([]byte, 0, 2)
+	tupleLenBytes := make([]byte, 2)
 	binary.LittleEndian.PutUint16(tupleLenBytes, tupleLen)
 
 	lastTuplePtrPtr := p.ptrToLastTuplePtr()

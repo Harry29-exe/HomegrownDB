@@ -1,4 +1,4 @@
-package page
+package buffer
 
 type RPage interface {
 	Tuple(tupleIndex uint16) Tuple
@@ -14,7 +14,7 @@ type WPage interface {
 	DeleteTuple(tIndex TupleIndex)
 }
 
-type Id = uint32
+type PageId = uint32
 
 const IdSize = 4
 

@@ -1,11 +1,11 @@
-package page
+package buffer
 
 import (
 	"sync"
 )
 
 var Buffer = &buffer{
-	pageIdBufferId:  map[Tag]BufferId{},
+	pageIdBufferId:  map[PageTag]BufferId{},
 	descriptorArray: make([]bufferDescriptor, 0, bufferSize),
 	pageBufferArray: make([]byte, 0, int64(Size)*bufferSize),
 }

@@ -1,4 +1,4 @@
-package page
+package buffer
 
 import (
 	"HomegrownDB/dbsystem"
@@ -9,16 +9,16 @@ import (
 	"bytes"
 )
 
-var TupleCreator = tupleCreator{}
+var TupleBuilder = tupleBuilder{}
 
-type tupleCreator struct{}
+type tupleBuilder struct{}
 
-// CreateTuple creates new TupleToSave from given columnValues and transaction context,
+// Create creates new TupleToSave from given columnValues and transaction context,
 // Tuple inside is not initialized i.e. it does not have TID (tuple identifier) and ids of
 // objects stored outside tuple should be saved to Tuple
-func (tc tupleCreator) CreateTuple(tableDef table.Definition, columnValues map[string]any, txContext tx.Context) (TupleToSave, error) {
+func (tb tupleBuilder) Create(tableDef table.Definition, columnValues map[string]any, txContext tx.Context) (TupleToSave, error) {
 
-	sortedValues := make([]any, 0, tableDef.ColumnCount())
+	sortedValues := make([]any, tableDef.ColumnCount())
 
 	for i := uint16(0); i < tableDef.ColumnCount(); i++ {
 		sortedValues[i] = columnValues[tableDef.ColumnName(i)]
@@ -76,7 +76,7 @@ func (tc tupleCreator) CreateTuple(tableDef table.Definition, columnValues map[s
 	panic("not implemented")
 }
 
-func (tc tupleCreator) name() {
+func (tb tupleBuilder) name() {
 
 }
 

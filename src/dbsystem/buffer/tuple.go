@@ -1,4 +1,4 @@
-package page
+package buffer
 
 import (
 	"HomegrownDB/dbsystem/schema/column"
@@ -16,7 +16,7 @@ type Tuple struct {
 
 // TID tuple id composed of Id and InPage
 type TID struct {
-	PageId     Id
+	PageId     PageId
 	TupleIndex TupleIndex
 }
 
@@ -25,6 +25,10 @@ type TupleIndex = uint16
 const TupleIndexSize = 2
 
 type InTuplePtr = uint16
+
+func (t Tuple) Data() []byte {
+	return t.data
+}
 
 func (t Tuple) CreatedByTx() tx.Id {
 	return tx.Id(bparse.Parse.UInt4(t.data[toTxId:]))

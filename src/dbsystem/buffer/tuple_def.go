@@ -1,4 +1,4 @@
-package page
+package buffer
 
 import (
 	"HomegrownDB/dbsystem/schema/column"
