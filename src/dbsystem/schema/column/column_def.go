@@ -32,12 +32,12 @@ type DataParser interface {
 // or data processed by internal functions, it's usually obtained from
 // column.Definition
 type DataSerializer interface {
-	// Serialize takes Data for serialization and returns DataToSave,
-	// if error occurred it returns nil, error
-	Serialize(data []byte) (DataToSave, error)
 	// SerializeValue takes value check if it's of supported type for serialization and
 	// returns DataToSave, if error occurred it returns nil, error
 	SerializeValue(value any) (DataToSave, error)
+	// SerializeInput takes string and attempt to convert it into adequate data type,
+	// so it can be serialized
+	SerializeInput(value string) (DataToSave, error)
 }
 
 // DataToSave data created by DataSerializer, contains data
@@ -53,6 +53,18 @@ func NewDataToSave(data []byte, storePlace DataStoragePlace) DataToSave {
 		data:       data,
 		storePlace: storePlace,
 	}
+}
+
+func NewDataToSaveInTuple(data []byte) DataToSave {
+	return &dataToSave{data, StoreInTuple}
+}
+
+func NewDataToSaveInLob(data []byte) DataToSave {
+	return &dataToSave{data, StoreInLob}
+}
+
+func NewDataToSaveInBackground(data []byte) DataToSave {
+	return &dataToSave{data, StoreInBackground}
 }
 
 type dataToSave struct {

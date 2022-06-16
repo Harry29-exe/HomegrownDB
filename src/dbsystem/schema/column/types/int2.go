@@ -6,6 +6,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"fmt"
+	"math"
+	"strconv"
 )
 
 const Int2 column.Type = "Int2"
@@ -89,19 +92,30 @@ type int2Serializer struct {
 	columnIsNullable bool
 }
 
-func (s *int2Serializer) Serialize(data []byte) (column.DataToSave, error) {
-	return column.NewDataToSave(data, column.StoreInTuple), nil
-}
-
 func (s *int2Serializer) SerializeValue(value any) (column.DataToSave, error) {
 	switch data := value.(type) {
+	case int:
+		if data < math.MaxInt16 {
+			return column.NewDataToSaveInTuple(bparse.Serialize.Int2(int16(data))), nil
+		} else {
+			return nil, errors.New(fmt.Sprintf(
+				"can save integer %d bigger that %d as int2", data, math.MaxInt16))
+		}
 	case int16:
-		asBytes := make([]byte, 0, 2)
-		binary.LittleEndian.PutUint16(asBytes, uint16(data))
-		return column.NewDataToSave(asBytes, column.StoreInTuple), nil
+		return column.NewDataToSaveInTuple(bparse.Serialize.Int2(data)), nil
 	}
 
-	return nil, errors.New("value argument is not pointer to int16 type")
+	return nil, errors.New(fmt.Sprintf(
+		"value: %+v, is nor int nor int16 type", value))
+}
+
+func (s *int2Serializer) SerializeInput(value string) (column.DataToSave, error) {
+	v, err := strconv.Atoi(value)
+	if err != nil {
+		return nil, err
+	}
+
+	return column.NewDataToSave(bparse.Serialize.Uint2(uint16(v)), column.StoreInTuple), nil
 }
 
 type int2Value struct {

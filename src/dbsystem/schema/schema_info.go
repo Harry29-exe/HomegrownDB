@@ -13,9 +13,9 @@ type tables struct {
 	definitions table.Definition
 }
 
-func (t tables) Definition(name string) table.Definition {
-
-}
+//func (t tables) Definition(name string) table.Definition {
+//
+//}
 
 func initTables() *tables {
 	//todo implement reading files

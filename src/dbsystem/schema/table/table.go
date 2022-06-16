@@ -109,8 +109,9 @@ func (t *table) AddColumn(definition column.Definition) error {
 	if ok {
 		return errors.New("table already contains column with name:" + definition.Name())
 	}
-	t.columns[t.columnsCount] = definition
+	t.columns = append(t.columns, definition)
 	t.colNameIdMap[definition.Name()] = t.columnsCount
+	t.columnsNames = append(t.columnsNames, definition.Name())
 	t.columnsCount++
 
 	return nil
