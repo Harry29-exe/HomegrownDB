@@ -1,8 +1,8 @@
 package types
 
 import (
+	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/io/bparse"
 	"bytes"
 	"encoding/binary"
 	"errors"
@@ -29,6 +29,7 @@ func NewInt2Column(args column.Args) *Int2Column {
 }
 
 type Int2Column struct {
+	prototype
 	name     string
 	nullable bool
 

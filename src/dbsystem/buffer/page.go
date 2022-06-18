@@ -16,7 +16,7 @@ import (
 //todo add handling for inserting into empty page
 
 func CreateEmptyPage(tableDef table.Definition) Page {
-	rawPage := make([]byte, Size)
+	rawPage := make([]byte, PageSize)
 	uint16Zero := make([]byte, 2)
 	binary.LittleEndian.PutUint16(uint16Zero, 0)
 
@@ -132,7 +132,7 @@ func (p Page) lastTuplePtr() InPagePointer {
 func (p Page) tupleEnd(index TupleIndex) InPagePointer {
 	tuplePtr := p.tuplePtr(index)
 	if tuplePtr == p.lastTuplePtr() {
-		return Size
+		return PageSize
 	}
 
 	prevTuplePtr := p.tuplePtr(index - 1)

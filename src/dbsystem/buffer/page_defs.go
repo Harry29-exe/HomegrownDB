@@ -16,6 +16,6 @@ type WPage interface {
 
 type PageId = uint32
 
-const IdSize = 4
+const PageIdSize = 4
 
-const Size uint16 = 8192
+const PageSize uint16 = 8192

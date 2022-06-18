@@ -104,6 +104,15 @@ func (t *table) ColumnSerializers(ids []column.OrderId) []column.DataSerializer 
 	return serializers
 }
 
+func (t *table) AllColumnSerializer() []column.DataSerializer {
+	serializers := make([]column.DataSerializer, t.columnsCount)
+	for i := 0; i < int(t.columnsCount); i++ {
+		serializers[i] = t.columns[i].DataSerializer()
+	}
+
+	return serializers
+}
+
 func (t *table) AddColumn(definition column.Definition) error {
 	_, ok := t.colNameIdMap[definition.Name()]
 	if ok {

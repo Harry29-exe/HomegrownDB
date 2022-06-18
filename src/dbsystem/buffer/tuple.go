@@ -109,11 +109,11 @@ func (t Tuple) txCommandCounterSlice() []byte {
 }
 
 func (t Tuple) tidSlice() []byte {
-	return t.data[toPageId : toPageId+IdSize+TupleIndexSize]
+	return t.data[toPageId : toPageId+PageIdSize+TupleIndexSize]
 }
 
 func (t Tuple) tidPageIdSlice() []byte {
-	return t.data[toPageId : toPageId+IdSize]
+	return t.data[toPageId : toPageId+PageIdSize]
 }
 
 func (t Tuple) tidTupleIndexSlice() []byte {

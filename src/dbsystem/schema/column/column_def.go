@@ -1,11 +1,13 @@
 package column
 
 type Type = string
+type Id = uint16
 
 // Definition describes column properties and provides parser and serializer
 type Definition interface {
 	Name() string
 	Nullable() bool
+	GetColumnId() Id
 
 	DataParser() DataParser
 	DataSerializer() DataSerializer
@@ -16,6 +18,11 @@ type Definition interface {
 	// Deserialize takes the same Data that Serialize returned
 	// and set this column definitions to match given Data
 	Deserialize(data []byte) (subsequent []byte)
+}
+
+type ModifiableDefinition interface {
+	Definition
+	SetColumnId(id Id)
 }
 
 // OrderId describes order of column in table
@@ -44,6 +51,7 @@ type DataSerializer interface {
 // that should be saved to disc and information where exactly
 // on disc data should be saved
 type DataToSave interface {
+	DataInTuple() []byte
 	Data() []byte
 	StorePlace() DataStoragePlace
 }
@@ -56,27 +64,32 @@ func NewDataToSave(data []byte, storePlace DataStoragePlace) DataToSave {
 }
 
 func NewDataToSaveInTuple(data []byte) DataToSave {
-	return &dataToSave{data, StoreInTuple}
+	return dataToSave{data, nil, StoreInTuple}
 }
 
-func NewDataToSaveInLob(data []byte) DataToSave {
-	return &dataToSave{data, StoreInLob}
+func NewDataToSaveInLob(descriptorInTuple, data []byte) DataToSave {
+	return dataToSave{descriptorInTuple, data, StoreInLob}
 }
 
-func NewDataToSaveInBackground(data []byte) DataToSave {
-	return &dataToSave{data, StoreInBackground}
+func NewDataToSaveInBackground(descriptorInTuple, data []byte) DataToSave {
+	return dataToSave{descriptorInTuple, data, StoreInBackground}
 }
 
 type dataToSave struct {
-	data       []byte
-	storePlace DataStoragePlace
+	dataInTuple []byte
+	data        []byte
+	storePlace  DataStoragePlace
 }
 
-func (d *dataToSave) Data() []byte {
-	return d.data
+func (d dataToSave) DataInTuple() []byte {
+	return d.dataInTuple
 }
 
-func (d *dataToSave) StorePlace() DataStoragePlace {
+func (d dataToSave) Data() []byte {
+	return d.dataInTuple
+}
+
+func (d dataToSave) StorePlace() DataStoragePlace {
 	return d.storePlace
 }
 

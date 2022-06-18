@@ -25,10 +25,22 @@ type WTuple interface {
 type TupleOffset = uint16
 
 const (
-	toTxId         TupleOffset = 0                  // offset to created by tx_id field
-	toModifiedTxId             = 4 + toTxId         // offset to created/modified by tx_id field
-	toTxCounter                = 4 + toModifiedTxId // offset to amount of command executed by TxId
-	toPageId                   = 2 + toTxCounter    //offset to pageId where next version of this tuple can be found
-	toTupleIndex               = 4 + toPageId       // offset to line number of next version of this tuple
-	toNullBitmap               = toTupleIndex + 2   // offset to start of null bitmap
+	sizeOfTxId         = tx.IdSize
+	sizeOfModifiedTxId = tx.IdSize
+	sizeOfTxCounter    = tx.CommandCounterSize
+	sizeOfPageId       = PageSize
+	sizeOfTupleIndex   = TupleIndexSize
+)
+
+const (
+	toTxId         TupleOffset = 0                                   // offset to created by tx_id field
+	toModifiedTxId             = sizeOfTxId + toTxId                 // offset to created/modified by tx_id field
+	toTxCounter                = sizeOfModifiedTxId + toModifiedTxId // offset to amount of command executed by TxId
+	toPageId                   = sizeOfTxCounter + toTxCounter       // offset to pageId where next version of this tuple can be found
+	toTupleIndex               = sizeOfPageId + toPageId             // offset to line number of next version of this tuple
+	toNullBitmap               = sizeOfTupleIndex + toTupleIndex     // offset to start of null bitmap
+)
+
+const (
+	tupleHeaderSize = toNullBitmap // size in bytes of tuple header data
 )
