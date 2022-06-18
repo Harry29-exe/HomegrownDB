@@ -1,6 +1,10 @@
 package dbsystem
 
-import "os"
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+)
 
 const dbHomeVarName = "HOMEGROWN_DB_HOME"
 const TableDirname = "tables"
@@ -8,7 +12,18 @@ const TableInfoFilename = "info"
 
 var dbHomePath = ""
 
-//readDBHome()
+var DBProperties = dbProperties{}
+
+type dbProperties struct{}
+
+func init() {
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exPath := filepath.Dir(ex)
+	fmt.Println(exPath)
+}
 
 func GetDBHomePath() string {
 	return dbHomePath

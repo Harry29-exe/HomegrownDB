@@ -16,34 +16,6 @@ func CreateTuple(tableDef table.Definition, columnValues map[string]any, txCtx t
 	return builder.Create(tableDef, columnValues, txCtx)
 }
 
-type TupleToSave struct {
-	Tuple           Tuple
-	BgValuesToSave  []BgValueToSave
-	LobValuesToSave []LobValueToSave
-}
-
-// BgValueToSave value to save in background table see documentation/storage_types.svg
-type BgValueToSave struct {
-	Value      []byte
-
-}
-
-type LobValueToSave struct {
-	Value      []byte
-	PtrInTuple InTuplePtr // PtrInTuple ptr to place in tuple where should be putted id to lob
-}
-
-type tupleBuilder struct {
-	table        table.Definition
-	sortedValues []any
-
-	buffer    bytes.Buffer
-	bufferPtr InTuplePtr
-
-	lobs     [][]byte
-	bgValues [][]byte
-}
-
 func (tb tupleBuilder) Create(tableDef table.Definition, columnValues map[string]any, txContext tx.Context) (TupleToSave, error) {
 	tb.sortMapValues(tableDef, columnValues)
 	tb.initTupleBuffer()
