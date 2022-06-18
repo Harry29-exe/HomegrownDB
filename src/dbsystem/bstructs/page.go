@@ -1,12 +1,12 @@
-package buffer
+package bstructs
 
 // For better understanding of struct Page
 // it's recommended to view page.doc.svg diagram
 // which shows how page's binary representations looks like
 
 import (
+	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/io/bparse"
 	"crypto/md5"
 	"encoding/binary"
 	"errors"

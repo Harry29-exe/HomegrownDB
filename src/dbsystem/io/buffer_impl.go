@@ -1,4 +1,4 @@
-package buffer
+package io
 
 type buffer struct {
 	pageIdBufferId  map[PageTag]BufferId

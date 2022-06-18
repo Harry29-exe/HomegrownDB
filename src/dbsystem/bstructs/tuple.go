@@ -1,10 +1,10 @@
-package buffer
+package bstructs
 
 import (
+	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
-	"HomegrownDB/io/bparse"
 	"encoding/binary"
 )
 

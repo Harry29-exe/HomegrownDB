@@ -1,10 +1,10 @@
 package node
 
 import (
-	"HomegrownDB/dbsystem/buffer"
+	"HomegrownDB/dbsystem/bstructs"
 )
 
 type Node interface {
 	HasNext() bool
-	Next() buffer.Tuple
+	Next() bstructs.Tuple
 }

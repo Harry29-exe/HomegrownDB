@@ -1,9 +1,9 @@
 package table
 
 import (
+	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/factory"
-	"HomegrownDB/io/bparse"
 	"errors"
 )
 

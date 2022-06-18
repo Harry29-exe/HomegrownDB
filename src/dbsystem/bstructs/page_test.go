@@ -1,7 +1,7 @@
-package buffer_test
+package bstructs_test
 
 import (
-	"HomegrownDB/dbsystem/buffer"
+	"HomegrownDB/dbsystem/bstructs"
 	"HomegrownDB/dbsystem/schema/column/factory"
 	"HomegrownDB/dbsystem/schema/column/types"
 	"HomegrownDB/dbsystem/schema/table"
@@ -15,7 +15,7 @@ func TestCreateEmptyPage(t *testing.T) {
 	tableDef := table.NewDefinition(
 		"test_table", 0, 0)
 
-	newPage := buffer.CreateEmptyPage(tableDef)
+	newPage := bstructs.CreateEmptyPage(tableDef)
 
 	if newPage.TupleCount() != 0 {
 		errMsg := fmt.Sprintf("new page has tuple count different than 0,\n page: %#v", newPage)
@@ -37,10 +37,10 @@ func TestCreateEmptyPage(t *testing.T) {
 
 func TestPage_Tuple(t *testing.T) {
 	table := pUtils.testTable()
-	page := buffer.CreateEmptyPage(table)
+	page := bstructs.CreateEmptyPage(table)
 
 	txCtx1 := tx.NewContext(1)
-	tupleToSave, err := buffer.TupleBuilder.Create(table, pUtils.colValues1(), txCtx1)
+	tupleToSave, err := bstructs.TupleBuilder.Create(table, pUtils.colValues1(), txCtx1)
 	if err != nil {
 		t.Error(err.Error())
 	}
