@@ -1,9 +1,9 @@
 package factory
 
 import (
+	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/types"
-	"HomegrownDB/io/bparse"
 )
 
 func DeserializeColumnDefinition(serializedData []byte) (col column.Definition, subsequent []byte) {

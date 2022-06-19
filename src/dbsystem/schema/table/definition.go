@@ -26,6 +26,7 @@ type Definition interface {
 	ColumnSerializers(ids []column.OrderId) []column.DataSerializer
 	AllColumnSerializer() []column.DataSerializer
 
+	GetColumn(index column.OrderId) column.ImmDefinition
 	AddColumn(definition column.Definition) error
 	RemoveColumn(name string) error
 }

@@ -1,9 +1,8 @@
 package bstructs
 
 import (
-	"HomegrownDB/dbsystem/io/bgtable"
-	"HomegrownDB/dbsystem/schema/table"
-	"bytes"
+	"HomegrownDB/dbsystem/io/lob"
+	"HomegrownDB/dbsystem/schema/column"
 )
 
 type TupleToSave struct {
@@ -14,21 +13,11 @@ type TupleToSave struct {
 
 // BgValueToSave value to save in background table see documentation/storage_types.svg
 type BgValueToSave struct {
-	Value []byte
-	BgId  bgtable.BgId
+	Value    []byte
+	ColumnId column.Id
 }
 
 type LobValueToSave struct {
 	Value []byte
-}
-
-type tupleBuilder struct {
-	table        table.Definition
-	sortedValues []any
-
-	buffer    bytes.Buffer
-	bufferPtr InTuplePtr
-
-	lobs     [][]byte
-	bgValues [][]byte
+	LobId lob.Id
 }

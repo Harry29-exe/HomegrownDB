@@ -2,10 +2,12 @@ package bstructs
 
 import (
 	"HomegrownDB/common/bparse"
+	"HomegrownDB/dbsystem/io/lob"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 	"bytes"
+	"fmt"
 )
 
 // CreateTuple creates new TupleToSave from given columnValues and transaction context,
@@ -13,16 +15,39 @@ import (
 // objects stored outside tuple should be saved to Tuple
 func CreateTuple(tableDef table.Definition, columnValues map[string]any, txCtx tx.Context) (TupleToSave, error) {
 	builder := tupleBuilder{}
-	return builder.Create(tableDef, columnValues, txCtx)
+	tuple, err := builder.Create(tableDef, columnValues, txCtx)
+	if err != nil {
+		return TupleToSave{}, err
+	}
+
+	return TupleToSave{
+		Tuple:           tuple,
+		BgValuesToSave:  builder.bgValues,
+		LobValuesToSave: builder.lobs,
+	}, nil
 }
 
-func (tb tupleBuilder) Create(tableDef table.Definition, columnValues map[string]any, txContext tx.Context) (TupleToSave, error) {
+type tupleBuilder struct {
+	table        table.Definition
+	sortedValues []any
+
+	buffer    bytes.Buffer
+	bufferPtr InTuplePtr
+
+	lobs     []LobValueToSave
+	bgValues []BgValueToSave
+}
+
+func (tb tupleBuilder) Create(tableDef table.Definition, columnValues map[string]any, txContext tx.Context) (Tuple, error) {
 	tb.sortMapValues(tableDef, columnValues)
 	tb.initTupleBuffer()
 	tb.createNullBitmap()
 	tb.bufferPtr = InTuplePtr(tb.buffer.Len())
 
-	tb.serializeColumnValues()
+	err := tb.serializeColumnValues()
+	if err != nil {
+		return Tuple{}, err
+	}
 
 	tuple := Tuple{
 		data:  tb.buffer.Bytes(),
@@ -30,10 +55,7 @@ func (tb tupleBuilder) Create(tableDef table.Definition, columnValues map[string
 	}
 	tb.initTupleWithTxContext(tuple, txContext)
 
-	return TupleToSave{
-		Tuple: tuple,
-		BgValuesToSave: tb.bgValues
-	}tuple, nil
+	return tuple, nil
 }
 
 func (tb tupleBuilder) sortMapValues(tableDef table.Definition, columnValues map[string]any) {
@@ -67,28 +89,38 @@ func (tb tupleBuilder) createNullBitmap() {
 	tb.buffer.Write(nullBitmap)
 }
 
-func (tb tupleBuilder) serializeColumnValues() {
-	serializers := tb.table.AllColumnSerializer()
+func (tb tupleBuilder) serializeColumnValues() error {
+	tableDef := tb.table
 	for i, value := range tb.sortedValues {
+		colDef := tableDef.GetColumn(uint16(i))
+
 		if value != nil {
-			tb.serializeValue(value, serializers[i])
-		} else {
-			tb.table.
+			serializer := colDef.DataSerializer()
+			data, err := serializer.SerializeValue(value)
+			if err != nil {
+				return err
+			}
+
+			tb.saveData(data, colDef)
+		} else if !colDef.Nullable() {
+			return fmt.Errorf("column %s is not nullable, so it can not accept null value",
+				colDef.Name())
+
 		}
 	}
+
+	return nil
 }
 
-func (tb tupleBuilder) serializeValue(value any, serializer column.DataSerializer) {
-	data, err := serializer.SerializeValue(value)
-	if err != nil {
-		panic(err.Error())
-	}
-
+func (tb tupleBuilder) saveData(data column.DataToSave, col column.ImmDefinition) {
 	tb.buffer.Write(data.DataInTuple())
 	if data.StorePlace() == column.StoreInBackground {
-		tb.bgValues = append(tb.bgValues, data.Data())
+		tb.bgValues = append(tb.bgValues,
+			BgValueToSave{data.Data(), col.GetColumnId()})
+
 	} else if data.StorePlace() == column.StoreInLob {
-		tb.lobs = append(tb.lobs, data.Data())
+		lobId := lob.IdCounter.NextId()
+		tb.lobs = append(tb.lobs, LobValueToSave{data.Data(), lobId})
 	}
 }
 

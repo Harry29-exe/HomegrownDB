@@ -52,7 +52,7 @@ func (t *table) Deserialize(tableDef []byte) {
 	}
 }
 
-// NullBitmapLen returns number of bytes in tuple that constitute null bitmap
+// BitmapLen returns number of bytes in tuple that constitute null bitmap
 func (t *table) BitmapLen() uint16 {
 	return t.columnsCount / 8
 }
@@ -111,6 +111,10 @@ func (t *table) AllColumnSerializer() []column.DataSerializer {
 	}
 
 	return serializers
+}
+
+func (t *table) GetColumn(index column.OrderId) column.ImmDefinition {
+	return t.columns[index]
 }
 
 func (t *table) AddColumn(definition column.Definition) error {
