@@ -14,8 +14,8 @@ import (
 // Tuple inside is not initialized i.e. it does not have TID (tuple identifier) and ids of
 // objects stored outside tuple should be saved to Tuple
 func CreateTuple(tableDef table.Definition, columnValues map[string]any, txCtx tx.Context) (TupleToSave, error) {
-	builder := tupleBuilder{}
-	tuple, err := builder.Create(tableDef, columnValues, txCtx)
+	builder := tupleBuilder{table: tableDef}
+	tuple, err := builder.Create(columnValues, txCtx)
 	if err != nil {
 		return TupleToSave{}, err
 	}
@@ -31,18 +31,16 @@ type tupleBuilder struct {
 	table        table.Definition
 	sortedValues []any
 
-	buffer    bytes.Buffer
-	bufferPtr InTuplePtr
+	buffer bytes.Buffer
 
 	lobs     []LobValueToSave
 	bgValues []BgValueToSave
 }
 
-func (tb tupleBuilder) Create(tableDef table.Definition, columnValues map[string]any, txContext tx.Context) (Tuple, error) {
-	tb.sortMapValues(tableDef, columnValues)
+func (tb *tupleBuilder) Create(columnValues map[string]any, txContext tx.Context) (Tuple, error) {
+	tb.sortMapValues(columnValues)
 	tb.initTupleBuffer()
 	tb.createNullBitmap()
-	tb.bufferPtr = InTuplePtr(tb.buffer.Len())
 
 	err := tb.serializeColumnValues()
 	if err != nil {
@@ -51,27 +49,27 @@ func (tb tupleBuilder) Create(tableDef table.Definition, columnValues map[string
 
 	tuple := Tuple{
 		data:  tb.buffer.Bytes(),
-		table: tableDef,
+		table: tb.table,
 	}
 	tb.initTupleWithTxContext(tuple, txContext)
 
 	return tuple, nil
 }
 
-func (tb tupleBuilder) sortMapValues(tableDef table.Definition, columnValues map[string]any) {
-	tb.sortedValues = make([]any, tableDef.ColumnCount())
+func (tb *tupleBuilder) sortMapValues(columnValues map[string]any) {
+	tb.sortedValues = make([]any, tb.table.ColumnCount())
 
-	for i := uint16(0); i < tableDef.ColumnCount(); i++ {
-		tb.sortedValues[i] = columnValues[tableDef.ColumnName(i)]
+	for i := uint16(0); i < tb.table.ColumnCount(); i++ {
+		tb.sortedValues[i] = columnValues[tb.table.ColumnName(i)]
 	}
 }
 
-func (tb tupleBuilder) initTupleBuffer() {
+func (tb *tupleBuilder) initTupleBuffer() {
 	tb.buffer = bytes.Buffer{}
 	tb.buffer.Write(make([]byte, tupleHeaderSize))
 }
 
-func (tb tupleBuilder) createNullBitmap() {
+func (tb *tupleBuilder) createNullBitmap() {
 	bitmapLen := tb.table.BitmapLen()
 	nullBitmap := make([]byte, bitmapLen)
 	colCounter := 0
@@ -89,7 +87,7 @@ func (tb tupleBuilder) createNullBitmap() {
 	tb.buffer.Write(nullBitmap)
 }
 
-func (tb tupleBuilder) serializeColumnValues() error {
+func (tb *tupleBuilder) serializeColumnValues() error {
 	tableDef := tb.table
 	for i, value := range tb.sortedValues {
 		colDef := tableDef.GetColumn(uint16(i))
@@ -112,7 +110,7 @@ func (tb tupleBuilder) serializeColumnValues() error {
 	return nil
 }
 
-func (tb tupleBuilder) saveData(data column.DataToSave, col column.ImmDefinition) {
+func (tb *tupleBuilder) saveData(data column.DataToSave, col column.ImmDefinition) {
 	tb.buffer.Write(data.DataInTuple())
 	if data.StorePlace() == column.StoreInBackground {
 		tb.bgValues = append(tb.bgValues,
@@ -124,7 +122,7 @@ func (tb tupleBuilder) saveData(data column.DataToSave, col column.ImmDefinition
 	}
 }
 
-func (tb tupleBuilder) initTupleWithTxContext(tuple Tuple, ctx tx.Context) {
+func (tb *tupleBuilder) initTupleWithTxContext(tuple Tuple, ctx tx.Context) {
 	tuple.SetCreatedByTx(ctx.TxId())
 	tuple.SetTxCommandCounter(ctx.CommandExecuted())
 }

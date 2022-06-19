@@ -40,7 +40,7 @@ func TestPage_Tuple(t *testing.T) {
 	page := bstructs.CreateEmptyPage(table)
 
 	txCtx1 := tx.NewContext(1)
-	tupleToSave, err := bstructs.TupleBuilder.Create(table, pUtils.colValues1(), txCtx1)
+	tupleToSave, err := bstructs.CreateTuple(table, pUtils.colValues1(), txCtx1)
 	if err != nil {
 		t.Error(err.Error())
 	}

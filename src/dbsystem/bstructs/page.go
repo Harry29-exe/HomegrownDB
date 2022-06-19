@@ -21,7 +21,7 @@ func CreateEmptyPage(tableDef table.Definition) Page {
 	binary.LittleEndian.PutUint16(uint16Zero, 0)
 
 	copy(rawPage[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
-	copy(rawPage[poPtrToLastTuple:poPtrToLastTuple+InPagePointerSize], uint16Zero)
+	copy(rawPage[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
 
 	page := Page{
 		table: tableDef,
@@ -57,22 +57,21 @@ func (p Page) Tuple(tIndex TupleIndex) Tuple {
 }
 
 func (p Page) TupleCount() uint16 {
-	lastPointer := p.lastTuplePtr()
-	if lastPointer == 0 {
+	lastPtrIndex := p.getLastPtrIndex()
+	if lastPtrIndex == 0 {
 		return 0
 	}
 
-	firstPointer := poPtrToFirstTuple
+	firstPtrIndex := poFirstTuplePtr
 
-	return (lastPointer-InPagePointer(firstPointer))/2 + 1
+	return (lastPtrIndex-InPagePointer(firstPtrIndex))/2 + 1
 }
 
 func (p Page) FreeSpace() uint16 {
-	lastTuplePtr := p.lastTuplePtr()
-	lastTuplePtrPtr := binary.LittleEndian.Uint16(
-		p.page[poPrtToLastTuplePtr : poPrtToLastTuplePtr+InPagePointerSize])
+	lastTupleStartIndex := p.getLastTupleStart()
+	lastTuplePointerStart := p.getLastPtrIndex()
 
-	return lastTuplePtr - (lastTuplePtrPtr + InPagePointerSize - 1)
+	return lastTupleStartIndex - (lastTuplePointerStart + InPagePointerSize - 1)
 }
 
 func (p Page) InsertTuple(tuple Tuple) error {
@@ -84,21 +83,22 @@ func (p Page) InsertTuple(tuple Tuple) error {
 	}
 
 	// copy tuple
-	lastTuplePtr := p.lastTuplePtr()
-	newTuplePtr := lastTuplePtr - tupleLen
-	copy(p.page[newTuplePtr:lastTuplePtr], tuple.data)
+	lastTupleStart := p.getLastTupleStart()
+	var tuplePtrIndex InPagePointer
 
-	// create new tuple pointer
-	tupleLenBytes := make([]byte, 2)
-	binary.LittleEndian.PutUint16(tupleLenBytes, tupleLen)
+	// empty page
+	if lastTupleStart == 0 {
+		lastTupleStart = PageSize
+		tuplePtrIndex = poFirstTuplePtr
+	} else {
+		tuplePtrIndex = p.getPtrToLastTuplePtr() + InPagePointerSize
+	}
 
-	lastTuplePtrPtr := p.ptrToLastTuplePtr()
-	newTuplePtrPtr := lastTuplePtrPtr + InPagePointerSize
-	copy(p.page[newTuplePtrPtr:newTuplePtrPtr+InPagePointerSize], tupleLenBytes)
-
-	// reassign last pointer pointer
-	copy(p.page[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize],
-		tupleLenBytes)
+	tupleStartIndex := lastTupleStart - tupleLen
+	copy(p.page[tupleStartIndex:lastTupleStart], tuple.data)
+	binary.LittleEndian.PutUint16(p.page[tuplePtrIndex:], tupleStartIndex)
+	p.setPtrToLastTupleStart(tupleStartIndex)
+	p.setPtrToLastTuplePtr(tuplePtrIndex)
 
 	return nil
 }
@@ -118,20 +118,19 @@ func (p Page) UpdateTuple(tIndex TupleIndex, newTuple []byte) {
 	copy(tuple, newTuple)
 }
 
-func (p Page) lastTuplePtr() InPagePointer {
-	pointerToLastPointer := bparse.Parse.UInt2(
-		p.page[poPrtToLastTuplePtr : poPrtToLastTuplePtr+InPagePointerSize])
+func (p Page) getLastTupleStart() InPagePointer {
+	pointerToLastPointer := bparse.Parse.UInt2(p.page[poPrtToLastTuplePtr:])
 
 	if pointerToLastPointer == 0 {
 		return 0
 	}
 
-	return bparse.Parse.UInt2(p.page[pointerToLastPointer:InPagePointerSize])
+	return bparse.Parse.UInt2(p.page[pointerToLastPointer:])
 }
 
 func (p Page) tupleEnd(index TupleIndex) InPagePointer {
 	tuplePtr := p.tuplePtr(index)
-	if tuplePtr == p.lastTuplePtr() {
+	if tuplePtr == p.getLastTupleStart() {
 		return PageSize
 	}
 
@@ -140,13 +139,29 @@ func (p Page) tupleEnd(index TupleIndex) InPagePointer {
 }
 
 func (p Page) tuplePtr(index TupleIndex) InPagePointer {
-	ptrStart := poPtrToFirstTuple + InPagePointerSize*index
+	ptrStart := poFirstTuplePtr + InPagePointerSize*index
 	return bparse.Parse.UInt2(p.page[ptrStart : ptrStart+InPagePointerSize])
 }
 
-func (p Page) ptrToLastTuplePtr() InPagePointer {
+func (p Page) getLastPtrIndex() InPagePointer {
+	return binary.LittleEndian.Uint16(p.page[poPrtToLastTuplePtr:])
+}
+
+func (p Page) getPtrToLastTuplePtr() InPagePointer {
 	return binary.LittleEndian.Uint16(
-		p.page[poPtrToLastTuple : poPtrToLastTuple+InPagePointerSize])
+		p.page[poPtrToLastTupleStart:])
+}
+
+func (p Page) setPtrToLastTuplePtr(ptr InPagePointer) {
+	binary.LittleEndian.PutUint16(p.page[poPrtToLastTuplePtr:], ptr)
+}
+
+func (p Page) getPtrToStartOfLastTuple() InPagePointer {
+	return binary.LittleEndian.Uint16(p.page[poPtrToLastTupleStart:])
+}
+
+func (p Page) setPtrToLastTupleStart(ptr InPagePointer) {
+	binary.LittleEndian.PutUint16(p.page[poPtrToLastTupleStart:], ptr)
 }
 
 func (p Page) updateHash() {
@@ -160,10 +175,10 @@ const InPagePointerSize = 2
 
 // po - page offset to
 const (
-	poPageHash          = 0                        // offset to page hash
-	poPrtToLastTuplePtr = poPageHash + pageHashLen // offset to pointer pointing to last tuple pointer
-	poPtrToLastTuple    = poPrtToLastTuplePtr + 2  // offset to pointer pointing to last tuple start
-	poPtrToFirstTuple   = poPtrToLastTuple + 2     // offset to first of many tuple pointers
+	poPageHash            = 0                         // offset to page hash
+	poPrtToLastTuplePtr   = poPageHash + pageHashLen  // offset to pointer pointing to last tuple pointer
+	poPtrToLastTupleStart = poPrtToLastTuplePtr + 2   // offset to pointer pointing to last tuple start
+	poFirstTuplePtr       = poPtrToLastTupleStart + 2 // offset to first of many tuple pointers
 )
 
 const (

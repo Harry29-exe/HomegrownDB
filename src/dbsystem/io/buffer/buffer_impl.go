@@ -1,12 +1,14 @@
 package buffer
 
+import "HomegrownDB/dbsystem/bstructs"
+
 type buffer struct {
-	pageIdBufferId  map[PageTag]BufferId
+	pageIdBufferId  map[bstructs.PageTag]BufferId
 	descriptorArray []bufferDescriptor
 	pageBufferArray []byte
 }
 
-func (b *buffer) RPage(tag PageTag) (RPage, error) {
+func (b *buffer) RPage(tag bstructs.PageTag) (bstructs.RPage, error) {
 	panic("Not implemented")
 	//pageDescriptor, ok := b.pageIdBufferId[tag]
 	//if !ok {
@@ -15,18 +17,18 @@ func (b *buffer) RPage(tag PageTag) (RPage, error) {
 
 }
 
-func (b *buffer) WPage(id PageId) (WPage, error) {
+func (b *buffer) WPage(id bstructs.PageId) (bstructs.WPage, error) {
 	panic("Not implemented")
 }
 
-func (b *buffer) ReleaseWPage(page WPage) {
+func (b *buffer) ReleaseWPage(page bstructs.WPage) {
 	panic("Not implemented")
 }
 
-func (b *buffer) ReleaseRPage(page RPage) {
+func (b *buffer) ReleaseRPage(page bstructs.RPage) {
 	panic("Not implemented")
 }
 
-func (b *buffer) fetchPage(tag PageTag) error {
+func (b *buffer) fetchPage(tag bstructs.PageTag) error {
 	panic("Not implemented")
 }

@@ -28,7 +28,7 @@ const (
 	sizeOfTxId         = tx.IdSize
 	sizeOfModifiedTxId = tx.IdSize
 	sizeOfTxCounter    = tx.CommandCounterSize
-	sizeOfPageId       = PageSize
+	sizeOfPageId       = PageIdSize
 	sizeOfTupleIndex   = TupleIndexSize
 )
 

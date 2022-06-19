@@ -6,7 +6,7 @@ import (
 )
 
 // todo add errors for definition creation
-func CreateDefinition(args column.Args) column.ImmDefinition {
+func CreateDefinition(args column.Args) column.Definition {
 	columnType, err := args.Type()
 	if err != nil {
 		panic("Args must contain column's Type")
