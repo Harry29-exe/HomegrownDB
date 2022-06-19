@@ -2,8 +2,9 @@ package bstructs_test
 
 import (
 	"HomegrownDB/dbsystem/bstructs"
+	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/schema/column/ctypes"
 	"HomegrownDB/dbsystem/schema/column/factory"
-	"HomegrownDB/dbsystem/schema/column/types"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/tests"
@@ -62,15 +63,15 @@ type pageUtils struct{}
 func (u pageUtils) testTable() table.Definition {
 	def := table.NewDefinition("test_table", 12, 20)
 	def.AddColumn(factory.CreateDefinition(
-		factory.ArgsBuilder().
+		column.ArgsBuilder().
 			Name("col1").
-			Type(types.Int2).
+			Type(ctypes.Int2).
 			Build(),
 	))
 	def.AddColumn(factory.CreateDefinition(
-		factory.ArgsBuilder().
+		column.ArgsBuilder().
 			Name("col2").
-			Type(types.Int2).
+			Type(ctypes.Int2).
 			Build(),
 	))
 

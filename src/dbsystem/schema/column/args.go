@@ -1,7 +1,6 @@
-package factory
+package column
 
 import (
-	column2 "HomegrownDB/dbsystem/schema/column"
 	"errors"
 )
 
@@ -9,7 +8,7 @@ func ArgsBuilder() *argsBuilder {
 	return &argsBuilder{argsMap: &argsMap{}}
 }
 
-func (b *argsBuilder) Type(columnType column2.Type) *argsBuilder {
+func (b *argsBuilder) Type(columnType Type) *argsBuilder {
 	b.argsMap.SetType(columnType)
 	return b
 }
@@ -29,7 +28,7 @@ func (b *argsBuilder) Length(length uint32) *argsBuilder {
 	return b
 }
 
-func (b *argsBuilder) Build() column2.Args {
+func (b *argsBuilder) Build() Args {
 	return b.argsMap
 }
 
@@ -38,7 +37,7 @@ type argsBuilder struct {
 }
 
 type argsMap struct {
-	columnType    column2.Type
+	columnType    Type
 	columnTypeSet bool
 
 	name    string
@@ -51,14 +50,14 @@ type argsMap struct {
 	lengthSet bool
 }
 
-func (am *argsMap) Type() (column2.Type, error) {
+func (am *argsMap) Type() (Type, error) {
 	if !am.columnTypeSet {
 		return "", errors.New("arg type not set")
 	}
 	return am.columnType, nil
 }
 
-func (am *argsMap) SetType(colType column2.Type) {
+func (am *argsMap) SetType(colType Type) {
 	am.columnType = colType
 	am.columnTypeSet = true
 }

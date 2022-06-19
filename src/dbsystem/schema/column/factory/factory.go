@@ -2,7 +2,7 @@ package factory
 
 import (
 	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/column/types"
+	"HomegrownDB/dbsystem/schema/column/ctypes"
 )
 
 // todo add errors for definition creation
@@ -13,8 +13,8 @@ func CreateDefinition(args column.Args) column.Definition {
 	}
 
 	switch columnType {
-	case types.Int2:
-		return types.NewInt2Column(args)
+	case ctypes.Int2:
+		return ctypes.NewInt2Column(args)
 	default:
 		panic("unknown column type: " + columnType)
 	}

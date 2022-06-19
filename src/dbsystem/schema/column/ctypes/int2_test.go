@@ -1,8 +1,9 @@
-package types_test
+package ctypes_test
 
 import (
+	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/schema/column/ctypes"
 	factory2 "HomegrownDB/dbsystem/schema/column/factory"
-	"HomegrownDB/dbsystem/schema/column/types"
 	"reflect"
 	"testing"
 )
@@ -11,8 +12,8 @@ func TestInt2Column_Builder(t *testing.T) {
 	nullable := false
 	name := "small_int"
 
-	args := factory2.ArgsBuilder().
-		Type(types.Int2).Nullable(nullable).
+	args := column.ArgsBuilder().
+		Type(ctypes.Int2).Nullable(nullable).
 		Name(name).
 		Build()
 
@@ -33,7 +34,7 @@ func TestInt2Column_Serializable(t *testing.T) {
 
 	serialized := columnDef.Serialize()
 	deserialized, _ := factory2.DeserializeColumnDefinition(serialized)
-	recreatedDef, ok := deserialized.(*types.Int2Column)
+	recreatedDef, ok := deserialized.(*ctypes.Int2Column)
 	if !ok {
 		t.Errorf("Can not cast result")
 	}
@@ -44,11 +45,11 @@ func TestInt2Column_Serializable(t *testing.T) {
 	}
 }
 
-func createInt2(name string, nullable bool) *types.Int2Column {
-	args := factory2.ArgsBuilder().
-		Type(types.Int2).Nullable(nullable).
+func createInt2(name string, nullable bool) *ctypes.Int2Column {
+	args := column.ArgsBuilder().
+		Type(ctypes.Int2).Nullable(nullable).
 		Name(name).
 		Build()
 
-	return types.NewInt2Column(args)
+	return ctypes.NewInt2Column(args)
 }

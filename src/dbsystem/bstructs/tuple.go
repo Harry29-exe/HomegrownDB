@@ -129,10 +129,6 @@ func (t Tuple) NullBitmapSlice() []byte {
 	return t.data[toNullBitmap : toNullBitmap+length]
 }
 
-func (t Tuple) LOBBitmap() {
-
-}
-
 var nullBitmapMasks = [8]byte{
 	1, 2, 4, 8,
 	16, 32, 64, 128,

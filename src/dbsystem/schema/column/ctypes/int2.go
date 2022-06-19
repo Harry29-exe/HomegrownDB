@@ -1,4 +1,4 @@
-package types
+package ctypes
 
 import (
 	"HomegrownDB/common/bparse"

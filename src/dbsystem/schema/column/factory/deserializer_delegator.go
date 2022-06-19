@@ -3,7 +3,7 @@ package factory
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/column/types"
+	"HomegrownDB/dbsystem/schema/column/ctypes"
 )
 
 func DeserializeColumnDefinition(serializedData []byte) (col column.Definition, subsequent []byte) {
@@ -11,8 +11,8 @@ func DeserializeColumnDefinition(serializedData []byte) (col column.Definition, 
 	columnCode := deserialized.MdString()
 
 	switch columnCode {
-	case types.Int2:
-		colDef := &types.Int2Column{}
+	case ctypes.Int2:
+		colDef := &ctypes.Int2Column{}
 		return colDef, colDef.Deserialize(serializedData)
 	default:
 		panic("Unknown type to deserialize")
