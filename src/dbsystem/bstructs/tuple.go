@@ -2,10 +2,13 @@ package bstructs
 
 import (
 	"HomegrownDB/common/bparse"
+	"HomegrownDB/common/strutils"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 	"encoding/binary"
+	"fmt"
+	"strings"
 )
 
 type Tuple struct {
@@ -126,10 +129,73 @@ func (t Tuple) NullBitmapSlice() []byte {
 	}
 
 	length := t.table.BitmapLen()
+	println("debug len:", length)
 	return t.data[toNullBitmap : toNullBitmap+length]
 }
 
 var nullBitmapMasks = [8]byte{
 	1, 2, 4, 8,
 	16, 32, 64, 128,
+}
+
+// +++++ Debug +++++
+
+var TupleHelper = tupleHelper{}
+
+type tupleHelper struct{}
+
+func (t tupleHelper) TupleDescription(tuple Tuple) []string {
+	strArr := &strutils.StrArray{}
+
+	strArr.FormatAndAdd("Created by %d", tuple.CreatedByTx())
+	strArr.FormatAndAdd("Modified by %d", tuple.ModifiedByTx())
+	strArr.FormatAndAdd("Command executed before %d", tuple.TxCommandCounter())
+	tid := tuple.TID()
+	strArr.FormatAndAdd("TID: (PageId: %d, TupleIndex: %d)", tid.PageId, tid.TupleIndex)
+
+	t.stringifyNullBitmap(tuple, strArr)
+
+	//todo col values
+	return strArr.Array
+}
+
+func (t tupleHelper) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) {
+	builder := strings.Builder{}
+	builder.WriteString("NullBitmap: ")
+	for _, bitmapByte := range tuple.NullBitmapSlice() {
+		builder.WriteString(fmt.Sprintf("%08b", bitmapByte))
+	}
+	builder.WriteRune('\n')
+
+	for i := column.OrderId(0); i < tuple.table.BitmapLen(); i++ {
+		col := tuple.table.GetColumn(i)
+		if !col.Nullable() {
+			builder.WriteString(fmt.Sprintf("%s: %d", col.Name(), -1))
+		}
+
+		byteIndex := i % 8
+		bitIndex := i - byteIndex*8
+		bit := bparse.Bit.GetBit(tuple.data[toNullBitmap+byteIndex], uint8(bitIndex))
+
+		builder.WriteString(fmt.Sprintf("%s: %b", col.Name(), bit))
+	}
+
+	arr.Add(builder.String())
+}
+
+func (t tupleHelper) stringifyColumnValues(tuple Tuple, arr *strutils.StrArray) {
+	tabDef := tuple.table
+
+	nextData := tuple.data[toNullBitmap+tabDef.BitmapLen():]
+	for i := column.OrderId(0); i < tabDef.ColumnCount(); i++ {
+		col := tabDef.GetColumn(i)
+		if tuple.IsNull(i) {
+			arr.FormatAndAdd("%s: null", col.Name())
+		}
+
+		parser := col.DataParser()
+		var value any
+		value, nextData = parser.Parse(nextData)
+		arr.FormatAndAdd("%s: %+#v", col.Name(), value)
+	}
 }

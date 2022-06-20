@@ -5,6 +5,7 @@ import (
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/factory"
 	"errors"
+	"math"
 )
 
 type table struct {
@@ -54,7 +55,7 @@ func (t *table) Deserialize(tableDef []byte) {
 
 // BitmapLen returns number of bytes in tuple that constitute null bitmap
 func (t *table) BitmapLen() uint16 {
-	return t.columnsCount / 8
+	return uint16(math.Ceil(float64(t.columnsCount) / 8))
 }
 
 func (t *table) ColumnCount() uint16 {

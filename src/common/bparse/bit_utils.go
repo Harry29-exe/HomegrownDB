@@ -9,6 +9,10 @@ func (b bitUtils) SetBit(byte byte, bitInByte uint8) byte {
 	return byte | setBitsMap[bitInByte]
 }
 
+func (b bitUtils) GetBit(byte byte, bitInByte uint8) byte {
+	return byte & setBitsMap[bitInByte]
+}
+
 // ClearBit clears bit at bitInByte position in given byte and returns changed byte
 func (b bitUtils) ClearBit(byte byte, bitInByte uint8) byte {
 	return byte &^ setBitsMap[bitInByte]
