@@ -132,7 +132,7 @@ func NewInt2Value(value *int16) *int2Value {
 		}
 	}
 
-	asBytes := make([]byte, 0, 2)
+	asBytes := make([]byte, 2)
 	binary.LittleEndian.PutUint16(asBytes, uint16(*value))
 
 	return &int2Value{
@@ -228,4 +228,8 @@ func (v *int2Value) Compare(value *any) int {
 	default:
 		panic("TYPE of argument value and column value are different")
 	}
+}
+
+func (v *int2Value) ToString() string {
+	return strconv.Itoa(int(*v.value))
 }

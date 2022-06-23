@@ -7,7 +7,7 @@ type StrArray struct {
 }
 
 func (sa *StrArray) FormatAndAdd(format string, args ...any) {
-	sa.Array = append(sa.Array, fmt.Sprintf(format, args))
+	sa.Array = append(sa.Array, fmt.Sprintf(format, args...))
 }
 
 func (sa *StrArray) Add(str string) {

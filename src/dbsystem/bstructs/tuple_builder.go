@@ -73,7 +73,8 @@ func (tb *tupleBuilder) createNullBitmap() {
 	bitmapLen := tb.table.BitmapLen()
 	nullBitmap := make([]byte, bitmapLen)
 	colCounter := 0
-	for currentByte := uint16(0); currentByte < bitmapLen; currentByte++ {
+	currentByte := uint16(0)
+	for ; currentByte < bitmapLen-1; currentByte++ {
 		for bit := uint8(0); bit < 8; bit++ {
 			if tb.sortedValues[colCounter] != nil {
 				nullBitmap[currentByte] = bparse.Bit.
@@ -82,6 +83,16 @@ func (tb *tupleBuilder) createNullBitmap() {
 
 			colCounter++
 		}
+	}
+
+	bitsInLastByte := uint8(bitmapLen*8 - tb.table.ColumnCount())
+	for bit := uint8(0); bit < bitsInLastByte; bit++ {
+		if tb.sortedValues[colCounter] != nil {
+			nullBitmap[currentByte] = bparse.Bit.
+				SetBit(nullBitmap[currentByte], bit)
+		}
+
+		colCounter++
 	}
 
 	tb.buffer.Write(nullBitmap)

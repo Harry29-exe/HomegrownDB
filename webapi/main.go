@@ -52,7 +52,7 @@ func testTuplePrint() {
 		"col3": 6,
 		"col4": 9,
 	}
-	txCtx := tx.NewContext(231)
+	txCtx := tx.NewContext(32)
 	tuple, err := bstructs.CreateTuple(tabDef, colValues, txCtx)
 	if err != nil {
 		println(err.Error())

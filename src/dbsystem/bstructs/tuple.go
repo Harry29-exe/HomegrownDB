@@ -58,7 +58,7 @@ func (t Tuple) IsNull(id column.OrderId) bool {
 	var byteNumber = id / 8
 	value := t.data[toNullBitmap+byteNumber]
 	divRest := id % 8
-	return value&nullBitmapMasks[divRest] > 0
+	return value&nullBitmapMasks[divRest] == 0
 }
 
 func (t Tuple) ColValue(id column.OrderId) column.Value {
@@ -129,7 +129,6 @@ func (t Tuple) NullBitmapSlice() []byte {
 	}
 
 	length := t.table.BitmapLen()
-	println("debug len:", length)
 	return t.data[toNullBitmap : toNullBitmap+length]
 }
 
@@ -154,6 +153,7 @@ func (t tupleHelper) TupleDescription(tuple Tuple) []string {
 	strArr.FormatAndAdd("TID: (PageId: %d, TupleIndex: %d)", tid.PageId, tid.TupleIndex)
 
 	t.stringifyNullBitmap(tuple, strArr)
+	t.stringifyColumnValues(tuple, strArr)
 
 	//todo col values
 	return strArr.Array
@@ -191,11 +191,12 @@ func (t tupleHelper) stringifyColumnValues(tuple Tuple, arr *strutils.StrArray) 
 		col := tabDef.GetColumn(i)
 		if tuple.IsNull(i) {
 			arr.FormatAndAdd("%s: null", col.Name())
+			continue
 		}
 
 		parser := col.DataParser()
-		var value any
+		var value column.Value
 		value, nextData = parser.Parse(nextData)
-		arr.FormatAndAdd("%s: %+#v", col.Name(), value)
+		arr.FormatAndAdd("%s: %s", col.Name(), value.ToString())
 	}
 }

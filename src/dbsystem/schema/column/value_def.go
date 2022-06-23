@@ -9,4 +9,6 @@ type Value interface {
 	// Compare returns 0 if this.value == value,
 	// -1 if this.value < value and 1 if this.value > value
 	Compare(value *any) int
+
+	ToString() string
 }
