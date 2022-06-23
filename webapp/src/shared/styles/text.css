@@ -1,0 +1,11 @@
+@tailwind components;
+
+@layer components {
+    .link {
+        @apply hover:underline decoration-4 hover:cursor-pointer;
+    }
+
+    .clickable {
+        @apply select-none hover:cursor-pointer dark:hover:text-primary-500 hover:text-primary-800;
+    }
+}

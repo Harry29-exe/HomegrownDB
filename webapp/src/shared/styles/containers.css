@@ -1,5 +1,23 @@
 @tailwind components;
 
 @layer components {
+    .sm-box {
+        @apply drop-shadow-md p-2 rounded-sm;
+    }
 
+    .md-box {
+        @apply drop-shadow-lg p-4 rounded-md;
+    }
+
+    .lg-box {
+        @apply drop-shadow-xl p-5 rounded-lg;
+    }
+
+    .h-stack {
+        @apply flex flex-row justify-start items-center;
+    }
+
+    .v-stack {
+        @apply flex flex-col justify-start items-center;
+    }
 }

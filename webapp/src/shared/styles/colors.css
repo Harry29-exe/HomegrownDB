@@ -1,0 +1,36 @@
+@tailwind base;
+
+@layer base {
+    .text-normal {
+        @apply text-black dark:text-white;
+    }
+    .text-accent {
+        @apply text-primary-900 dark:text-primary-300;
+    }
+
+    .bg-accent-l1 {
+        @apply bg-primary-300 dark:bg-primary-600;
+    }
+    .bg-accent-l2 {
+        @apply bg-primary-400 dark:bg-primary-700;
+    }
+    .bg-accent-l3 {
+        @apply bg-primary-500  dark:bg-primary-800;
+    }
+    .bg-accent-l4 {
+        @apply bg-primary-600  dark:bg-primary-900;
+    }
+
+    .bg-color-l1 {
+
+    }
+    .bg-color-l2 {
+
+    }
+    .bg-color-l3 {
+
+    }
+    .bg-color-l4 {
+
+    }
+}
