@@ -20,4 +20,8 @@
     .v-stack {
         @apply flex flex-col justify-start items-center;
     }
+
+    .flex-grid {
+        @apply flex flex-row flex-wrap justify-evenly items-center;
+    }
 }

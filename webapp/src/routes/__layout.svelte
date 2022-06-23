@@ -18,3 +18,6 @@
 
 <Navbar/>
 <slot></slot>
+<div class="bg-primary-700 w-[100vw] h-[100vh] fixed left-[-50vw] top-0
+            shadow-2xl shadow-black opacity-20 dark:opacity-10 -z-[49]"
+     style="transform: skewX(-20deg)"></div>

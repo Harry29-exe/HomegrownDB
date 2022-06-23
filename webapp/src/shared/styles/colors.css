@@ -2,7 +2,7 @@
 
 @layer base {
     .text-normal {
-        @apply text-black dark:text-white;
+        @apply text-white;
     }
     .text-accent {
         @apply text-primary-900 dark:text-primary-300;
@@ -22,15 +22,19 @@
     }
 
     .bg-color-l1 {
-
+        @apply bg-gray-100 darl:bg-gray-600;
     }
     .bg-color-l2 {
-
+        @apply bg-gray-200 darl:bg-gray-700;
     }
     .bg-color-l3 {
-
+        @apply bg-gray-300 darl:bg-gray-800;
     }
     .bg-color-l4 {
+        @apply bg-gray-400 darl:bg-gray-900;
+    }
 
+    .border-color {
+        @apply dark:border-gray-200 border-gray-800;
     }
 }

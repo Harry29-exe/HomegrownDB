@@ -1,8 +1,9 @@
 export class Link {
 
     constructor (
-        public link: string,
-        public name: string
+        public path: string,
+        public name: string,
+        public imgPath?: string
     ) {}
 
 }
