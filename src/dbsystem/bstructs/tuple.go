@@ -139,6 +139,7 @@ var nullBitmapMasks = [8]byte{
 
 // +++++ Debug +++++
 
+// TupleHelper helps with debugging of Tuple structure
 var TupleHelper = tupleHelper{}
 
 type tupleHelper struct{}
@@ -167,18 +168,24 @@ func (t tupleHelper) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) {
 	}
 	builder.WriteRune('\n')
 
-	for i := column.OrderId(0); i < tuple.table.BitmapLen(); i++ {
+	for i := column.OrderId(0); i < tuple.table.ColumnCount(); i++ {
 		col := tuple.table.GetColumn(i)
 		if !col.Nullable() {
-			builder.WriteString(fmt.Sprintf("%s: %d", col.Name(), -1))
+			builder.WriteString(fmt.Sprintf("| %s: %d ", col.Name(), -1))
+			continue
 		}
 
-		byteIndex := i % 8
+		byteIndex := i / 8
 		bitIndex := i - byteIndex*8
 		bit := bparse.Bit.GetBit(tuple.data[toNullBitmap+byteIndex], uint8(bitIndex))
+		bitValue := uint8(0)
+		if bit > 0 {
+			bitValue = 1
+		}
 
-		builder.WriteString(fmt.Sprintf("%s: %b", col.Name(), bit))
+		builder.WriteString(fmt.Sprintf("| %s: %d ", col.Name(), bitValue))
 	}
+	builder.WriteString("|")
 
 	arr.Add(builder.String())
 }

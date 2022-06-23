@@ -76,12 +76,12 @@ func (am *argsMap) SetName(name string) {
 
 func (am *argsMap) Nullable() (bool, error) {
 	if !am.nullableSet {
-		return am.nullable, errors.New("arg nullable not set")
+		return false, errors.New("arg nullable not set")
 	}
 	return am.nullable, nil
 }
 
-func (am argsMap) SetNullable(nullable bool) {
+func (am *argsMap) SetNullable(nullable bool) {
 	am.nullable = nullable
 	am.nullableSet = true
 }
@@ -93,7 +93,7 @@ func (am *argsMap) Length() (uint32, error) {
 	return am.length, nil
 }
 
-func (am argsMap) SetLength(length uint32) {
+func (am *argsMap) SetLength(length uint32) {
 	am.length = length
 	am.lengthSet = true
 }
