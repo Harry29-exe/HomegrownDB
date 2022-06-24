@@ -3,7 +3,7 @@ package buffer
 import "HomegrownDB/dbsystem/bstructs"
 
 type buffer struct {
-	pageIdBufferId  map[bstructs.PageTag]BufferId
+	pageIdBufferId  map[bstructs.PageTag]ArrayIndex
 	descriptorArray []bufferDescriptor
 	pageBufferArray []byte
 }

@@ -1,8 +1,11 @@
-package datastructs
+package appsync
 
-import "sync"
+import (
+	"HomegrownDB/datastructs"
+	"sync"
+)
 
-type SyncCounter[T Number] interface {
+type SyncCounter[T datastructs.Number] interface {
 	GetAndIncrement() T
 	IncrementAndGet() T
 	Get() T
