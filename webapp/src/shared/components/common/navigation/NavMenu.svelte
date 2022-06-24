@@ -9,7 +9,7 @@
     }
 </script>
 
-<div class="lg-box bg-accent-l2 wrapper flex-grid">
+<div class="base-component bg-accent-l2 flex-grid">
     {#each links as link}
         <div class="md-box card link"
              on:click={goToFunc(link.path)}>
@@ -19,10 +19,6 @@
 </div>
 
 <style>
-    .wrapper {
-        @apply w-11/12 md:w-2/3 px-2 py-5 mx-auto my-10 md:my-16;
-    }
-
     .card {
         @apply md:w-[45%] xl:w-[30%] mx-2 my-4
         border-2 hover:cursor-pointer text-xl font-semibold hover:scale-105;
