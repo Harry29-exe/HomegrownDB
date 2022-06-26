@@ -15,7 +15,3 @@ func (sl *SpinLock) Lock() {
 func (sl *SpinLock) Unlock() {
 	atomic.StoreUint32((*uint32)(sl), 0)
 }
-func NewSpinLock() *SpinLock {
-	var lock SpinLock
-	return &lock
-}

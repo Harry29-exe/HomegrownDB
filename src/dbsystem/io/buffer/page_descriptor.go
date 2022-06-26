@@ -16,3 +16,22 @@ type pageDescriptor struct {
 	ioInProgressLock sync.Mutex
 	descriptorLock   appsync.SpinLock
 }
+
+func (pd *pageDescriptor) InitNewPage(tag bstructs.PageTag) {
+	pd.refCount = 0
+	pd.usageCount = 0
+	pd.pageTag = tag
+}
+
+func (pd *pageDescriptor) incrementRefCount() {
+	pd.descriptorLock.Lock()
+	pd.refCount++
+	pd.usageCount++
+	pd.descriptorLock.Unlock()
+}
+
+func (pd *pageDescriptor) decrementRefCount() {
+	pd.descriptorLock.Lock()
+	pd.refCount++
+	pd.descriptorLock.Unlock()
+}

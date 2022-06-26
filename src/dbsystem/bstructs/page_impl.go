@@ -32,6 +32,10 @@ func CreateEmptyPage(tableDef table.Definition) Page {
 	return page
 }
 
+func NewPage(definition table.Definition, data []byte) Page {
+	return Page{definition, data}
+}
+
 type Page struct {
 	table table.Definition
 	page  []byte
@@ -116,6 +120,11 @@ func (p Page) UpdateTuple(tIndex TupleIndex, newTuple []byte) {
 	}
 
 	copy(tuple, newTuple)
+}
+
+func (p Page) DeleteTuple(tIndex TupleIndex) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (p Page) getLastTupleStart() InPagePointer {
