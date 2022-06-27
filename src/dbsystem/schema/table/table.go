@@ -26,6 +26,10 @@ func (t *table) ObjectId() uint64 {
 	return t.objectId
 }
 
+func (t *table) Name() string {
+	return t.name
+}
+
 func (t *table) Serialize() []byte {
 	serializer := bparse.NewSerializer()
 

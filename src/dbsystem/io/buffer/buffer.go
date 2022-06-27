@@ -12,7 +12,7 @@ var Buffer DBBuffer = &buffer{
 
 type DBBuffer interface {
 	RPage(tag bstructs.PageTag) (bstructs.RPage, error)
-	WPage(id bstructs.PageId) (bstructs.WPage, error)
+	WPage(id bstructs.PageTag) (bstructs.WPage, error)
 
 	ReleaseWPage(page bstructs.WPage)
 	ReleaseRPage(page bstructs.RPage)

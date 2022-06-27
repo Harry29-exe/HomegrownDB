@@ -9,7 +9,7 @@ type RPage interface {
 type WPage interface {
 	RPage
 
-	InsertTuple(data []byte)
+	InsertTuple(data []byte) error
 	UpdateTuple(tIndex TupleIndex, tuple []byte)
 	DeleteTuple(tIndex TupleIndex)
 }

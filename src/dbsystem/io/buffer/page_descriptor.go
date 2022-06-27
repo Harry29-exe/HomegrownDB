@@ -23,15 +23,17 @@ func (pd *pageDescriptor) InitNewPage(tag bstructs.PageTag) {
 	pd.pageTag = tag
 }
 
-func (pd *pageDescriptor) incrementRefCount() {
+// newUsage increment refCount and usageCount by 1
+func (pd *pageDescriptor) newUsage() {
 	pd.descriptorLock.Lock()
 	pd.refCount++
 	pd.usageCount++
 	pd.descriptorLock.Unlock()
 }
 
-func (pd *pageDescriptor) decrementRefCount() {
+// endUsage decrement refCount by 1
+func (pd *pageDescriptor) endUsage() {
 	pd.descriptorLock.Lock()
-	pd.refCount++
+	pd.refCount--
 	pd.descriptorLock.Unlock()
 }

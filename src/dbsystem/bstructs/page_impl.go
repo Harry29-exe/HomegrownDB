@@ -78,8 +78,8 @@ func (p Page) FreeSpace() uint16 {
 	return lastTupleStartIndex - (lastTuplePointerStart + InPagePointerSize - 1)
 }
 
-func (p Page) InsertTuple(tuple Tuple) error {
-	tupleLen := uint16(len(tuple.data))
+func (p Page) InsertTuple(tuple []byte) error {
+	tupleLen := uint16(len(tuple))
 
 	if tupleLen+InPagePointerSize > p.FreeSpace() {
 		return errors.New(fmt.Sprintf("cannot fit tuple of size: %d to page with free space: %d",
@@ -99,7 +99,7 @@ func (p Page) InsertTuple(tuple Tuple) error {
 	}
 
 	tupleStartIndex := lastTupleStart - tupleLen
-	copy(p.page[tupleStartIndex:lastTupleStart], tuple.data)
+	copy(p.page[tupleStartIndex:lastTupleStart], tuple)
 	binary.LittleEndian.PutUint16(p.page[tuplePtrIndex:], tupleStartIndex)
 	p.setPtrToLastTupleStart(tupleStartIndex)
 	p.setPtrToLastTuplePtr(tuplePtrIndex)

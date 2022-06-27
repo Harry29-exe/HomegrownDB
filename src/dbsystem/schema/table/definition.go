@@ -7,6 +7,8 @@ import (
 type Definition interface {
 	TableId() Id
 	ObjectId() uint64
+	Name() string
+
 	// Serialize table info, so it can be saved to disc and
 	// later deserialize into table object
 	Serialize() []byte

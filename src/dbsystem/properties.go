@@ -12,7 +12,7 @@ const TableInfoFilename = "info"
 
 var dbHomePath = ""
 
-var DBProperties = dbProperties{}
+var Props = &dbProperties{}
 
 type dbProperties struct{}
 
@@ -25,7 +25,7 @@ func init() {
 	fmt.Println(exPath)
 }
 
-func GetDBHomePath() string {
+func (dbp *dbProperties) DBHomePath() string {
 	return dbHomePath
 }
 
