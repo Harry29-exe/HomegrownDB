@@ -1,9 +1,8 @@
 package dbsystem
 
 import (
-	"fmt"
+	"log"
 	"os"
-	"path/filepath"
 )
 
 const dbHomeVarName = "HOMEGROWN_DB_HOME"
@@ -16,23 +15,26 @@ var Props = &dbProperties{}
 
 type dbProperties struct{}
 
-func init() {
-	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-	exPath := filepath.Dir(ex)
-	fmt.Println(exPath)
-}
-
 func (dbp *dbProperties) DBHomePath() string {
 	return dbHomePath
+}
+
+func init() {
+	dbHomePath = readDBHome()
+	//ex, err := os.Executable()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//exPath := filepath.Dir(ex)
+	//fmt.Printf("execution path: %s\n", exPath)
 }
 
 func readDBHome() string {
 	home := os.Getenv(dbHomeVarName)
 	if home == "" {
 		panic("Env variable: " + dbHomeVarName + " is empty.")
+	} else {
+		log.Printf("DB home path is set to: %s\n", home)
 	}
 
 	return home
