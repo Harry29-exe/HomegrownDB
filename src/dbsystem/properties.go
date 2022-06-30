@@ -11,11 +11,11 @@ const TableInfoFilename = "info"
 
 var dbHomePath = ""
 
-var Props = &dbProperties{}
+var Props = dbProperties{}
 
 type dbProperties struct{}
 
-func (dbp *dbProperties) DBHomePath() string {
+func (dbp dbProperties) DBHomePath() string {
 	return dbHomePath
 }
 
