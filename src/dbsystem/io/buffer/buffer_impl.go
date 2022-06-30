@@ -2,16 +2,33 @@ package buffer
 
 import (
 	"HomegrownDB/dbsystem/bstructs"
+	"HomegrownDB/dbsystem/io"
 	"HomegrownDB/dbsystem/schema"
 	"HomegrownDB/dbsystem/schema/table"
 	"sync"
 )
 
+func newBuffer(bufferSize uint) *buffer {
+	descriptorArray := make([]pageDescriptor, bufferSize)
+
+	return &buffer{
+		bufferMap:     map[bstructs.PageTag]ArrayIndex{},
+		bufferMapLock: &sync.RWMutex{},
+
+		descriptorArray: descriptorArray,
+		clock:           newClockSweep(descriptorArray),
+
+		pageBufferArray: make([]byte, bufferSize*uint(bstructs.PageSize)),
+	}
+}
+
 type buffer struct {
 	bufferMap     map[bstructs.PageTag]ArrayIndex
-	bufferMapLock sync.RWMutex
+	bufferMapLock *sync.RWMutex
 
 	descriptorArray []pageDescriptor
+	clock           *clockSweep
+
 	pageBufferArray []byte
 }
 
@@ -23,13 +40,14 @@ func (b *buffer) RPage(tag bstructs.PageTag) (bstructs.RPage, error) {
 	var descriptor *pageDescriptor
 	if ok {
 		descriptor = &b.descriptorArray[pageArrIndex]
-		descriptor.newUsage()
+		descriptor.pin()
 		b.bufferMapLock.RUnlock()
 
 		descriptor.contentLock.RLock()
 	} else {
 		b.bufferMapLock.RUnlock()
-		index, err := b.fetchPageAndRLock(tag, tableDef)
+		//todo add locks to new loadPage impl
+		index, err := b.loadPage(tag, tableDef)
 		if err != nil {
 			return nil, err
 		}
@@ -49,13 +67,14 @@ func (b *buffer) WPage(tag bstructs.PageTag) (bstructs.WPage, error) {
 	var descriptor *pageDescriptor
 	if ok {
 		descriptor = &b.descriptorArray[pageArrIndex]
-		descriptor.newUsage()
+		descriptor.pin()
 		b.bufferMapLock.RUnlock()
 
 		descriptor.contentLock.Lock()
 	} else {
 		b.bufferMapLock.RUnlock()
-		index, err := b.fetchPageAndWLock(tag, tableDef)
+		//todo add locks to new loadPage impl
+		index, err := b.loadPage(tag, tableDef)
 		if err != nil {
 			return nil, err
 		}
@@ -75,16 +94,41 @@ func (b *buffer) ReleaseRPage(page bstructs.RPage) {
 	panic("Not implemented")
 }
 
-// fetchPage fetches page with given tag from drive and increases it usage count
-// by 1, so it can not instantly become victim page, therefore function invoking this
-// method should not increase it
-func (b *buffer) fetchPageAndRLock(tag bstructs.PageTag, table table.Definition) (ArrayIndex, error) {
-	panic("Not implemented")
-}
+//todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
+// 2) prawdopodobnie zaimplementować własną hash mape
+func (b *buffer) loadPage(tag bstructs.PageTag, table table.Definition) (ArrayIndex, error) {
+	for {
+		victimIndex := b.clock.FindVictimPage()
+		descriptor := &b.descriptorArray[victimIndex]
 
-// fetchPage fetches page with given tag from drive and increases it usage count
-// by 1, so it can not instantly become victim page, therefore function invoking this
-// method should not increase it
-func (b *buffer) fetchPageAndWLock(tag bstructs.PageTag, table table.Definition) (ArrayIndex, error) {
-	panic("Not implemented")
+		pSize := uint(bstructs.PageSize)
+		pageStart := pSize * victimIndex
+		arraySlot := b.pageBufferArray[pageStart : pageStart+pSize]
+
+		if descriptor.isDirty {
+			descriptor.pin()
+			descriptor.contentLock.RLock()
+			descriptor.ioInProgressLock.Lock()
+
+			io.Pages.Flush(descriptor.pageTag, arraySlot)
+			descriptor.descriptorLock.Lock()
+			descriptor.isDirty = false
+			descriptor.descriptorLock.Unlock()
+
+			descriptor.contentLock.RUnlock()
+			descriptor.ioInProgressLock.Unlock()
+			descriptor.unpin()
+		}
+
+		b.bufferMapLock.Lock()
+		if descriptor.refCount != 0 {
+			b.bufferMapLock.Unlock()
+			continue
+		}
+
+		b.bufferMap[tag] = victimIndex
+		delete(b.bufferMap, descriptor.pageTag)
+
+		//todo load new page
+	}
 }
