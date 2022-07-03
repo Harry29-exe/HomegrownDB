@@ -42,7 +42,7 @@ def read_db_path() -> str:
 
 
 def export_db_env(db_path: str):
-    outfile = open(os.path.expanduser("~/.profile"), "r+t")
+    outfile = open(os.path.expanduser("~/.zprofile"), "r+t")
 
     env_start = "export "+HOMEGROWN_DB_HOME+"="
     if not (env_start in outfile.read()):
@@ -68,11 +68,7 @@ def create_dir_hierarchy(db_path: str):
         for dir_name in dirs_to_create:
             os.mkdir(db_path + dir_name)
     except FileExistsError:
-        # print("Script is about to delete " + db_path + " directory, enter y to proceed or n to abort: ", end="")
-        # user_input = input()
-        # while user_input != 'y' and user_input != 'n':
-        #     print("Please enter y or n: ")
-        #     user_input = input()
+
         if not override_current_dir:
             print("\n\nOverride existing configuration is not enabled")
             quit(1)

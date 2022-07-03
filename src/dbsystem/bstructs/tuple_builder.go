@@ -85,7 +85,8 @@ func (tb *tupleBuilder) createNullBitmap() {
 		}
 	}
 
-	bitsInLastByte := uint8(bitmapLen*8 - tb.table.ColumnCount())
+	colCounter = 0
+	bitsInLastByte := uint8(tb.table.ColumnCount() - (bitmapLen-1)*8)
 	for bit := uint8(0); bit < bitsInLastByte; bit++ {
 		if tb.sortedValues[colCounter] != nil {
 			nullBitmap[currentByte] = bparse.Bit.

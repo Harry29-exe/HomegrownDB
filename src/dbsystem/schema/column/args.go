@@ -5,17 +5,12 @@ import (
 )
 
 func ArgsBuilder(name string, ctype Type) *argsBuilder {
-	return &argsBuilder{argsMap: &argsMap{}}
-}
-
-func (b *argsBuilder) Type(columnType Type) *argsBuilder {
-	b.argsMap.SetType(columnType)
-	return b
-}
-
-func (b *argsBuilder) Name(name string) *argsBuilder {
-	b.argsMap.SetName(name)
-	return b
+	return &argsBuilder{argsMap: &argsMap{
+		columnType:    ctype,
+		columnTypeSet: true,
+		name:          name,
+		nameSet:       true,
+	}}
 }
 
 func (b *argsBuilder) Nullable(nullable bool) *argsBuilder {
