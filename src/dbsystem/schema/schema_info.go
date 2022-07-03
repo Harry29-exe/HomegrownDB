@@ -8,16 +8,25 @@ import (
 	"os"
 )
 
-var Tables *tables = initTables()
+var Tables = initTables()
 
-type tables struct {
+type tableSource struct {
 	nameTableMap    map[string]table.Id
 	definitions     []table.Definition
 	changeListeners []func()
 	tableIdCounter  appsync.SyncCounter[table.Id]
 }
 
-func (t *tables) GetTable(name string) table.Definition {
+func NewTables() *tableSource {
+	return &tableSource{
+		nameTableMap:    map[string]table.Id{},
+		definitions:     nil,
+		changeListeners: nil,
+		tableIdCounter:  appsync.NewUint32SyncCounter(0),
+	}
+}
+
+func (t *tableSource) GetTable(name string) table.Definition {
 	id, ok := t.nameTableMap[name]
 	if ok {
 		return t.definitions[id]
@@ -25,11 +34,11 @@ func (t *tables) GetTable(name string) table.Definition {
 	return nil
 }
 
-func (t *tables) Table(id table.Id) table.Definition {
+func (t *tableSource) Table(id table.Id) table.Definition {
 	return t.definitions[id]
 }
 
-func (t *tables) AllTables() []table.Definition {
+func (t *tableSource) AllTables() []table.Definition {
 	length := len(t.definitions)
 	allTablesList := make([]table.Definition, length)
 	for i, def := range t.definitions {
@@ -39,24 +48,24 @@ func (t *tables) AllTables() []table.Definition {
 	return allTablesList
 }
 
-func (t *tables) AddTable(table table.WDefinition) error {
+func (t *tableSource) AddTable(table table.WDefinition) error {
 	//table.SetTableId()
 	//todo implement me
 	panic("Not implemented")
 }
 
-func (t *tables) RemoveTable(id table.Id) error {
+func (t *tableSource) RemoveTable(id table.Id) error {
 	//todo implement me
 	panic("Not implemented")
 }
 
-func (t *tables) RegisterChangeListener(fn func()) {
+func (t *tableSource) RegisterChangeListener(fn func()) {
 	t.changeListeners = append(t.changeListeners, fn)
 }
 
-func initTables() *tables {
+func initTables() *tableSource {
 	//todo implement reading files
-	return &tables{}
+	return &tableSource{}
 }
 
 func readDBSchema(dbHomePath string) {

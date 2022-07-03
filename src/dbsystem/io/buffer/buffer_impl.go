@@ -2,16 +2,14 @@ package buffer
 
 import (
 	"HomegrownDB/dbsystem/bstructs"
-	"HomegrownDB/dbsystem/io"
-	"HomegrownDB/dbsystem/schema"
 	"HomegrownDB/dbsystem/schema/table"
 	"sync"
 )
 
-func newBuffer(bufferSize uint) *buffer {
+func NewSharedBuffer(bufferSize uint, tableSource TableSrc, pageLoader PageIO) *sharedBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 
-	return &buffer{
+	return &sharedBuffer{
 		bufferMap:     map[bstructs.PageTag]ArrayIndex{},
 		bufferMapLock: &sync.RWMutex{},
 
@@ -19,10 +17,13 @@ func newBuffer(bufferSize uint) *buffer {
 		clock:           newClockSweep(descriptorArray),
 
 		pageBufferArray: make([]byte, bufferSize*uint(bstructs.PageSize)),
+
+		tableSRC: tableSource,
+		pageIO:   pageLoader,
 	}
 }
 
-type buffer struct {
+type sharedBuffer struct {
 	bufferMap     map[bstructs.PageTag]ArrayIndex
 	bufferMapLock *sync.RWMutex
 
@@ -30,10 +31,13 @@ type buffer struct {
 	clock           *clockSweep
 
 	pageBufferArray []byte
+
+	tableSRC TableSrc
+	pageIO   PageIO
 }
 
-func (b *buffer) RPage(tag bstructs.PageTag) (bstructs.RPage, error) {
-	tableDef := schema.Tables.Table(tag.TableId)
+func (b *sharedBuffer) RPage(tag bstructs.PageTag) (bstructs.RPage, error) {
+	tableDef := b.tableSRC.Table(tag.TableId)
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -59,8 +63,8 @@ func (b *buffer) RPage(tag bstructs.PageTag) (bstructs.RPage, error) {
 	return bstructs.NewPage(tableDef, b.pageBufferArray[pageStart:pageStart+uintptr(bstructs.PageSize)]), nil
 }
 
-func (b *buffer) WPage(tag bstructs.PageTag) (bstructs.WPage, error) {
-	tableDef := schema.Tables.Table(tag.TableId)
+func (b *sharedBuffer) WPage(tag bstructs.PageTag) (bstructs.WPage, error) {
+	tableDef := b.tableSRC.Table(tag.TableId)
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -86,7 +90,7 @@ func (b *buffer) WPage(tag bstructs.PageTag) (bstructs.WPage, error) {
 	return bstructs.NewPage(tableDef, b.pageBufferArray[pageStart:pageStart+uintptr(bstructs.PageSize)]), nil
 }
 
-func (b *buffer) ReleaseWPage(tag bstructs.PageTag) {
+func (b *sharedBuffer) ReleaseWPage(tag bstructs.PageTag) {
 	b.bufferMapLock.RLock()
 	index := b.bufferMap[tag]
 	b.bufferMapLock.RUnlock()
@@ -100,7 +104,7 @@ func (b *buffer) ReleaseWPage(tag bstructs.PageTag) {
 	descriptor.unpin()
 }
 
-func (b *buffer) ReleaseRPage(tag bstructs.PageTag) {
+func (b *sharedBuffer) ReleaseRPage(tag bstructs.PageTag) {
 	b.bufferMapLock.RLock()
 	index := b.bufferMap[tag]
 	b.bufferMapLock.RUnlock()
@@ -112,7 +116,7 @@ func (b *buffer) ReleaseRPage(tag bstructs.PageTag) {
 
 //todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
 // 2) prawdopodobnie zaimplementować własną hash mape
-func (b *buffer) loadPage(tag bstructs.PageTag, table table.Definition) (ArrayIndex, error) {
+func (b *sharedBuffer) loadPage(tag bstructs.PageTag, table table.Definition) (ArrayIndex, error) {
 	for {
 		victimIndex := b.clock.FindVictimPage()
 		descriptor := &b.descriptorArray[victimIndex]
@@ -126,7 +130,7 @@ func (b *buffer) loadPage(tag bstructs.PageTag, table table.Definition) (ArrayIn
 			descriptor.contentLock.RLock()
 			descriptor.ioInProgressLock.Lock()
 
-			io.Pages.Flush(descriptor.pageTag, arraySlot)
+			b.pageIO.Flush(descriptor.pageTag, arraySlot)
 			descriptor.descriptorLock.Lock()
 			descriptor.isDirty = false
 			descriptor.descriptorLock.Unlock()
@@ -146,7 +150,7 @@ func (b *buffer) loadPage(tag bstructs.PageTag, table table.Definition) (ArrayIn
 		delete(b.bufferMap, descriptor.pageTag)
 
 		//todo load new page
-		io.Pages.Read(tag, arraySlot)
+		b.pageIO.Read(tag, arraySlot)
 		b.bufferMapLock.Unlock()
 	}
 }

@@ -29,5 +29,11 @@ func (mp mainPages) Read(tag bstructs.PageTag, buffer []byte) {
 }
 
 func (mp mainPages) Flush(tag bstructs.PageTag, buffer []byte) {
+	//todo implement me
+	panic("Not implemented")
+}
+
+func (mp mainPages) SaveNew(tag bstructs.PageTag, buffer []byte) {
+	//todo implement me
 	panic("Not implemented")
 }
