@@ -22,12 +22,7 @@ func TestTokenizerWithBasicSelectQuery(t *testing.T) {
 	tester.assertNextBasicToken(token.SpaceBreak, " ")
 	tester.assertNextBasicToken(token.Identifier, "table_alias")
 	tester.assertNextBasicToken(token.Dot, ".")
-	tok := tester.testTokenizer
-	for tok.HasNext() {
-		next, _ := tok.Next()
-		print("[", next.Code(), "-", next.Value(), "]")
-	}
-
+	//todo finish testing
 }
 
 type tokenizerTester struct {
