@@ -3,6 +3,7 @@ package appsync
 import (
 	"HomegrownDB/datastructs"
 	"sync"
+	"sync/atomic"
 )
 
 type SyncCounter[T datastructs.Number] interface {
@@ -20,6 +21,10 @@ func NewInt32SyncCounter(startVal int32) SyncCounter[int32] {
 		mutex: sync.Mutex{},
 		value: startVal,
 	}
+}
+
+func NewUint32SyncCounter(startVal uint32) SyncCounter[uint32] {
+	return &uint32AtomicCounter{value: startVal}
 }
 
 func newUint64Counter(startVal uint64) *uint64LockCounter {
@@ -74,5 +79,21 @@ func (u *int32LockCounter) IncrementAndGet() int32 {
 }
 
 func (u *int32LockCounter) Get() int32 {
+	return u.value
+}
+
+type uint32AtomicCounter struct {
+	value uint32
+}
+
+func (u *uint32AtomicCounter) GetAndIncrement() uint32 {
+	return atomic.AddUint32(&u.value, 1) - 1
+}
+
+func (u *uint32AtomicCounter) IncrementAndGet() uint32 {
+	return atomic.AddUint32(&u.value, 1)
+}
+
+func (u *uint32AtomicCounter) Get() uint32 {
 	return u.value
 }
