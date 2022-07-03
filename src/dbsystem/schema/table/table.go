@@ -18,12 +18,24 @@ type table struct {
 	name         string
 }
 
+func (t *table) SetTableId(id Id) {
+	t.tableId = id
+}
+
 func (t *table) TableId() Id {
 	return t.tableId
 }
 
+func (t *table) SetObjectId(id uint64) {
+	t.objectId = id
+}
+
 func (t *table) ObjectId() uint64 {
 	return t.objectId
+}
+
+func (t *table) SetName(name string) {
+	t.name = name
 }
 
 func (t *table) Name() string {

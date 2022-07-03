@@ -11,7 +11,7 @@ var Pages = mainPages{}
 
 type mainPages struct{}
 
-func (mp mainPages) FetchPage(tag bstructs.PageTag, buffer []byte) {
+func (mp mainPages) Read(tag bstructs.PageTag, buffer []byte) {
 	file, err := os.Open(tablesDataPaths[tag.TableId])
 	if err != nil {
 		panic(fmt.Sprintf("data file for table %s does not exist", schema.Tables.Table(tag.TableId).Name()))

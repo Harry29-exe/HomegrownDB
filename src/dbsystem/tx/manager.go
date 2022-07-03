@@ -1,16 +1,18 @@
 package tx
 
-import "HomegrownDB/datastructs"
+import (
+	"HomegrownDB/datastructs/appsync"
+)
 
 //todo add manager initalization from file
 
 var Manager = &txManager{
-	txIdCounter: datastructs.NewInt32SyncCounter(0),
+	txIdCounter: appsync.NewInt32SyncCounter(0),
 	txHistory:   map[Id]Status{},
 }
 
 type txManager struct {
-	txIdCounter datastructs.SyncCounter[int32]
+	txIdCounter appsync.SyncCounter[int32]
 	txHistory   map[Id]Status
 	listeners   map[Id][]chan uint8
 }

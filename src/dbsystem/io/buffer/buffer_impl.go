@@ -86,12 +86,28 @@ func (b *buffer) WPage(tag bstructs.PageTag) (bstructs.WPage, error) {
 	return bstructs.NewPage(tableDef, b.pageBufferArray[pageStart:pageStart+uintptr(bstructs.PageSize)]), nil
 }
 
-func (b *buffer) ReleaseWPage(page bstructs.WPage) {
-	panic("Not implemented")
+func (b *buffer) ReleaseWPage(tag bstructs.PageTag) {
+	b.bufferMapLock.RLock()
+	index := b.bufferMap[tag]
+	b.bufferMapLock.RUnlock()
+	descriptor := &b.descriptorArray[index]
+
+	descriptor.descriptorLock.Lock()
+	descriptor.isDirty = true
+	descriptor.descriptorLock.Unlock()
+
+	descriptor.contentLock.Unlock()
+	descriptor.unpin()
 }
 
-func (b *buffer) ReleaseRPage(page bstructs.RPage) {
-	panic("Not implemented")
+func (b *buffer) ReleaseRPage(tag bstructs.PageTag) {
+	b.bufferMapLock.RLock()
+	index := b.bufferMap[tag]
+	b.bufferMapLock.RUnlock()
+	descriptor := &b.descriptorArray[index]
+
+	descriptor.contentLock.RUnlock()
+	descriptor.unpin()
 }
 
 //todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
@@ -130,5 +146,7 @@ func (b *buffer) loadPage(tag bstructs.PageTag, table table.Definition) (ArrayIn
 		delete(b.bufferMap, descriptor.pageTag)
 
 		//todo load new page
+		io.Pages.Read(tag, arraySlot)
+		b.bufferMapLock.Unlock()
 	}
 }

@@ -15,6 +15,7 @@ var Props = dbProperties{}
 
 type dbProperties struct{}
 
+// DBHomePath returns path to root directory of database without '/' postfix
 func (dbp dbProperties) DBHomePath() string {
 	return dbHomePath
 }

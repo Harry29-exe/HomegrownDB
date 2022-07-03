@@ -30,19 +30,18 @@ func main() {
 }
 
 func testTuplePrint() {
-	tabDef := table.NewDefinition("table1", 231, 4352)
-	tabDef.AddColumn(factory.CreateDefinition(column.NewSimpleArgs("col1", ctypes.Int2)))
-	tabDef.AddColumn(factory.CreateDefinition(column.NewSimpleArgs("col2", ctypes.Int2)))
-	tabDef.AddColumn(factory.CreateDefinition(
-		column.ArgsBuilder().
-			Name("col3").
-			Type(ctypes.Int2).
+	tableDef := table.NewDefinition("table1")
+	tableDef.SetTableId(231)
+	tableDef.SetObjectId(4352)
+
+	tableDef.AddColumn(factory.CreateDefinition(column.ArgsBuilder("col1", ctypes.Int2).Build()))
+	tableDef.AddColumn(factory.CreateDefinition(column.ArgsBuilder("col2", ctypes.Int2).Build()))
+	tableDef.AddColumn(factory.CreateDefinition(
+		column.ArgsBuilder("col3", ctypes.Int2).
 			Nullable(true).
 			Build()))
-	tabDef.AddColumn(factory.CreateDefinition(
-		column.ArgsBuilder().
-			Name("col4").
-			Type(ctypes.Int2).
+	tableDef.AddColumn(factory.CreateDefinition(
+		column.ArgsBuilder("col4", ctypes.Int2).
 			Nullable(true).
 			Build()))
 
@@ -53,7 +52,7 @@ func testTuplePrint() {
 		"col4": 9,
 	}
 	txCtx := tx.NewContext(32)
-	tuple, err := bstructs.CreateTuple(tabDef, colValues, txCtx)
+	tuple, err := bstructs.CreateTuple(tableDef, colValues, txCtx)
 	if err != nil {
 		println(err.Error())
 		os.Exit(1)

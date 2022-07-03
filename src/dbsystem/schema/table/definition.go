@@ -29,16 +29,25 @@ type Definition interface {
 	AllColumnSerializer() []column.DataSerializer
 
 	GetColumn(index column.OrderId) column.ImmDefinition
+}
+
+type WDefinition interface {
+	Definition
+
+	SetTableId(id Id)
+	SetObjectId(id uint64)
+	SetName(name string)
+
 	AddColumn(definition column.Definition) error
 	RemoveColumn(name string) error
 }
 
 type Id = uint32
 
-func NewDefinition(name string, tableId Id, objId uint64) Definition {
+func NewDefinition(name string) WDefinition {
 	return &table{
-		tableId:      tableId,
-		objectId:     objId,
+		tableId:      0,
+		objectId:     0,
 		colNameIdMap: map[string]column.OrderId{},
 		columnsNames: []string{},
 		columns:      []column.Definition{},

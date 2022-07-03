@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-func ArgsBuilder() *argsBuilder {
+func ArgsBuilder(name string, ctype Type) *argsBuilder {
 	return &argsBuilder{argsMap: &argsMap{}}
 }
 

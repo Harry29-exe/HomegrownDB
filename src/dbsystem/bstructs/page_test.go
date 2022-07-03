@@ -14,7 +14,9 @@ import (
 
 func TestCreateEmptyPage(t *testing.T) {
 	tableDef := table.NewDefinition(
-		"test_table", 0, 0)
+		"test_table")
+	tableDef.SetTableId(32)
+	tableDef.SetObjectId(12)
 
 	newPage := bstructs.CreateEmptyPage(tableDef)
 
@@ -47,7 +49,7 @@ func TestPage_Tuple(t *testing.T) {
 	}
 	tuple := tupleToSave.Tuple
 
-	err = page.InsertTuple(tuple)
+	err = page.InsertTuple(tuple.Data())
 	if err != nil {
 		t.Errorf("%e", err)
 	}
@@ -61,21 +63,18 @@ var pUtils = pageUtils{}
 type pageUtils struct{}
 
 func (u pageUtils) testTable() table.Definition {
-	def := table.NewDefinition("test_table", 12, 20)
-	def.AddColumn(factory.CreateDefinition(
-		column.ArgsBuilder().
-			Name("col1").
-			Type(ctypes.Int2).
-			Build(),
+	tableDef := table.NewDefinition("test_table")
+	tableDef.SetTableId(12)
+	tableDef.SetObjectId(20)
+
+	tableDef.AddColumn(factory.CreateDefinition(
+		column.ArgsBuilder("col1", ctypes.Int2).Build(),
 	))
-	def.AddColumn(factory.CreateDefinition(
-		column.ArgsBuilder().
-			Name("col2").
-			Type(ctypes.Int2).
-			Build(),
+	tableDef.AddColumn(factory.CreateDefinition(
+		column.ArgsBuilder("col2", ctypes.Int2).Build(),
 	))
 
-	return def
+	return tableDef
 }
 
 func (u pageUtils) colValues1() map[string]any {

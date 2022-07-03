@@ -12,9 +12,8 @@ func TestInt2Column_Builder(t *testing.T) {
 	nullable := false
 	name := "small_int"
 
-	args := column.ArgsBuilder().
-		Type(ctypes.Int2).Nullable(nullable).
-		Name(name).
+	args := column.ArgsBuilder(name, ctypes.Int2).
+		Nullable(nullable).
 		Build()
 
 	col := factory2.CreateDefinition(args)
@@ -46,9 +45,8 @@ func TestInt2Column_Serializable(t *testing.T) {
 }
 
 func createInt2(name string, nullable bool) *ctypes.Int2Column {
-	args := column.ArgsBuilder().
-		Type(ctypes.Int2).Nullable(nullable).
-		Name(name).
+	args := column.ArgsBuilder(name, ctypes.Int2).
+		Nullable(nullable).
 		Build()
 
 	return ctypes.NewInt2Column(args)

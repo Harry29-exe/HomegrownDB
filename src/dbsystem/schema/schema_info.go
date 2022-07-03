@@ -1,17 +1,28 @@
 package schema
 
 import (
+	"HomegrownDB/datastructs/appsync"
 	"HomegrownDB/dbsystem"
 	"HomegrownDB/dbsystem/schema/table"
 	"io/ioutil"
 	"os"
 )
 
-var Tables = initTables()
+var Tables *tables = initTables()
 
 type tables struct {
+	nameTableMap    map[string]table.Id
 	definitions     []table.Definition
 	changeListeners []func()
+	tableIdCounter  appsync.SyncCounter[table.Id]
+}
+
+func (t *tables) GetTable(name string) table.Definition {
+	id, ok := t.nameTableMap[name]
+	if ok {
+		return t.definitions[id]
+	}
+	return nil
 }
 
 func (t *tables) Table(id table.Id) table.Definition {
@@ -26,6 +37,17 @@ func (t *tables) AllTables() []table.Definition {
 	}
 
 	return allTablesList
+}
+
+func (t *tables) AddTable(table table.WDefinition) error {
+	//table.SetTableId()
+	//todo implement me
+	panic("Not implemented")
+}
+
+func (t *tables) RemoveTable(id table.Id) error {
+	//todo implement me
+	panic("Not implemented")
 }
 
 func (t *tables) RegisterChangeListener(fn func()) {

@@ -10,8 +10,8 @@ type DBBuffer interface {
 	RPage(tag bstructs.PageTag) (bstructs.RPage, error)
 	WPage(id bstructs.PageTag) (bstructs.WPage, error)
 
-	ReleaseWPage(page bstructs.WPage)
-	ReleaseRPage(page bstructs.RPage)
+	ReleaseWPage(tag bstructs.PageTag)
+	ReleaseRPage(tag bstructs.PageTag)
 }
 
 const bufferSize = 10_000

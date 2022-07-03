@@ -11,8 +11,10 @@ import (
 type TestTableBuilder struct{}
 
 func (b TestTableBuilder) TestTable1() table.Definition {
-	tableDef := table.NewDefinition("test_table1", 43741, 642)
-	tableDef.AddColumn(factory.CreateDefinition(column.NewSimpleArgs("col1", ctypes.Int2)))
+	tableDef := table.NewDefinition("test_table1")
+	tableDef.SetTableId(43741)
+	tableDef.SetObjectId(642)
+	tableDef.AddColumn(factory.CreateDefinition(column.ArgsBuilder("col1", ctypes.Int2).Build()))
 
 	return tableDef
 }
