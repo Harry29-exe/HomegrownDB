@@ -1,39 +1,38 @@
 package io
 
 import (
-	"HomegrownDB/dbsystem/bstructs"
-	"HomegrownDB/dbsystem/schema"
+	"HomegrownDB/dbsystem/bdata"
+	"HomegrownDB/dbsystem/stores"
 	"fmt"
 	"os"
 )
 
-var Pages = mainPages{}
+var Pages = &PageIO{}
 
-type mainPages struct{}
+type PageIO struct {
+	homePath        string
+	tablesPaths     []string // array of table.Id to path to table data directory
+	tablesDataPaths []string // array of table.Id to path to table data directory
+}
 
-func (mp mainPages) Read(tag bstructs.PageTag, buffer []byte) {
-	file, err := os.Open(tablesDataPaths[tag.TableId])
+func (mp *PageIO) Read(tag bdata.PageTag, buffer []byte) {
+	file, err := os.Open(mp.tablesDataPaths[tag.TableId])
 	if err != nil {
-		panic(fmt.Sprintf("data file for table %s does not exist", schema.Tables.Table(tag.TableId).Name()))
+		panic(fmt.Sprintf("data file for table %s does not exist", stores.Tables.Table(tag.TableId).Name()))
 	}
 
-	_, err = file.Seek(int64(bstructs.PageSize)*int64(tag.PageId), 0)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	_, err = file.ReadAt(buffer[:bstructs.PageSize], int64(bstructs.PageSize)*int64(tag.PageId))
+	_, err = file.ReadAt(buffer[:bdata.PageSize], int64(bdata.PageSize)*int64(tag.PageId))
 	if err != nil {
 		panic(err.Error())
 	}
 }
 
-func (mp mainPages) Flush(tag bstructs.PageTag, buffer []byte) {
+func (mp *PageIO) Flush(tag bdata.PageTag, buffer []byte) {
 	//todo implement me
 	panic("Not implemented")
 }
 
-func (mp mainPages) SaveNew(tag bstructs.PageTag, buffer []byte) {
+func (mp *PageIO) SaveNew(tag bdata.PageTag, buffer []byte) {
 	//todo implement me
 	panic("Not implemented")
 }

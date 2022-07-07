@@ -2,8 +2,8 @@ package io
 
 import (
 	"HomegrownDB/dbsystem"
-	"HomegrownDB/dbsystem/schema"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/stores"
 )
 
 var homePath string
@@ -13,11 +13,11 @@ var tablesDataPaths []string // array of table.Id to path to table data director
 func init() {
 	homePath = dbsystem.Props.DBHomePath() + "/tables"
 	initIOProperties()
-	schema.Tables.RegisterChangeListener(initIOProperties)
+	stores.Tables.RegisterChangeListener(initIOProperties)
 }
 
 func initIOProperties() {
-	tables := schema.Tables.AllTables()
+	tables := stores.Tables.AllTables()
 
 	maxTableId := table.Id(0)
 	for _, def := range tables {

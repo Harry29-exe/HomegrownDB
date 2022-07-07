@@ -1,4 +1,4 @@
-package bstructs
+package bdata
 
 import (
 	"HomegrownDB/common/bparse"

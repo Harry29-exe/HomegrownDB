@@ -2,12 +2,12 @@ package buffer
 
 import (
 	"HomegrownDB/datastructs/appsync"
-	"HomegrownDB/dbsystem/bstructs"
+	"HomegrownDB/dbsystem/bdata"
 	"sync"
 )
 
 type pageDescriptor struct {
-	pageTag    bstructs.PageTag
+	pageTag    bdata.PageTag
 	arrayIndex ArrayIndex
 	refCount   uint32
 	usageCount uint32
@@ -19,7 +19,7 @@ type pageDescriptor struct {
 	descriptorLock   appsync.SpinLock
 }
 
-func (pd *pageDescriptor) InitNewPage(tag bstructs.PageTag) {
+func (pd *pageDescriptor) InitNewPage(tag bdata.PageTag) {
 	pd.refCount = 0
 	pd.usageCount = 2 // set usageCount to 2, so it won't instantly become victim page
 	pd.pageTag = tag

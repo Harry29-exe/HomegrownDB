@@ -1,20 +1,20 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/bstructs"
+	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/io"
-	"HomegrownDB/dbsystem/schema"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/stores"
 )
 
-var SharedBuffer DBSharedBuffer = NewSharedBuffer(10_000, schema.Tables, io.Pages)
+var SharedBuffer DBSharedBuffer = NewSharedBuffer(10_000, stores.Tables, io.Pages)
 
 type DBSharedBuffer interface {
-	RPage(tag bstructs.PageTag) (bstructs.RPage, error)
-	WPage(id bstructs.PageTag) (bstructs.WPage, error)
+	RPage(tag bdata.PageTag) (bdata.RPage, error)
+	WPage(id bdata.PageTag) (bdata.WPage, error)
 
-	ReleaseWPage(tag bstructs.PageTag)
-	ReleaseRPage(tag bstructs.PageTag)
+	ReleaseWPage(tag bdata.PageTag)
+	ReleaseRPage(tag bdata.PageTag)
 }
 
 type TableSrc interface {
@@ -22,9 +22,9 @@ type TableSrc interface {
 }
 
 type PageIO interface {
-	Read(tag bstructs.PageTag, buffer []byte)
-	Flush(tag bstructs.PageTag, buffer []byte)
-	SaveNew(tag bstructs.PageTag, buffer []byte)
+	Read(tag bdata.PageTag, buffer []byte)
+	Flush(tag bdata.PageTag, buffer []byte)
+	SaveNew(tag bdata.PageTag, buffer []byte)
 }
 
 const bufferSize = 10_000

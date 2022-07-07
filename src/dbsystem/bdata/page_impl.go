@@ -1,4 +1,4 @@
-package bstructs
+package bdata
 
 // For better understanding of struct Page
 // it's recommended to view page.doc.svg diagram
@@ -77,6 +77,10 @@ func (p Page) FreeSpace() uint16 {
 
 	return lastTupleStartIndex - (lastTuplePointerStart + InPagePointerSize - 1)
 }
+
+/*
+todo add inserting tuple to page that have dead index eg. page had tuples 1, 2 and 3
+ then tuple 2 was deleted next insert should put new tuple between 1 and 3 */
 
 func (p Page) InsertTuple(tuple []byte) error {
 	tupleLen := uint16(len(tuple))

@@ -1,4 +1,4 @@
-package bstructs
+package bdata
 
 type RPage interface {
 	Tuple(tupleIndex uint16) Tuple

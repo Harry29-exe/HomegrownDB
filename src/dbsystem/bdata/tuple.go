@@ -1,4 +1,4 @@
-package bstructs
+package bdata
 
 import (
 	"HomegrownDB/dbsystem/schema/column"
