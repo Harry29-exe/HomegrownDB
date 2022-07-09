@@ -1,5 +1,7 @@
 package bdata
 
+import "HomegrownDB/dbsystem"
+
 type RPage interface {
 	Tuple(tupleIndex uint16) Tuple
 	TupleCount() uint16
@@ -18,4 +20,4 @@ type PageId = uint32
 
 const PageIdSize = 4
 
-const PageSize uint16 = 8192
+const PageSize uint16 = dbsystem.PageSize

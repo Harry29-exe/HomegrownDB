@@ -7,7 +7,7 @@ import (
 )
 
 func CreateTableFiles(table table.Definition) error {
-	tablePath := dbsystem.Props.DBHomePath() + "/tables/" + table.Name()
+	tablePath := dbsystem.DBHomePath() + "/tables/" + table.Name()
 	err := os.Mkdir(tablePath, 755)
 	if err != nil {
 		return err

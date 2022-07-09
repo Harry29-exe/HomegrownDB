@@ -11,23 +11,13 @@ const TableInfoFilename = "info"
 
 var dbHomePath = ""
 
-var Props = dbProperties{}
-
-type dbProperties struct{}
-
-// DBHomePath returns path to root directory of database without '/' postfix
-func (dbp dbProperties) DBHomePath() string {
-	return dbHomePath
-}
-
 func init() {
 	dbHomePath = readDBHome()
-	//ex, err := os.Executable()
-	//if err != nil {
-	//	panic(err)
-	//}
-	//exPath := filepath.Dir(ex)
-	//fmt.Printf("execution path: %s\n", exPath)
+}
+
+// DBHomePath returns path to root directory of database without '/' postfix
+func DBHomePath() string {
+	return dbHomePath
 }
 
 func readDBHome() string {

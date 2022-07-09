@@ -11,7 +11,7 @@ var tablesPaths []string     // array of table.Id to path to table data director
 var tablesDataPaths []string // array of table.Id to path to table data directory
 
 func init() {
-	homePath = dbsystem.Props.DBHomePath() + "/tables"
+	homePath = dbsystem.DBHomePath() + "/tables"
 	initIOProperties()
 	stores.Tables.RegisterChangeListener(initIOProperties)
 }
