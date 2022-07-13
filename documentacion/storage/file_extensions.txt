@@ -1,2 +1,3 @@
+hdbb -> homegrown database binary file, usually serialized definition
 hdbd -> homegrown database data, stores table pages
 hdbfsm -> homegrown database free space map, stores map of empty space in table pages (hdbd file)

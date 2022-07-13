@@ -55,3 +55,10 @@ func NewDefinition(name string) WDefinition {
 		name:         name,
 	}
 }
+
+func Deserialize(data []byte) WDefinition {
+	def := &table{}
+	def.Deserialize(data)
+
+	return def
+}

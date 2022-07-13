@@ -1,0 +1,3 @@
+This file describes coding conventions used is this project.
+
+- dir path are passed without '/' postfix
