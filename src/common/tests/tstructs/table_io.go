@@ -1,4 +1,4 @@
-package testmocks
+package tstructs
 
 import (
 	"HomegrownDB/dbsystem/bdata"

@@ -1,4 +1,4 @@
-package testutils
+package tutils
 
 import (
 	"HomegrownDB/dbsystem/schema/column"

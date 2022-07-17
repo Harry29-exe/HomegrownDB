@@ -1,8 +1,9 @@
-package testutils
+package tstructs
 
 import (
 	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/bdata"
+	"HomegrownDB/dbsystem/io"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/ctypes"
 	"HomegrownDB/dbsystem/schema/table"
@@ -12,6 +13,12 @@ import (
 
 type TestTable struct {
 	table.WDefinition
+}
+
+func (t TestTable) FillPages(tableIO io.TableDataIO, pagesToFill int) {
+	for {
+
+	}
 }
 
 func (t TestTable) RandTuple(rand random.Random) bdata.TupleToSave {
