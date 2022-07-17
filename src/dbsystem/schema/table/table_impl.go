@@ -8,7 +8,7 @@ import (
 	"math"
 )
 
-type table struct {
+type StandardTable struct {
 	objectId     uint64
 	tableId      Id
 	colNameIdMap map[string]column.OrderId
@@ -18,31 +18,31 @@ type table struct {
 	name         string
 }
 
-func (t *table) SetTableId(id Id) {
+func (t *StandardTable) SetTableId(id Id) {
 	t.tableId = id
 }
 
-func (t *table) TableId() Id {
+func (t *StandardTable) TableId() Id {
 	return t.tableId
 }
 
-func (t *table) SetObjectId(id uint64) {
+func (t *StandardTable) SetObjectId(id uint64) {
 	t.objectId = id
 }
 
-func (t *table) ObjectId() uint64 {
+func (t *StandardTable) ObjectId() uint64 {
 	return t.objectId
 }
 
-func (t *table) SetName(name string) {
+func (t *StandardTable) SetName(name string) {
 	t.name = name
 }
 
-func (t *table) Name() string {
+func (t *StandardTable) Name() string {
 	return t.name
 }
 
-func (t *table) Serialize() []byte {
+func (t *StandardTable) Serialize() []byte {
 	serializer := bparse.NewSerializer()
 
 	serializer.Uint64(t.objectId)
@@ -57,7 +57,7 @@ func (t *table) Serialize() []byte {
 	return serializer.GetBytes()
 }
 
-func (t *table) Deserialize(tableDef []byte) {
+func (t *StandardTable) Deserialize(tableDef []byte) {
 	deserializer := bparse.NewDeserializer(tableDef)
 	t.objectId = deserializer.Uint64()
 	t.name = deserializer.MdString()
@@ -70,23 +70,23 @@ func (t *table) Deserialize(tableDef []byte) {
 }
 
 // BitmapLen returns number of bytes in tuple that constitute null bitmap
-func (t *table) BitmapLen() uint16 {
+func (t *StandardTable) BitmapLen() uint16 {
 	return uint16(math.Ceil(float64(t.columnsCount) / 8))
 }
 
-func (t *table) ColumnCount() uint16 {
+func (t *StandardTable) ColumnCount() uint16 {
 	return t.columnsCount
 }
 
-func (t *table) ColumnName(columnId column.OrderId) string {
+func (t *StandardTable) ColumnName(columnId column.OrderId) string {
 	return t.columnsNames[columnId]
 }
 
-func (t *table) ColumnId(name string) column.OrderId {
+func (t *StandardTable) ColumnId(name string) column.OrderId {
 	return t.colNameIdMap[name]
 }
 
-func (t *table) ColumnsIds(names []string) []column.OrderId {
+func (t *StandardTable) ColumnsIds(names []string) []column.OrderId {
 	colIds := make([]column.OrderId, 0, len(names))
 	for i, name := range names {
 		colIds[i] = t.colNameIdMap[name]
@@ -95,11 +95,11 @@ func (t *table) ColumnsIds(names []string) []column.OrderId {
 	return colIds
 }
 
-func (t *table) ColumnParser(id column.OrderId) column.DataParser {
+func (t *StandardTable) ColumnParser(id column.OrderId) column.DataParser {
 	return t.columns[id].DataParser()
 }
 
-func (t *table) ColumnParsers(ids []column.OrderId) []column.DataParser {
+func (t *StandardTable) ColumnParsers(ids []column.OrderId) []column.DataParser {
 	parsers := make([]column.DataParser, 0, len(ids))
 	for i, id := range ids {
 		parsers[i] = t.columns[id].DataParser()
@@ -108,11 +108,11 @@ func (t *table) ColumnParsers(ids []column.OrderId) []column.DataParser {
 	return parsers
 }
 
-func (t *table) ColumnSerializer(id column.OrderId) column.DataSerializer {
+func (t *StandardTable) ColumnSerializer(id column.OrderId) column.DataSerializer {
 	return t.columns[id].DataSerializer()
 }
 
-func (t *table) ColumnSerializers(ids []column.OrderId) []column.DataSerializer {
+func (t *StandardTable) ColumnSerializers(ids []column.OrderId) []column.DataSerializer {
 	serializers := make([]column.DataSerializer, 0, len(ids))
 	for i, id := range ids {
 		serializers[i] = t.columns[id].DataSerializer()
@@ -121,7 +121,7 @@ func (t *table) ColumnSerializers(ids []column.OrderId) []column.DataSerializer 
 	return serializers
 }
 
-func (t *table) AllColumnSerializer() []column.DataSerializer {
+func (t *StandardTable) AllColumnSerializer() []column.DataSerializer {
 	serializers := make([]column.DataSerializer, t.columnsCount)
 	for i := 0; i < int(t.columnsCount); i++ {
 		serializers[i] = t.columns[i].DataSerializer()
@@ -130,11 +130,11 @@ func (t *table) AllColumnSerializer() []column.DataSerializer {
 	return serializers
 }
 
-func (t *table) GetColumn(index column.OrderId) column.ImmDefinition {
+func (t *StandardTable) GetColumn(index column.OrderId) column.ImmDefinition {
 	return t.columns[index]
 }
 
-func (t *table) AddColumn(definition column.Definition) error {
+func (t *StandardTable) AddColumn(definition column.Definition) error {
 	_, ok := t.colNameIdMap[definition.Name()]
 	if ok {
 		return errors.New("table already contains column with name:" + definition.Name())
@@ -147,7 +147,7 @@ func (t *table) AddColumn(definition column.Definition) error {
 	return nil
 }
 
-func (t *table) RemoveColumn(name string) error {
+func (t *StandardTable) RemoveColumn(name string) error {
 	colToRemoveId, ok := t.colNameIdMap[name]
 	if !ok {
 		return errors.New("column does not contain column with name: " + name)

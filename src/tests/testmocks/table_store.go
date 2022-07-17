@@ -35,6 +35,31 @@ func NewTestTableStore(definitions []table.WDefinition, tablesIOs []io.TableData
 	}
 }
 
+func NewTestTableStoreWithInMemoryIO(definitions []table.WDefinition) stores.Tables {
+	definitionsMap := map[table.Id]table.WDefinition{}
+	tableIOs := map[table.Id]io.TableDataIO{}
+	nameTableMap := map[string]table.Id{}
+	maxId := table.Id(0)
+	for _, def := range definitions {
+		id := def.TableId()
+		if id > maxId {
+			maxId = id
+		}
+		definitionsMap[id] = def
+		tableIOs[id] = NewInMemoryTableIO()
+		nameTableMap[def.Name()] = id
+	}
+
+	return &TestTablesStore{
+		storeLock:       &sync.RWMutex{},
+		nameTableMap:    nameTableMap,
+		definitions:     definitionsMap,
+		tableIOs:        tableIOs,
+		changeListeners: nil,
+		tableIdCounter:  appsync.NewUint32SyncCounter(maxId + 1),
+	}
+}
+
 type TestTablesStore struct {
 	storeLock *sync.RWMutex
 

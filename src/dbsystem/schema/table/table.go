@@ -45,7 +45,7 @@ type WDefinition interface {
 type Id = uint32
 
 func NewDefinition(name string) WDefinition {
-	return &table{
+	return &StandardTable{
 		tableId:      0,
 		objectId:     0,
 		colNameIdMap: map[string]column.OrderId{},
@@ -57,7 +57,7 @@ func NewDefinition(name string) WDefinition {
 }
 
 func Deserialize(data []byte) WDefinition {
-	def := &table{}
+	def := &StandardTable{}
 	def.Deserialize(data)
 
 	return def
