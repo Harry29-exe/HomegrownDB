@@ -2,11 +2,11 @@ package buffer
 
 import (
 	"HomegrownDB/dbsystem/bdata"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/stores"
 	"sync"
 )
 
-func NewSharedBuffer(bufferSize uint, tableSource TableSrc, pageLoader PageIO) *sharedBuffer {
+func NewSharedBuffer(bufferSize uint, tableStore stores.Tables) *sharedBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 
 	return &sharedBuffer{
@@ -18,8 +18,7 @@ func NewSharedBuffer(bufferSize uint, tableSource TableSrc, pageLoader PageIO) *
 
 		pageBufferArray: make([]byte, bufferSize*uint(bdata.PageSize)),
 
-		tableSRC: tableSource,
-		pageIO:   pageLoader,
+		tableStore: tableStore,
 	}
 }
 
@@ -32,12 +31,11 @@ type sharedBuffer struct {
 
 	pageBufferArray []byte
 
-	tableSRC TableSrc
-	pageIO   PageIO
+	tableStore stores.Tables
 }
 
 func (b *sharedBuffer) RPage(tag bdata.PageTag) (bdata.RPage, error) {
-	tableDef := b.tableSRC.Table(tag.TableId)
+	tableDef := b.tableStore.Table(tag.TableId)
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -51,7 +49,7 @@ func (b *sharedBuffer) RPage(tag bdata.PageTag) (bdata.RPage, error) {
 	} else {
 		b.bufferMapLock.RUnlock()
 		//todo add locks to new loadPage impl
-		index, err := b.loadPage(tag, tableDef)
+		index, err := b.loadPage(tag)
 		if err != nil {
 			return nil, err
 		}
@@ -64,7 +62,7 @@ func (b *sharedBuffer) RPage(tag bdata.PageTag) (bdata.RPage, error) {
 }
 
 func (b *sharedBuffer) WPage(tag bdata.PageTag) (bdata.WPage, error) {
-	tableDef := b.tableSRC.Table(tag.TableId)
+	tableDef := b.tableStore.Table(tag.TableId)
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -78,7 +76,7 @@ func (b *sharedBuffer) WPage(tag bdata.PageTag) (bdata.WPage, error) {
 	} else {
 		b.bufferMapLock.RUnlock()
 		//todo add locks to new loadPage impl
-		index, err := b.loadPage(tag, tableDef)
+		index, err := b.loadPage(tag)
 		if err != nil {
 			return nil, err
 		}
@@ -116,7 +114,7 @@ func (b *sharedBuffer) ReleaseRPage(tag bdata.PageTag) {
 
 //todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
 // 2) prawdopodobnie zaimplementować własną hash mape
-func (b *sharedBuffer) loadPage(tag bdata.PageTag, table table.Definition) (ArrayIndex, error) {
+func (b *sharedBuffer) loadPage(tag bdata.PageTag) (ArrayIndex, error) {
 	for {
 		victimIndex := b.clock.FindVictimPage()
 		descriptor := &b.descriptorArray[victimIndex]
@@ -126,18 +124,10 @@ func (b *sharedBuffer) loadPage(tag bdata.PageTag, table table.Definition) (Arra
 		arraySlot := b.pageBufferArray[pageStart : pageStart+pSize]
 
 		if descriptor.isDirty {
-			descriptor.pin()
-			descriptor.contentLock.RLock()
-			descriptor.ioInProgressLock.Lock()
-
-			b.pageIO.Flush(descriptor.pageTag, arraySlot)
-			descriptor.descriptorLock.Lock()
-			descriptor.isDirty = false
-			descriptor.descriptorLock.Unlock()
-
-			descriptor.contentLock.RUnlock()
-			descriptor.ioInProgressLock.Unlock()
-			descriptor.unpin()
+			err := b.flushPage(descriptor, arraySlot)
+			if err != nil {
+				return 0, err
+			}
 		}
 
 		b.bufferMapLock.Lock()
@@ -150,7 +140,33 @@ func (b *sharedBuffer) loadPage(tag bdata.PageTag, table table.Definition) (Arra
 		delete(b.bufferMap, descriptor.pageTag)
 
 		//todo load new page
-		b.pageIO.Read(tag, arraySlot)
+		err := b.tableStore.TableIO(tag.TableId).ReadPage(tag.PageId, arraySlot)
+		if err != nil {
+			b.bufferMapLock.Unlock()
+			return 0, err
+		}
 		b.bufferMapLock.Unlock()
 	}
+}
+
+func (b *sharedBuffer) flushPage(descriptor *pageDescriptor, pageData []byte) error {
+	descriptorTag := descriptor.pageTag
+	descriptor.pin()
+	descriptor.contentLock.RLock()
+	descriptor.ioInProgressLock.Lock()
+	defer func() {
+		descriptor.contentLock.RUnlock()
+		descriptor.ioInProgressLock.Unlock()
+		descriptor.unpin()
+	}()
+
+	err := b.tableStore.TableIO(descriptorTag.TableId).FlushPage(descriptorTag.PageId, pageData)
+	if err != nil {
+		return err
+	}
+	descriptor.descriptorLock.Lock()
+	descriptor.isDirty = false
+	descriptor.descriptorLock.Unlock()
+
+	return nil
 }

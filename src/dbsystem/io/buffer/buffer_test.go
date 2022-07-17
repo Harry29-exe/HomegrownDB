@@ -1,6 +1,7 @@
 package buffer_test
 
 import (
+	"HomegrownDB/dbsystem/io/buffer"
 	"HomegrownDB/tests/testutils"
 	"testing"
 )
@@ -8,6 +9,5 @@ import (
 var testTables = testutils.TestTables
 
 func TestSharedBuffer_Overflow(t *testing.T) {
-	//tabDef1 := testTables.Table1Def()
-	//buf := buffer.NewSharedBuffer(1_000, )
+	testBuffer := buffer.NewSharedBuffer(10_000)
 }
