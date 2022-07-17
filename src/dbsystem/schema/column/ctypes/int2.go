@@ -45,6 +45,10 @@ func (c *Int2Column) Nullable() bool {
 	return c.nullable
 }
 
+func (c *Int2Column) Type() column.Type {
+	return Int2
+}
+
 func (c *Int2Column) DataParser() column.DataParser {
 	return c.parser
 }

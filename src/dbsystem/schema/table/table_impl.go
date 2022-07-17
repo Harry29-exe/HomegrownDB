@@ -13,7 +13,7 @@ type StandardTable struct {
 	tableId      Id
 	colNameIdMap map[string]column.OrderId
 	columnsNames []string
-	columns      []column.Definition
+	columns      []column.WDefinition
 	columnsCount uint16
 	name         string
 }
@@ -130,11 +130,11 @@ func (t *StandardTable) AllColumnSerializer() []column.DataSerializer {
 	return serializers
 }
 
-func (t *StandardTable) GetColumn(index column.OrderId) column.ImmDefinition {
+func (t *StandardTable) GetColumn(index column.OrderId) column.Definition {
 	return t.columns[index]
 }
 
-func (t *StandardTable) AddColumn(definition column.Definition) error {
+func (t *StandardTable) AddColumn(definition column.WDefinition) error {
 	_, ok := t.colNameIdMap[definition.Name()]
 	if ok {
 		return errors.New("table already contains column with name:" + definition.Name())
@@ -168,7 +168,7 @@ func (t *StandardTable) RemoveColumn(name string) error {
 	copy(newColumnNames[colToRemoveId:], t.columnsNames[colToRemoveId+1:])
 	t.columnsNames = newColumnNames
 
-	newColumns := make([]column.Definition, t.columnsCount-1)
+	newColumns := make([]column.WDefinition, t.columnsCount-1)
 	copy(newColumns[0:colToRemoveId], t.columns[0:colToRemoveId])
 	copy(newColumns[colToRemoveId:], t.columns[colToRemoveId+1:])
 	t.columns = newColumns

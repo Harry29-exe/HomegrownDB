@@ -3,11 +3,12 @@ package column
 type Type = string
 type Id = uint16
 
-// ImmDefinition describes column properties and provides parser and serializer
-type ImmDefinition interface {
+// Definition describes column properties and provides parser and serializer
+type Definition interface {
 	Name() string
 	Nullable() bool
 	GetColumnId() Id
+	Type() Type
 
 	DataParser() DataParser
 	DataSerializer() DataSerializer
@@ -20,8 +21,8 @@ type ImmDefinition interface {
 	Deserialize(data []byte) (subsequent []byte)
 }
 
-type Definition interface {
-	ImmDefinition
+type WDefinition interface {
+	Definition
 	SetColumnId(id Id)
 }
 

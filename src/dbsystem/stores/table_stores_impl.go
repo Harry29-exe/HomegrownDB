@@ -1,10 +1,10 @@
 package stores
 
 import (
+	"HomegrownDB/common/errors"
 	"HomegrownDB/datastructs/appsync"
 	"HomegrownDB/dbsystem/io"
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/errors"
 	"fmt"
 	"sync"
 )

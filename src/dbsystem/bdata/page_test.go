@@ -1,13 +1,13 @@
 package bdata_test
 
 import (
+	tests2 "HomegrownDB/common/tests"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/ctypes"
 	"HomegrownDB/dbsystem/schema/column/factory"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
-	"HomegrownDB/tests"
 	"fmt"
 	"testing"
 )
@@ -25,13 +25,13 @@ func TestCreateEmptyPage(t *testing.T) {
 		t.Error(errMsg)
 	}
 
-	tests.ShouldPanic(
+	tests2.ShouldPanic(
 		func() {
 			newPage.Tuple(0)
 		},
 		"Newly created tuple returned non existing tuple with index 0", t)
 
-	tests.ShouldPanic(
+	tests2.ShouldPanic(
 		func() {
 			newPage.UpdateTuple(0, make([]byte, 128))
 		},
@@ -54,8 +54,8 @@ func TestPage_Tuple(t *testing.T) {
 		t.Errorf("%e", err)
 	}
 
-	tests.AssertEq(page.TupleCount(), 1, t)
-	tests.AssertEqArray(tuple.Data(), page.Tuple(0).Data(), t)
+	tests2.AssertEq(page.TupleCount(), 1, t)
+	tests2.AssertEqArray(tuple.Data(), page.Tuple(0).Data(), t)
 }
 
 var pUtils = pageUtils{}

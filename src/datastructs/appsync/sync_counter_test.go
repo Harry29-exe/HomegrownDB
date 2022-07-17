@@ -1,8 +1,8 @@
 package appsync_test
 
 import (
+	"HomegrownDB/common/tests"
 	"HomegrownDB/datastructs/appsync"
-	"HomegrownDB/tests"
 	"sync"
 	"testing"
 )

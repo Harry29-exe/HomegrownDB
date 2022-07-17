@@ -1,11 +1,11 @@
 package testmocks
 
 import (
+	"HomegrownDB/common/errors"
 	"HomegrownDB/datastructs/appsync"
 	"HomegrownDB/dbsystem/io"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/stores"
-	"HomegrownDB/errors"
 	"fmt"
 	"sync"
 )

@@ -122,7 +122,7 @@ func (tb *tupleBuilder) serializeColumnValues() error {
 	return nil
 }
 
-func (tb *tupleBuilder) saveData(data column.DataToSave, col column.ImmDefinition) {
+func (tb *tupleBuilder) saveData(data column.DataToSave, col column.Definition) {
 	tb.buffer.Write(data.DataInTuple())
 	if data.StorePlace() == column.StoreInBackground {
 		tb.bgValues = append(tb.bgValues,

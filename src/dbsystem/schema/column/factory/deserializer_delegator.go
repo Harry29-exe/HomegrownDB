@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/dbsystem/schema/column/ctypes"
 )
 
-func DeserializeColumnDefinition(serializedData []byte) (col column.Definition, subsequent []byte) {
+func DeserializeColumnDefinition(serializedData []byte) (col column.WDefinition, subsequent []byte) {
 	deserialized := bparse.NewDeserializer(serializedData)
 	columnCode := deserialized.MdString()
 

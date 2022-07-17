@@ -28,7 +28,7 @@ type Definition interface {
 	ColumnSerializers(ids []column.OrderId) []column.DataSerializer
 	AllColumnSerializer() []column.DataSerializer
 
-	GetColumn(index column.OrderId) column.ImmDefinition
+	GetColumn(index column.OrderId) column.Definition
 }
 
 type WDefinition interface {
@@ -38,7 +38,7 @@ type WDefinition interface {
 	SetObjectId(id uint64)
 	SetName(name string)
 
-	AddColumn(definition column.Definition) error
+	AddColumn(definition column.WDefinition) error
 	RemoveColumn(name string) error
 }
 
@@ -50,7 +50,7 @@ func NewDefinition(name string) WDefinition {
 		objectId:     0,
 		colNameIdMap: map[string]column.OrderId{},
 		columnsNames: []string{},
-		columns:      []column.Definition{},
+		columns:      []column.WDefinition{},
 		columnsCount: 0,
 		name:         name,
 	}
