@@ -15,9 +15,19 @@ type TestTable struct {
 	table.WDefinition
 }
 
-func (t TestTable) FillPages(tableIO io.TableDataIO, pagesToFill int) {
-	for {
-
+func (t TestTable) FillPages(pagesToFill int, tableIO io.TableDataIO, rand random.Random) {
+	page := bdata.NewPage(t.WDefinition, make([]byte, pageSize))
+	filledPages := 0
+	for filledPages < pagesToFill {
+		err := page.InsertTuple(t.RandTuple(rand).Tuple.Data())
+		if err != nil {
+			filledPages++
+			_, err := tableIO.NewPage(page.Data())
+			if err != nil {
+				panic("could not create new page")
+			}
+			page = bdata.NewPage(t.WDefinition, make([]byte, pageSize))
+		}
 	}
 }
 

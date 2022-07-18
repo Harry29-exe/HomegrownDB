@@ -1,27 +1,35 @@
 package buffer_test
 
 import (
+	"HomegrownDB/common/random"
+	"HomegrownDB/common/tests"
 	"HomegrownDB/common/tests/tstructs"
 	"HomegrownDB/common/tests/tutils"
+	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/io/buffer"
 	"testing"
 )
 
-var testTables = tutils.TestTables
-
 func TestSharedBuffer_Overflow(t *testing.T) {
-	tables := []tstructs.TestTable{
-		tutils.TestTables.Table1Def(),
-	}
-	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(tables)
-	for i := 0; i < 10_000; i++ {
+	table1 := tutils.TestTables.Table1Def()
+	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
+	table1IO := tableStore.TableIO(table1.TableId())
 
-	}
+	rand := random.NewRandom(0)
+	table1.FillPages(1_000, table1IO, rand)
 
+	buf := make([]byte, bdata.PageSize)
 	testBuffer := buffer.NewSharedBuffer(100, tableStore)
+	for i := bdata.PageId(0); i < 1_000; i++ {
+		page, err := testBuffer.WPage(bdata.NewPageTag(i, table1))
+		if err != nil {
+			t.Errorf("During reading page %d got error: %e", i, err)
+		}
 
-	if testBuffer != nil {
-
+		err = table1IO.ReadPage(i, buf)
+		if err != nil {
+			return
+		}
+		tests.AssertEqArray(page.Data(), buf, t)
 	}
-	//testBuffer.RPage()
 }

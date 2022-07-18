@@ -35,7 +35,7 @@ func NewTestTableStore(definitions []TestTable, tablesIOs []io.TableDataIO) stor
 	}
 }
 
-func NewTestTableStoreWithInMemoryIO(definitions []TestTable) stores.Tables {
+func NewTestTableStoreWithInMemoryIO(definitions ...TestTable) stores.Tables {
 	definitionsMap := map[table.Id]TestTable{}
 	tableIOs := map[table.Id]io.TableDataIO{}
 	nameTableMap := map[string]table.Id{}

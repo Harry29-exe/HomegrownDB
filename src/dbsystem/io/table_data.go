@@ -11,8 +11,11 @@ import (
 const PageSize = uint32(dbsystem.PageSize)
 
 type TableDataIO interface {
+	// ReadPage reads page with given index to provided buffer
 	ReadPage(pageIndex bdata.PageId, buffer []byte) error
+	// FlushPage overrides pages at given page index with data from provided buffer
 	FlushPage(pageIndex bdata.PageId, pageData []byte) error
+	// NewPage saves provided buffer as new page and returns newly created page index
 	NewPage(pageData []byte) (bdata.PageId, error)
 
 	ReadBgPage(pageIndex bdata.PageId, buffer []byte) error

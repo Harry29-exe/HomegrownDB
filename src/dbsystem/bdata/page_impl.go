@@ -41,11 +41,6 @@ type Page struct {
 	page  []byte
 }
 
-type PageTag struct {
-	PageId  PageId
-	TableId table.Id
-}
-
 func (p Page) Tuple(tIndex TupleIndex) Tuple {
 	if p.TupleCount() <= tIndex {
 		panic(fmt.Sprintf("Page has %d tuples but was requestd tuple with id: %d",
@@ -76,6 +71,10 @@ func (p Page) FreeSpace() uint16 {
 	lastTuplePointerStart := p.getLastPtrIndex()
 
 	return lastTupleStartIndex - (lastTuplePointerStart + InPagePointerSize - 1)
+}
+
+func (p Page) Data() []byte {
+	return p.page
 }
 
 /*
