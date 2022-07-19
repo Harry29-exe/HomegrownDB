@@ -18,6 +18,10 @@
     .flex-grid {
         @apply flex flex-row flex-wrap justify-evenly items-center;
     }
+
+    .center {
+        @apply flex justify-center items-center;
+    }
 }
 
 @layer base {
