@@ -1,13 +1,14 @@
 package bdata_test
 
 import (
-	tests2 "HomegrownDB/common/tests"
+	"HomegrownDB/common/random"
+	"HomegrownDB/common/tests"
+	"HomegrownDB/common/tests/tutils"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/ctypes"
 	"HomegrownDB/dbsystem/schema/column/factory"
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/dbsystem/tx"
 	"fmt"
 	"testing"
 )
@@ -25,13 +26,13 @@ func TestCreateEmptyPage(t *testing.T) {
 		t.Error(errMsg)
 	}
 
-	tests2.ShouldPanic(
+	tests.ShouldPanic(
 		func() {
 			newPage.Tuple(0)
 		},
 		"Newly created tuple returned non existing tuple with index 0", t)
 
-	tests2.ShouldPanic(
+	tests.ShouldPanic(
 		func() {
 			newPage.UpdateTuple(0, make([]byte, 128))
 		},
@@ -39,23 +40,21 @@ func TestCreateEmptyPage(t *testing.T) {
 }
 
 func TestPage_Tuple(t *testing.T) {
-	table := pUtils.testTable()
+	table := tutils.TestTables.Table1Def()
 	page := bdata.CreateEmptyPage(table)
 
-	txCtx1 := tx.NewContext(1)
-	tupleToSave, err := bdata.CreateTuple(table, pUtils.colValues1(), txCtx1)
-	if err != nil {
-		t.Error(err.Error())
-	}
-	tuple := tupleToSave.Tuple
+	//txCtx1 := tx.NewContext(1)
+	rand := random.NewRandom(13)
+	for tupleIndex := uint16(0); tupleIndex < 20; tupleIndex++ {
+		tuple := table.RandTuple(rand).Tuple
+		err := page.InsertTuple(tuple.Data())
+		if err != nil {
+			t.Errorf("could not insert tuple nr %d because of error: %e", tupleIndex, err)
+			tests.AssertEq(page.TupleCount(), tupleIndex, t)
+			tests.AssertEqArray(tuple.Data(), page.Tuple(tupleIndex).Data(), t)
+		}
 
-	err = page.InsertTuple(tuple.Data())
-	if err != nil {
-		t.Errorf("%e", err)
 	}
-
-	tests2.AssertEq(page.TupleCount(), 1, t)
-	tests2.AssertEqArray(tuple.Data(), page.Tuple(0).Data(), t)
 }
 
 var pUtils = pageUtils{}

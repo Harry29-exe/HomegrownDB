@@ -18,8 +18,15 @@ type TestTable struct {
 func (t TestTable) FillPages(pagesToFill int, tableIO io.TableDataIO, rand random.Random) {
 	page := bdata.NewPage(t.WDefinition, make([]byte, pageSize))
 	filledPages := 0
+	insertedTuples := 0
 	for filledPages < pagesToFill {
 		err := page.InsertTuple(t.RandTuple(rand).Tuple.Data())
+		insertedTuples++
+		println(insertedTuples)
+		if insertedTuples == 356 {
+			print("about to crash")
+		}
+
 		if err != nil {
 			filledPages++
 			_, err := tableIO.NewPage(page.Data())
