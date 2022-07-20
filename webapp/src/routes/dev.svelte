@@ -1,15 +1,9 @@
 <script lang="ts">
     import NavMenu from "../shared/components/common/navigation/NavMenu.svelte";
     import {Link} from "../shared/components/common/navigation/Link.js";
+    import {devPaths} from "./dev/DevPaths";
 
-    const pageList: Link[] = [
-        new Link("/dev/tuple-visualizer", "Tuple visualizer"),
-        new Link("/dev/tuple-visualizer", "Tuple visualizer"),
-        new Link("/dev/tuple-visualizer", "Tuple visualizer"),
-        new Link("/dev/tuple-visualizer", "Tuple visualizer"),
-        new Link("/dev/tuple-visualizer", "Tuple visualizer"),
-        new Link("/dev/tuple-visualizer", "Tuple visualizer"),
-    ]
+    const paths= devPaths
 </script>
 
-<NavMenu links={pageList}></NavMenu>
+<NavMenu links={paths}></NavMenu>

@@ -1,5 +1,5 @@
-<script lang="ts">
-    import "../shared/styles/app.css"
+<script>
+    import '../shared/styles/app.css';
     import "../shared/styles/colors.css"
     import "../shared/styles/containers.css"
     import "../shared/styles/inputs.css"
