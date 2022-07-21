@@ -98,7 +98,7 @@ func (p Page) InsertTuple(tuple []byte) error {
 		lastTupleStart = PageSize
 		tuplePtrIndex = poFirstTuplePtr
 	} else {
-		tuplePtrIndex = p.getPtrToLastTuplePtr() + InPagePointerSize
+		tuplePtrIndex = p.getLastPtrIndex() + InPagePointerSize
 	}
 
 	tupleStartIndex := lastTupleStart - tupleLen

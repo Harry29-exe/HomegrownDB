@@ -41,10 +41,18 @@ def read_db_path() -> str:
     return homegrown_db_path
 
 
-def export_db_env(db_path: str):
-    outfile = open(os.path.expanduser("~/.zprofile"), "r+t")
+Z_PROFILE_PATH = "~/.zprofile"
+BASH_PROFILE = "~/.bash_profile"
 
-    env_start = "export "+HOMEGROWN_DB_HOME+"="
+
+def export_db_env(db_path: str):
+    path = os.path.expanduser(Z_PROFILE_PATH)
+    if not os.path.exists(path):
+        path = os.path.expanduser(BASH_PROFILE)
+
+    outfile = open(path, "r+t")
+
+    env_start = "export " + HOMEGROWN_DB_HOME + "="
     if not (env_start in outfile.read()):
         outfile.write(
             "# homegrown db environment\n"
