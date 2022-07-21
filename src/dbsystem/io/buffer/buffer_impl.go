@@ -6,8 +6,24 @@ import (
 	"sync"
 )
 
+//todo implement intermediate buffer to which data from TableIO goes before it
+// is saved in SharedBuffer, in this way bufferMapLock will be lock for shorter time
+// see sharedBuffer.loadPage
+
 func NewSharedBuffer(bufferSize uint, tableStore stores.Tables) *sharedBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
+	for i := uint(0); i < bufferSize; i++ {
+		descriptorArray[i] = pageDescriptor{
+			pageTag:          bdata.PageTag{},
+			arrayIndex:       i,
+			refCount:         0,
+			usageCount:       0,
+			isDirty:          false,
+			contentLock:      sync.RWMutex{},
+			ioInProgressLock: sync.Mutex{},
+			descriptorLock:   0,
+		}
+	}
 
 	return &sharedBuffer{
 		bufferMap:     map[bdata.PageTag]ArrayIndex{},
@@ -69,10 +85,7 @@ func (b *sharedBuffer) WPage(tag bdata.PageTag) (bdata.WPage, error) {
 	var descriptor *pageDescriptor
 	if ok {
 		descriptor = &b.descriptorArray[pageArrIndex]
-		descriptor.pin()
 		b.bufferMapLock.RUnlock()
-
-		descriptor.contentLock.Lock()
 	} else {
 		b.bufferMapLock.RUnlock()
 		//todo add locks to new loadPage impl
@@ -82,8 +95,11 @@ func (b *sharedBuffer) WPage(tag bdata.PageTag) (bdata.WPage, error) {
 		}
 
 		descriptor = &b.descriptorArray[index]
+		pageArrIndex = index
 	}
 
+	descriptor.pin()
+	descriptor.contentLock.Lock()
 	pageStart := uintptr(pageArrIndex) * uintptr(bdata.PageSize)
 	return bdata.NewPage(tableDef, b.pageBufferArray[pageStart:pageStart+uintptr(bdata.PageSize)]), nil
 }
@@ -136,16 +152,20 @@ func (b *sharedBuffer) loadPage(tag bdata.PageTag) (ArrayIndex, error) {
 			continue
 		}
 
-		b.bufferMap[tag] = victimIndex
 		delete(b.bufferMap, descriptor.pageTag)
+		b.bufferMap[tag] = victimIndex
+		descriptor.InitNewPage(tag)
+		descriptor.contentLock.Lock()
+		//todo check if ioLock should not be locked here
+		b.bufferMapLock.Unlock()
 
-		//todo load new page
 		err := b.tableStore.TableIO(tag.TableId).ReadPage(tag.PageId, arraySlot)
 		if err != nil {
-			b.bufferMapLock.Unlock()
-			return 0, err
+			return handleFailedTableIO(tag, victimIndex, err)
 		}
-		b.bufferMapLock.Unlock()
+
+		descriptor.contentLock.Unlock()
+		return victimIndex, nil
 	}
 }
 
@@ -169,4 +189,9 @@ func (b *sharedBuffer) flushPage(descriptor *pageDescriptor, pageData []byte) er
 	descriptor.descriptorLock.Unlock()
 
 	return nil
+}
+
+func handleFailedTableIO(tag bdata.PageTag, arrayIndex ArrayIndex, err error) (ArrayIndex, error) {
+	//todo implement me
+	panic("Not implemented")
 }

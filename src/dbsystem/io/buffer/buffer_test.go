@@ -21,15 +21,18 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 	buf := make([]byte, bdata.PageSize)
 	testBuffer := buffer.NewSharedBuffer(100, tableStore)
 	for i := bdata.PageId(0); i < 1_000; i++ {
-		page, err := testBuffer.WPage(bdata.NewPageTag(i, table1))
+		tag := bdata.NewPageTag(i, table1)
+		page, err := testBuffer.WPage(tag)
 		if err != nil {
 			t.Errorf("During reading page %d got error: %e", i, err)
 		}
 
 		err = table1IO.ReadPage(i, buf)
 		if err != nil {
-			return
+			t.Errorf("TableIO returned non nil error: %e", err)
 		}
-		tests.AssertEqArray(page.Data(), buf, t)
+		testBuffer.ReleaseWPage(tag)
+		data := page.Data()
+		tests.AssertEqArray(data, buf, t)
 	}
 }

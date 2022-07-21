@@ -22,10 +22,6 @@ func (t TestTable) FillPages(pagesToFill int, tableIO io.TableDataIO, rand rando
 	for filledPages < pagesToFill {
 		err := page.InsertTuple(t.RandTuple(rand).Tuple.Data())
 		insertedTuples++
-		println(insertedTuples)
-		if insertedTuples == 356 {
-			print("about to crash")
-		}
 
 		if err != nil {
 			filledPages++

@@ -20,9 +20,11 @@ type pageDescriptor struct {
 }
 
 func (pd *pageDescriptor) InitNewPage(tag bdata.PageTag) {
+	pd.descriptorLock.Lock()
 	pd.refCount = 0
 	pd.usageCount = 2 // set usageCount to 2, so it won't instantly become victim page
 	pd.pageTag = tag
+	pd.descriptorLock.Unlock()
 }
 
 // pin increment refCount and usageCount by 1
