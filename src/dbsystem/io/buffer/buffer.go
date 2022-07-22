@@ -12,6 +12,7 @@ func init() {
 	SharedBuffer = NewSharedBuffer(10_000, stores.DBTables)
 }
 
+//todo change methods to operate on ArrayIndexes
 type DBSharedBuffer interface {
 	RPage(tag bdata.PageTag) (bdata.RPage, error)
 	WPage(id bdata.PageTag) (bdata.WPage, error)

@@ -73,6 +73,8 @@ func (b *sharedBuffer) RPage(tag bdata.PageTag) (bdata.RPage, error) {
 		descriptor = &b.descriptorArray[index]
 	}
 
+	descriptor.contentLock.RLock()
+	descriptor.pin()
 	pageStart := uintptr(pageArrIndex) * uintptr(bdata.PageSize)
 	return bdata.NewPage(tableDef, b.pageBufferArray[pageStart:pageStart+uintptr(bdata.PageSize)]), nil
 }
