@@ -50,10 +50,9 @@ func TestPage_Tuple(t *testing.T) {
 		err := page.InsertTuple(tuple.Data())
 		if err != nil {
 			t.Errorf("could not insert tuple nr %d because of error: %e", tupleIndex, err)
-			tests.AssertEq(page.TupleCount(), tupleIndex, t)
-			tests.AssertEqArray(tuple.Data(), page.Tuple(tupleIndex).Data(), t)
 		}
-
+		tests.AssertEq(page.TupleCount(), tupleIndex+1, t)
+		tests.AssertEqArray(tuple.Data(), page.Tuple(tupleIndex).Data(), t)
 	}
 }
 
