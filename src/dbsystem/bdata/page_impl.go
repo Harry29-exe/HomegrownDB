@@ -5,9 +5,7 @@ package bdata
 // which shows how page's binary representations looks like
 
 import (
-	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/schema/table"
-	"crypto/md5"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -46,7 +44,7 @@ func (p Page) Tuple(tIndex TupleIndex) Tuple {
 		panic(fmt.Sprintf("Page has %d tuples but was requestd tuple with id: %d",
 			p.TupleCount(), tIndex))
 	}
-	tuplePtr := p.tuplePtr(tIndex)
+	tuplePtr := p.tupleStart(tIndex)
 	tupleEndPtr := p.tupleEnd(tIndex)
 
 	return Tuple{
@@ -56,21 +54,21 @@ func (p Page) Tuple(tIndex TupleIndex) Tuple {
 }
 
 func (p Page) TupleCount() uint16 {
-	lastPtrIndex := p.getLastPtrIndex()
-	if lastPtrIndex == 0 {
+	lastPtrPosition := p.getLastPtrPosition()
+	if lastPtrPosition == 0 {
 		return 0
 	}
 
 	firstPtrIndex := poFirstTuplePtr
 
-	return (lastPtrIndex-InPagePointer(firstPtrIndex))/2 + 1
+	return (lastPtrPosition-InPagePointer(firstPtrIndex))/2 + 1
 }
 
 func (p Page) FreeSpace() uint16 {
-	lastTupleStartIndex := p.getLastTupleStart()
-	lastTuplePointerStart := p.getLastPtrIndex()
-
-	return lastTupleStartIndex - (lastTuplePointerStart + InPagePointerSize - 1)
+	if lastTupleStart := p.getLastTupleStart(); lastTupleStart != 0 {
+		return lastTupleStart - (p.getLastPtrPosition() + InPagePointerSize)
+	}
+	return emptyPageFreeSpace
 }
 
 func (p Page) Data() []byte {
@@ -91,21 +89,33 @@ func (p Page) InsertTuple(tuple []byte) error {
 
 	// copy tuple
 	lastTupleStart := p.getLastTupleStart()
-	var tuplePtrIndex InPagePointer
+	var tuplePtrPosition InPagePointer
 
+	insertedAsLast := true
 	// empty page
 	if lastTupleStart == 0 {
 		lastTupleStart = PageSize
-		tuplePtrIndex = poFirstTuplePtr
+		tuplePtrPosition = poFirstTuplePtr
 	} else {
-		tuplePtrIndex = p.getLastPtrIndex() + InPagePointerSize
+		tCount := p.TupleCount()
+		for i := uint16(0); i < tCount; i++ {
+			if tupleStart := p.tupleStart(i); tupleStart == 0 {
+				tuplePtrPosition = poFirstTuplePtr + tuplePtrPosition*InPagePointerSize
+				insertedAsLast = false
+				break
+			}
+		}
+
+		tuplePtrPosition = p.getLastPtrPosition() + InPagePointerSize
 	}
 
 	tupleStartIndex := lastTupleStart - tupleLen
 	copy(p.page[tupleStartIndex:lastTupleStart], tuple)
-	binary.LittleEndian.PutUint16(p.page[tuplePtrIndex:], tupleStartIndex)
-	p.setPtrToLastTupleStart(tupleStartIndex)
-	p.setPtrToLastTuplePtr(tuplePtrIndex)
+	binary.LittleEndian.PutUint16(p.page[tuplePtrPosition:], tupleStartIndex)
+	p.setLastTupleStart(tupleStartIndex)
+	if insertedAsLast {
+		p.setLastPointerPosition(tuplePtrPosition)
+	}
 
 	return nil
 }
@@ -115,8 +125,8 @@ func (p Page) UpdateTuple(tIndex TupleIndex, newTuple []byte) {
 		panic(fmt.Sprintf("page does not contains tuple with index %d", tIndex))
 	}
 
-	tuplePtr := p.tuplePtr(tIndex)
-	prevTuplePtr := p.tuplePtr(tIndex - 1)
+	tuplePtr := p.tupleStart(tIndex)
+	prevTuplePtr := p.tupleStart(tIndex - 1)
 	tuple := p.page[tuplePtr:prevTuplePtr]
 	if len(tuple) != len(newTuple) {
 		panic("When updating tuple it's len must me identical")
@@ -129,70 +139,3 @@ func (p Page) DeleteTuple(tIndex TupleIndex) {
 	//TODO implement me
 	panic("implement me")
 }
-
-func (p Page) getLastTupleStart() InPagePointer {
-	pointerToLastPointer := bparse.Parse.UInt2(p.page[poPrtToLastTuplePtr:])
-
-	if pointerToLastPointer == 0 {
-		return 0
-	}
-
-	return bparse.Parse.UInt2(p.page[pointerToLastPointer:])
-}
-
-func (p Page) tupleEnd(index TupleIndex) InPagePointer {
-	tuplePtr := p.tuplePtr(index)
-	if tuplePtr == p.getLastTupleStart() {
-		return PageSize
-	}
-
-	prevTuplePtr := p.tuplePtr(index - 1)
-	return prevTuplePtr
-}
-
-func (p Page) tuplePtr(index TupleIndex) InPagePointer {
-	ptrStart := poFirstTuplePtr + InPagePointerSize*index
-	return bparse.Parse.UInt2(p.page[ptrStart : ptrStart+InPagePointerSize])
-}
-
-func (p Page) getLastPtrIndex() InPagePointer {
-	return binary.LittleEndian.Uint16(p.page[poPrtToLastTuplePtr:])
-}
-
-func (p Page) getPtrToLastTuplePtr() InPagePointer {
-	return binary.LittleEndian.Uint16(
-		p.page[poPtrToLastTupleStart:])
-}
-
-func (p Page) setPtrToLastTuplePtr(ptr InPagePointer) {
-	binary.LittleEndian.PutUint16(p.page[poPrtToLastTuplePtr:], ptr)
-}
-
-func (p Page) getPtrToStartOfLastTuple() InPagePointer {
-	return binary.LittleEndian.Uint16(p.page[poPtrToLastTupleStart:])
-}
-
-func (p Page) setPtrToLastTupleStart(ptr InPagePointer) {
-	binary.LittleEndian.PutUint16(p.page[poPtrToLastTupleStart:], ptr)
-}
-
-func (p Page) updateHash() {
-	hash := md5.Sum(p.page[poPageHash+pageHashLen:])
-	copy(p.page[poPageHash:poPageHash+pageHashLen], hash[0:pageHashLen])
-}
-
-type InPagePointer = uint16
-
-const InPagePointerSize = 2
-
-// po - page offset to
-const (
-	poPageHash            = 0                         // offset to page hash
-	poPrtToLastTuplePtr   = poPageHash + pageHashLen  // offset to pointer pointing to last tuple pointer
-	poPtrToLastTupleStart = poPrtToLastTuplePtr + 2   // offset to pointer pointing to last tuple start
-	poFirstTuplePtr       = poPtrToLastTupleStart + 2 // offset to first of many tuple pointers
-)
-
-const (
-	pageHashLen = 8
-)
