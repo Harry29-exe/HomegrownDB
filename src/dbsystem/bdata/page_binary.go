@@ -12,17 +12,31 @@ const InPagePointerSize = 2
 
 var emptyPageFreeSpace = PageSize - (poFirstTuplePtr + InPagePointerSize)
 
-func (p Page) tupleEnd(index TupleIndex) InPagePointer {
-	if index == 0 {
-		return PageSize
+func (p Page) getTupleEnd(index TupleIndex) InPagePointer {
+	var tupleEnd InPagePointer
+	for index > 0 {
+		tupleEnd = p.getTupleStart(index - 1)
+		if tupleEnd != 0 {
+			return tupleEnd
+		}
+		index--
 	}
 
-	return p.tupleStart(index - 1)
+	return PageSize
 }
 
-func (p Page) tupleStart(index TupleIndex) InPagePointer {
+func (p Page) getTupleStart(index TupleIndex) InPagePointer {
 	ptrStart := poFirstTuplePtr + InPagePointerSize*index
 	return bparse.Parse.UInt2(p.page[ptrStart : ptrStart+InPagePointerSize])
+}
+
+func (p Page) setTupleStart(tupleIndex TupleIndex, tupleStart InPagePointer) {
+	ptrStart := poFirstTuplePtr + InPagePointerSize*tupleIndex
+	binary.LittleEndian.PutUint16(p.page[ptrStart:], tupleStart)
+}
+
+func (p Page) getPtrPosition(index TupleIndex) InPagePointer {
+	return poFirstTuplePtr + index*InPagePointerSize
 }
 
 func (p Page) getLastPtrPosition() InPagePointer {
@@ -36,13 +50,6 @@ func (p Page) setLastPointerPosition(ptr InPagePointer) {
 
 func (p Page) getLastTupleStart() InPagePointer {
 	return bparse.Parse.UInt2(p.page[poPtrToLastTupleStart:])
-	//pointerToLastPointer := bparse.Parse.UInt2(p.page[poPrtToLastTuplePtr:])
-	//
-	//if pointerToLastPointer == 0 {
-	//	return 0
-	//}
-	//
-	//return bparse.Parse.UInt2(p.page[pointerToLastPointer:])
 }
 
 func (p Page) setLastTupleStart(ptr InPagePointer) {

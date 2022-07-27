@@ -44,8 +44,8 @@ func (p Page) Tuple(tIndex TupleIndex) Tuple {
 		panic(fmt.Sprintf("Page has %d tuples but was requestd tuple with id: %d",
 			p.TupleCount(), tIndex))
 	}
-	tuplePtr := p.tupleStart(tIndex)
-	tupleEndPtr := p.tupleEnd(tIndex)
+	tuplePtr := p.getTupleStart(tIndex)
+	tupleEndPtr := p.getTupleEnd(tIndex)
 
 	return Tuple{
 		data:  p.page[tuplePtr:tupleEndPtr],
@@ -99,7 +99,7 @@ func (p Page) InsertTuple(tuple []byte) error {
 	} else {
 		tCount := p.TupleCount()
 		for i := uint16(0); i < tCount; i++ {
-			if tupleStart := p.tupleStart(i); tupleStart == 0 {
+			if tupleStart := p.getTupleStart(i); tupleStart == 0 {
 				tuplePtrPosition = poFirstTuplePtr + tuplePtrPosition*InPagePointerSize
 				insertedAsLast = false
 				break
@@ -125,8 +125,8 @@ func (p Page) UpdateTuple(tIndex TupleIndex, newTuple []byte) {
 		panic(fmt.Sprintf("page does not contains tuple with index %d", tIndex))
 	}
 
-	tuplePtr := p.tupleStart(tIndex)
-	prevTuplePtr := p.tupleStart(tIndex - 1)
+	tuplePtr := p.getTupleStart(tIndex)
+	prevTuplePtr := p.getTupleStart(tIndex - 1)
 	tuple := p.page[tuplePtr:prevTuplePtr]
 	if len(tuple) != len(newTuple) {
 		panic("When updating tuple it's len must me identical")
@@ -136,6 +136,40 @@ func (p Page) UpdateTuple(tIndex TupleIndex, newTuple []byte) {
 }
 
 func (p Page) DeleteTuple(tIndex TupleIndex) {
-	//TODO implement me
-	panic("implement me")
+	tCount := p.TupleCount()
+	if tCount == 0 || tCount <= tIndex {
+		panic(fmt.Sprintf(
+			"Page has %d tuples but DeleteTuple was invoked with parameter tIndex=%d",
+			tCount, tIndex))
+	}
+	if tCount == 1 {
+		p.setLastPointerPosition(0)
+		p.setLastTupleStart(0)
+
+	} else if tIndex == tCount-1 {
+		newLastPtrIndex := p.TupleCount() - 2
+		newLastTupleStart := p.getTupleStart(newLastPtrIndex)
+		p.setLastTupleStart(newLastTupleStart)
+		p.setLastPointerPosition(p.getPtrPosition(newLastPtrIndex))
+
+	} else {
+		p.deleteTupleFromMiddle(tIndex)
+	}
+}
+
+func (p Page) deleteTupleFromMiddle(tIndex TupleIndex) {
+	deletedTupleEnd := p.getTupleEnd(tIndex)
+	deletedTupleStart := p.getTupleStart(tIndex)
+	deletedTupleLen := deletedTupleEnd - deletedTupleStart
+	lastTupleStart := p.getLastTupleStart()
+
+	copy(p.page[lastTupleStart+deletedTupleLen:deletedTupleEnd], p.page[lastTupleStart:deletedTupleStart])
+	tCount := p.TupleCount()
+	for i := TupleIndex(0); i < tCount; i++ {
+		if tupleStart := p.getTupleStart(i); tupleStart != 0 && tupleStart < deletedTupleStart {
+			p.setTupleStart(i, tupleStart+deletedTupleLen)
+		}
+	}
+	p.setLastTupleStart(p.getLastTupleStart() + deletedTupleLen)
+	p.setTupleStart(tIndex, 0)
 }

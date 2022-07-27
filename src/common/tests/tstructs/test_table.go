@@ -34,6 +34,20 @@ func (t TestTable) FillPages(pagesToFill int, tableIO io.TableDataIO, rand rando
 	}
 }
 
+func (t TestTable) PutRandomTupleToPage(tupleCount int, page bdata.Page, rand random.Random) []bdata.Tuple {
+	tuples := make([]bdata.Tuple, tupleCount)
+	for i := 0; i < tupleCount; i++ {
+		tuple := t.RandTuple(rand).Tuple
+		tuples[i] = tuple
+		err := page.InsertTuple(tuple.Data())
+		if err != nil {
+			panic(fmt.Sprintf("TestTable.PutRandomTupleToPage got error: %s", err.Error()))
+		}
+	}
+
+	return tuples
+}
+
 func (t TestTable) RandTuple(rand random.Random) bdata.TupleToSave {
 	values := map[string]any{}
 	for i := uint16(0); i < t.ColumnCount(); i++ {
