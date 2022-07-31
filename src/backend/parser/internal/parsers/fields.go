@@ -1,8 +1,8 @@
 package parsers
 
 import (
-	"HomegrownDB/backend/parser/parsers/helpers"
-	"HomegrownDB/backend/parser/parsers/source"
+	"HomegrownDB/backend/parser/internal/source"
+	"HomegrownDB/backend/parser/internal/validator"
 	"HomegrownDB/backend/parser/sqlerr"
 	token2 "HomegrownDB/backend/tokenizer/token"
 )
@@ -10,7 +10,7 @@ import (
 var Fields = fieldsParser{}
 
 type fieldsParser struct {
-	helpers.ParserHelper
+	validator.Validator
 }
 
 // Parse starts at Current token and ends at last column name and creates Fields

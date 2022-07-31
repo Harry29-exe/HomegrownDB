@@ -1,7 +1,7 @@
 package sqlerr
 
 import (
-	"HomegrownDB/backend/parser/parsers/source"
+	"HomegrownDB/backend/parser/internal/source"
 	token2 "HomegrownDB/backend/tokenizer/token"
 	"strings"
 )

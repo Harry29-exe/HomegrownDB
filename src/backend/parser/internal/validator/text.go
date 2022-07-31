@@ -1,21 +1,21 @@
-package helpers
+package validator
 
 import (
 	"HomegrownDB/backend/parser/sqlerr"
 	tk "HomegrownDB/backend/tokenizer/token"
 )
 
-// textTokenChecker is specialization of tokenChecker
+// textTokenChecker is specialization of tokenValidator
 // created just to offer checks for tokenizer.TextToken
 type textTokenChecker struct {
-	*tokenChecker
+	*tokenValidator
 	textToken *tk.TextToken
 }
 
-func nilTextTokenChecker(checker *tokenChecker) *textTokenChecker {
+func nilTextTokenChecker(checker *tokenValidator) *textTokenChecker {
 	return &textTokenChecker{
-		tokenChecker: checker,
-		textToken:    nil,
+		tokenValidator: checker,
+		textToken:      nil,
 	}
 }
 

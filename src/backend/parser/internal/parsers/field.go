@@ -1,15 +1,15 @@
 package parsers
 
 import (
-	"HomegrownDB/backend/parser/parsers/helpers"
-	"HomegrownDB/backend/parser/parsers/source"
+	"HomegrownDB/backend/parser/internal/source"
+	"HomegrownDB/backend/parser/internal/validator"
 	"HomegrownDB/backend/tokenizer/token"
 )
 
 var Field = fieldParser{}
 
 type fieldParser struct {
-	helpers.ParserHelper
+	validator.Validator
 }
 
 // Parse todo add support for field without table alias

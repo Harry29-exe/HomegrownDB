@@ -1,15 +1,15 @@
 package parsers
 
 import (
-	"HomegrownDB/backend/parser/parsers/helpers"
-	"HomegrownDB/backend/parser/parsers/source"
+	"HomegrownDB/backend/parser/internal/source"
+	"HomegrownDB/backend/parser/internal/validator"
 	"HomegrownDB/backend/tokenizer/token"
 )
 
 var Tables = tablesParser{}
 
 type tablesParser struct {
-	helpers.ParserHelper
+	validator.Validator
 }
 
 // Parse table declarations which are usually found after FROM keyword

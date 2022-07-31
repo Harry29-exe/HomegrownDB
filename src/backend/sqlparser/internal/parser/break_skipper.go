@@ -1,27 +1,27 @@
-package helpers
+package parser
 
 import (
-	"HomegrownDB/backend/parser/parsers/source"
 	"HomegrownDB/backend/parser/sqlerr"
-	token2 "HomegrownDB/backend/tokenizer/token"
+	"HomegrownDB/backend/sqlparser/internal"
+	"HomegrownDB/backend/tokenizer/token"
 	"math"
 	"strings"
 )
 
-func SkipBreaks(source source.TokenSource) *breaksSkipper {
+func SkipBreaks(source internal.TokenSource) *breaksSkipper {
 	return &breaksSkipper{
-		breakTypes: map[token2.Code]*breakType{},
+		breakTypes: map[token.Code]*breakType{},
 		source:     source,
 	}
 }
 
-func (h *ParserHelper) SkipBreaks() *breaksSkipper {
-	return SkipBreaks(h.source)
+func (p *Parser) SkipBreaks() *breaksSkipper {
+	return SkipBreaks(p.source)
 }
 
 type breaksSkipper struct {
-	breakTypes map[token2.Code]*breakType
-	source     source.TokenSource
+	breakTypes map[token.Code]*breakType
+	source     internal.TokenSource
 }
 
 type breakType struct {
@@ -40,14 +40,14 @@ func (b *breaksSkipper) SkipFromCurrent() error {
 func (b *breaksSkipper) skip(fromCurrent bool) error {
 	b.source.Checkpoint()
 
-	var currentToken token2.Token
+	var currentToken token.Token
 	if fromCurrent {
 		currentToken = b.source.Current()
 	} else {
 		currentToken = b.source.Next()
 	}
 
-	for token2.IsBreak(currentToken.Code()) {
+	for token.IsBreak(currentToken.Code()) {
 		breakType, ok := b.breakTypes[currentToken.Code()]
 		if !ok {
 			err := sqlerr.NewSyntaxError(b.breakTypesToStr(), currentToken.Value(), b.source)
@@ -62,12 +62,12 @@ func (b *breaksSkipper) skip(fromCurrent bool) error {
 
 	for breakType, data := range b.breakTypes {
 		if data.minOccurrences > 0 {
-			err := sqlerr.NewSyntaxTextError("expected more of: "+token2.ToString(breakType), b.source)
+			err := sqlerr.NewSyntaxTextError("expected more of: "+token.ToString(breakType), b.source)
 			b.source.Rollback()
 			return err
 		}
 		if data.maxOccurrences < 0 {
-			err := sqlerr.NewSyntaxTextError("expected less of: "+token2.ToString(breakType), b.source)
+			err := sqlerr.NewSyntaxTextError("expected less of: "+token.ToString(breakType), b.source)
 			b.source.Rollback()
 			return err
 		}
@@ -77,7 +77,7 @@ func (b *breaksSkipper) skip(fromCurrent bool) error {
 	return nil
 }
 
-func (b *breaksSkipper) Type(code token2.Code) *breaksSkipper {
+func (b *breaksSkipper) Type(code token.Code) *breaksSkipper {
 	b.breakTypes[code] = &breakType{
 		maxOccurrences: math.MaxInt16,
 		minOccurrences: 0,
@@ -86,7 +86,7 @@ func (b *breaksSkipper) Type(code token2.Code) *breaksSkipper {
 	return b
 }
 
-func (b *breaksSkipper) TypeMin(code token2.Code, min int16) *breaksSkipper {
+func (b *breaksSkipper) TypeMin(code token.Code, min int16) *breaksSkipper {
 	b.breakTypes[code] = &breakType{
 		maxOccurrences: math.MaxInt16,
 		minOccurrences: min,
@@ -95,7 +95,7 @@ func (b *breaksSkipper) TypeMin(code token2.Code, min int16) *breaksSkipper {
 	return b
 }
 
-func (b *breaksSkipper) TypeMax(code token2.Code, max int16) *breaksSkipper {
+func (b *breaksSkipper) TypeMax(code token.Code, max int16) *breaksSkipper {
 	b.breakTypes[code] = &breakType{
 		maxOccurrences: max,
 		minOccurrences: 0,
@@ -104,7 +104,7 @@ func (b *breaksSkipper) TypeMax(code token2.Code, max int16) *breaksSkipper {
 	return b
 }
 
-func (b *breaksSkipper) TypeMinMax(code token2.Code, min, max int16) *breaksSkipper {
+func (b *breaksSkipper) TypeMinMax(code token.Code, min, max int16) *breaksSkipper {
 	b.breakTypes[code] = &breakType{
 		maxOccurrences: max,
 		minOccurrences: min,
@@ -113,7 +113,7 @@ func (b *breaksSkipper) TypeMinMax(code token2.Code, min, max int16) *breaksSkip
 	return b
 }
 
-func (b *breaksSkipper) TypeExactly(code token2.Code, occurrences int16) *breaksSkipper {
+func (b *breaksSkipper) TypeExactly(code token.Code, occurrences int16) *breaksSkipper {
 	b.breakTypes[code] = &breakType{
 		maxOccurrences: occurrences,
 		minOccurrences: occurrences,
@@ -132,7 +132,7 @@ func (b *breaksSkipper) breakTypesToStr() string {
 		} else {
 			notFirst = true
 		}
-		builder.WriteString(token2.ToString(code))
+		builder.WriteString(token.ToString(code))
 	}
 
 	return builder.String()

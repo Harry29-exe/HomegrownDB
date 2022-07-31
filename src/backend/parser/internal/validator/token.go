@@ -1,21 +1,27 @@
-package helpers
+package validator
 
 import (
-	"HomegrownDB/backend/parser/parsers/source"
+	"HomegrownDB/backend/parser/internal/source"
 	"HomegrownDB/backend/parser/sqlerr"
-	token2 "HomegrownDB/backend/tokenizer/token"
+	"HomegrownDB/backend/tokenizer/token"
 )
 
-func Next(source source.TokenSource) *tokenChecker {
+type tokenValidator struct {
+	source source.TokenSource
+	token  token.Token
+	err    error
+}
+
+func Next(source source.TokenSource) *tokenValidator {
 	source.Checkpoint()
-	return &tokenChecker{
+	return &tokenValidator{
 		source: source,
 		token:  source.Next(),
 		err:    nil,
 	}
 }
 
-func NextSequence(source source.TokenSource, codes ...token2.Code) error {
+func NextSequence(source source.TokenSource, codes ...token.Code) error {
 	source.Checkpoint()
 	for _, code := range codes {
 		next := source.Next()
@@ -30,16 +36,16 @@ func NextSequence(source source.TokenSource, codes ...token2.Code) error {
 	return nil
 }
 
-func Current(source source.TokenSource) *tokenChecker {
+func Current(source source.TokenSource) *tokenValidator {
 	source.Checkpoint()
-	return &tokenChecker{
+	return &tokenValidator{
 		source: source,
 		token:  source.Current(),
 		err:    nil,
 	}
 }
 
-func CurrentSequence(source source.TokenSource, codes ...token2.Code) error {
+func CurrentSequence(source source.TokenSource, codes ...token.Code) error {
 	currentToken := source.Current()
 	if currentToken.Code() != codes[0] {
 		return sqlerr.NewTokenSyntaxError(codes[0], currentToken.Code(), source)
@@ -59,13 +65,7 @@ func CurrentSequence(source source.TokenSource, codes ...token2.Code) error {
 	return nil
 }
 
-type tokenChecker struct {
-	source source.TokenSource
-	token  token2.Token
-	err    error
-}
-
-func (tc *tokenChecker) Check() (token2.Token, error) {
+func (tc *tokenValidator) Check() (token.Token, error) {
 	if tc.err != nil {
 		tc.source.Rollback()
 		return nil, tc.err
@@ -74,32 +74,32 @@ func (tc *tokenChecker) Check() (token2.Token, error) {
 	return tc.token, nil
 }
 
-func (tc *tokenChecker) Has(code token2.Code) *tokenChecker {
+func (tc *tokenValidator) Has(code token.Code) *tokenValidator {
 	switch {
 	case tc.err != nil:
 		break
 
 	case tc.token == nil:
-		tc.err = sqlerr.NewSyntaxError(token2.ToString(code), "nil", tc.source)
+		tc.err = sqlerr.NewSyntaxError(token.ToString(code), "nil", tc.source)
 
 	case tc.token.Code() != code:
-		tc.err = sqlerr.NewSyntaxError(token2.ToString(code), tc.token.Value(), tc.source)
+		tc.err = sqlerr.NewSyntaxError(token.ToString(code), tc.token.Value(), tc.source)
 	}
 
 	return tc
 }
 
-func (tc *tokenChecker) IsTextToken() *textTokenChecker {
-	tc.Has(token2.Identifier)
+func (tc *tokenValidator) IsTextToken() *textTokenChecker {
+	tc.Has(token.Identifier)
 	if tc.err != nil {
 		return nilTextTokenChecker(tc)
 	}
 
 	switch textToken := tc.token.(type) {
-	case *token2.TextToken:
+	case *token.TextToken:
 		return &textTokenChecker{
-			tokenChecker: tc,
-			textToken:    textToken,
+			tokenValidator: tc,
+			textToken:      textToken,
 		}
 	default:
 		tc.err = sqlerr.NewSyntaxError("Identifier", tc.token.Value(), tc.source)

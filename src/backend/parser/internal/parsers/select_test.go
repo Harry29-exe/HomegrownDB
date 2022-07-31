@@ -1,7 +1,7 @@
 package parsers_test
 
 import (
-	. "HomegrownDB/backend/parser/parsers"
+	. "HomegrownDB/backend/parser/internal/parsers"
 	"testing"
 )
 

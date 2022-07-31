@@ -1,15 +1,15 @@
 package parsers
 
 import (
-	"HomegrownDB/backend/parser/parsers/helpers"
-	"HomegrownDB/backend/parser/parsers/source"
+	"HomegrownDB/backend/parser/internal/source"
+	"HomegrownDB/backend/parser/internal/validator"
 	"HomegrownDB/backend/tokenizer/token"
 )
 
 var Select = selectParser{}
 
 type selectParser struct {
-	helpers.ParserHelper
+	validator.Validator
 }
 
 func (s selectParser) Parse(source source.TokenSource) (*SelectNode, error) {

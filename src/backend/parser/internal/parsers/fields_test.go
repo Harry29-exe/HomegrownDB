@@ -1,7 +1,7 @@
 package parsers_test
 
 import (
-	parsers2 "HomegrownDB/backend/parser/parsers"
+	"HomegrownDB/backend/parser/internal/parsers"
 	"testing"
 )
 
@@ -12,7 +12,7 @@ func TestFields_Parse_ShouldParseString(t *testing.T) {
 		"u.name, \t u.surname, c.name",
 		"u.name, u.surname\n,\t c.name",
 	}
-	expectedFields := []parsers2.FieldNode{
+	expectedFields := []parsers.FieldNode{
 		{TableAlias: "u", FieldName: "name", FieldAlias: "name"},
 		{TableAlias: "u", FieldName: "surname", FieldAlias: "surname"},
 		{TableAlias: "c", FieldName: "name", FieldAlias: "name"},
@@ -22,7 +22,7 @@ func TestFields_Parse_ShouldParseString(t *testing.T) {
 		source := createTestTokenSource(sentence, t)
 
 		//when
-		fieldsNode, err := parsers2.Fields.Parse(source)
+		fieldsNode, err := parsers.Fields.Parse(source)
 		if err != nil {
 			t.Error("Fields parser returned following error: ", err)
 			t.FailNow()
@@ -55,7 +55,7 @@ func TestFields_Parse_ShouldReturnError(t *testing.T) {
 		source := createTestTokenSource(sentence, t)
 
 		//when
-		_, err := parsers2.Fields.Parse(source)
+		_, err := parsers.Fields.Parse(source)
 
 		//then
 		if err == nil {
