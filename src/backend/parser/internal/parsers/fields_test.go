@@ -2,6 +2,7 @@ package parsers_test
 
 import (
 	"HomegrownDB/backend/parser/internal/parsers"
+	"HomegrownDB/backend/parser/internal/validator"
 	"testing"
 )
 
@@ -20,9 +21,10 @@ func TestFields_Parse_ShouldParseString(t *testing.T) {
 
 	for _, sentence := range correctSentences {
 		source := createTestTokenSource(sentence, t)
+		v := validator.NewValidator(source)
 
 		//when
-		fieldsNode, err := parsers.Fields.Parse(source)
+		fieldsNode, err := parsers.Fields.Parse(source, v)
 		if err != nil {
 			t.Error("Fields parser returned following error: ", err)
 			t.FailNow()
@@ -53,9 +55,10 @@ func TestFields_Parse_ShouldReturnError(t *testing.T) {
 
 	for _, sentence := range badSentences {
 		source := createTestTokenSource(sentence, t)
+		v := validator.NewValidator(source)
 
 		//when
-		_, err := parsers.Fields.Parse(source)
+		_, err := parsers.Fields.Parse(source, v)
 
 		//then
 		if err == nil {

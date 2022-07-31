@@ -2,6 +2,7 @@ package parsers_test
 
 import (
 	. "HomegrownDB/backend/parser/internal/parsers"
+	"HomegrownDB/backend/parser/internal/validator"
 	"testing"
 )
 
@@ -20,9 +21,9 @@ func TestField_Parse_ShouldParse(t *testing.T) {
 
 	for _, sentence := range sentences {
 		source := createTestTokenSource(sentence.str, t)
-
+		v := validator.NewValidator(source)
 		//when
-		result, err := Field.Parse(source)
+		result, err := Field.Parse(source, v)
 
 		//then
 		CorrectSentenceParserTestIsSuccessful(
@@ -41,8 +42,9 @@ func TestField_Parse_ShouldReturnError(t *testing.T) {
 
 	for _, sentence := range sentences {
 		source := createTestTokenSource(sentence.str, t)
+		v := validator.NewValidator(source)
 		//when
-		_, err := Field.Parse(source)
+		_, err := Field.Parse(source, v)
 
 		if err == nil {
 			t.Error("Field parser returned nil error for invalid token sequence: ",

@@ -8,16 +8,13 @@ import (
 
 var Field = fieldParser{}
 
-type fieldParser struct {
-	validator.Validator
-}
+type fieldParser struct{}
 
 // Parse todo add support for field without table alias
-func (f fieldParser) Parse(source source.TokenSource) (*FieldNode, error) {
-	f.Init(source)
+func (f fieldParser) Parse(source source.TokenSource, validator validator.Validator) (*FieldNode, error) {
 	source.Checkpoint()
 
-	tableToken, err := f.Current().
+	tableToken, err := validator.Current().
 		Has(token.Identifier).
 		IsTextToken().
 		DontStartWithDigit().
@@ -29,14 +26,9 @@ func (f fieldParser) Parse(source source.TokenSource) (*FieldNode, error) {
 		return nil, err
 	}
 
-	err = f.NextIs(token.Dot)
-	if err != nil {
-		source.Rollback()
-		return nil, err
-	}
-
-	columnToken, err := f.Next().
-		IsTextToken().
+	columnToken, err := validator.
+		NextIsAnd(token.Dot).
+		Next().IsTextToken().
 		DontStartWithDigit().
 		AsciiOnly().
 		Check()

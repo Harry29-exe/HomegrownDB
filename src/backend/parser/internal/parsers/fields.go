@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/backend/parser/internal/source"
 	"HomegrownDB/backend/parser/internal/validator"
 	"HomegrownDB/backend/parser/sqlerr"
-	token2 "HomegrownDB/backend/tokenizer/token"
+	"HomegrownDB/backend/tokenizer/token"
 )
 
 var Fields = fieldsParser{}
@@ -27,27 +27,26 @@ type fieldsParser struct {
 // "table1.col1.col2, table2.col1" - will be parsed to second dot and returned
 //
 // "table1.col1,, table2.col2" - will be parsed to first comma and returned
-func (p fieldsParser) Parse(source source.TokenSource) (*FieldsNode, error) {
-	p.Init(source)
+func (p fieldsParser) Parse(source source.TokenSource, validator validator.Validator) (*FieldsNode, error) {
 	source.Checkpoint()
 
 	parsingToken := source.Current()
 	fields := FieldsNode{Fields: make([]*FieldNode, 0, 5)}
 
 	for {
-		if parsingToken.Code() != token2.Identifier {
-			return nil, sqlerr.NewSyntaxError(token2.TextStr, parsingToken.Value(), source)
+		if parsingToken.Code() != token.Identifier {
+			return nil, sqlerr.NewSyntaxError(token.TextStr, parsingToken.Value(), source)
 		}
 
-		field, err := Field.Parse(source)
+		field, err := Field.Parse(source, validator)
 		if err != nil {
 			return nil, err
 		}
 		fields.AddField(field)
 
-		err = p.SkipBreaks().
-			Type(token2.SpaceBreak).
-			TypeMinMax(token2.Comma, 1, 1).
+		err = validator.SkipBreaks().
+			Type(token.SpaceBreak).
+			TypeMinMax(token.Comma, 1, 1).
 			SkipFromNext()
 
 		if err != nil {

@@ -9,14 +9,12 @@ import (
 var Table = tableParser{}
 
 type tableParser struct {
-	validator.Validator
 }
 
-func (t tableParser) Parse(source source.TokenSource) (*TableNode, error) {
-	t.Init(source)
+func (t tableParser) Parse(source source.TokenSource, validator validator.Validator) (*TableNode, error) {
 	source.Checkpoint()
 
-	name, err := t.Current().
+	name, err := validator.Current().
 		IsTextToken().
 		AsciiOnly().
 		DontStartWithDigit().
@@ -26,13 +24,13 @@ func (t tableParser) Parse(source source.TokenSource) (*TableNode, error) {
 		return nil, err
 	}
 
-	err = t.NextSequence(token.SpaceBreak, token.Identifier)
+	err = validator.NextSequence(token.SpaceBreak, token.Identifier)
 	if err != nil {
 		source.Commit()
 		return &TableNode{name.Value(), name.Value()}, nil
 	}
 
-	alias, err := t.Current().
+	alias, err := validator.Current().
 		IsTextToken().
 		AsciiOnly().
 		DontStartWithDigit().

@@ -8,41 +8,35 @@ import (
 
 var Select = selectParser{}
 
-type selectParser struct {
-	validator.Validator
-}
+type selectParser struct{}
 
 func (s selectParser) Parse(source source.TokenSource) (*SelectNode, error) {
 	source.Checkpoint()
-	s.Init(source)
+	v := validator.NewValidator(source)
 
 	// Select
-	err := s.CurrentIs(token.Select)
+	err := v.CurrentIsAnd(token.Select).
+		NextIs(token.SpaceBreak)
 	if err != nil {
 		return nil, err
 	}
 	selectNode := SelectNode{}
 
-	err = s.NextIs(token.SpaceBreak)
-	if err != nil {
-		return nil, err
-	}
-
 	// Fields
 	source.Next()
-	selectNode.Fields, err = Fields.Parse(source)
+	selectNode.Fields, err = Fields.Parse(source, v)
 	if err != nil {
 		return nil, err
 	}
 
 	// From
-	err = s.NextSequence(token.SpaceBreak, token.From, token.SpaceBreak, token.Identifier)
+	err = v.NextSequence(token.SpaceBreak, token.From, token.SpaceBreak, token.Identifier)
 	if err != nil {
 		return nil, err
 	}
 
 	// Tables
-	tables, err := Tables.Parse(source)
+	tables, err := Tables.Parse(source, v)
 	if err != nil {
 		return nil, err
 	}
