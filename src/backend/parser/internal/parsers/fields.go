@@ -3,6 +3,7 @@ package parsers
 import (
 	"HomegrownDB/backend/parser/internal/source"
 	"HomegrownDB/backend/parser/internal/validator"
+	"HomegrownDB/backend/parser/pnode"
 	"HomegrownDB/backend/parser/sqlerr"
 	"HomegrownDB/backend/tokenizer/token"
 )
@@ -27,20 +28,20 @@ type fieldsParser struct {
 // "table1.col1.col2, table2.col1" - will be parsed to second dot and returned
 //
 // "table1.col1,, table2.col2" - will be parsed to first comma and returned
-func (p fieldsParser) Parse(source source.TokenSource, validator validator.Validator) (*FieldsNode, error) {
+func (p fieldsParser) Parse(source source.TokenSource, validator validator.Validator) (pnode.FieldsNode, error) {
 	source.Checkpoint()
 
 	parsingToken := source.Current()
-	fields := FieldsNode{Fields: make([]*FieldNode, 0, 5)}
+	fields := pnode.FieldsNode{Fields: make([]pnode.FieldNode, 0, 5)}
 
 	for {
 		if parsingToken.Code() != token.Identifier {
-			return nil, sqlerr.NewSyntaxError(token.TextStr, parsingToken.Value(), source)
+			return fields, sqlerr.NewSyntaxError(token.TextStr, parsingToken.Value(), source)
 		}
 
 		field, err := Field.Parse(source, validator)
 		if err != nil {
-			return nil, err
+			return fields, err
 		}
 		fields.AddField(field)
 
@@ -51,15 +52,7 @@ func (p fieldsParser) Parse(source source.TokenSource, validator validator.Valid
 
 		if err != nil {
 			source.Commit()
-			return &fields, nil
+			return fields, nil
 		}
 	}
-}
-
-type FieldsNode struct {
-	Fields []*FieldNode
-}
-
-func (f *FieldsNode) AddField(field *FieldNode) {
-	f.Fields = append(f.Fields, field)
 }

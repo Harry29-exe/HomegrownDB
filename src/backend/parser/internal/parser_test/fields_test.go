@@ -1,8 +1,9 @@
-package parsers_test
+package parser_test_test
 
 import (
 	"HomegrownDB/backend/parser/internal/parsers"
 	"HomegrownDB/backend/parser/internal/validator"
+	"HomegrownDB/backend/parser/pnode"
 	"testing"
 )
 
@@ -13,7 +14,7 @@ func TestFields_Parse_ShouldParseString(t *testing.T) {
 		"u.name, \t u.surname, c.name",
 		"u.name, u.surname\n,\t c.name",
 	}
-	expectedFields := []parsers.FieldNode{
+	expectedFields := []pnode.FieldNode{
 		{TableAlias: "u", FieldName: "name", FieldAlias: "name"},
 		{TableAlias: "u", FieldName: "surname", FieldAlias: "surname"},
 		{TableAlias: "c", FieldName: "name", FieldAlias: "name"},
@@ -37,9 +38,9 @@ func TestFields_Parse_ShouldParseString(t *testing.T) {
 			t.FailNow()
 		}
 		for i, field := range fieldsNode.Fields {
-			if *field != expectedFields[i] {
+			if field != expectedFields[i] {
 				t.Error("at ", i, "expected value: ", expectedFields[i],
-					"got:", *field)
+					"got:", field)
 			}
 		}
 	}

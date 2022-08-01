@@ -1,8 +1,9 @@
-package parsers_test
+package parser_test_test
 
 import (
 	"HomegrownDB/backend/parser/internal/parsers"
 	"HomegrownDB/backend/parser/internal/validator"
+	"HomegrownDB/backend/parser/pnode"
 	"testing"
 )
 
@@ -15,7 +16,7 @@ func TestTable_Parse_ShouldParse(t *testing.T) {
 		{"table1 t1 ", 2},
 	}
 
-	expectedNode := parsers.TableNode{
+	expectedNode := pnode.TableNode{
 		TableName:  "table1",
 		TableAlias: "t1",
 	}
@@ -33,7 +34,7 @@ func TestTable_Parse_ShouldParse2(t *testing.T) {
 		{"table1, table2 t2", 0},
 	}
 
-	expectedNode := parsers.TableNode{
+	expectedNode := pnode.TableNode{
 		TableName:  "table1",
 		TableAlias: "table1",
 	}
@@ -42,12 +43,12 @@ func TestTable_Parse_ShouldParse2(t *testing.T) {
 		_tableParserPositiveTest(t, sentence, expectedNode)
 	}
 }
-func _tableParserPositiveTest(t *testing.T, sentence testSentence, expectedNode parsers.TableNode) {
+func _tableParserPositiveTest(t *testing.T, sentence testSentence, expectedNode pnode.TableNode) {
 	source := createTestTokenSource(sentence.str, t)
 	v := validator.NewValidator(source)
 	output, err := parsers.Table.Parse(source, v)
 
 	CorrectSentenceParserTestIsSuccessful(
 		t, source, sentence,
-		err, expectedNode, *output)
+		err, expectedNode, output)
 }

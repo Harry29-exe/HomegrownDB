@@ -3,6 +3,7 @@ package parsers
 import (
 	"HomegrownDB/backend/parser/internal/source"
 	"HomegrownDB/backend/parser/internal/validator"
+	"HomegrownDB/backend/parser/pnode"
 	"HomegrownDB/backend/tokenizer/token"
 )
 
@@ -10,7 +11,7 @@ var Select = selectParser{}
 
 type selectParser struct{}
 
-func (s selectParser) Parse(source source.TokenSource) (*SelectNode, error) {
+func (s selectParser) Parse(source source.TokenSource) (*pnode.SelectNode, error) {
 	source.Checkpoint()
 	v := validator.NewValidator(source)
 
@@ -20,7 +21,7 @@ func (s selectParser) Parse(source source.TokenSource) (*SelectNode, error) {
 	if err != nil {
 		return nil, err
 	}
-	selectNode := SelectNode{}
+	selectNode := pnode.SelectNode{}
 
 	// Fields
 	source.Next()
@@ -44,9 +45,4 @@ func (s selectParser) Parse(source source.TokenSource) (*SelectNode, error) {
 
 	source.Commit()
 	return &selectNode, nil
-}
-
-type SelectNode struct {
-	Fields *FieldsNode
-	Tables *TablesNode
 }

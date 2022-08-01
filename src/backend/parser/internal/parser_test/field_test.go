@@ -1,8 +1,9 @@
-package parsers_test
+package parser_test_test
 
 import (
 	. "HomegrownDB/backend/parser/internal/parsers"
 	"HomegrownDB/backend/parser/internal/validator"
+	"HomegrownDB/backend/parser/pnode"
 	"testing"
 )
 
@@ -13,7 +14,7 @@ func TestField_Parse_ShouldParse(t *testing.T) {
 		{"t1.col1, t2.col2", 2},
 		{"t1.col1 FROM ", 2},
 	}
-	expectedResult := FieldNode{
+	expectedResult := pnode.FieldNode{
 		TableAlias: "t1",
 		FieldName:  "col1",
 		FieldAlias: "col1",
@@ -28,7 +29,7 @@ func TestField_Parse_ShouldParse(t *testing.T) {
 		//then
 		CorrectSentenceParserTestIsSuccessful(
 			t, source, sentence,
-			err, expectedResult, *result)
+			err, expectedResult, result)
 	}
 }
 

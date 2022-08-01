@@ -1,4 +1,4 @@
-package parsers_test
+package parser_test_test
 
 import (
 	"HomegrownDB/backend/tokenizer"
