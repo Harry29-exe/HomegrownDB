@@ -6,10 +6,10 @@ import (
 )
 
 type Fields struct {
-	fields []Field
+	Fields []Field
 }
 
 type Field struct {
-	table  table.Definition
-	column column.Definition
+	Table  table.Definition
+	Column column.Definition
 }

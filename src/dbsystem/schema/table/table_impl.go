@@ -82,8 +82,9 @@ func (t *StandardTable) ColumnName(columnId column.OrderId) string {
 	return t.columnsNames[columnId]
 }
 
-func (t *StandardTable) ColumnId(name string) column.OrderId {
-	return t.colNameIdMap[name]
+func (t *StandardTable) ColumnId(name string) (order column.OrderId, ok bool) {
+	order, ok = t.colNameIdMap[name]
+	return
 }
 
 func (t *StandardTable) ColumnsIds(names []string) []column.OrderId {

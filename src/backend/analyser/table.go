@@ -25,5 +25,6 @@ func AnaliseTables(node pnode.TablesNode, store stores.Tables) (anode.Tables, er
 		}
 	}
 
+	newNode.Init()
 	return newNode, nil
 }

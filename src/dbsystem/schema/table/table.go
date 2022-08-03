@@ -19,7 +19,7 @@ type Definition interface {
 	ColumnCount() uint16
 
 	ColumnName(columnId column.OrderId) string
-	ColumnId(name string) column.OrderId
+	ColumnId(name string) (id column.OrderId, ok bool)
 	ColumnsIds(names []string) []column.OrderId
 
 	ColumnParser(id column.OrderId) column.DataParser
