@@ -20,8 +20,9 @@ func AnalyseFields(node pnode.FieldsNode, tables anode.Tables) (anode.Fields, er
 			return anode.Fields{}, errors.New("") // todo better message
 		} else {
 			fieldsNode.Fields[i] = anode.Field{
-				Table:  table,
-				Column: table.GetColumn(colOrder),
+				Table:     table,
+				Column:    table.GetColumn(colOrder),
+				FieldName: field.FieldName,
 			}
 		}
 	}

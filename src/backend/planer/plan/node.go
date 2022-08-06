@@ -1,8 +1,13 @@
 package plan
 
 type Node interface {
-	Type() nodeType
+	Type() NodeType
 	Children() []Node
 }
 
-type nodeType = uint16
+type NodeType = uint16
+
+const (
+	SelectFieldsNode NodeType = iota
+	SeqScanNode
+)

@@ -10,6 +10,7 @@ type Fields struct {
 }
 
 type Field struct {
-	Table  table.Definition
-	Column column.Definition
+	Table     table.Definition
+	Column    column.Definition
+	FieldName string
 }
