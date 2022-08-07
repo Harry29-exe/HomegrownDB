@@ -17,6 +17,7 @@
         } else {
             document.documentElement.classList.add('dark');
             themeIcon = '☽'
+            localStorage.theme = 'dark'
         }
     }
 
@@ -34,7 +35,7 @@
     }
 </script>
 
-<div class="w-full h-16 bg-accent-l3 h-stack p-4 pl-0 text-2xl font-bold text-white relative shadow-lg z-50">
+<div class="navbar">
     <p on:click={go("/")} class="hover:cursor-pointer select-none hover:underline decoration-4">
         <Logo/>
     </p>

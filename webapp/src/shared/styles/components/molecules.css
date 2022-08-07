@@ -1,0 +1,13 @@
+@import "../base/colors.css";
+@import "./containers.css";
+
+@tailwind components;
+
+@layer components {
+
+    .navbar {
+        @apply w-full h-16 h-stack p-4 pl-0 z-50;
+        @apply bg-accent-l3 text-2xl font-bold text-white relative shadow-lg;
+    }
+
+}
