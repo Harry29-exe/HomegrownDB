@@ -8,11 +8,11 @@ import (
 type Conditions = []Condition
 
 type Condition struct {
-	LeftValue any
+	Values []ConditionValue
+	Type   conditionType
 }
 
 type ConditionValue interface {
-	ValueType() conditionValuesType
 	Value() ConditionRawValue
 }
 
@@ -34,12 +34,4 @@ const (
 	GEQ
 	LEQ
 	LIKE
-)
-
-type conditionValuesType = uint8
-
-const (
-	ColumnAndColumn conditionType = iota
-	ColumnAndValue
-	ValueAndValue
 )
