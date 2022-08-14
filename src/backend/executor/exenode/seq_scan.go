@@ -1,4 +1,4 @@
-package node
+package exenode
 
 import (
 	"HomegrownDB/dbsystem/bdata"
@@ -41,7 +41,7 @@ func (s *SeqScan) All() []bdata.Tuple {
 	panic("implement me")
 }
 
-func (s SeqScan) loadDataFromNextPage() {
-	s.buffer.RPage()
-
+func (s *SeqScan) loadDataFromNextPage() {
+	//todo implement me
+	panic("Not implemented")
 }

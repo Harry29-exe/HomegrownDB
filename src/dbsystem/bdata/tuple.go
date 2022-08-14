@@ -12,6 +12,7 @@ type RTuple interface {
 	TID() TID
 	IsNull(id column.OrderId) bool
 	ColValue(id column.OrderId) column.Value
+	DataSize() int
 }
 
 type WTuple interface {

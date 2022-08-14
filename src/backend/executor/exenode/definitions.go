@@ -1,4 +1,4 @@
-package node
+package exenode
 
 import (
 	"HomegrownDB/backend/planer/plan"

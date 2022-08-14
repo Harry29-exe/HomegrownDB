@@ -13,11 +13,19 @@ func (s serializer) Int2(value int16) []byte {
 	return bytes
 }
 
+func (s serializer) PutInt2(value int16, dest []byte) {
+	binary.LittleEndian.PutUint16(dest, uint16(value))
+}
+
 func (s serializer) Uint2(value uint16) []byte {
 	bytes := make([]byte, 2)
 	binary.LittleEndian.PutUint16(bytes, value)
 
 	return bytes
+}
+
+func (s serializer) PutUInt2(value uint16, dest []byte) {
+	binary.LittleEndian.PutUint16(dest, value)
 }
 
 func (s serializer) Int4(value int32) []byte {

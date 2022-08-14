@@ -32,7 +32,8 @@ type OrderId = uint16
 // DataParser to parse raw data obtained from disc,
 // it's usually obtained from column.Definition
 type DataParser interface {
-	Skip(data []byte) (int, []byte)
+	Skip(data []byte) []byte
+	CopyData(data []byte, dest []byte) (copiedBytes int)
 	Parse(data []byte) (Value, []byte)
 }
 

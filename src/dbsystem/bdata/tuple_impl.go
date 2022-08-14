@@ -80,6 +80,10 @@ func (t Tuple) ColValue(id column.OrderId) column.Value {
 	return val
 }
 
+func (t Tuple) DataSize() int {
+	return len(t.data) + int(t.table.BitmapLen()+toNullBitmap)
+}
+
 func (t Tuple) SetCreatedByTx(txId tx.Id) {
 	binary.LittleEndian.PutUint32(t.data[toTxId:toTxId+tx.IdSize], uint32(txId))
 }
