@@ -24,6 +24,7 @@ type Definition interface {
 
 	ColumnParser(id column.OrderId) column.DataParser
 	ColumnParsers(ids []column.OrderId) []column.DataParser
+	AllColumnParsers() []column.DataParser
 	ColumnSerializer(id column.OrderId) column.DataSerializer
 	ColumnSerializers(ids []column.OrderId) []column.DataSerializer
 	AllColumnSerializer() []column.DataSerializer
@@ -46,15 +47,19 @@ type WDefinition interface {
 type Id = uint16
 
 func NewDefinition(name string) WDefinition {
-	return &StandardTable{
-		tableId:      0,
-		objectId:     0,
-		colNameIdMap: map[string]column.OrderId{},
-		columnsNames: []string{},
-		columns:      []column.WDefinition{},
-		columnsCount: 0,
-		name:         name,
+	table := &StandardTable{
+		tableId:  0,
+		objectId: 0,
+		columns:  []column.WDefinition{},
+		name:     name,
+
+		colNameIdMap:  map[string]column.OrderId{},
+		columnsNames:  nil,
+		columnsCount:  0,
+		columnParsers: nil,
 	}
+	table.initInMemoryFields()
+	return table
 }
 
 func Deserialize(data []byte) WDefinition {

@@ -82,8 +82,8 @@ type int2Parser struct {
 	columnIsNullable bool
 }
 
-func (i *int2Parser) Skip(data []byte) []byte {
-	return data[:2]
+func (i *int2Parser) Skip(data []byte) (int, []byte) {
+	return 2, data[:2]
 }
 
 func (i *int2Parser) Parse(data []byte) (column.Value, []byte) {

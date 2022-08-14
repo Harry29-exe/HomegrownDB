@@ -9,13 +9,15 @@ import (
 )
 
 type StandardTable struct {
-	objectId     uint64
-	tableId      Id
-	colNameIdMap map[string]column.OrderId
-	columnsNames []string
-	columns      []column.WDefinition
-	columnsCount uint16
-	name         string
+	objectId uint64
+	tableId  Id
+	columns  []column.WDefinition
+	name     string
+
+	colNameIdMap  map[string]column.OrderId
+	columnsNames  []string
+	columnsCount  uint16
+	columnParsers []column.DataParser
 }
 
 func (t *StandardTable) SetTableId(id Id) {
@@ -109,6 +111,10 @@ func (t *StandardTable) ColumnParsers(ids []column.OrderId) []column.DataParser 
 	return parsers
 }
 
+func (t *StandardTable) AllColumnParsers() []column.DataParser {
+	return t.columnParsers
+}
+
 func (t *StandardTable) ColumnSerializer(id column.OrderId) column.DataSerializer {
 	return t.columns[id].DataSerializer()
 }
@@ -143,6 +149,7 @@ func (t *StandardTable) AddColumn(definition column.WDefinition) error {
 	t.columns = append(t.columns, definition)
 	t.colNameIdMap[definition.Name()] = t.columnsCount
 	t.columnsNames = append(t.columnsNames, definition.Name())
+	t.columnParsers = append(t.columnParsers, definition.DataParser())
 	t.columnsCount++
 
 	return nil
@@ -154,26 +161,37 @@ func (t *StandardTable) RemoveColumn(name string) error {
 		return errors.New("column does not contain column with name: " + name)
 	}
 
-	newNameColIdMap := map[string]column.OrderId{}
+	delete(t.colNameIdMap, name)
 	for colName, colId := range t.colNameIdMap {
-		if colId < colToRemoveId {
-			newNameColIdMap[colName] = colId
-		} else if colId > colToRemoveId {
-			newNameColIdMap[colName] = colId - 1
+		if colId > colToRemoveId {
+			t.colNameIdMap[colName] = colId - 1
 		}
 	}
-	t.colNameIdMap = newNameColIdMap
 
-	newColumnNames := make([]string, t.columnsCount-1)
-	copy(newColumnNames[0:colToRemoveId], t.columnsNames[0:colToRemoveId])
-	copy(newColumnNames[colToRemoveId:], t.columnsNames[colToRemoveId+1:])
-	t.columnsNames = newColumnNames
+	copy(t.columnsNames[colToRemoveId:], t.columnsNames[colToRemoveId+1:])
+	t.columnsNames = t.columnsNames[:len(t.columnsNames)-1]
 
-	newColumns := make([]column.WDefinition, t.columnsCount-1)
-	copy(newColumns[0:colToRemoveId], t.columns[0:colToRemoveId])
-	copy(newColumns[colToRemoveId:], t.columns[colToRemoveId+1:])
-	t.columns = newColumns
+	copy(t.columns[colToRemoveId:], t.columns[colToRemoveId+1:])
+	t.columns = t.columns[:len(t.columns)-1]
+
+	copy(t.columnParsers[colToRemoveId:], t.columnParsers[colToRemoveId+1:])
+	t.columnParsers = t.columnParsers[:len(t.columnParsers)-1]
+
 	t.columnsCount--
 
 	return nil
+}
+
+func (t *StandardTable) initInMemoryFields() {
+	colCount := len(t.columns)
+	t.columnParsers = make([]column.DataParser, colCount)
+	t.columnsNames = make([]string, colCount)
+	t.colNameIdMap = map[string]column.OrderId{}
+
+	for i, col := range t.columns {
+		t.columnParsers[i] = col.DataParser()
+		t.columnsNames[i] = col.Name()
+		t.colNameIdMap[col.Name()] = column.OrderId(i)
+	}
+	t.columnsCount = uint16(colCount)
 }
