@@ -33,6 +33,7 @@ type OrderId = uint16
 // it's usually obtained from column.Definition
 type DataParser interface {
 	Skip(data []byte) []byte
+	GetValue(data []byte) (value []byte)
 	CopyData(data []byte, dest []byte) (copiedBytes int)
 	Parse(data []byte) (Value, []byte)
 }

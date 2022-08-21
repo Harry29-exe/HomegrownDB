@@ -31,7 +31,7 @@ func NewTestTableStore(definitions []TestTable, tablesIOs []io.TableDataIO) stor
 		definitions:     definitionsMap,
 		tableIOs:        tableIOs,
 		changeListeners: nil,
-		tableIdCounter:  appsync.NewUint32SyncCounter(maxId + 1),
+		tableIdCounter:  appsync.NewIdResolver(maxId+1, nil),
 	}
 }
 
@@ -56,7 +56,7 @@ func NewTestTableStoreWithInMemoryIO(definitions ...TestTable) stores.Tables {
 		definitions:     definitionsMap,
 		tableIOs:        tableIOs,
 		changeListeners: nil,
-		tableIdCounter:  appsync.NewUint32SyncCounter(maxId + 1),
+		tableIdCounter:  appsync.NewIdResolver(maxId+1, nil),
 	}
 }
 
@@ -69,7 +69,7 @@ type TestTablesStore struct {
 
 	// store utils
 	changeListeners []func()
-	tableIdCounter  appsync.SyncCounter[uint32]
+	tableIdCounter  *appsync.IdResolver[table.Id]
 }
 
 func (t *TestTablesStore) GetTable(name string) (table.Definition, error) {
@@ -129,7 +129,7 @@ func (t *TestTablesStore) AddTable(table table.WDefinition) error {
 	defer t.storeLock.Unlock()
 
 	testTable := TestTable{table}
-	id := t.tableIdCounter.GetAndIncrement()
+	id := t.tableIdCounter.NextId()
 	testTable.SetTableId(id)
 	t.nameTableMap[testTable.Name()] = id
 	t.definitions[id] = testTable

@@ -15,6 +15,23 @@ type FieldPtr = uint16
 
 const FieldPtrSize = 2
 
+func NewBaseHolder(buffer *Buffer, tables []table.Definition) *BaseHolder {
+	fields := uint16(0)
+	for _, def := range tables {
+		fields += def.ColumnCount()
+	}
+
+	return &BaseHolder{
+		buffer:         buffer,
+		tables:         tables,
+		fields:         fields,
+		headerLen:      int((fields + 1) * FieldPtrSize),
+		dataArrays:     make([][]byte, 10),
+		lastArrayIndex: 0,
+		lastArrayLen:   0,
+	}
+}
+
 type BaseHolder struct {
 	buffer *Buffer
 
@@ -41,7 +58,7 @@ func (i *BaseHolder) GetRowSlot(dataContentLen int) []byte {
 	}
 
 	i.dataArrays = append(i.dataArrays, i.buffer.GetArray())
-	i.lastArrayIndex++
+	i.lastArrayIndex = len(i.dataArrays) - 1
 	i.lastArrayLen = dataLen
 	return i.dataArrays[i.lastArrayIndex][0:dataLen]
 }

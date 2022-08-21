@@ -58,7 +58,7 @@ func testTuplePrint() {
 		os.Exit(1)
 	}
 
-	strs := bdata.TupleHelper.TupleDescription(tuple.Tuple)
+	strs := bdata.TupleDebugger.TupleDescription(tuple.Tuple)
 	for _, str := range strs {
 		println(str)
 	}

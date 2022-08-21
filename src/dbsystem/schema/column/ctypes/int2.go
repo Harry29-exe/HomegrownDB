@@ -86,6 +86,10 @@ func (i *int2Parser) Skip(data []byte) []byte {
 	return data[:2]
 }
 
+func (i *int2Parser) GetValue(data []byte) []byte {
+	return data[0:2]
+}
+
 func (i *int2Parser) CopyData(data []byte, dest []byte) (copiedBytes int) {
 	copy(data[:2], dest[:2])
 	return 2

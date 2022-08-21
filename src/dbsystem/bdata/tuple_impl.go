@@ -81,7 +81,7 @@ func (t Tuple) ColValue(id column.OrderId) column.Value {
 }
 
 func (t Tuple) DataSize() int {
-	return len(t.data) + int(t.table.BitmapLen()+toNullBitmap)
+	return len(t.data) - int(t.table.BitmapLen()+toNullBitmap)
 }
 
 func (t Tuple) SetCreatedByTx(txId tx.Id) {
@@ -143,12 +143,12 @@ var nullBitmapMasks = [8]byte{
 
 // +++++ Debug +++++
 
-// TupleHelper helps with debugging of Tuple structure
-var TupleHelper = tupleHelper{}
+// TupleDebugger helps with debugging of Tuple structure
+var TupleDebugger = tupleDebugger{}
 
-type tupleHelper struct{}
+type tupleDebugger struct{}
 
-func (t tupleHelper) TupleDescription(tuple Tuple) []string {
+func (t tupleDebugger) TupleDescription(tuple Tuple) []string {
 	strArr := &strutils.StrArray{}
 
 	strArr.FormatAndAdd("Created by %d", tuple.CreatedByTx())
@@ -164,7 +164,7 @@ func (t tupleHelper) TupleDescription(tuple Tuple) []string {
 	return strArr.Array
 }
 
-func (t tupleHelper) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) {
+func (t tupleDebugger) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) {
 	builder := strings.Builder{}
 	builder.WriteString("NullBitmap: ")
 	for _, bitmapByte := range tuple.NullBitmapSlice() {
@@ -194,7 +194,7 @@ func (t tupleHelper) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) {
 	arr.Add(builder.String())
 }
 
-func (t tupleHelper) stringifyColumnValues(tuple Tuple, arr *strutils.StrArray) {
+func (t tupleDebugger) stringifyColumnValues(tuple Tuple, arr *strutils.StrArray) {
 	tabDef := tuple.table
 
 	nextData := tuple.data[toNullBitmap+tabDef.BitmapLen():]
