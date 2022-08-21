@@ -1,6 +1,7 @@
 package exenode
 
 import (
+	"HomegrownDB/backend/executor/exenode/internal/data"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/io/buffer"
 	"HomegrownDB/dbsystem/schema/table"
@@ -26,17 +27,17 @@ func (s *SeqScan) HasNext() bool {
 	panic("implement me")
 }
 
-func (s *SeqScan) Next() bdata.Tuple {
+func (s *SeqScan) Next() data.Row {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *SeqScan) NextBatch() []bdata.Tuple {
+func (s *SeqScan) NextBatch() []data.Row {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *SeqScan) All() []bdata.Tuple {
+func (s *SeqScan) All() []data.Row {
 	//TODO implement me
 	panic("implement me")
 }

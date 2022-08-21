@@ -37,6 +37,7 @@ func NewRow(tuples []bdata.Tuple, holder RowHolder) Row {
 }
 
 func (d Row) GetField(fieldIndex int) []byte {
-	//todo implement me
-	panic("Not implemented")
+	start := bparse.Parse.Int2(d.data[fieldIndex*2:])
+	end := bparse.Parse.Int2(d.data[fieldIndex*2+2:])
+	return d.data[start:end]
 }
