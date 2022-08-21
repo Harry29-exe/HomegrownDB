@@ -30,4 +30,14 @@ func TestNewRow(t *testing.T) {
 		dataRow.GetField(tutils.Table1.AwesomeKeyId),
 		t,
 	)
+	tests.AssertEqArray(
+		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, tutils.Table1.NullableCol),
+		dataRow.GetField(tutils.Table1.NullableColId),
+		t,
+	)
+	tests.AssertEqArray(
+		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, tutils.Table1.NonNullColl),
+		dataRow.GetField(tutils.Table1.NonNullCollId),
+		t,
+	)
 }

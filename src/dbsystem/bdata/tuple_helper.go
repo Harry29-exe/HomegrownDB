@@ -11,6 +11,9 @@ var TupleHelper = tupleHelper{}
 type tupleHelper struct{}
 
 func (th tupleHelper) GetValue(tuple Tuple, tableDef table.Definition, id column.OrderId) []byte {
+	if tuple.IsNull(id) {
+		return nil
+	}
 	if id == 0 {
 		return tableDef.ColumnParser(0).GetValue(tuple.Data())
 	}

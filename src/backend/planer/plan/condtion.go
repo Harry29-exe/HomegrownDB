@@ -13,7 +13,7 @@ type Condition struct {
 }
 
 type ConditionValue interface {
-	Value() ConditionRawValue
+	Value() any //todo change any to ConditionRawValue somehow
 }
 
 type ConditionRawValue interface {

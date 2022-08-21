@@ -18,7 +18,8 @@ func NewRow(tuples []bdata.Tuple, holder RowHolder) Row {
 	}
 	slot := holder.GetRowSlot(dataSize)
 
-	var dataPosition = holder.Fields()*2 + 2
+	var fieldCount = holder.Fields()
+	var dataPosition = fieldCount*2 + 2
 	var tuple bdata.Tuple
 	var tupleByte int
 	field, skippedBytes := FieldPtr(0), 0
@@ -32,11 +33,18 @@ func NewRow(tuples []bdata.Tuple, holder RowHolder) Row {
 				skippedBytes = parser.CopyData(tuple.Data()[tupleByte:], slot[dataPosition:])
 				bparse.Serialize.PutUInt2(dataPosition, slot[field*2:])
 				dataPosition += uint16(skippedBytes)
-				field++
 			}
+			field++
 		}
 	}
 	bparse.Serialize.PutUInt2(dataPosition, slot[field*2:])
+
+	for i := (fieldCount - 1) * 2; i > 0; i -= 2 {
+		if slot[i] == 0 && slot[i+1] == 0 {
+			slot[i] = slot[i+2]
+			slot[i+1] = slot[i+3]
+		}
+	}
 
 	return Row{
 		holder: holder,
@@ -46,9 +54,9 @@ func NewRow(tuples []bdata.Tuple, holder RowHolder) Row {
 
 func (d Row) GetField(fieldIndex uint16) []byte {
 	start := bparse.Parse.Int2(d.data[fieldIndex*2:])
-	if start == 0 {
+	end := bparse.Parse.Int2(d.data[fieldIndex*2+2:])
+	if start == end {
 		return nil
 	}
-	end := bparse.Parse.Int2(d.data[fieldIndex*2+2:])
 	return d.data[start:end]
 }
