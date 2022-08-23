@@ -11,8 +11,8 @@ type SeqScan struct {
 	table  table.Definition
 	buffer buffer.DBSharedBuffer
 
-	currentData []bdata.Tuple
-	nextPage    bdata.PageId
+	nextPage bdata.PageId
+	holder   data.RowBuffer
 }
 
 func NewSeqScan(table table.Definition, buffer buffer.DBSharedBuffer) *SeqScan {
@@ -20,6 +20,16 @@ func NewSeqScan(table table.Definition, buffer buffer.DBSharedBuffer) *SeqScan {
 		table:  table,
 		buffer: buffer,
 	}
+}
+
+func (s *SeqScan) Init(dataHolder data.RowBuffer) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s *SeqScan) Free() {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (s *SeqScan) HasNext() bool {

@@ -21,8 +21,8 @@ func TestNewRow(t *testing.T) {
 		panic(err.Error())
 	}
 
-	buffer := data.NewBuffer(10_000)
-	holder := data.NewBaseHolder(buffer, []table.Definition{tableDef})
+	buffer := data.NewSlotBuffer(10_000)
+	holder := data.NewBaseRowHolder(buffer, []table.Definition{tableDef})
 	dataRow := data.NewRow([]bdata.Tuple{testTuple.Tuple}, holder)
 
 	tests.AssertEqArray(

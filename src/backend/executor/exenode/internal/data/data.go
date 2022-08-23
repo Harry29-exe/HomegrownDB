@@ -7,11 +7,11 @@ import (
 )
 
 type Row struct {
-	holder RowHolder
+	holder RowBuffer
 	data   []byte // data format described in documentation/executor/Data.svg
 }
 
-func NewRow(tuples []bdata.Tuple, holder RowHolder) Row {
+func NewRow(tuples []bdata.Tuple, holder RowBuffer) Row {
 	dataSize := 0
 	for _, tuple := range tuples {
 		dataSize = tuple.DataSize()

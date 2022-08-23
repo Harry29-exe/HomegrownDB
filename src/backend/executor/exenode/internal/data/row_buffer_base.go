@@ -1,27 +1,14 @@
 package data
 
-import (
-	"HomegrownDB/dbsystem/schema/table"
-)
+import "HomegrownDB/dbsystem/schema/table"
 
-type RowHolder interface {
-	GetRowSlot(dataContentLen int) []byte
-	Free()
-	Fields() uint16
-	Tables() []table.Definition
-}
-
-type FieldPtr = uint16
-
-const FieldPtrSize = 2
-
-func NewBaseHolder(buffer *Buffer, tables []table.Definition) *BaseHolder {
+func NewBaseRowHolder(buffer *SlotBuffer, tables []table.Definition) *BaseRowBuffer {
 	fields := uint16(0)
 	for _, def := range tables {
 		fields += def.ColumnCount()
 	}
 
-	return &BaseHolder{
+	return &BaseRowBuffer{
 		buffer:         buffer,
 		tables:         tables,
 		fields:         fields,
@@ -32,8 +19,8 @@ func NewBaseHolder(buffer *Buffer, tables []table.Definition) *BaseHolder {
 	}
 }
 
-type BaseHolder struct {
-	buffer *Buffer
+type BaseRowBuffer struct {
+	buffer *SlotBuffer
 
 	tables    []table.Definition
 	fields    uint16
@@ -44,7 +31,7 @@ type BaseHolder struct {
 	lastArrayLen   int
 }
 
-func (i *BaseHolder) GetRowSlot(dataContentLen int) []byte {
+func (i *BaseRowBuffer) GetRowSlot(dataContentLen int) []byte {
 	dataLen := dataContentLen + i.headerLen
 	if dataLen > i.buffer.ArrayLen() {
 		panic("Data row bigger thant array not yet supported")
@@ -63,15 +50,11 @@ func (i *BaseHolder) GetRowSlot(dataContentLen int) []byte {
 	return i.dataArrays[i.lastArrayIndex][0:dataLen]
 }
 
-func (i *BaseHolder) Free() {
+func (i *BaseRowBuffer) Free() {
 	//todo implement me
 	panic("Not implemented")
 }
 
-func (i *BaseHolder) Fields() uint16 {
+func (i *BaseRowBuffer) Fields() uint16 {
 	return i.fields
-}
-
-func (i *BaseHolder) Tables() []table.Definition {
-	return i.tables
 }

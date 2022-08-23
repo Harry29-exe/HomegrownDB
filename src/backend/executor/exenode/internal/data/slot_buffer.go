@@ -4,30 +4,30 @@ import "HomegrownDB/datastructs/queue"
 
 const initialBufferSize = 1000
 
-func NewBuffer(arrayLen int) *Buffer {
+func NewSlotBuffer(arrayLen int) *SlotBuffer {
 	array := make([]byte, initialBufferSize*arrayLen)
 	baseQueue := queue.NewBaseQueue[[]byte](initialBufferSize)
 	for i := 0; i < initialBufferSize; i++ {
 		baseQueue.Push(array[i*arrayLen : (i+1)*arrayLen])
 	}
 
-	return &Buffer{
+	return &SlotBuffer{
 		arrayQueue: baseQueue,
 		arrayLen:   arrayLen,
 	}
 }
 
-type Buffer struct {
+type SlotBuffer struct {
 	arrayQueue queue.Queue[[]byte]
 	arrayLen   int
 }
 
-func (b *Buffer) GetInfo() *RowHolder {
+func (b *SlotBuffer) GetInfo() *RowBuffer {
 	//todo implement me
 	panic("Not implemented")
 }
 
-func (b *Buffer) GetArray() []byte {
+func (b *SlotBuffer) GetArray() []byte {
 	arr, ok := b.arrayQueue.Get()
 	if ok {
 		return arr
@@ -37,11 +37,11 @@ func (b *Buffer) GetArray() []byte {
 	}
 }
 
-func (b *Buffer) ArrayLen() int {
+func (b *SlotBuffer) ArrayLen() int {
 	return b.arrayLen
 }
 
-func (b *Buffer) allocateNewHugeArray() {
+func (b *SlotBuffer) allocateNewHugeArray() {
 	array := make([]byte, initialBufferSize*b.arrayLen)
 	for i := 0; i < initialBufferSize; i++ {
 		b.arrayQueue.Push(array[i*b.arrayLen : (i+1)*b.arrayLen])
