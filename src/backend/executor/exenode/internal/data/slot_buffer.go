@@ -4,6 +4,8 @@ import "HomegrownDB/datastructs/queue"
 
 const initialBufferSize = 1000
 
+var GlobalSlotBuffer = NewSlotBuffer(initialBufferSize)
+
 func NewSlotBuffer(arrayLen int) *SlotBuffer {
 	array := make([]byte, initialBufferSize*arrayLen)
 	baseQueue := queue.NewBaseQueue[[]byte](initialBufferSize)

@@ -18,9 +18,3 @@ const FieldPtrSize = 2
 func (i *BaseRowBuffer) Tables() []table.Definition {
 	return i.tables
 }
-
-type rowBufferType = uint8
-
-const (
-	RememberAll rowBufferType = iota
-)

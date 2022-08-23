@@ -11,8 +11,9 @@ type SeqScan struct {
 	table  table.Definition
 	buffer buffer.DBSharedBuffer
 
-	nextPage bdata.PageId
-	holder   data.RowBuffer
+	page   bdata.PageId
+	tuple  bdata.TupleIndex
+	holder data.RowBuffer
 }
 
 func NewSeqScan(table table.Definition, buffer buffer.DBSharedBuffer) *SeqScan {
@@ -22,9 +23,9 @@ func NewSeqScan(table table.Definition, buffer buffer.DBSharedBuffer) *SeqScan {
 	}
 }
 
-func (s *SeqScan) Init(dataHolder data.RowBuffer) {
-	//TODO implement me
-	panic("implement me")
+func (s *SeqScan) Init(options InitOptions) data.RowBuffer {
+	s.holder = data.NewBaseRowHolder(data.GlobalSlotBuffer, []table.Definition{s.table})
+	return s.holder
 }
 
 func (s *SeqScan) Free() {
@@ -38,13 +39,29 @@ func (s *SeqScan) HasNext() bool {
 }
 
 func (s *SeqScan) Next() data.Row {
-	//TODO implement me
-	panic("implement me")
+	tag := bdata.PageTag{PageId: s.page, TableId: s.table.TableId()}
+	rPage, err := buffer.SharedBuffer.RPage(tag)
+	if err != nil {
+		panic("")
+	}
+	defer buffer.SharedBuffer.ReleaseRPage(tag)
+	tuple := rPage.Tuple(s.tuple)
+
+	tCount := rPage.TupleCount()
+	if tCount == s.tuple+1 {
+		s.tuple = 0
+		s.page += 1 //todo check if table has next page if not set some flag 'hasNext' to false
+	}
+
+	return data.NewRow([]bdata.Tuple{tuple}, s.holder)
 }
 
 func (s *SeqScan) NextBatch() []data.Row {
-	//TODO implement me
-	panic("implement me")
+	rPage, err := buffer.SharedBuffer.RPage(bdata.PageTag{PageId: s.page, TableId: s.table.TableId()})
+	if err != nil {
+		panic("")
+	}
+	rPage
 }
 
 func (s *SeqScan) All() []data.Row {
