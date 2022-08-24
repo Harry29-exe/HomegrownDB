@@ -10,21 +10,26 @@ import (
 type SeqScan struct {
 	table  table.Definition
 	buffer buffer.DBSharedBuffer
-
-	page   bdata.PageId
-	tuple  bdata.TupleIndex
 	holder data.RowBuffer
+
+	page  bdata.PageId
+	tuple bdata.TupleIndex
+
+	pageCount bdata.PageId
+	hasNext   bool
 }
 
-func NewSeqScan(table table.Definition, buffer buffer.DBSharedBuffer) *SeqScan {
+func NewSeqScan(table table.Definition, pageCount uint32, buffer buffer.DBSharedBuffer) *SeqScan {
 	return &SeqScan{
-		table:  table,
-		buffer: buffer,
+		table:     table,
+		pageCount: pageCount,
+		buffer:    buffer,
 	}
 }
 
 func (s *SeqScan) Init(options InitOptions) data.RowBuffer {
 	s.holder = data.NewBaseRowHolder(data.GlobalSlotBuffer, []table.Definition{s.table})
+
 	return s.holder
 }
 
@@ -34,8 +39,7 @@ func (s *SeqScan) Free() {
 }
 
 func (s *SeqScan) HasNext() bool {
-	//TODO implement me
-	panic("implement me")
+	return s.hasNext
 }
 
 func (s *SeqScan) Next() data.Row {
@@ -50,26 +54,38 @@ func (s *SeqScan) Next() data.Row {
 	tCount := rPage.TupleCount()
 	if tCount == s.tuple+1 {
 		s.tuple = 0
-		s.page += 1 //todo check if table has next page if not set some flag 'hasNext' to false
+		s.page += 1
+		if s.page == s.pageCount {
+			s.hasNext = false
+		}
 	}
 
 	return data.NewRow([]bdata.Tuple{tuple}, s.holder)
 }
 
 func (s *SeqScan) NextBatch() []data.Row {
-	rPage, err := buffer.SharedBuffer.RPage(bdata.PageTag{PageId: s.page, TableId: s.table.TableId()})
+	tag := bdata.PageTag{PageId: s.page, TableId: s.table.TableId()}
+	rPage, err := buffer.SharedBuffer.RPage(tag)
 	if err != nil {
 		panic("")
 	}
-	rPage
+
+	defer buffer.SharedBuffer.ReleaseRPage(tag)
+	tCount := rPage.TupleCount()
+	rows := make([]data.Row, tCount)
+	for i := uint16(0); i < tCount; i++ {
+		rows[i] = data.NewRow([]bdata.Tuple{rPage.Tuple(i)}, s.holder)
+	}
+
+	s.page += 1
+	if s.page == s.pageCount {
+		s.hasNext = false
+	}
+
+	return rows
 }
 
 func (s *SeqScan) All() []data.Row {
 	//TODO implement me
 	panic("implement me")
-}
-
-func (s *SeqScan) loadDataFromNextPage() {
-	//todo implement me
-	panic("Not implemented")
 }

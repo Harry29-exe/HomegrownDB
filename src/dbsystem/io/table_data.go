@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"sync/atomic"
 )
 
 const PageSize = uint32(dbsystem.PageSize)
@@ -17,18 +18,21 @@ type TableDataIO interface {
 	FlushPage(pageIndex bdata.PageId, pageData []byte) error
 	// NewPage saves provided buffer as new page and returns newly created page index
 	NewPage(pageData []byte) (bdata.PageId, error)
+	PageCount() uint32
 
 	ReadBgPage(pageIndex bdata.PageId, buffer []byte) error
 	FlushBgPage(pageIndex bdata.PageId, pageData []byte) error
 	NewBgPage(pageData []byte) (bdata.PageId, error)
+	BgPageCount() uint32
 
 	ReadToastPage(pageIndex bdata.PageId, buffer []byte) error
 	FlushToastPage(pageIndex bdata.PageId, pageData []byte) error
 	NewToastPage(pageData []byte) (bdata.PageId, error)
+	ToastPageCount() uint32
 }
 
 func SingleDiscTableDataIO(pathToTableDir string) (TableDataIO, error) {
-	pagesFile, err := os.Open(pathToTableDir + "/pages.hdbd")
+	pagesFile, err := os.Open(pathToTableDir + "/pages.hdbd") //todo read page count for all 3 page types
 	if err != nil {
 		return nil, err
 	}
@@ -54,12 +58,15 @@ func SingleDiscTableDataIO(pathToTableDir string) (TableDataIO, error) {
 type tableDataIO struct {
 	pagesFile     *os.File
 	pagesFileLock *sync.RWMutex
+	pageCount     *uint32
 
 	bgPagesFile     *os.File
 	bgPagesFileLock *sync.RWMutex
+	bgPageCount     *uint32
 
 	toastPagesFile     *os.File
 	toastPagesFileLock *sync.RWMutex
+	toastPageCount     *uint32
 }
 
 func (t *tableDataIO) ReadPage(pageIndex bdata.PageId, buffer []byte) error {
@@ -71,7 +78,15 @@ func (t *tableDataIO) FlushPage(pageIndex bdata.PageId, pageData []byte) error {
 }
 
 func (t *tableDataIO) NewPage(pageData []byte) (bdata.PageId, error) {
-	return newPage(pageData, t.pagesFile, t.pagesFileLock)
+	id, err := newPage(pageData, t.pagesFile, t.pagesFileLock)
+	if err == nil {
+		atomic.AddUint32(t.pageCount, 1)
+	}
+	return id, err
+}
+
+func (t *tableDataIO) PageCount() uint32 {
+	return *t.pageCount
 }
 
 func (t *tableDataIO) ReadBgPage(pageIndex bdata.PageId, buffer []byte) error {
@@ -83,7 +98,15 @@ func (t *tableDataIO) FlushBgPage(pageIndex bdata.PageId, pageData []byte) error
 }
 
 func (t *tableDataIO) NewBgPage(pageData []byte) (bdata.PageId, error) {
-	return newPage(pageData, t.bgPagesFile, t.bgPagesFileLock)
+	id, err := newPage(pageData, t.bgPagesFile, t.bgPagesFileLock)
+	if err == nil {
+		atomic.AddUint32(t.bgPageCount, 1)
+	}
+	return id, err
+}
+
+func (t *tableDataIO) BgPageCount() uint32 {
+	return *t.bgPageCount
 }
 
 func (t *tableDataIO) ReadToastPage(pageIndex bdata.PageId, buffer []byte) error {
@@ -95,7 +118,15 @@ func (t *tableDataIO) FlushToastPage(pageIndex bdata.PageId, pageData []byte) er
 }
 
 func (t *tableDataIO) NewToastPage(pageData []byte) (bdata.PageId, error) {
-	return newPage(pageData, t.toastPagesFile, t.toastPagesFileLock)
+	id, err := newPage(pageData, t.toastPagesFile, t.toastPagesFileLock)
+	if err == nil {
+		atomic.AddUint32(t.toastPageCount, 1)
+	}
+	return id, err
+}
+
+func (t *tableDataIO) ToastPageCount() uint32 {
+	return *t.toastPageCount
 }
 
 func readPage(pageIndex bdata.PageId, buffer []byte, pagesFile *os.File, fileLock *sync.RWMutex) error {
