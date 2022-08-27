@@ -2,7 +2,7 @@ package sqlerr
 
 import (
 	"HomegrownDB/backend/parser/internal/source"
-	token2 "HomegrownDB/backend/tokenizer/token"
+	"HomegrownDB/backend/parser/tokenizer/token"
 	"strings"
 )
 
@@ -14,10 +14,10 @@ func NewSyntaxError(expected string, actual string, source source.TokenSource) *
 	}
 }
 
-func NewTokenSyntaxError(expected, actual token2.Code, source source.TokenSource) *syntaxError {
+func NewTokenSyntaxError(expected, actual token.Code, source source.TokenSource) *syntaxError {
 	return &syntaxError{
-		expected:     token2.ToString(expected),
-		actual:       token2.ToString(actual),
+		expected:     token.ToString(expected),
+		actual:       token.ToString(actual),
 		currentQuery: recreateQuery(source),
 	}
 }

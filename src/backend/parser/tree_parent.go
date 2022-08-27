@@ -1,15 +1,28 @@
 package parser
 
-type TreeParentType = uint16
+type Tree interface {
+	Type() RootType
+	Root() any
+}
+
+type BasicTree struct {
+	rootType RootType
+	root     any
+}
+
+func (b BasicTree) Type() RootType {
+	return b.rootType
+}
+
+func (b BasicTree) Root() any {
+	return b.root
+}
+
+type RootType = uint16
 
 const (
-	SELECT TreeParentType = iota
+	SELECT RootType = iota
 	INSERT
 	UPDATE
 	DELETE
 )
-
-type TreeParent interface {
-	Name() TreeParentType
-	Value() any
-}

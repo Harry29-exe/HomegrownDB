@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/backend/parser/internal/validator"
 	"HomegrownDB/backend/parser/pnode"
 	"HomegrownDB/backend/parser/sqlerr"
-	"HomegrownDB/backend/tokenizer/token"
+	token2 "HomegrownDB/backend/parser/tokenizer/token"
 )
 
 var Fields = fieldsParser{}
@@ -35,8 +35,8 @@ func (p fieldsParser) Parse(source source.TokenSource, validator validator.Valid
 	fields := pnode.FieldsNode{Fields: make([]pnode.FieldNode, 0, 5)}
 
 	for {
-		if parsingToken.Code() != token.Identifier {
-			return fields, sqlerr.NewSyntaxError(token.TextStr, parsingToken.Value(), source)
+		if parsingToken.Code() != token2.Identifier {
+			return fields, sqlerr.NewSyntaxError(token2.TextStr, parsingToken.Value(), source)
 		}
 
 		field, err := Field.Parse(source, validator)
@@ -46,8 +46,8 @@ func (p fieldsParser) Parse(source source.TokenSource, validator validator.Valid
 		fields.AddField(field)
 
 		err = validator.SkipBreaks().
-			Type(token.SpaceBreak).
-			TypeMinMax(token.Comma, 1, 1).
+			Type(token2.SpaceBreak).
+			TypeMinMax(token2.Comma, 1, 1).
 			SkipFromNext()
 
 		if err != nil {

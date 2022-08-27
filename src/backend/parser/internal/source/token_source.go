@@ -1,7 +1,7 @@
 package source
 
 import (
-	"HomegrownDB/backend/tokenizer/token"
+	"HomegrownDB/backend/parser/tokenizer/token"
 )
 
 // TokenSource array like structure where Next moves pointer one token forward

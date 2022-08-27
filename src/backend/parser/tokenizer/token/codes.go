@@ -5,6 +5,16 @@ import (
 	"strings"
 )
 
+func KeywordToToken(keyword string) (Token, error) {
+	upperKeyword := strings.ToUpper(keyword)
+	token, ok := keywordMap[upperKeyword]
+	if !ok {
+		return nil, errors.New("\"" + keyword + "\" is unknown keyword")
+	}
+
+	return NewBasicToken(token, keyword), nil
+}
+
 type Code = uint16
 
 const (
@@ -15,6 +25,7 @@ const (
 	Where
 	Join
 	Update
+	Insert
 	Delete
 	Create
 	Drop
@@ -49,22 +60,13 @@ var breakCodes = map[Code]bool{
 	Semicolon:  true,
 }
 
-func KeywordToToken(keyword string) (Token, error) {
-	upperKeyword := strings.ToUpper(keyword)
-	token, ok := keywordMap[upperKeyword]
-	if !ok {
-		return nil, errors.New("\"" + keyword + "\" is unknown keyword")
-	}
-
-	return NewBasicToken(token, keyword), nil
-}
-
 var keywordMap = map[string]Code{
 	"SELECT": Select,
 	"FROM":   From,
 	"WHERE":  Where,
 	"JOIN":   Join,
 	"UPDATE": Update,
+	"INSERT": Insert,
 	"DELETE": Delete,
 	"CREATE": Create,
 	"DROP":   Drop,

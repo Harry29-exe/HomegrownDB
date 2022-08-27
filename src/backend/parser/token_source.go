@@ -2,8 +2,8 @@ package parser
 
 import (
 	"HomegrownDB/backend/parser/internal/source"
-	tk "HomegrownDB/backend/tokenizer"
-	"HomegrownDB/backend/tokenizer/token"
+	tk "HomegrownDB/backend/parser/tokenizer"
+	"HomegrownDB/backend/parser/tokenizer/token"
 )
 
 func NewTokenSource(query string) source.TokenSource {

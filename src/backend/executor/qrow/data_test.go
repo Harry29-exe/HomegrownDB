@@ -1,7 +1,7 @@
-package data_test
+package qrow_test
 
 import (
-	"HomegrownDB/backend/executor/exenode/internal/data"
+	qrow2 "HomegrownDB/backend/executor/qrow"
 	"HomegrownDB/common/tests"
 	"HomegrownDB/common/tests/tutils"
 	"HomegrownDB/dbsystem/bdata"
@@ -21,9 +21,9 @@ func TestNewRow(t *testing.T) {
 		panic(err.Error())
 	}
 
-	buffer := data.NewSlotBuffer(10_000)
-	holder := data.NewBaseRowHolder(buffer, []table.Definition{tableDef})
-	dataRow := data.NewRow([]bdata.Tuple{testTuple.Tuple}, holder)
+	buffer := qrow2.NewSlotBuffer(10_000)
+	holder := qrow2.NewBaseRowHolder(buffer, []table.Definition{tableDef})
+	dataRow := qrow2.NewRow([]bdata.Tuple{testTuple.Tuple}, holder)
 
 	tests.AssertEqArray(
 		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, tutils.Table1.AwesomeKey),

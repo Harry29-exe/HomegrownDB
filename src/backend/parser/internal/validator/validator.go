@@ -3,7 +3,7 @@ package validator
 import (
 	"HomegrownDB/backend/parser/internal/source"
 	"HomegrownDB/backend/parser/sqlerr"
-	"HomegrownDB/backend/tokenizer/token"
+	token2 "HomegrownDB/backend/parser/tokenizer/token"
 )
 
 func NewValidator(source source.TokenSource) Validator {
@@ -14,8 +14,8 @@ func NewValidator(source source.TokenSource) Validator {
 
 type validator struct {
 	source      source.TokenSource
-	current     token.Token
-	currentText *token.TextToken
+	current     token2.Token
+	currentText *token2.TextToken
 }
 
 func (v *validator) Init(source source.TokenSource) {
@@ -32,55 +32,55 @@ func (v *validator) Current() TokenValidator {
 	return v
 }
 
-func (v *validator) NextIs(code token.Code) error {
+func (v *validator) NextIs(code token2.Code) error {
 	if tk := v.source.Next(); tk == nil {
-		return sqlerr.NewSyntaxError(token.ToString(code), "nil", v.source)
+		return sqlerr.NewSyntaxError(token2.ToString(code), "nil", v.source)
 	} else if tk.Code() != code {
-		return sqlerr.NewSyntaxError(token.ToString(code), tk.Value(), v.source)
+		return sqlerr.NewSyntaxError(token2.ToString(code), tk.Value(), v.source)
 	}
 	return nil
 }
 
-func (v *validator) NextIsAnd(code token.Code) Validator {
+func (v *validator) NextIsAnd(code token2.Code) Validator {
 	if tk := v.source.Next(); tk == nil {
 		return afterErrorValidator{
 			token: tk,
-			err:   sqlerr.NewSyntaxError(token.ToString(code), "nil", v.source),
+			err:   sqlerr.NewSyntaxError(token2.ToString(code), "nil", v.source),
 		}
 	} else if tk.Code() != code {
 		return afterErrorValidator{
 			token: tk,
-			err:   sqlerr.NewSyntaxError(token.ToString(code), tk.Value(), v.source),
+			err:   sqlerr.NewSyntaxError(token2.ToString(code), tk.Value(), v.source),
 		}
 	}
 	return v
 }
 
-func (v *validator) CurrentIs(code token.Code) error {
+func (v *validator) CurrentIs(code token2.Code) error {
 	if tk := v.source.Current(); tk == nil {
-		return sqlerr.NewSyntaxError(token.ToString(code), "nil", v.source)
+		return sqlerr.NewSyntaxError(token2.ToString(code), "nil", v.source)
 	} else if tk.Code() != code {
-		return sqlerr.NewSyntaxError(token.ToString(code), tk.Value(), v.source)
+		return sqlerr.NewSyntaxError(token2.ToString(code), tk.Value(), v.source)
 	}
 	return nil
 }
 
-func (v *validator) CurrentIsAnd(code token.Code) Validator {
+func (v *validator) CurrentIsAnd(code token2.Code) Validator {
 	if tk := v.source.Current(); tk == nil {
 		return afterErrorValidator{
 			token: tk,
-			err:   sqlerr.NewSyntaxError(token.ToString(code), "nil", v.source),
+			err:   sqlerr.NewSyntaxError(token2.ToString(code), "nil", v.source),
 		}
 	} else if tk.Code() != code {
 		return afterErrorValidator{
 			token: tk,
-			err:   sqlerr.NewSyntaxError(token.ToString(code), tk.Value(), v.source),
+			err:   sqlerr.NewSyntaxError(token2.ToString(code), tk.Value(), v.source),
 		}
 	}
 	return v
 }
 
-func (v *validator) NextSequence(codes ...token.Code) error {
+func (v *validator) NextSequence(codes ...token2.Code) error {
 	v.source.Checkpoint()
 	for _, code := range codes {
 		next := v.source.Next()
@@ -95,7 +95,7 @@ func (v *validator) NextSequence(codes ...token.Code) error {
 	return nil
 }
 
-func (v *validator) NextSequenceAnd(codes ...token.Code) Validator {
+func (v *validator) NextSequenceAnd(codes ...token2.Code) Validator {
 	v.source.Checkpoint()
 	for _, code := range codes {
 		next := v.source.Next()
@@ -113,7 +113,7 @@ func (v *validator) NextSequenceAnd(codes ...token.Code) Validator {
 	return nil
 }
 
-func (v *validator) CurrentSequence(codes ...token.Code) error {
+func (v *validator) CurrentSequence(codes ...token2.Code) error {
 	currentToken := v.source.Current()
 	if currentToken.Code() != codes[0] {
 		return sqlerr.NewTokenSyntaxError(codes[0], currentToken.Code(), v.source)
@@ -133,7 +133,7 @@ func (v *validator) CurrentSequence(codes ...token.Code) error {
 	return nil
 }
 
-func (v *validator) CurrentSequenceAnd(codes ...token.Code) Validator {
+func (v *validator) CurrentSequenceAnd(codes ...token2.Code) Validator {
 	currentToken := v.source.Current()
 	if currentToken.Code() != codes[0] {
 		return afterErrorValidator{

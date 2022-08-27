@@ -2,10 +2,10 @@ package validator
 
 import (
 	"HomegrownDB/backend/parser/sqlerr"
-	"HomegrownDB/backend/tokenizer/token"
+	token2 "HomegrownDB/backend/parser/tokenizer/token"
 )
 
-func (v *validator) Check() (token.Token, error) {
+func (v *validator) Check() (token2.Token, error) {
 	return v.current, nil
 }
 
@@ -13,16 +13,16 @@ func (v *validator) CheckAnd() Validator {
 	return v
 }
 
-func (v *validator) Has(code token.Code) TokenValidator {
+func (v *validator) Has(code token2.Code) TokenValidator {
 	if v.current == nil {
 		return afterErrorValidator{
 			token: nil,
-			err:   sqlerr.NewSyntaxError(token.ToString(code), "nil", v.source),
+			err:   sqlerr.NewSyntaxError(token2.ToString(code), "nil", v.source),
 		}
 	} else if v.current.Code() != code {
 		return afterErrorValidator{
 			token: v.current,
-			err:   sqlerr.NewSyntaxError(token.ToString(code), v.current.Value(), v.source),
+			err:   sqlerr.NewSyntaxError(token2.ToString(code), v.current.Value(), v.source),
 		}
 	}
 	return v
@@ -37,7 +37,7 @@ func (v *validator) IsTextToken() TextTokenValidator {
 	}
 
 	switch textToken := v.current.(type) {
-	case *token.TextToken:
+	case *token2.TextToken:
 		v.currentText = textToken
 		return v
 	default:

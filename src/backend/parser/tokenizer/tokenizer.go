@@ -1,7 +1,7 @@
 package tokenizer
 
 import (
-	. "HomegrownDB/backend/tokenizer/token"
+	. "HomegrownDB/backend/parser/tokenizer/token"
 	"errors"
 	"unicode"
 )

@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/backend/parser/internal/source"
 	"HomegrownDB/backend/parser/internal/validator"
 	"HomegrownDB/backend/parser/pnode"
-	"HomegrownDB/backend/tokenizer/token"
+	"HomegrownDB/backend/parser/tokenizer/token"
 )
 
 var Select = selectParser{}

@@ -1,4 +1,4 @@
-package data
+package qrow
 
 import "HomegrownDB/dbsystem/schema/table"
 

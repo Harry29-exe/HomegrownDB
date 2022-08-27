@@ -1,5 +1,0 @@
-package analizer
-
-func AnalyzeSelect() {
-
-}

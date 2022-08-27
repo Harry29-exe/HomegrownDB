@@ -1,9 +1,11 @@
 package validator
 
-import "HomegrownDB/backend/tokenizer/token"
+import (
+	token2 "HomegrownDB/backend/parser/tokenizer/token"
+)
 
 type afterErrorValidator struct {
-	token token.Token
+	token token2.Token
 	err   error
 }
 
@@ -17,35 +19,35 @@ func (v afterErrorValidator) Current() TokenValidator {
 	return v
 }
 
-func (v afterErrorValidator) NextIs(code token.Code) error {
+func (v afterErrorValidator) NextIs(code token2.Code) error {
 	return v.err
 }
 
-func (v afterErrorValidator) NextIsAnd(code token.Code) Validator {
+func (v afterErrorValidator) NextIsAnd(code token2.Code) Validator {
 	return v
 }
 
-func (v afterErrorValidator) CurrentIs(code token.Code) error {
+func (v afterErrorValidator) CurrentIs(code token2.Code) error {
 	return v.err
 }
 
-func (v afterErrorValidator) CurrentIsAnd(code token.Code) Validator {
+func (v afterErrorValidator) CurrentIsAnd(code token2.Code) Validator {
 	return v
 }
 
-func (v afterErrorValidator) NextSequence(codes ...token.Code) error {
+func (v afterErrorValidator) NextSequence(codes ...token2.Code) error {
 	return v.err
 }
 
-func (v afterErrorValidator) NextSequenceAnd(codes ...token.Code) Validator {
+func (v afterErrorValidator) NextSequenceAnd(codes ...token2.Code) Validator {
 	return v
 }
 
-func (v afterErrorValidator) CurrentSequence(codes ...token.Code) error {
+func (v afterErrorValidator) CurrentSequence(codes ...token2.Code) error {
 	return v.err
 }
 
-func (v afterErrorValidator) CurrentSequenceAnd(codes ...token.Code) Validator {
+func (v afterErrorValidator) CurrentSequenceAnd(codes ...token2.Code) Validator {
 	return v
 }
 
@@ -55,7 +57,7 @@ func (v afterErrorValidator) SkipBreaks() *breaksSkipper {
 
 // TokenValidator impl
 
-func (v afterErrorValidator) Check() (token.Token, error) {
+func (v afterErrorValidator) Check() (token2.Token, error) {
 	return v.token, v.err
 }
 
@@ -63,7 +65,7 @@ func (v afterErrorValidator) CheckAnd() Validator {
 	return v
 }
 
-func (v afterErrorValidator) Has(code token.Code) TokenValidator {
+func (v afterErrorValidator) Has(code token2.Code) TokenValidator {
 	return v
 }
 

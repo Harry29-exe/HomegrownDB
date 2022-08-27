@@ -1,6 +1,9 @@
 package querry
 
-import "HomegrownDB/dbsystem/tx"
+import (
+	"HomegrownDB/backend/executor/qrow"
+	"HomegrownDB/dbsystem/tx"
+)
 
 type DBRequest struct {
 	txId  tx.Id
@@ -8,6 +11,10 @@ type DBRequest struct {
 	user  any //not in use for now
 }
 
-func (r *DBRequest) Handle() {
+type DBResponse struct {
+	rows qrow.RowBuffer
+}
+
+func (r *DBRequest) Handle() *DBResponse {
 
 }

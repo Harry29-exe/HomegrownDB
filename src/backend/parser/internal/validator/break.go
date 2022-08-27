@@ -3,20 +3,20 @@ package validator
 import (
 	"HomegrownDB/backend/parser/internal/source"
 	"HomegrownDB/backend/parser/sqlerr"
-	"HomegrownDB/backend/tokenizer/token"
+	token2 "HomegrownDB/backend/parser/tokenizer/token"
 	"math"
 	"strings"
 )
 
 func SkipBreaks(source source.TokenSource) *breaksSkipper {
 	return &breaksSkipper{
-		breakTypes: map[token.Code]*breakType{},
+		breakTypes: map[token2.Code]*breakType{},
 		source:     source,
 	}
 }
 
 type breaksSkipper struct {
-	breakTypes map[token.Code]*breakType
+	breakTypes map[token2.Code]*breakType
 	source     source.TokenSource
 }
 
@@ -36,14 +36,14 @@ func (b *breaksSkipper) SkipFromCurrent() error {
 func (b *breaksSkipper) skip(fromCurrent bool) error {
 	b.source.Checkpoint()
 
-	var currentToken token.Token
+	var currentToken token2.Token
 	if fromCurrent {
 		currentToken = b.source.Current()
 	} else {
 		currentToken = b.source.Next()
 	}
 
-	for token.IsBreak(currentToken.Code()) {
+	for token2.IsBreak(currentToken.Code()) {
 		breakType, ok := b.breakTypes[currentToken.Code()]
 		if !ok {
 			err := sqlerr.NewSyntaxError(b.breakTypesToStr(), currentToken.Value(), b.source)
@@ -58,12 +58,12 @@ func (b *breaksSkipper) skip(fromCurrent bool) error {
 
 	for breakType, data := range b.breakTypes {
 		if data.minOccurrences > 0 {
-			err := sqlerr.NewSyntaxTextError("expected more of: "+token.ToString(breakType), b.source)
+			err := sqlerr.NewSyntaxTextError("expected more of: "+token2.ToString(breakType), b.source)
 			b.source.Rollback()
 			return err
 		}
 		if data.maxOccurrences < 0 {
-			err := sqlerr.NewSyntaxTextError("expected less of: "+token.ToString(breakType), b.source)
+			err := sqlerr.NewSyntaxTextError("expected less of: "+token2.ToString(breakType), b.source)
 			b.source.Rollback()
 			return err
 		}
@@ -73,7 +73,7 @@ func (b *breaksSkipper) skip(fromCurrent bool) error {
 	return nil
 }
 
-func (b *breaksSkipper) Type(code token.Code) *breaksSkipper {
+func (b *breaksSkipper) Type(code token2.Code) *breaksSkipper {
 	b.breakTypes[code] = &breakType{
 		maxOccurrences: math.MaxInt16,
 		minOccurrences: 0,
@@ -82,7 +82,7 @@ func (b *breaksSkipper) Type(code token.Code) *breaksSkipper {
 	return b
 }
 
-func (b *breaksSkipper) TypeMin(code token.Code, min int16) *breaksSkipper {
+func (b *breaksSkipper) TypeMin(code token2.Code, min int16) *breaksSkipper {
 	b.breakTypes[code] = &breakType{
 		maxOccurrences: math.MaxInt16,
 		minOccurrences: min,
@@ -91,7 +91,7 @@ func (b *breaksSkipper) TypeMin(code token.Code, min int16) *breaksSkipper {
 	return b
 }
 
-func (b *breaksSkipper) TypeMax(code token.Code, max int16) *breaksSkipper {
+func (b *breaksSkipper) TypeMax(code token2.Code, max int16) *breaksSkipper {
 	b.breakTypes[code] = &breakType{
 		maxOccurrences: max,
 		minOccurrences: 0,
@@ -100,7 +100,7 @@ func (b *breaksSkipper) TypeMax(code token.Code, max int16) *breaksSkipper {
 	return b
 }
 
-func (b *breaksSkipper) TypeMinMax(code token.Code, min, max int16) *breaksSkipper {
+func (b *breaksSkipper) TypeMinMax(code token2.Code, min, max int16) *breaksSkipper {
 	b.breakTypes[code] = &breakType{
 		maxOccurrences: max,
 		minOccurrences: min,
@@ -109,7 +109,7 @@ func (b *breaksSkipper) TypeMinMax(code token.Code, min, max int16) *breaksSkipp
 	return b
 }
 
-func (b *breaksSkipper) TypeExactly(code token.Code, occurrences int16) *breaksSkipper {
+func (b *breaksSkipper) TypeExactly(code token2.Code, occurrences int16) *breaksSkipper {
 	b.breakTypes[code] = &breakType{
 		maxOccurrences: occurrences,
 		minOccurrences: occurrences,
@@ -128,7 +128,7 @@ func (b *breaksSkipper) breakTypesToStr() string {
 		} else {
 			notFirst = true
 		}
-		builder.WriteString(token.ToString(code))
+		builder.WriteString(token2.ToString(code))
 	}
 
 	return builder.String()

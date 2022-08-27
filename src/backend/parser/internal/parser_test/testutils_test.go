@@ -1,8 +1,8 @@
 package parser_test_test
 
 import (
-	"HomegrownDB/backend/tokenizer"
-	"HomegrownDB/backend/tokenizer/token"
+	"HomegrownDB/backend/parser/tokenizer"
+	"HomegrownDB/backend/parser/tokenizer/token"
 	"reflect"
 	"testing"
 )
