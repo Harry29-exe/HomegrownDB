@@ -36,7 +36,7 @@ func Plan(node anode.Select) plan2.Plan {
 	queryPlan.RootNode = plan2.SelectFields{
 		Fields: fields,
 		Child: plan2.SeqScan{
-			Table:      node.Tables.Tables[0].Table,
+			Table:      node.Tables.Tables[0].Table.TableId(),
 			Conditions: nil,
 		},
 	}

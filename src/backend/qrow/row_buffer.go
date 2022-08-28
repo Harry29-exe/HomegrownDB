@@ -2,6 +2,7 @@ package qrow
 
 import (
 	"HomegrownDB/dbsystem/schema/table"
+	"io"
 )
 
 type RowBuffer interface {
@@ -9,12 +10,9 @@ type RowBuffer interface {
 	Free()
 	Fields() uint16
 	Tables() []table.Definition
+	Reader() io.Reader
 }
 
 type FieldPtr = uint16
 
 const FieldPtrSize = 2
-
-func (i *BaseRowBuffer) Tables() []table.Definition {
-	return i.tables
-}

@@ -1,7 +1,7 @@
 package bdata
 
 import (
-	"HomegrownDB/dbsystem/io/lob"
+	"HomegrownDB/dbsystem/access/lob"
 	"HomegrownDB/dbsystem/schema/column"
 )
 

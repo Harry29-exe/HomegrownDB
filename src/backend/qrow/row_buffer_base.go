@@ -1,6 +1,9 @@
 package qrow
 
-import "HomegrownDB/dbsystem/schema/table"
+import (
+	"HomegrownDB/dbsystem/schema/table"
+	"io"
+)
 
 func NewBaseRowHolder(buffer *SlotBuffer, tables []table.Definition) *BaseRowBuffer {
 	fields := uint16(0)
@@ -57,4 +60,13 @@ func (i *BaseRowBuffer) Free() {
 
 func (i *BaseRowBuffer) Fields() uint16 {
 	return i.fields
+}
+
+func (i *BaseRowBuffer) Tables() []table.Definition {
+	return i.tables
+}
+
+func (i *BaseRowBuffer) Reader() io.Reader {
+	//todo implement me
+	panic("Not implemented")
 }

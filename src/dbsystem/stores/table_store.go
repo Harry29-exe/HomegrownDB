@@ -1,7 +1,7 @@
 package stores
 
 import (
-	"HomegrownDB/dbsystem/io"
+	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/schema/table"
 )
 
@@ -12,6 +12,6 @@ type Tables interface {
 	AddTable(table table.WDefinition) error
 	RemoveTable(id table.Id) error
 
-	GetTableIO(name string) (io.TableDataIO, error)
-	TableIO(id table.Id) io.TableDataIO
+	GetTableIO(name string) (access.TableDataIO, error)
+	TableIO(id table.Id) access.TableDataIO
 }

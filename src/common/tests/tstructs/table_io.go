@@ -1,8 +1,8 @@
 package tstructs
 
 import (
+	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/bdata"
-	"HomegrownDB/dbsystem/io"
 	"fmt"
 )
 
@@ -20,7 +20,7 @@ type TestInMemoryTableIO struct {
 	toastPages []byte
 }
 
-var pageSize = io.PageSize
+var pageSize = access.PageSize
 
 func (t *TestInMemoryTableIO) ReadPage(pageIndex bdata.PageId, buffer []byte) error {
 	pageStart := pageIndex * pageSize
@@ -48,6 +48,10 @@ func (t *TestInMemoryTableIO) NewPage(pageData []byte) (bdata.PageId, error) {
 	return bdata.PageId(len(t.pages))/pageSize - 1, nil
 }
 
+func (t *TestInMemoryTableIO) PageCount() uint32 {
+	return uint32(len(t.bgPages)) / pageSize
+}
+
 func (t *TestInMemoryTableIO) ReadBgPage(pageIndex bdata.PageId, buffer []byte) error {
 	//TODO implement me
 	panic("implement me")
@@ -63,6 +67,11 @@ func (t *TestInMemoryTableIO) NewBgPage(pageData []byte) (bdata.PageId, error) {
 	panic("implement me")
 }
 
+func (t *TestInMemoryTableIO) BgPageCount() uint32 {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (t *TestInMemoryTableIO) ReadToastPage(pageIndex bdata.PageId, buffer []byte) error {
 	//TODO implement me
 	panic("implement me")
@@ -74,6 +83,11 @@ func (t *TestInMemoryTableIO) FlushToastPage(pageIndex bdata.PageId, pageData []
 }
 
 func (t *TestInMemoryTableIO) NewToastPage(pageData []byte) (bdata.PageId, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *TestInMemoryTableIO) ToastPageCount() uint32 {
 	//TODO implement me
 	panic("implement me")
 }

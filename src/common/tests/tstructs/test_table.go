@@ -2,8 +2,8 @@ package tstructs
 
 import (
 	"HomegrownDB/common/random"
+	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/bdata"
-	"HomegrownDB/dbsystem/io"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/ctypes"
 	"HomegrownDB/dbsystem/schema/table"
@@ -15,7 +15,7 @@ type TestTable struct {
 	table.WDefinition
 }
 
-func (t TestTable) FillPages(pagesToFill int, tableIO io.TableDataIO, rand random.Random) {
+func (t TestTable) FillPages(pagesToFill int, tableIO access.TableDataIO, rand random.Random) {
 	page := bdata.NewPage(t.WDefinition, make([]byte, pageSize))
 	filledPages := 0
 	insertedTuples := 0

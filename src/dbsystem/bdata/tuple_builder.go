@@ -2,7 +2,7 @@ package bdata
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/io/lob"
+	"HomegrownDB/dbsystem/access/lob"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"

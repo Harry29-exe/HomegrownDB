@@ -3,7 +3,7 @@ package stores
 import (
 	"HomegrownDB/common/errors"
 	"HomegrownDB/datastructs/appsync"
-	"HomegrownDB/dbsystem/io"
+	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/schema/table"
 	"fmt"
 	"sync"
@@ -16,7 +16,7 @@ type TablesStore struct {
 	tableDirectoryPath string
 	nameTableMap       map[string]table.Id
 	definitions        []table.WDefinition
-	tableIOs           []io.TableDataIO
+	tableIOs           []access.TableDataIO
 
 	// store utils
 	changeListeners []func()
@@ -27,13 +27,13 @@ func NewTableStore(tableDirectoryPath string, tables []table.WDefinition) (*Tabl
 	maxId, missingIds := findMaxAndMissing(tables)
 
 	nameTableMap := map[string]table.Id{}
-	tablesIOs := make([]io.TableDataIO, maxId)
+	tablesIOs := make([]access.TableDataIO, maxId)
 	definitionsArray := make([]table.WDefinition, maxId)
 	for _, def := range tables {
 		id := def.TableId()
 		nameTableMap[def.Name()] = id
 		definitionsArray[id] = def
-		tableIO, err := io.SingleDiscTableDataIO(tableDirectoryPath + "/" + def.Name())
+		tableIO, err := access.SingleDiscTableDataIO(tableDirectoryPath + "/" + def.Name())
 		if err != nil {
 			return nil, err
 		}
@@ -93,7 +93,7 @@ func (t *TablesStore) GetTable(name string) (table.Definition, error) {
 	return nil, errors.TableNotExist{TableName: name}
 }
 
-func (t *TablesStore) GetTableIO(name string) (io.TableDataIO, error) {
+func (t *TablesStore) GetTableIO(name string) (access.TableDataIO, error) {
 	t.storeLock.RLock()
 	defer t.storeLock.RUnlock()
 
@@ -104,7 +104,7 @@ func (t *TablesStore) GetTableIO(name string) (io.TableDataIO, error) {
 	return nil, fmt.Errorf("no table io with table name: %s", name)
 }
 
-func (t *TablesStore) TableIO(id table.Id) io.TableDataIO {
+func (t *TablesStore) TableIO(id table.Id) access.TableDataIO {
 	t.storeLock.RLock()
 	defer t.storeLock.RUnlock()
 	return t.tableIOs[id]
@@ -130,7 +130,7 @@ func (t *TablesStore) AllTables() []table.Definition {
 }
 
 func (t *TablesStore) AddTable(table table.WDefinition) error {
-	tableIO, err := io.SingleDiscTableDataIO(t.tableDirectoryPath + "/" + table.Name())
+	tableIO, err := access.SingleDiscTableDataIO(t.tableDirectoryPath + "/" + table.Name())
 	if err != nil {
 		return err
 	}
