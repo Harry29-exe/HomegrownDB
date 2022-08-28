@@ -1,10 +1,10 @@
-package parsers
+package parser
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/source"
+	"HomegrownDB/backend/internal/parser/internal"
+	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/backend/internal/parser/pnode"
-	"HomegrownDB/backend/internal/parser/tokenizer/token"
 )
 
 var Field = fieldParser{}
@@ -12,7 +12,7 @@ var Field = fieldParser{}
 type fieldParser struct{}
 
 // Parse todo add support for field without table alias
-func (f fieldParser) Parse(source source.TokenSource, validator validator.Validator) (pnode.FieldNode, error) {
+func (f fieldParser) Parse(source internal.TokenSource, validator validator.Validator) (pnode.FieldNode, error) {
 	source.Checkpoint()
 
 	tableToken, err := validator.Current().

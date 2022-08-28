@@ -1,30 +1,30 @@
 package parser
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/parsers"
-	"HomegrownDB/backend/internal/parser/internal/source"
-	tk "HomegrownDB/backend/internal/parser/tokenizer/token"
+	"HomegrownDB/backend/internal/parser/internal"
+	"HomegrownDB/backend/internal/parser/internal/parser"
+	tk "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 )
 
 func Parse(query string) (Tree, error) {
-	tokenSrc := NewTokenSource(query)
+	tokenSrc := internal.NewTokenSource(query)
 
 	root, rootType, err := delegate(tokenSrc)
 	if err != nil {
-		return nil, err
+		return Tree{}, err
 	}
 
-	return BasicTree{
-		rootType: rootType,
-		root:     root,
+	return Tree{
+		RootType: rootType,
+		Root:     root,
 	}, nil
 }
 
-func delegate(source source.TokenSource) (root any, rootType RootType, err error) {
+func delegate(source internal.TokenSource) (root any, rootType RootType, err error) {
 	switch source.Current().Code() {
 	case tk.Select:
 		rootType = SELECT
-		root, err = parsers.Select.Parse(source)
+		root, err = parser.Select.Parse(source)
 	default:
 		//todo implement me
 		panic("Not implemented")

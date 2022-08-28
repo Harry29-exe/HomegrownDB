@@ -1,10 +1,10 @@
-package parsers
+package parser
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/source"
+	"HomegrownDB/backend/internal/parser/internal"
+	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/backend/internal/parser/pnode"
-	"HomegrownDB/backend/internal/parser/tokenizer/token"
 )
 
 var Table = tableParser{}
@@ -12,7 +12,7 @@ var Table = tableParser{}
 type tableParser struct {
 }
 
-func (t tableParser) Parse(source source.TokenSource, validator validator.Validator) (pnode.TableNode, error) {
+func (t tableParser) Parse(source internal.TokenSource, validator validator.Validator) (pnode.TableNode, error) {
 	source.Checkpoint()
 
 	name, err := validator.Current().

@@ -1,12 +1,11 @@
-package parser
+package internal
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/source"
-	tk "HomegrownDB/backend/internal/parser/tokenizer"
-	"HomegrownDB/backend/internal/parser/tokenizer/token"
+	tk "HomegrownDB/backend/internal/parser/internal/tokenizer"
+	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 )
 
-func NewTokenSource(query string) source.TokenSource {
+func NewTokenSource(query string) TokenSource {
 	return &tokenSource{
 		tokenCache:  make([]token.Token, 0, 10),
 		currentLen:  0,

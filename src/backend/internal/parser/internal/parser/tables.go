@@ -1,10 +1,10 @@
-package parsers
+package parser
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/source"
+	"HomegrownDB/backend/internal/parser/internal"
+	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/backend/internal/parser/pnode"
-	"HomegrownDB/backend/internal/parser/tokenizer/token"
 )
 
 var Tables = tablesParser{}
@@ -14,7 +14,7 @@ type tablesParser struct {
 
 // Parse table declarations which are usually found after FROM keyword
 // todo add tests
-func (t tablesParser) Parse(source source.TokenSource, validator validator.Validator) (pnode.TablesNode, error) {
+func (t tablesParser) Parse(source internal.TokenSource, validator validator.Validator) (pnode.TablesNode, error) {
 	source.Checkpoint()
 
 	tables := pnode.TablesNode{Tables: make([]pnode.TableNode, 0, 3)}

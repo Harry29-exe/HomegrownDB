@@ -1,7 +1,7 @@
 package parser_test_test
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/parsers"
+	"HomegrownDB/backend/internal/parser/internal/parser"
 	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/backend/internal/parser/pnode"
 	"testing"
@@ -46,7 +46,7 @@ func TestTable_Parse_ShouldParse2(t *testing.T) {
 func _tableParserPositiveTest(t *testing.T, sentence testSentence, expectedNode pnode.TableNode) {
 	source := createTestTokenSource(sentence.str, t)
 	v := validator.NewValidator(source)
-	output, err := parsers.Table.Parse(source, v)
+	output, err := parser.Table.Parse(source, v)
 
 	CorrectSentenceParserTestIsSuccessful(
 		t, source, sentence,

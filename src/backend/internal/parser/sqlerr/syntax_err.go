@@ -1,12 +1,12 @@
 package sqlerr
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/source"
-	token2 "HomegrownDB/backend/internal/parser/tokenizer/token"
+	"HomegrownDB/backend/internal/parser/internal"
+	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"strings"
 )
 
-func NewSyntaxError(expected string, actual string, source source.TokenSource) *syntaxError {
+func NewSyntaxError(expected string, actual string, source internal.TokenSource) *syntaxError {
 	return &syntaxError{
 		expected:     expected,
 		actual:       actual,
@@ -14,10 +14,10 @@ func NewSyntaxError(expected string, actual string, source source.TokenSource) *
 	}
 }
 
-func NewTokenSyntaxError(expected, actual token2.Code, source source.TokenSource) *syntaxError {
+func NewTokenSyntaxError(expected, actual token.Code, source internal.TokenSource) *syntaxError {
 	return &syntaxError{
-		expected:     token2.ToString(expected),
-		actual:       token2.ToString(actual),
+		expected:     token.ToString(expected),
+		actual:       token.ToString(actual),
 		currentQuery: recreateQuery(source),
 	}
 }
@@ -34,7 +34,7 @@ func (s *syntaxError) Error() string {
 		s.currentQuery + " <- here "
 }
 
-func NewSyntaxTextError(reason string, source source.TokenSource) *syntaxTextError {
+func NewSyntaxTextError(reason string, source internal.TokenSource) *syntaxTextError {
 	return &syntaxTextError{
 		reason:       reason,
 		currentQuery: recreateQuery(source),
@@ -50,7 +50,7 @@ func (s *syntaxTextError) Error() string {
 	return s.currentQuery + " <- " + s.reason
 }
 
-func recreateQuery(source source.TokenSource) string {
+func recreateQuery(source internal.TokenSource) string {
 	tokens := source.History()
 	strBuilder := strings.Builder{}
 	for _, token := range tokens {

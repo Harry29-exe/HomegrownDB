@@ -1,17 +1,17 @@
-package parsers
+package parser
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/source"
+	"HomegrownDB/backend/internal/parser/internal"
+	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/backend/internal/parser/pnode"
-	"HomegrownDB/backend/internal/parser/tokenizer/token"
 )
 
 var Select = selectParser{}
 
 type selectParser struct{}
 
-func (s selectParser) Parse(source source.TokenSource) (*pnode.SelectNode, error) {
+func (s selectParser) Parse(source internal.TokenSource) (*pnode.SelectNode, error) {
 	source.Checkpoint()
 	v := validator.NewValidator(source)
 

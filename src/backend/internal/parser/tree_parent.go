@@ -1,21 +1,8 @@
 package parser
 
-type Tree interface {
-	Type() RootType
-	Root() any
-}
-
-type BasicTree struct {
-	rootType RootType
-	root     any
-}
-
-func (b BasicTree) Type() RootType {
-	return b.rootType
-}
-
-func (b BasicTree) Root() any {
-	return b.root
+type Tree struct {
+	RootType RootType
+	Root     any
 }
 
 type RootType = uint16

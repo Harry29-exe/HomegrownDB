@@ -8,13 +8,13 @@ import (
 )
 
 func Analyse(tree parser.Tree) (Tree, error) {
-	root, rootType, err := delegateAnalyse(tree, stores.DBTables)
+	root, rootNodeType, err := delegateAnalyse(tree, stores.DBTables)
 	if err != nil {
 		return Tree{}, err
 	}
 
 	return Tree{
-		RootType: rootType,
+		RootType: rootNodeType,
 		Root:     root,
 	}, nil
 }
@@ -32,12 +32,12 @@ const (
 )
 
 func delegateAnalyse(tree parser.Tree, store *stores.TablesStore) (root any, rootType rootType, err error) {
-	switch tree.Type() {
+	switch tree.RootType {
 	case parser.SELECT:
 		rootType = Select
-		rootPnode, ok := tree.Root().(pnode.SelectNode)
+		rootPnode, ok := tree.Root.(pnode.SelectNode)
 		if !ok {
-			panic(fmt.Sprintf("Could not cast pnode with root type of %d", tree.Type()))
+			panic(fmt.Sprintf("Could not cast pnode with root type of %d", tree.RootType))
 		}
 		root, err = AnalyseSelect(rootPnode, store)
 		return

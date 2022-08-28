@@ -1,32 +1,32 @@
 package validator
 
 import (
-	"HomegrownDB/backend/internal/parser/tokenizer/token"
+	token2 "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 )
 
 type Validator interface {
 	Next() TokenValidator
 	Current() TokenValidator
 
-	NextIs(code token.Code) error
-	NextIsAnd(code token.Code) Validator
+	NextIs(code token2.Code) error
+	NextIsAnd(code token2.Code) Validator
 
-	CurrentIs(code token.Code) error
-	CurrentIsAnd(code token.Code) Validator
+	CurrentIs(code token2.Code) error
+	CurrentIsAnd(code token2.Code) Validator
 
-	NextSequence(codes ...token.Code) error
-	NextSequenceAnd(codes ...token.Code) Validator
+	NextSequence(codes ...token2.Code) error
+	NextSequenceAnd(codes ...token2.Code) Validator
 
-	CurrentSequence(codes ...token.Code) error
-	CurrentSequenceAnd(codes ...token.Code) Validator
+	CurrentSequence(codes ...token2.Code) error
+	CurrentSequenceAnd(codes ...token2.Code) Validator
 
 	SkipBreaks() *breaksSkipper
 }
 
 type TokenValidator interface {
-	Check() (token.Token, error)
+	Check() (token2.Token, error)
 	CheckAnd() Validator
-	Has(code token.Code) TokenValidator
+	Has(code token2.Code) TokenValidator
 	IsTextToken() TextTokenValidator
 }
 
