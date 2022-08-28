@@ -6,5 +6,9 @@ import (
 )
 
 func HandleQuery(query string) (qrow.RowBuffer, error) {
-	tree := parser.Parse(query)
+	tree, err := parser.Parse(query)
+	if err != nil {
+		return nil, err
+	}
+
 }

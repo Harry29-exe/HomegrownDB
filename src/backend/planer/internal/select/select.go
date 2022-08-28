@@ -1,14 +1,14 @@
-package planer
+package _select
 
 import (
 	"HomegrownDB/backend/analyser/anode"
 	"HomegrownDB/backend/planer/plan"
 )
 
-// PlanSelect is mvc for now,
+// Plan is mvc for now,
 // it supports for now only following queries Select f1 f2 From t
 // without Where, sorting, grouping and so on
-func PlanSelect(node anode.Select) plan.Plan {
+func Plan(node anode.Select) plan.Plan {
 	if len(node.Tables.Tables) > 1 {
 		panic("multiple tables select not supported yet!")
 	}

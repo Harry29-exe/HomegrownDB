@@ -26,3 +26,7 @@ type PlanTableId = plan.TableId
 type InitOptions struct {
 	StoreAllRows bool
 }
+
+type Builder interface {
+	Build(node plan.Node) ExeNode
+}

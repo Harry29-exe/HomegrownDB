@@ -5,7 +5,7 @@ import (
 )
 
 type SeqScan struct {
-	Table      table.Definition
+	Table      table.Id
 	Conditions Conditions
 }
 
