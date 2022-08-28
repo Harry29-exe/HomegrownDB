@@ -1,6 +1,8 @@
 package qrow
 
-import "HomegrownDB/datastructs/queue"
+import (
+	"HomegrownDB/common/datastructs/collection/queue"
+)
 
 const initialBufferSize = 1000
 

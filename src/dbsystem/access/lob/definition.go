@@ -1,7 +1,7 @@
 package lob
 
 import (
-	"HomegrownDB/datastructs/appsync"
+	"HomegrownDB/common/datastructs/appsync"
 )
 
 type Id = uint64

@@ -1,8 +1,8 @@
 package stores
 
 import (
+	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/errors"
-	"HomegrownDB/datastructs/appsync"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/schema/table"
 	"fmt"

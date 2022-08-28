@@ -1,7 +1,7 @@
 package appsync
 
 import (
-	"HomegrownDB/datastructs"
+	"HomegrownDB/common/datastructs"
 	"sync"
 	"sync/atomic"
 )

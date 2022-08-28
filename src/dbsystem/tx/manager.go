@@ -1,7 +1,7 @@
 package tx
 
 import (
-	"HomegrownDB/datastructs/appsync"
+	"HomegrownDB/common/datastructs/appsync"
 )
 
 //todo add manager initalization from file
