@@ -1,7 +1,8 @@
 package querry
 
 import (
-	"HomegrownDB/backend/executor/qrow"
+	"HomegrownDB/backend"
+	"HomegrownDB/backend/qrow"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -16,5 +17,5 @@ type DBResponse struct {
 }
 
 func (r *DBRequest) Handle() *DBResponse {
-
+	backend.HandleQuery()
 }
