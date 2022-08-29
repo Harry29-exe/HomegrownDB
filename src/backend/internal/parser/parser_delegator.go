@@ -23,7 +23,7 @@ func Parse(query string) (Tree, error) {
 func delegate(source internal.TokenSource) (root any, rootType RootType, err error) {
 	switch source.Current().Code() {
 	case tk.Select:
-		rootType = SELECT
+		rootType = Select
 		root, err = parser.Select.Parse(source)
 	default:
 		//todo implement me

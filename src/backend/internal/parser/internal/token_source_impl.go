@@ -38,6 +38,7 @@ func (t *tokenSource) Next() token.Token {
 		}
 
 		t.tokenCache = append(t.tokenCache, next)
+		t.currentLen++
 		return next
 	} else {
 		t.pointer--
@@ -55,6 +56,10 @@ func (t *tokenSource) Prev() token.Token {
 }
 
 func (t *tokenSource) Current() token.Token {
+	if len(t.tokenCache) == 0 && t.tokenizer.HasNext() {
+		t.pointer--
+		return t.Next()
+	}
 	return t.tokenCache[t.pointer]
 }
 

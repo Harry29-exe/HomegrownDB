@@ -33,7 +33,7 @@ const (
 
 func delegateAnalyse(tree parser.Tree, store *stores.TablesStore) (root any, rootType rootType, err error) {
 	switch tree.RootType {
-	case parser.SELECT:
+	case parser.Select:
 		rootType = Select
 		rootPnode, ok := tree.Root.(pnode.SelectNode)
 		if !ok {

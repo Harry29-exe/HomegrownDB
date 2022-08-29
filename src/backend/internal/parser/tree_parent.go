@@ -8,8 +8,8 @@ type Tree struct {
 type RootType = uint16
 
 const (
-	SELECT RootType = iota
-	INSERT
-	UPDATE
-	DELETE
+	Select RootType = iota
+	Insert
+	Update
+	Delete
 )
