@@ -26,6 +26,7 @@ const (
 	Join
 	Update
 	Insert
+	Into
 	Delete
 	Create
 	Drop
@@ -40,6 +41,8 @@ const (
 	Comma
 	Dot
 	Semicolon
+	OpeningParenthesis //todo add to tokenizer
+	ClosingParenthesis //todo add to tokenizer
 
 	/* -- Values like string, int, float -- */
 
@@ -67,6 +70,7 @@ var keywordMap = map[string]Code{
 	"JOIN":   Join,
 	"UPDATE": Update,
 	"INSERT": Insert,
+	"Into":   Into,
 	"DELETE": Delete,
 	"CREATE": Create,
 	"DROP":   Drop,

@@ -37,3 +37,7 @@ func TestBasicSelectParse(t *testing.T) {
 	tests.AssertEq(birdsTable.TableName, "birds", t)
 	tests.AssertEq(birdsTable.TableAlias, "b", t)
 }
+
+func TestBasicInsertParse(t *testing.T) {
+
+}
