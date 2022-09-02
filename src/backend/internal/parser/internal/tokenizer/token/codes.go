@@ -27,6 +27,7 @@ const (
 	Update
 	Insert
 	Into
+	Values
 	Delete
 	Create
 	Drop
@@ -70,7 +71,8 @@ var keywordMap = map[string]Code{
 	"JOIN":   Join,
 	"UPDATE": Update,
 	"INSERT": Insert,
-	"Into":   Into,
+	"INTO":   Into,
+	"Values": Values,
 	"DELETE": Delete,
 	"CREATE": Create,
 	"DROP":   Drop,

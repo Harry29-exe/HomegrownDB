@@ -7,12 +7,14 @@ import (
 	"HomegrownDB/backend/internal/parser/pnode"
 )
 
-type InsertColParser struct{}
+var InsertColParser = insertColParser{}
+
+type insertColParser struct{}
 
 // Parse when starting source should be at opening parenthesis position.
 // Insert Into here -->(col1, col2, col3)
 // Last token parsed is closing parenthesis
-func (p InsertColParser) Parse(source internal.TokenSource, v validator.Validator) (pnode.InsertingColumns, error) {
+func (p insertColParser) Parse(source internal.TokenSource, v validator.Validator) (pnode.InsertingColumns, error) {
 	err := v.CurrentIs(token.OpeningParenthesis)
 	if err != nil {
 		return pnode.InsertingColumns{}, err
