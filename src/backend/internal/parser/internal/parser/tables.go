@@ -25,7 +25,7 @@ func (t tablesParser) Parse(source internal.TokenSource, validator validator.Val
 		}
 		tables.Tables = append(tables.Tables, table)
 
-		err = validator.SkipBreaks().
+		err = validator.SkipTokens().
 			Type(token.SpaceBreak).
 			TypeExactly(token.Comma, 1).
 			SkipFromNext()

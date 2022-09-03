@@ -159,6 +159,6 @@ func (v *validator) CurrentSequenceAnd(codes ...token2.Code) Validator {
 	return nil
 }
 
-func (v *validator) SkipBreaks() *breaksSkipper {
-	return SkipBreaks(v.source)
+func (v *validator) SkipTokens() *tokenSkipper {
+	return SkipTokens(v.source)
 }

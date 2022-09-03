@@ -45,7 +45,7 @@ func (p fieldsParser) Parse(source internal.TokenSource, validator validator.Val
 		}
 		fields.AddField(field)
 
-		err = validator.SkipBreaks().
+		err = validator.SkipTokens().
 			Type(token2.SpaceBreak).
 			TypeMinMax(token2.Comma, 1, 1).
 			SkipFromNext()

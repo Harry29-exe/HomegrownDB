@@ -51,8 +51,8 @@ func (v afterErrorValidator) CurrentSequenceAnd(codes ...tk.Code) Validator {
 	return v
 }
 
-func (v afterErrorValidator) SkipBreaks() *breaksSkipper {
-	return &breaksSkipper{} //todo
+func (v afterErrorValidator) SkipTokens() *tokenSkipper {
+	return &tokenSkipper{} //todo
 }
 
 // TokenValidator impl

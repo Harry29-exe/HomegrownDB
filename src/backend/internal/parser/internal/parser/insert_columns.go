@@ -20,7 +20,7 @@ func (p insertColParser) Parse(source internal.TokenSource, v validator.Validato
 		return pnode.InsertingColumns{}, err
 	}
 
-	err = v.SkipBreaks().Type(token.SpaceBreak).SkipFromNext()
+	err = v.SkipTokens().Type(token.SpaceBreak).SkipFromNext()
 	if err != nil {
 		return pnode.InsertingColumns{}, err
 	}
@@ -33,9 +33,9 @@ func (p insertColParser) Parse(source internal.TokenSource, v validator.Validato
 		}
 		insertCols.ColumnNames = append(insertCols.ColumnNames, colName.Value())
 
-		err = v.SkipBreaks().Type(token.SpaceBreak).TypeExactly(token.Comma, 1).SkipFromNext()
+		err = v.SkipTokens().Type(token.SpaceBreak).TypeExactly(token.Comma, 1).SkipFromNext()
 		if err != nil {
-			err = v.SkipBreaks().
+			err = v.SkipTokens().
 				TypeMax(token.SpaceBreak, 1).
 				TypeExactly(token.ClosingParenthesis, 1).
 				SkipFromNext()

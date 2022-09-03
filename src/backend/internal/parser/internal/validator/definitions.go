@@ -20,7 +20,7 @@ type Validator interface {
 	CurrentSequence(codes ...token2.Code) error
 	CurrentSequenceAnd(codes ...token2.Code) Validator
 
-	SkipBreaks() *breaksSkipper
+	SkipTokens() *tokenSkipper
 }
 
 type TokenValidator interface {

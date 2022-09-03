@@ -20,7 +20,7 @@ type insertValsParser struct{}
 // when source pointer is on closing parenthesis
 func (i insertValsParser) Parse(source internal.TokenSource, v validator.Validator) ([]pnode.InsertingValues, error) {
 	err := v.CurrentIsAnd(token.Values).
-		SkipBreaks().
+		SkipTokens().
 		TypeMax(token.SpaceBreak, 1).
 		SkipFromNext()
 	if err != nil {
@@ -39,7 +39,7 @@ func (i insertValsParser) Parse(source internal.TokenSource, v validator.Validat
 
 		values = append(values, value)
 
-		err = v.SkipBreaks().
+		err = v.SkipTokens().
 			TypeExactly(token.Comma, 1).
 			TypeMax(token.SpaceBreak, 2).
 			SkipFromNext()
@@ -58,6 +58,15 @@ func (i insertValsParser) Parse(source internal.TokenSource, v validator.Validat
 }
 
 func (i insertValsParser) parseValue(source internal.TokenSource, v validator.Validator) (pnode.InsertingValues, error) {
+	err := v.CurrentIsAnd(token.OpeningParenthesis).
+		SkipTokens().
+		TypeMax(token.SpaceBreak, 1).
+		SkipFromNext()
+	if err != nil {
+		return pnode.InsertingValues{}, err
+	}
+
+	//firstValue := source.Next()
 	//todo implement me
 	panic("Not implemented")
 }
