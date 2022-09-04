@@ -8,33 +8,38 @@ import (
 )
 
 func TestSimpleInsertParse(t *testing.T) {
-	query := "INSERT INTO users (name, age) VALUES ('bob', 15), ('Alice', 24)"
-	source := internal.NewTokenSource(query)
-
-	node, err := parser.InsertParser.Parse(source)
-	if err != nil {
-		t.Error(err.Error())
+	queries := []string{
+		"INSERT INTO users (name, age) VALUES ('bob', 15), ('Alice', 24)",
+		"INSERT INTO users  (name , age ) VALUES ( 'bob' , 15), ('Alice', 24) ",
+		"INSERT INTO users (name,age) VALUES ('bob',15),('Alice' ,   24 )",
+		"INSERT INTO users  (  name  ,  age  ) VALUES ('bob',15)  , (  'Alice'   ,   24   )",
 	}
+	for _, query := range queries {
+		source := internal.NewTokenSource(query)
 
-	tests.AssertEq(node.Table.TableName, "users", t)
-	tests.AssertEq(node.Table.TableAlias, "users", t)
+		node, err := parser.InsertParser.Parse(source)
+		if err != nil {
+			t.Error(err.Error())
+		}
 
-	columns := node.Columns.ColNames
-	tests.AssertEq(len(columns), 2, t)
-	tests.AssertEq(columns[0], "name", t)
-	tests.AssertEq(columns[1], "age", t)
+		tests.AssertEq(node.Table.TableName, "users", t)
+		tests.AssertEq(node.Table.TableAlias, "users", t)
 
-	values := node.Rows
-	tests.AssertEq(len(values), 2, t)
+		columns := node.Columns.ColNames
+		tests.AssertEq(len(columns), 2, t)
+		tests.AssertEq(columns[0], "name", t)
+		tests.AssertEq(columns[1], "age", t)
 
-	//todo finish writing test
-	//val1 := values[0].Values
-	//tests.AssertEq(len(val1), 2, t)
-	//tests.AssertEq(val1[0], "bob", t)
-	//tests.AssertEq(val1[1], 15, t)
-	//val2 := values[0].Values
-	//tests.AssertEq(len(val2), 2, t)
-	//tests.AssertEq(val2[0], "Alice", t)
-	//tests.AssertEq(val2[1], 24, t)
+		values := node.Rows
+		tests.AssertEq(len(values), 2, t)
 
+		val1 := values[0].Values
+		tests.AssertEq(len(val1), 2, t)
+		tests.AssertEq(val1[0].V.(string), "bob", t)
+		tests.AssertEq(val1[1].V.(int), 15, t)
+		val2 := values[1].Values
+		tests.AssertEq(len(val2), 2, t)
+		tests.AssertEq(val2[0].V.(string), "Alice", t)
+		tests.AssertEq(val2[1].V.(int), 24, t)
+	}
 }
