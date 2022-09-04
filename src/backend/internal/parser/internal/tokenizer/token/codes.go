@@ -72,7 +72,7 @@ var keywordMap = map[string]Code{
 	"UPDATE": Update,
 	"INSERT": Insert,
 	"INTO":   Into,
-	"Values": Values,
+	"VALUES": Values,
 	"DELETE": Delete,
 	"CREATE": Create,
 	"DROP":   Drop,

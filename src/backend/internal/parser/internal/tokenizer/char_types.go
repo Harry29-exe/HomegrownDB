@@ -2,7 +2,7 @@ package tokenizer
 
 import "unicode"
 
-var breakChars = newCharCollection([]rune{',', '.', ';'})
+var breakChars = newCharCollection([]rune{',', '.', ';', '(', ')'})
 
 func isStrAppendable(char rune) bool {
 	switch {

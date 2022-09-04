@@ -25,18 +25,18 @@ func (p insertColParser) Parse(source internal.TokenSource, v validator.Validato
 		return pnode.InsertingColumns{}, err
 	}
 
-	insertCols := pnode.InsertingColumns{ColumnNames: make([]string, 10)}
+	insertCols := pnode.InsertingColumns{ColNames: make([]string, 0, 10)}
 	for {
 		colName, err := v.Next().IsTextToken().AsciiOnly().DontStartWithDigit().Check()
 		if err != nil {
 			return pnode.InsertingColumns{}, err
 		}
-		insertCols.ColumnNames = append(insertCols.ColumnNames, colName.Value())
+		insertCols.ColNames = append(insertCols.ColNames, colName.Value())
 
 		err = v.SkipTokens().Type(token.SpaceBreak).TypeExactly(token.Comma, 1).SkipFromNext()
 		if err != nil {
+			_ = v.SkipTokens().Type(token.SpaceBreak).SkipFromNext()
 			err = v.SkipTokens().
-				TypeMax(token.SpaceBreak, 1).
 				TypeExactly(token.ClosingParenthesis, 1).
 				SkipFromNext()
 

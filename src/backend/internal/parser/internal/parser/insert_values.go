@@ -5,6 +5,7 @@ import (
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/backend/internal/parser/pnode"
+	"HomegrownDB/backend/internal/parser/sqlerr"
 )
 
 var InsertValues = insertValsParser{}
@@ -66,7 +67,30 @@ func (i insertValsParser) parseValue(source internal.TokenSource, v validator.Va
 		return pnode.InsertingValues{}, err
 	}
 
-	//firstValue := source.Next()
-	//todo implement me
-	panic("Not implemented")
+	values := pnode.NewInsertingValue()
+	err = values.AddValue(source.Next(), source)
+	if err != nil {
+		return pnode.InsertingValues{}, err
+	}
+
+	for {
+		err = v.SkipTokens().
+			TypeExactly(token.Comma, 1).
+			TypeMax(token.SpaceBreak, 2).
+			SkipFromNext()
+		if err != nil {
+			nextTk := source.Next()
+			if nextTk.Code() == token.SpaceBreak {
+				nextTk = source.Next()
+			}
+			if nextTk.Code() != token.ClosingParenthesis {
+				return values, sqlerr.NewSyntaxError(")", token.ToString(nextTk.Code()), source)
+			}
+			return values, nil
+		}
+		err = values.AddValue(source.Next(), source)
+		if err != nil {
+			return pnode.InsertingValues{}, err
+		}
+	}
 }

@@ -100,6 +100,10 @@ func (t *basicTokenizer) tokenizeNonSpaceBreak() (token.Token, error) {
 		return token.NewBasicToken(token.Dot, string(t.futureToken)), nil
 	case ';':
 		return token.NewBasicToken(token.Semicolon, string(t.futureToken)), nil
+	case ')':
+		return token.NewBasicToken(token.ClosingParenthesis, string(t.futureToken)), nil
+	case '(':
+		return token.NewBasicToken(token.OpeningParenthesis, string(t.futureToken)), nil
 	default:
 		panic("unknown non-space character")
 	}
@@ -126,22 +130,37 @@ func (t *basicTokenizer) createFutureToken() error {
 
 	futureTokenStart := t.pointer
 	nextChar := t.chars[t.pointer]
-	if unicode.IsSpace(nextChar) {
+	switch {
+	case unicode.IsSpace(nextChar):
 		t.pointer++
 		t.futureToken = t.chars[futureTokenStart:t.pointer]
 		t.skipWhiteSpaces()
-	}
-
-	for !isBreak(nextChar) {
-		if unicode.IsControl(nextChar) {
-			return errors.New("control character is not allowed in query")
-		}
-
+	case nextChar == '\'':
 		t.pointer++
 		if t.pointer >= t.len {
-			break
+			return eofError(token.ToString(token.SqlTextValue), t.str)
 		}
 		nextChar = t.chars[t.pointer]
+		for nextChar != '\'' {
+			t.pointer++
+			if t.pointer >= t.len {
+				return eofError(token.ToString(token.SqlTextValue), t.str)
+			}
+			nextChar = t.chars[t.pointer]
+		}
+		t.pointer++
+	default:
+		for !isBreak(nextChar) {
+			if unicode.IsControl(nextChar) {
+				return errors.New("control character is not allowed in query")
+			}
+
+			t.pointer++
+			if t.pointer >= t.len {
+				break
+			}
+			nextChar = t.chars[t.pointer]
+		}
 	}
 
 	if t.pointer == futureTokenStart {

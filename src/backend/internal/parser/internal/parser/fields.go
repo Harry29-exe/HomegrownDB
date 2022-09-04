@@ -54,5 +54,6 @@ func (p fieldsParser) Parse(source internal.TokenSource, validator validator.Val
 			source.Commit()
 			return fields, nil
 		}
+		source.Next()
 	}
 }

@@ -27,23 +27,24 @@ func (i insertParser) Parse(source internal.TokenSource) (pnode.InsertNode, erro
 	insertNode.Table = table
 
 	err = v.NextSequence(token.SpaceBreak, token.OpeningParenthesis)
-	if err != nil {
+	if err == nil {
 		insertCols, err := InsertColParser.Parse(source, v)
 		if err != nil {
 			return insertNode, err
 		}
-		insertNode.Columns.ColumnNames = insertCols.ColumnNames
+		insertNode.Columns.ColNames = insertCols.ColNames
 	}
 	err = v.NextIs(token.SpaceBreak)
 	if err != nil {
 		return insertNode, err
 	}
 
+	source.Next()
 	insertValues, err := InsertValues.Parse(source, v)
 	if err != nil {
 		return insertNode, err
 	}
-	insertNode.Values = insertValues
+	insertNode.Rows = insertValues
 
 	return insertNode, nil
 }

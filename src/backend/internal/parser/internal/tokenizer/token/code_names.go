@@ -14,6 +14,9 @@ const (
 	WhereStr  = "WHERE"
 	JoinStr   = "JOIN"
 	UpdateStr = "UPDATE"
+	InsertStr = "INSERT"
+	IntoStr   = "INTO"
+	ValuesStr = "VALUES"
 	DeleteStr = "DELETE"
 	CreateStr = "CREATE"
 	DropStr   = "DROP"
@@ -45,6 +48,9 @@ var tokenNamesMap = map[Code]string{
 	From:   FromStr,
 	Where:  WhereStr,
 	Join:   JoinStr,
+	Insert: InsertStr,
+	Into:   IntoStr,
+	Values: ValuesStr,
 	Update: UpdateStr,
 	Delete: DeleteStr,
 	Create: CreateStr,
