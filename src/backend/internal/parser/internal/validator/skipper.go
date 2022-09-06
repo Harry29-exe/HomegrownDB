@@ -2,21 +2,31 @@ package validator
 
 import (
 	"HomegrownDB/backend/internal/parser/internal"
-	token2 "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
+	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/internal/parser/sqlerr"
 	"math"
 	"strings"
 )
 
-func SkipTokens(source internal.TokenSource) *tokenSkipper {
+func SkipTokens(source internal.TokenSource) TokenSkipper {
 	return &tokenSkipper{
-		tokenTypes: map[token2.Code]*skippingTokenType{},
+		tokenTypes: map[token.Code]*skippingTokenType{},
 		source:     source,
 	}
 }
 
+type TokenSkipper interface {
+	SkipFromNext() error
+	SkipFromCurrent() error
+	Type(code token.Code) TokenSkipper
+	TypeMin(code token.Code, min int16) TokenSkipper
+	TypeMax(code token.Code, max int16) TokenSkipper
+	TypeMinMax(code token.Code, min, max int16) TokenSkipper
+	TypeExactly(code token.Code, occurrences int16) TokenSkipper
+}
+
 type tokenSkipper struct {
-	tokenTypes map[token2.Code]*skippingTokenType
+	tokenTypes map[token.Code]*skippingTokenType
 	source     internal.TokenSource
 }
 
@@ -36,7 +46,7 @@ func (b *tokenSkipper) SkipFromCurrent() error {
 func (b *tokenSkipper) skip(fromCurrent bool) error {
 	b.source.Checkpoint()
 
-	var currentToken token2.Token
+	var currentToken token.Token
 	if fromCurrent {
 		currentToken = b.source.Current()
 	} else {
@@ -56,12 +66,12 @@ func (b *tokenSkipper) skip(fromCurrent bool) error {
 
 	for tokenType, data := range b.tokenTypes {
 		if data.minOccurrences > 0 {
-			err := sqlerr.NewSyntaxTextError("expected more of: "+token2.ToString(tokenType), b.source)
+			err := sqlerr.NewSyntaxTextError("expected more of: "+token.ToString(tokenType), b.source)
 			b.source.Rollback()
 			return err
 		}
 		if data.maxOccurrences < 0 {
-			err := sqlerr.NewSyntaxTextError("expected less of: "+token2.ToString(tokenType), b.source)
+			err := sqlerr.NewSyntaxTextError("expected less of: "+token.ToString(tokenType), b.source)
 			b.source.Rollback()
 			return err
 		}
@@ -71,7 +81,7 @@ func (b *tokenSkipper) skip(fromCurrent bool) error {
 	return nil
 }
 
-func (b *tokenSkipper) Type(code token2.Code) *tokenSkipper {
+func (b *tokenSkipper) Type(code token.Code) TokenSkipper {
 	b.tokenTypes[code] = &skippingTokenType{
 		maxOccurrences: math.MaxInt16,
 		minOccurrences: 0,
@@ -80,7 +90,7 @@ func (b *tokenSkipper) Type(code token2.Code) *tokenSkipper {
 	return b
 }
 
-func (b *tokenSkipper) TypeMin(code token2.Code, min int16) *tokenSkipper {
+func (b *tokenSkipper) TypeMin(code token.Code, min int16) TokenSkipper {
 	b.tokenTypes[code] = &skippingTokenType{
 		maxOccurrences: math.MaxInt16,
 		minOccurrences: min,
@@ -89,7 +99,7 @@ func (b *tokenSkipper) TypeMin(code token2.Code, min int16) *tokenSkipper {
 	return b
 }
 
-func (b *tokenSkipper) TypeMax(code token2.Code, max int16) *tokenSkipper {
+func (b *tokenSkipper) TypeMax(code token.Code, max int16) TokenSkipper {
 	b.tokenTypes[code] = &skippingTokenType{
 		maxOccurrences: max,
 		minOccurrences: 0,
@@ -98,7 +108,7 @@ func (b *tokenSkipper) TypeMax(code token2.Code, max int16) *tokenSkipper {
 	return b
 }
 
-func (b *tokenSkipper) TypeMinMax(code token2.Code, min, max int16) *tokenSkipper {
+func (b *tokenSkipper) TypeMinMax(code token.Code, min, max int16) TokenSkipper {
 	b.tokenTypes[code] = &skippingTokenType{
 		maxOccurrences: max,
 		minOccurrences: min,
@@ -107,7 +117,7 @@ func (b *tokenSkipper) TypeMinMax(code token2.Code, min, max int16) *tokenSkippe
 	return b
 }
 
-func (b *tokenSkipper) TypeExactly(code token2.Code, occurrences int16) *tokenSkipper {
+func (b *tokenSkipper) TypeExactly(code token.Code, occurrences int16) TokenSkipper {
 	b.tokenTypes[code] = &skippingTokenType{
 		maxOccurrences: occurrences,
 		minOccurrences: occurrences,
@@ -126,7 +136,7 @@ func (b *tokenSkipper) breakTypesToStr() string {
 		} else {
 			notFirst = true
 		}
-		builder.WriteString(token2.ToString(code))
+		builder.WriteString(token.ToString(code))
 	}
 
 	return builder.String()

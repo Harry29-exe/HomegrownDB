@@ -3,6 +3,7 @@ package bdata_test
 import (
 	"HomegrownDB/common/random"
 	"HomegrownDB/common/tests"
+	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/schema/table"
@@ -48,8 +49,8 @@ func TestPage_Tuple(t *testing.T) {
 		if err != nil {
 			t.Errorf("could not insert tuple nr %d because of error: %e", tupleIndex, err)
 		}
-		tests.AssertEq(page.TupleCount(), tupleIndex+1, t)
-		tests.AssertEqArray(tuple.Data(), page.Tuple(tupleIndex).Data(), t)
+		assert.Eq(page.TupleCount(), tupleIndex+1, t)
+		assert.EqArray(tuple.Data(), page.Tuple(tupleIndex).Data(), t)
 	}
 }
 
@@ -63,7 +64,7 @@ func TestPage_DeleteTuple_FromMiddle(t *testing.T) {
 
 	assertTuplesList := []bdata.TupleIndex{0, 1, 3, 4, 5, 6, 7, 9}
 	for _, tupleIndex := range assertTuplesList {
-		tests.AssertEqArray(page.Tuple(tupleIndex).Data(), tuples[tupleIndex].Data(), t)
+		assert.EqArray(page.Tuple(tupleIndex).Data(), tuples[tupleIndex].Data(), t)
 	}
 }
 
@@ -76,12 +77,12 @@ func TestPage_DeleteTuple_First(t *testing.T) {
 	page.DeleteTuple(0)
 	assertTuplesList := []bdata.TupleIndex{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	for _, tupleIndex := range assertTuplesList {
-		tests.AssertEqArray(page.Tuple(tupleIndex).Data(), tuples[tupleIndex].Data(), t)
+		assert.EqArray(page.Tuple(tupleIndex).Data(), tuples[tupleIndex].Data(), t)
 	}
 	page.DeleteTuple(1)
 	assertTuplesList = []bdata.TupleIndex{2, 3, 4, 5, 6, 7, 8, 9}
 	for _, tupleIndex := range assertTuplesList {
-		tests.AssertEqArray(page.Tuple(tupleIndex).Data(), tuples[tupleIndex].Data(), t)
+		assert.EqArray(page.Tuple(tupleIndex).Data(), tuples[tupleIndex].Data(), t)
 	}
 }
 
@@ -94,11 +95,11 @@ func TestPage_DeleteTuple_Last(t *testing.T) {
 	page.DeleteTuple(9)
 	assertTuplesList := []bdata.TupleIndex{0, 1, 2, 3, 4, 5, 6, 7, 8}
 	for _, tupleIndex := range assertTuplesList {
-		tests.AssertEqArray(page.Tuple(tupleIndex).Data(), tuples[tupleIndex].Data(), t)
+		assert.EqArray(page.Tuple(tupleIndex).Data(), tuples[tupleIndex].Data(), t)
 	}
 	page.DeleteTuple(8)
 	assertTuplesList = []bdata.TupleIndex{0, 1, 2, 3, 4, 5, 6, 7}
 	for _, tupleIndex := range assertTuplesList {
-		tests.AssertEqArray(page.Tuple(tupleIndex).Data(), tuples[tupleIndex].Data(), t)
+		assert.EqArray(page.Tuple(tupleIndex).Data(), tuples[tupleIndex].Data(), t)
 	}
 }

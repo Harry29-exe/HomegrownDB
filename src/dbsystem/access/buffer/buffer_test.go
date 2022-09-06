@@ -2,7 +2,7 @@ package buffer_test
 
 import (
 	"HomegrownDB/common/random"
-	"HomegrownDB/common/tests"
+	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tstructs"
 	"HomegrownDB/common/tests/tutils"
 	"HomegrownDB/dbsystem/access/buffer"
@@ -35,7 +35,7 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 		}
 		testBuffer.ReleaseWPage(tag)
 		data := page.Data()
-		tests.AssertEqArray(data, buf, t)
+		assert.EqArray(data, buf, t)
 	}
 }
 

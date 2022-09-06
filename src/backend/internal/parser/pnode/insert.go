@@ -16,8 +16,6 @@ type InsertNode struct {
 
 type InsertingColumns struct {
 	ColNames []string
-	// Default whether user specified inserting columns
-	Default bool
 }
 
 type InsertingValues struct {

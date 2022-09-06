@@ -2,7 +2,7 @@ package qrow_test
 
 import (
 	"HomegrownDB/backend/qrow"
-	"HomegrownDB/common/tests"
+	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/schema/table"
@@ -25,17 +25,17 @@ func TestNewRow(t *testing.T) {
 	holder := qrow.NewBaseRowHolder(buffer, []table.Definition{tableDef})
 	dataRow := qrow.NewRow([]bdata.Tuple{testTuple.Tuple}, holder)
 
-	tests.AssertEqArray(
+	assert.EqArray(
 		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, tutils.Table1.AwesomeKey),
 		dataRow.GetField(tutils.Table1.AwesomeKeyId),
 		t,
 	)
-	tests.AssertEqArray(
+	assert.EqArray(
 		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, tutils.Table1.NullableCol),
 		dataRow.GetField(tutils.Table1.NullableColId),
 		t,
 	)
-	tests.AssertEqArray(
+	assert.EqArray(
 		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, tutils.Table1.NonNullColl),
 		dataRow.GetField(tutils.Table1.NonNullCollId),
 		t,

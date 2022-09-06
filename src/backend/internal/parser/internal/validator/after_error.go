@@ -4,6 +4,12 @@ import (
 	tk "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 )
 
+// This struct implements all validator so when validator encounters
+// error it can return this struct that has dummy methods and at the
+// end will return encountered error
+//
+// #validator.Validator##validator.TokenValidator#
+// #validator.TextTokenValidator##validator.TokenSkipper#
 type afterErrorValidator struct {
 	token tk.Token
 	err   error
@@ -51,8 +57,8 @@ func (v afterErrorValidator) CurrentSequenceAnd(codes ...tk.Code) Validator {
 	return v
 }
 
-func (v afterErrorValidator) SkipTokens() *tokenSkipper {
-	return &tokenSkipper{} //todo
+func (v afterErrorValidator) SkipTokens() TokenSkipper {
+	return v
 }
 
 // TokenValidator impl
@@ -84,5 +90,35 @@ func (v afterErrorValidator) DontStartWithDigit() TextTokenValidator {
 }
 
 func (v afterErrorValidator) AsciiOnly() TextTokenValidator {
+	return v
+}
+
+// TokenSkipper
+
+func (v afterErrorValidator) SkipFromNext() error {
+	return v.err
+}
+
+func (v afterErrorValidator) SkipFromCurrent() error {
+	return v.err
+}
+
+func (v afterErrorValidator) Type(code tk.Code) TokenSkipper {
+	return v
+}
+
+func (v afterErrorValidator) TypeMin(code tk.Code, min int16) TokenSkipper {
+	return v
+}
+
+func (v afterErrorValidator) TypeMax(code tk.Code, max int16) TokenSkipper {
+	return v
+}
+
+func (v afterErrorValidator) TypeMinMax(code tk.Code, min, max int16) TokenSkipper {
+	return v
+}
+
+func (v afterErrorValidator) TypeExactly(code tk.Code, occurrences int16) TokenSkipper {
 	return v
 }

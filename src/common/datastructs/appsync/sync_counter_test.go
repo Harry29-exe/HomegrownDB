@@ -2,7 +2,7 @@ package appsync_test
 
 import (
 	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/common/tests"
+	"HomegrownDB/common/tests/assert"
 	"sync"
 	"testing"
 )
@@ -27,5 +27,5 @@ func TestUint32SyncCounter(t *testing.T) {
 	waitGroup.Wait()
 
 	counterValue := counter.Get()
-	tests.AssertEq(counterValue, uint32(increments*processes), t)
+	assert.Eq(counterValue, uint32(increments*processes), t)
 }
