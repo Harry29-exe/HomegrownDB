@@ -43,7 +43,7 @@ type WDefinition interface {
 	RemoveColumn(name string) error
 }
 
-// Id of table object, 0 means id is invalid
+// Id of table object, 0 if id is invalid
 type Id = uint16
 
 func NewDefinition(name string) WDefinition {

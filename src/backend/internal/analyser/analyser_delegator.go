@@ -1,6 +1,7 @@
 package analyser
 
 import (
+	"HomegrownDB/backend/internal/analyser/internal"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/parser/pnode"
 	"HomegrownDB/dbsystem/stores"
@@ -19,27 +20,15 @@ func Analyse(tree parser.Tree) (Tree, error) {
 	}, nil
 }
 
-type Tree struct {
-	RootType rootType
-	Root     any
-}
-
-type rootType = uint8
-
-const (
-	Select rootType = iota
-	Insert
-)
-
 func delegateAnalyse(tree parser.Tree, store *stores.TablesStore) (root any, rootType rootType, err error) {
 	switch tree.RootType {
 	case parser.Select:
-		rootType = Select
+		rootType = RootTypeSelect
 		rootPnode, ok := tree.Root.(pnode.SelectNode)
 		if !ok {
 			panic(fmt.Sprintf("Could not cast pnode with root type of %d", tree.RootType))
 		}
-		root, err = AnalyseSelect(rootPnode, store)
+		root, err = internal.Select.Analyse(rootPnode, store)
 		return
 	default:
 		//todo implement me
