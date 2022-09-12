@@ -13,7 +13,7 @@ type _select struct{}
 
 func (s _select) Analyse(node pnode.SelectNode, store stores.Tables, ctx analyser.Ctx) (anode.Select, error) {
 	selectNode := anode.Select{}
-	tablesNode, err := Tables.Analise(node.Tables, store)
+	tablesNode, err := Tables.Analise(node.Tables, store, ctx)
 	if err != nil {
 		return selectNode, err
 	}

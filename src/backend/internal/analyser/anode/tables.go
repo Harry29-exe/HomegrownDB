@@ -23,7 +23,7 @@ func (t Tables) Init() {
 	}
 }
 
-func (t Tables) GetTableIdByAlias(alias string) table.Id {
+func (t Tables) TableIdByAlias(alias string) table.Id {
 	min, max := 0, len(t.Tables)-1
 	var i int
 

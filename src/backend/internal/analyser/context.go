@@ -1,30 +1,38 @@
 package analyser
 
 import (
-	"HomegrownDB/backend/internal/analyser/anode"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/stores"
+	"HomegrownDB/dbsystem/tx"
 )
 
-type Ctx struct {
-}
-
-type tablesCtx struct {
-	nextQtableId anode.QtableId
-	// qtableIdTableIdMap slice functions here as map as x[anode.QtableId] = table.Id
-	qtableIdTableIdMap []table.Id
-}
-
-func (t *tablesCtx) NextQtableId(tableId table.Id) (id anode.QtableId) {
-	id = t.nextQtableId
-	t.qtableIdTableIdMap = append(t.qtableIdTableIdMap, tableId)
-	t.nextQtableId++
-	if int(id) != len(t.qtableIdTableIdMap) {
-		panic("illegal state")
+func NewAnalyserCtx(txCtx tx.Ctx, tables stores.RTablesDefs) *Ctx {
+	return &Ctx{
+		tableStore: tables,
+		txCtx:      txCtx,
+		tablesCtx: tablesCtx{
+			nextQtableId:       0,
+			qtableIdTableIdMap: make([]table.Id, 0, 10),
+		},
 	}
-
-	return id
 }
 
-func (t *tablesCtx) GetTableId(qtableId anode.QtableId) table.Id {
-	return t.qtableIdTableIdMap[qtableId]
+type Ctx struct {
+	tableStore stores.RTablesDefs
+	txCtx      tx.Ctx
+	tablesCtx
 }
+
+func (c *Ctx) GetTable(name string) (table.Definition, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (c *Ctx) Table(id table.Id) table.Definition {
+	//TODO implement me
+	panic("implement me")
+}
+
+var (
+	_ stores.RTablesDefs = (*Ctx)(nil)
+)

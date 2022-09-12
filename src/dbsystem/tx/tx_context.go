@@ -1,12 +1,14 @@
 package tx
 
-type Context interface {
+import "HomegrownDB/dbsystem/schema/table"
+
+type Ctx interface {
 	TxId() Id
 	CommandExecuted() uint16
 	IncrementCommandCounter()
 }
 
-func NewContext(txId Id) Context {
+func NewContext(txId Id) Ctx {
 	return &context{
 		txId:            txId,
 		commandExecuted: 0,
@@ -16,6 +18,7 @@ func NewContext(txId Id) Context {
 type context struct {
 	txId            Id
 	commandExecuted uint16
+	rLockedTables   []table.Id
 }
 
 func (c *context) TxId() Id {
@@ -28,4 +31,8 @@ func (c *context) CommandExecuted() uint16 {
 
 func (c *context) IncrementCommandCounter() {
 	c.commandExecuted++
+}
+
+func (c *context) QueryWillAccessTable() {
+
 }
