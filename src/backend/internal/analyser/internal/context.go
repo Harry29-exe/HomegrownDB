@@ -1,4 +1,4 @@
-package analyser
+package internal
 
 import (
 	"HomegrownDB/dbsystem/schema/table"
@@ -6,8 +6,8 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-func NewAnalyserCtx(txCtx tx.Ctx, tables stores.RTablesDefs) *Ctx {
-	return &Ctx{
+func NewAnalyserCtx(txCtx tx.Ctx, tables stores.RTablesDefs) *AnalyserCtx {
+	return &AnalyserCtx{
 		tableStore: tables,
 		txCtx:      txCtx,
 		tablesCtx: tablesCtx{
@@ -17,22 +17,22 @@ func NewAnalyserCtx(txCtx tx.Ctx, tables stores.RTablesDefs) *Ctx {
 	}
 }
 
-type Ctx struct {
+type AnalyserCtx struct {
 	tableStore stores.RTablesDefs
 	txCtx      tx.Ctx
 	tablesCtx
 }
 
-func (c *Ctx) GetTable(name string) (table.Definition, error) {
+func (c *AnalyserCtx) GetTable(name string) (table.Definition, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (c *Ctx) Table(id table.Id) table.Definition {
+func (c *AnalyserCtx) Table(id table.Id) table.Definition {
 	//TODO implement me
 	panic("implement me")
 }
 
 var (
-	_ stores.RTablesDefs = (*Ctx)(nil)
+	_ stores.RTablesDefs = (*AnalyserCtx)(nil)
 )

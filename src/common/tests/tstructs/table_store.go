@@ -172,3 +172,23 @@ func (t *TestTablesStore) TableIO(id table.Id) access.TableDataIO {
 
 	return t.tableIOs[id]
 }
+
+func (t *TestTablesStore) WLockTable(id table.Id) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *TestTablesStore) RLockTable(id table.Id) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *TestTablesStore) WUnlockTable(id table.Id) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *TestTablesStore) RUnlockTable(id table.Id) {
+	//TODO implement me
+	panic("implement me")
+}

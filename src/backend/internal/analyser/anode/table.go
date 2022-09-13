@@ -7,7 +7,7 @@ import (
 type QtableId = uint16
 
 type Table struct {
-	TableId  table.Id
+	Table    table.Definition
 	QtableId QtableId
 	Alias    string
 }

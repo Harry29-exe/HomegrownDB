@@ -1,8 +1,10 @@
 package analyser
 
+import "HomegrownDB/backend/internal/analyser/internal"
+
 type Tree struct {
 	RootType rootType
-	Ctx      *Ctx
+	Ctx      *internal.AnalyserCtx
 	Root     any
 }
 

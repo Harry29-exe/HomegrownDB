@@ -1,25 +1,23 @@
 package internal
 
 import (
-	"HomegrownDB/backend/internal/analyser"
 	"HomegrownDB/backend/internal/analyser/anode"
 	"HomegrownDB/backend/internal/parser/pnode"
-	"HomegrownDB/dbsystem/stores"
 )
 
 var Select = _select{}
 
 type _select struct{}
 
-func (s _select) Analyse(node pnode.SelectNode, store stores.Tables, ctx analyser.Ctx) (anode.Select, error) {
+func (s _select) Analyse(node pnode.SelectNode, ctx *AnalyserCtx) (anode.Select, error) {
 	selectNode := anode.Select{}
-	tablesNode, err := Tables.Analise(node.Tables, store, ctx)
+	tablesNode, err := Tables.Analise(node.Tables, ctx)
 	if err != nil {
 		return selectNode, err
 	}
 	selectNode.Tables = tablesNode
 
-	fieldsNode, err := Fields.Analyse(node.Fields, tablesNode)
+	fieldsNode, err := Fields.Analyse(node.Fields, tablesNode, ctx)
 	if err != nil {
 		return selectNode, err
 	}

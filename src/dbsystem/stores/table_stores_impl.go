@@ -5,6 +5,7 @@ import (
 	"HomegrownDB/common/errors"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/schema/table"
+	. "HomegrownDB/dbsystem/stores/internal"
 	"fmt"
 	"sync"
 )
@@ -16,6 +17,7 @@ type TablesStore struct {
 	tableDirectoryPath string
 	nameTableMap       map[string]table.Id
 	definitions        []table.WDefinition
+	tableLocks         map[table.Id]TableLocker
 	tableIOs           []access.TableDataIO
 
 	// store utils
@@ -27,12 +29,14 @@ func NewTableStore(tableDirectoryPath string, tables []table.WDefinition) (*Tabl
 	maxId, missingIds := findMaxAndMissing(tables)
 
 	nameTableMap := map[string]table.Id{}
+	tableLocksMap := map[table.Id]TableLocker{}
 	tablesIOs := make([]access.TableDataIO, maxId)
 	definitionsArray := make([]table.WDefinition, maxId)
 	for _, def := range tables {
 		id := def.TableId()
 		nameTableMap[def.Name()] = id
 		definitionsArray[id] = def
+		tableLocksMap[id] = NewTableLockr(id)
 		tableIO, err := access.SingleDiscTableDataIO(tableDirectoryPath + "/" + def.Name())
 		if err != nil {
 			return nil, err
@@ -43,6 +47,7 @@ func NewTableStore(tableDirectoryPath string, tables []table.WDefinition) (*Tabl
 	return &TablesStore{
 		nameTableMap:    nameTableMap,
 		definitions:     definitionsArray,
+		tableLocks:      tableLocksMap,
 		tableIOs:        tablesIOs,
 		changeListeners: nil,
 		tableIdCounter:  appsync.NewIdResolver(maxId+1, missingIds),
@@ -55,6 +60,7 @@ func NewEmptyTableStore(tableDirectoryPath string) *TablesStore {
 
 		tableDirectoryPath: tableDirectoryPath,
 		nameTableMap:       map[string]table.Id{},
+		tableLocks:         map[table.Id]TableLocker{},
 		definitions:        nil,
 		tableIOs:           nil,
 
@@ -166,6 +172,26 @@ func (t *TablesStore) RemoveTable(id table.Id) error {
 	t.tableIdCounter.AddId(id)
 
 	return nil
+}
+
+func (t *TablesStore) WLockTable(id table.Id) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *TablesStore) RLockTable(id table.Id) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *TablesStore) WUnlockTable(id table.Id) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *TablesStore) RUnlockTable(id table.Id) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (t *TablesStore) RegisterChangeListener(fn func()) {

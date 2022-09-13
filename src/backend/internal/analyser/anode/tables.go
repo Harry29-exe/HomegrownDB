@@ -23,7 +23,7 @@ func (t Tables) Init() {
 	}
 }
 
-func (t Tables) TableIdByAlias(alias string) table.Id {
+func (t Tables) TableByAlias(alias string) table.Definition {
 	min, max := 0, len(t.Tables)-1
 	var i int
 
@@ -38,9 +38,9 @@ func (t Tables) TableIdByAlias(alias string) table.Id {
 		case -1:
 			min = i - 1
 		default:
-			return table.TableId
+			return table.Table
 		}
 	}
 
-	return 0
+	return nil
 }
