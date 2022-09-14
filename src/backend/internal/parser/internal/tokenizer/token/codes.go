@@ -55,6 +55,7 @@ const (
 
 	Identifier
 	Nil
+	Error
 )
 
 var breakCodes = map[Code]bool{

@@ -80,7 +80,7 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 }
 
 func TestInsertParseInvalidQuery(t *testing.T) {
-	queries := []string{
+	queries := []string{ //todo check if returned errors are correct
 		"INSERT INTO users VALUS ('bob', 15)",
 		"INSERT INTO users VALUES ('bob, 15)",
 		"INSERT INTO users VALUES 'bob', 15))",

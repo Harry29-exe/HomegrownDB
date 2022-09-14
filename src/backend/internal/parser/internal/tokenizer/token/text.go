@@ -1,12 +1,5 @@
 package token
 
-type TextToken struct {
-	code            Code
-	value           string
-	IsAscii         bool
-	StartsWithDigit bool
-}
-
 func NewTextToken(value string) *TextToken {
 	token := TextToken{
 		code:    Identifier,
@@ -26,6 +19,13 @@ func NewTextToken(value string) *TextToken {
 	}
 
 	return &token
+}
+
+type TextToken struct {
+	code            Code
+	value           string
+	IsAscii         bool
+	StartsWithDigit bool
 }
 
 func (t *TextToken) Code() Code {

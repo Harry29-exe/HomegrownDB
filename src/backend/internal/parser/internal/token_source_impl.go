@@ -34,7 +34,7 @@ func (t *tokenSource) Next() token.Token {
 	if t.tokenizer.HasNext() {
 		next, err := t.tokenizer.Next()
 		if err != nil {
-			panic("tokenizer returned error: " + err.Error())
+			next = token.NewErrorToken(err.Error())
 		}
 
 		t.tokenCache = append(t.tokenCache, next)

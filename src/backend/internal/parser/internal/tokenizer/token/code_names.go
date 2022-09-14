@@ -8,72 +8,41 @@ func ToString(code Code) string {
 	return ""
 }
 
-const (
-	SelectStr = "SELECT"
-	FromStr   = "FROM"
-	WhereStr  = "WHERE"
-	JoinStr   = "JOIN"
-	UpdateStr = "UPDATE"
-	InsertStr = "INSERT"
-	IntoStr   = "INTO"
-	ValuesStr = "VALUES"
-	DeleteStr = "DELETE"
-	CreateStr = "CREATE"
-	DropStr   = "DROP"
-	TableStr  = "TABLE"
-	AndStr    = "AND"
-	OrStr     = "OR"
-	OnStr     = "ON"
-
-	/* -- break characters -- */
-
-	SpaceBreakStr = "SpaceBreak"
-	CommaStr      = "Comma"
-	DotStr        = "Dot"
-	SemicolonStr  = "Semicolon"
-
-	/* -- Values like string, int, float -- */
-
-	IntegerStr      = "Integer"
-	FloatStr        = "Float"
-	SqlTextValueStr = "SqlTextValue"
-
-	/* -- Other -- */
-
-	TextStr = "Identifier"
-)
-
 var tokenNamesMap = map[Code]string{
-	Select: SelectStr,
-	From:   FromStr,
-	Where:  WhereStr,
-	Join:   JoinStr,
-	Insert: InsertStr,
-	Into:   IntoStr,
-	Values: ValuesStr,
-	Update: UpdateStr,
-	Delete: DeleteStr,
-	Create: CreateStr,
-	Drop:   DropStr,
-	Table:  TableStr,
-	And:    AndStr,
-	Or:     OrStr,
-	On:     OnStr,
+	Select: "SELECT",
+	From:   "FROM",
+	Where:  "WHERE",
+	Join:   "JOIN",
+	Insert: "UPDATE",
+	Into:   "INSERT",
+	Values: "INTO",
+	Update: "VALUES",
+	Delete: "DELETE",
+	Create: "CREATE",
+	Drop:   "DROP",
+	Table:  "TABLE",
+	And:    "AND",
+	Or:     "OR",
+	On:     "ON",
 
 	/* -- break characters -- */
 
-	SpaceBreak: SpaceBreakStr,
-	Comma:      CommaStr,
-	Dot:        DotStr,
-	Semicolon:  SemicolonStr,
+	SpaceBreak:         "SpaceBreak",
+	Comma:              "Comma",
+	Dot:                "Dot",
+	Semicolon:          "Semicolon",
+	OpeningParenthesis: "OpeningParenthesis",
+	ClosingParenthesis: "ClosingParenthesis",
 
 	/* -- Values like string, int, float -- */
 
-	Integer:      IntegerStr,
-	Float:        FloatStr,
-	SqlTextValue: SqlTextValueStr,
+	Integer:      "Integer",
+	Float:        "Float",
+	SqlTextValue: "SqlTextValue",
 
 	/* -- Other -- */
 
-	Identifier: TextStr,
+	Identifier: "Identifier",
+	Nil:        "Nil",
+	Error:      "Error",
 }
