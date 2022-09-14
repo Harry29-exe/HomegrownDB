@@ -1,12 +1,13 @@
 package sqlerr
 
 import (
+	"HomegrownDB/backend/dberr"
 	"HomegrownDB/backend/internal/parser/internal"
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"strings"
 )
 
-func NewSyntaxError(expected string, actual string, source internal.TokenSource) error {
+func NewSyntaxError(expected string, actual string, source internal.TokenSource) dberr.DBError {
 	current := source.Current()
 	if current.Code() == token.Error {
 		errorToken := current.(token.ErrorToken)
@@ -19,7 +20,7 @@ func NewSyntaxError(expected string, actual string, source internal.TokenSource)
 	}
 }
 
-func NewTokenSyntaxError(expected, actual token.Code, source internal.TokenSource) error {
+func NewTokenSyntaxError(expected, actual token.Code, source internal.TokenSource) dberr.DBError {
 	current := source.Current()
 	if current.Code() == token.Error {
 		errorToken := current.(token.ErrorToken)
@@ -38,21 +39,15 @@ type syntaxError struct {
 	currentQuery string
 }
 
-func (s *syntaxError) Error() string {
-	return "expected: \"" + s.expected + "\" instead got: \"" +
-		s.actual + "\"\n" +
-		s.currentQuery + " <- here "
-}
-
-type tokenizerError struct {
-	msg string
-}
-
 func (t tokenizerError) Error() string {
 	return t.msg
 }
 
-func NewSyntaxTextError(reason string, source internal.TokenSource) error {
+func (s *syntaxError) Area() dberr.Area {
+	return dberr.Parser
+}
+
+func NewSyntaxTextError(reason string, source internal.TokenSource) dberr.DBError {
 	return &syntaxTextError{
 		reason:       reason,
 		currentQuery: recreateQuery(source),
@@ -66,6 +61,10 @@ type syntaxTextError struct {
 
 func (s *syntaxTextError) Error() string {
 	return s.currentQuery + " <- " + s.reason
+}
+
+func (s *syntaxTextError) Area() dberr.Area {
+	return dberr.Parser
 }
 
 func recreateQuery(source internal.TokenSource) string {
