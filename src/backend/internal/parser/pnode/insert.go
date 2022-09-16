@@ -54,16 +54,3 @@ func (v *InsertingValues) AddValue(tk token.Token, source internal.TokenSource) 
 	v.Values = append(v.Values, value)
 	return nil
 }
-
-type Value struct {
-	V    any
-	Type ValueType
-}
-
-type ValueType = uint8
-
-const (
-	ValueTypeStr ValueType = iota
-	ValueTypeInt
-	ValueTypeFloat
-)
