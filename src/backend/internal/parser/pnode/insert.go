@@ -11,38 +11,32 @@ import (
 type InsertNode struct {
 	Table   TableNode
 	Columns InsertingColumns
-	Rows    []InsertingValues
+	Rows    []InsertingRow
 }
 
 type InsertingColumns struct {
 	ColNames []string
 }
 
-type InsertingValues struct {
+type InsertingRow struct {
 	Values []Value
 }
 
-func NewInsertingValue() InsertingValues {
-	return InsertingValues{
+func NewInsertingValue() InsertingRow {
+	return InsertingRow{
 		Values: make([]Value, 0, 25),
 	}
 }
 
-func (v *InsertingValues) AddValue(tk token.Token, source internal.TokenSource) error {
+func (v *InsertingRow) AddValue(tk token.Token, source internal.TokenSource) error {
 	var value Value
 	switch tk.Code() {
 	case token.SqlTextValue:
-		strTk := tk.(*token.SqlTextValueToken)
-		value.V = strTk.RawStr
-		value.Type = ValueTypeStr
+		value = StrValue{v: tk.(*token.SqlTextValueToken).InputStr}
 	case token.Integer:
-		intTk := tk.(*token.IntegerToken)
-		value.V = intTk.Int
-		value.Type = ValueTypeInt
+		value = IntValue{v: tk.(*token.IntegerToken).Int}
 	case token.Float:
-		floatTk := tk.(*token.FloatToken)
-		value.V = floatTk.Float
-		value.Type = ValueTypeFloat
+		value = FloatValue{v: tk.(*token.FloatToken).Float}
 	default:
 		return sqlerr.NewSyntaxError(
 			"value that can be used as column value",

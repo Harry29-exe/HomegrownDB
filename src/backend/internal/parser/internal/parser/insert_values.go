@@ -19,7 +19,7 @@ type insertValsParser struct{}
 //
 // It will start parsing it when current token is Values and return
 // when source pointer is on closing parenthesis
-func (i insertValsParser) Parse(source internal.TokenSource, v validator.Validator) ([]pnode.InsertingValues, error) {
+func (i insertValsParser) Parse(source internal.TokenSource, v validator.Validator) ([]pnode.InsertingRow, error) {
 	err := v.CurrentIsAnd(token.Values).
 		SkipTokens().
 		TypeMax(token.SpaceBreak, 1).
@@ -28,8 +28,8 @@ func (i insertValsParser) Parse(source internal.TokenSource, v validator.Validat
 		return nil, err
 	}
 
-	values := make([]pnode.InsertingValues, 0, 25)
-	var value pnode.InsertingValues
+	values := make([]pnode.InsertingRow, 0, 25)
+	var value pnode.InsertingRow
 
 	source.Next()
 	for {
@@ -58,19 +58,19 @@ func (i insertValsParser) Parse(source internal.TokenSource, v validator.Validat
 	}
 }
 
-func (i insertValsParser) parseValue(source internal.TokenSource, v validator.Validator) (pnode.InsertingValues, error) {
+func (i insertValsParser) parseValue(source internal.TokenSource, v validator.Validator) (pnode.InsertingRow, error) {
 	err := v.CurrentIsAnd(token.OpeningParenthesis).
 		SkipTokens().
 		TypeMax(token.SpaceBreak, 1).
 		SkipFromNext()
 	if err != nil {
-		return pnode.InsertingValues{}, err
+		return pnode.InsertingRow{}, err
 	}
 
 	values := pnode.NewInsertingValue()
 	err = values.AddValue(source.Next(), source)
 	if err != nil {
-		return pnode.InsertingValues{}, err
+		return pnode.InsertingRow{}, err
 	}
 
 	for {
@@ -90,7 +90,7 @@ func (i insertValsParser) parseValue(source internal.TokenSource, v validator.Va
 		}
 		err = values.AddValue(source.Next(), source)
 		if err != nil {
-			return pnode.InsertingValues{}, err
+			return pnode.InsertingRow{}, err
 		}
 	}
 }

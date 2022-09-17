@@ -55,7 +55,7 @@ func (i IntValue) ConvertTo(ctype column.Type) []byte {
 // ### FloatValue
 
 type FloatValue struct {
-	v int
+	v float64
 }
 
 var floatValueSupportedCTypes = map[column.Type]bool{}
@@ -82,7 +82,7 @@ func (i FloatValue) ConvertTo(ctype column.Type) []byte {
 // ### StrValue
 
 type StrValue struct {
-	v int
+	v string
 }
 
 var strValueSupportedCTypes = map[column.Type]bool{}

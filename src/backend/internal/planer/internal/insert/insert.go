@@ -6,5 +6,6 @@ import (
 )
 
 func Plan(node anode.Select) plan.Plan {
-
+	//todo implement me
+	panic("Not implemented")
 }

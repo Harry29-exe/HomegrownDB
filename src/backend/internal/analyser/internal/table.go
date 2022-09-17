@@ -25,7 +25,7 @@ func (t tables) Analise(node pnode.TablesNode, ctx *AnalyserCtx) (anode.Tables, 
 		qTables[i] = anode.Table{
 			Table:    tableDef,
 			Alias:    node.Tables[i].TableAlias,
-			QtableId: ctx.NextQtableId(tableDef.TableId()),
+			QTableId: ctx.NextQTableId(tableDef.TableId()),
 		}
 	}
 

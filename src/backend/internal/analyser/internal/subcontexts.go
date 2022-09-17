@@ -11,7 +11,7 @@ type tablesCtx struct {
 	qTableIdTableIdMap []table.Id
 }
 
-func (t *tablesCtx) NextQtableId(tableId table.Id) (id anode.QTableId) {
+func (t *tablesCtx) NextQTableId(tableId table.Id) (id anode.QTableId) {
 	id = t.nextQTableId
 	t.qTableIdTableIdMap = append(t.qTableIdTableIdMap, tableId)
 	t.nextQTableId++
@@ -22,6 +22,6 @@ func (t *tablesCtx) NextQtableId(tableId table.Id) (id anode.QTableId) {
 	return id
 }
 
-func (t *tablesCtx) GetTableId(qtableId anode.QTableId) table.Id {
-	return t.qTableIdTableIdMap[qtableId]
+func (t *tablesCtx) GetTableId(qTableId anode.QTableId) table.Id {
+	return t.qTableIdTableIdMap[qTableId]
 }
