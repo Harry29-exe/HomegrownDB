@@ -4,10 +4,10 @@ import (
 	"HomegrownDB/dbsystem/schema/table"
 )
 
-type QtableId = uint16
+type QTableId = uint16
 
 type Table struct {
 	Table    table.Definition
-	QtableId QtableId
+	QtableId QTableId
 	Alias    string
 }

@@ -11,8 +11,8 @@ func NewAnalyserCtx(txCtx tx.Ctx, tables stores.RTablesDefs) *AnalyserCtx {
 		tableStore: tables,
 		txCtx:      txCtx,
 		tablesCtx: tablesCtx{
-			nextQtableId:       0,
-			qtableIdTableIdMap: make([]table.Id, 0, 10),
+			nextQTableId:       0,
+			qTableIdTableIdMap: make([]table.Id, 0, 10),
 		},
 	}
 }

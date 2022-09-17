@@ -6,22 +6,22 @@ import (
 )
 
 type tablesCtx struct {
-	nextQtableId anode.QtableId
-	// qtableIdTableIdMap slice functions here as map as x[anode.QtableId] = table.Id
-	qtableIdTableIdMap []table.Id
+	nextQTableId anode.QTableId
+	// qTableIdTableIdMap slice functions here as map as x[anode.QTableId] = table.Id
+	qTableIdTableIdMap []table.Id
 }
 
-func (t *tablesCtx) NextQtableId(tableId table.Id) (id anode.QtableId) {
-	id = t.nextQtableId
-	t.qtableIdTableIdMap = append(t.qtableIdTableIdMap, tableId)
-	t.nextQtableId++
-	if int(id) != len(t.qtableIdTableIdMap) {
+func (t *tablesCtx) NextQtableId(tableId table.Id) (id anode.QTableId) {
+	id = t.nextQTableId
+	t.qTableIdTableIdMap = append(t.qTableIdTableIdMap, tableId)
+	t.nextQTableId++
+	if int(id) != len(t.qTableIdTableIdMap) {
 		panic("illegal state")
 	}
 
 	return id
 }
 
-func (t *tablesCtx) GetTableId(qtableId anode.QtableId) table.Id {
-	return t.qtableIdTableIdMap[qtableId]
+func (t *tablesCtx) GetTableId(qtableId anode.QTableId) table.Id {
+	return t.qTableIdTableIdMap[qtableId]
 }

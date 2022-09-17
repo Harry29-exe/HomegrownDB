@@ -32,6 +32,10 @@ func delegateAnalyse(tree parser.Tree, ctx *internal.AnalyserCtx) (root any, roo
 		}
 		root, err = internal.Select.Analyse(rootPnode, ctx)
 		return
+	case parser.Insert:
+		rootType = RootTypeInsert
+		//todo implement me
+		panic("Not implemented")
 	default:
 		//todo implement me
 		panic("Not implemented")
