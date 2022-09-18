@@ -1,8 +1,8 @@
 package validator
 
 import (
+	"HomegrownDB/backend/internal/parser/internal/sqlerr"
 	token2 "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
-	"HomegrownDB/backend/internal/parser/sqlerr"
 )
 
 func (v *validator) Check() (token2.Token, error) {

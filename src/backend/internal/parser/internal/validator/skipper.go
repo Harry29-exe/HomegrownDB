@@ -2,8 +2,8 @@ package validator
 
 import (
 	"HomegrownDB/backend/internal/parser/internal"
+	"HomegrownDB/backend/internal/parser/internal/sqlerr"
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
-	"HomegrownDB/backend/internal/parser/sqlerr"
 	"math"
 	"strings"
 )

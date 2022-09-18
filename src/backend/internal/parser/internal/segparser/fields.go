@@ -1,11 +1,11 @@
-package parser
+package segparser
 
 import (
 	"HomegrownDB/backend/internal/parser/internal"
+	"HomegrownDB/backend/internal/parser/internal/sqlerr"
 	token "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/backend/internal/parser/pnode"
-	"HomegrownDB/backend/internal/parser/sqlerr"
 )
 
 var Fields = fieldsParser{}

@@ -2,20 +2,16 @@ package pnode
 
 import (
 	"HomegrownDB/backend/internal/parser/internal"
+	"HomegrownDB/backend/internal/parser/internal/sqlerr"
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
-	"HomegrownDB/backend/internal/parser/sqlerr"
 	"fmt"
 )
 
 // InsertNode represents INSERT query
 type InsertNode struct {
-	Table   TableNode
-	Columns InsertingColumns
-	Rows    []InsertingRow
-}
-
-type InsertingColumns struct {
+	Table    TableNode
 	ColNames []string
+	Rows     []InsertingRow
 }
 
 type InsertingRow struct {

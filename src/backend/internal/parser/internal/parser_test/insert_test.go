@@ -2,7 +2,7 @@ package parser_test
 
 import (
 	"HomegrownDB/backend/internal/parser/internal"
-	"HomegrownDB/backend/internal/parser/internal/parser"
+	"HomegrownDB/backend/internal/parser/internal/segparser"
 	"HomegrownDB/common/tests/assert"
 	"testing"
 )
@@ -17,7 +17,7 @@ func TestSimpleInsertParse(t *testing.T) {
 	for _, query := range queries {
 		source := internal.NewTokenSource(query)
 
-		node, err := parser.InsertParser.Parse(source)
+		node, err := segparser.InsertParser.Parse(source)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -54,7 +54,7 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 	for _, query := range queries {
 		source := internal.NewTokenSource(query)
 
-		node, err := parser.InsertParser.Parse(source)
+		node, err := segparser.InsertParser.Parse(source)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -90,7 +90,7 @@ func TestInsertParseInvalidQuery(t *testing.T) {
 	for _, query := range queries {
 		source := internal.NewTokenSource(query)
 
-		_, err := parser.InsertParser.Parse(source)
+		_, err := segparser.InsertParser.Parse(source)
 		assert.NotNil(err, t)
 	}
 }

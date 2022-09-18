@@ -16,7 +16,7 @@ func Plan(node anode.Select) plan.Plan {
 	queryPlan := plan.Plan{
 		Tables: []plan.Table{
 			{
-				TableId:     node.Tables.Tables[0].Table.TableId(),
+				TableId:     node.Tables.Tables[0].Def.TableId(),
 				PlanTableId: 0,
 			},
 		},
@@ -25,7 +25,7 @@ func Plan(node anode.Select) plan.Plan {
 	fields := make([]plan.SelectedField, len(node.Fields.Fields))
 	for i, field := range node.Fields.Fields {
 		fields[i] = plan.SelectedField{
-			Name: field.FieldName,
+			Name: field.FieldAlias,
 			FieldId: plan.FieldId{
 				PlanTableId: 0,
 				ColumnOrder: field.Column.GetColumnId(), //todo columnId what it is?
@@ -36,7 +36,7 @@ func Plan(node anode.Select) plan.Plan {
 	queryPlan.RootNode = plan.SelectFields{
 		Fields: fields,
 		Child: plan.SeqScan{
-			Table:      node.Tables.Tables[0].Table.TableId(),
+			Table:      node.Tables.Tables[0].Def.TableId(),
 			Conditions: nil,
 		},
 	}

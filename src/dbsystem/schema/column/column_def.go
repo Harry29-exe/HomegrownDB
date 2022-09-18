@@ -3,7 +3,7 @@ package column
 type Type = string
 type Id = uint16
 
-// Definition describes column properties and provides parser and serializer
+// Definition describes column properties and provides segparser and serializer
 type Definition interface {
 	Name() string
 	Nullable() bool

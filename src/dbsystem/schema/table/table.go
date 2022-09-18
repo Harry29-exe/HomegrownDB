@@ -30,6 +30,7 @@ type Definition interface {
 	AllColumnSerializer() []column.DataSerializer
 
 	GetColumn(index column.OrderId) column.Definition
+	AllColumns() []column.Definition
 }
 
 type WDefinition interface {
@@ -51,6 +52,7 @@ func NewDefinition(name string) WDefinition {
 		tableId:  0,
 		objectId: 0,
 		columns:  []column.WDefinition{},
+		rColumns: []column.Definition{},
 		name:     name,
 
 		colNameIdMap:  map[string]column.OrderId{},

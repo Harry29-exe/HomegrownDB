@@ -1,7 +1,9 @@
 package anode
 
+import "HomegrownDB/dbsystem/schema/column"
+
 type Insert struct {
-	Table  Table
-	Fields Fields
-	Values
+	Table   Table
+	Columns []column.OrderId
+	Values  Values
 }

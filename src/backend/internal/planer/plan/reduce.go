@@ -5,6 +5,7 @@ type SelectFields struct {
 	Child  Node
 }
 
+//todo probably rework this
 type SelectedField struct {
 	Name    string
 	FieldId FieldId

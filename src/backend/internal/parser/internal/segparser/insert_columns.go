@@ -1,4 +1,4 @@
-package parser
+package segparser
 
 import (
 	"HomegrownDB/backend/internal/parser/internal"

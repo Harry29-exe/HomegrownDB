@@ -2,7 +2,7 @@ package parser
 
 import (
 	"HomegrownDB/backend/internal/parser/internal"
-	"HomegrownDB/backend/internal/parser/internal/parser"
+	"HomegrownDB/backend/internal/parser/internal/segparser"
 	tk "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 )
 
@@ -24,7 +24,7 @@ func delegate(source internal.TokenSource) (root any, rootType RootType, err err
 	switch source.Current().Code() {
 	case tk.Select:
 		rootType = Select
-		root, err = parser.Select.Parse(source)
+		root, err = segparser.Select.Parse(source)
 	default:
 		//todo implement me
 		panic("Not implemented")

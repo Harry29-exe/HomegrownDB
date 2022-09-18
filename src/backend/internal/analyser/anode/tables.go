@@ -38,7 +38,7 @@ func (t Tables) TableByAlias(alias string) table.Definition {
 		case -1:
 			min = i - 1
 		default:
-			return table.Table
+			return table.Def
 		}
 	}
 

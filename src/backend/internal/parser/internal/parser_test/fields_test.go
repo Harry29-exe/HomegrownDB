@@ -1,7 +1,7 @@
 package parser_test
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/parser"
+	"HomegrownDB/backend/internal/parser/internal/segparser"
 	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/backend/internal/parser/pnode"
 	"testing"
@@ -25,7 +25,7 @@ func TestFields_Parse_ShouldParseString(t *testing.T) {
 		v := validator.NewValidator(source)
 
 		//when
-		fieldsNode, err := parser.Fields.Parse(source, v)
+		fieldsNode, err := segparser.Fields.Parse(source, v)
 		if err != nil {
 			t.Error("Fields parser returned following error: ", err)
 			t.FailNow()
@@ -59,7 +59,7 @@ func TestFields_Parse_ShouldReturnError(t *testing.T) {
 		v := validator.NewValidator(source)
 
 		//when
-		_, err := parser.Fields.Parse(source, v)
+		_, err := segparser.Fields.Parse(source, v)
 
 		//then
 		if err == nil {

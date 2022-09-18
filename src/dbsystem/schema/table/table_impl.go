@@ -12,6 +12,7 @@ type StandardTable struct {
 	objectId uint64
 	tableId  Id
 	columns  []column.WDefinition
+	rColumns []column.Definition
 	name     string
 
 	colNameIdMap  map[string]column.OrderId
@@ -141,12 +142,17 @@ func (t *StandardTable) GetColumn(index column.OrderId) column.Definition {
 	return t.columns[index]
 }
 
+func (t *StandardTable) AllColumns() []column.Definition {
+	return t.rColumns
+}
+
 func (t *StandardTable) AddColumn(definition column.WDefinition) error {
 	_, ok := t.colNameIdMap[definition.Name()]
 	if ok {
 		return errors.New("table already contains column with name:" + definition.Name())
 	}
 	t.columns = append(t.columns, definition)
+	t.rColumns = append(t.rColumns, definition)
 	t.colNameIdMap[definition.Name()] = t.columnsCount
 	t.columnsNames = append(t.columnsNames, definition.Name())
 	t.columnParsers = append(t.columnParsers, definition.DataParser())
@@ -173,6 +179,7 @@ func (t *StandardTable) RemoveColumn(name string) error {
 
 	copy(t.columns[colToRemoveId:], t.columns[colToRemoveId+1:])
 	t.columns = t.columns[:len(t.columns)-1]
+	t.rColumns = t.rColumns[:len(t.columns)-1]
 
 	copy(t.columnParsers[colToRemoveId:], t.columnParsers[colToRemoveId+1:])
 	t.columnParsers = t.columnParsers[:len(t.columnParsers)-1]
