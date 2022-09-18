@@ -25,7 +25,7 @@ func TestSimpleInsertParse(t *testing.T) {
 		assert.Eq(node.Table.TableName, "users", t)
 		assert.Eq(node.Table.TableAlias, "users", t)
 
-		columns := node.Columns.ColNames
+		columns := node.ColNames
 		assert.Eq(len(columns), 2, t)
 		assert.Eq(columns[0], "name", t)
 		assert.Eq(columns[1], "age", t)
@@ -62,7 +62,7 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 		assert.Eq(node.Table.TableName, "users", t)
 		assert.Eq(node.Table.TableAlias, "users", t)
 
-		columns := node.Columns.ColNames
+		columns := node.ColNames
 		assert.Eq(len(columns), 0, t)
 
 		values := node.Rows

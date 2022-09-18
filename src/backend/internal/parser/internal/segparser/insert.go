@@ -28,7 +28,7 @@ func (i insertParser) Parse(source internal.TokenSource) (pnode.InsertNode, erro
 
 	err = v.NextSequence(token.SpaceBreak, token.OpeningParenthesis)
 	if err == nil {
-		err = i.parseInsertingCols(insertNode, v)
+		err = i.parseInsertingCols(&insertNode, v)
 		if err != nil {
 			return insertNode, err
 		}
@@ -48,7 +48,7 @@ func (i insertParser) Parse(source internal.TokenSource) (pnode.InsertNode, erro
 	return insertNode, nil
 }
 
-func (i insertParser) parseInsertingCols(insertNode pnode.InsertNode, v validator.Validator) error {
+func (i insertParser) parseInsertingCols(insertNode *pnode.InsertNode, v validator.Validator) error {
 	err := v.CurrentIs(token.OpeningParenthesis)
 	if err != nil {
 		return err
@@ -60,7 +60,6 @@ func (i insertParser) parseInsertingCols(insertNode pnode.InsertNode, v validato
 	}
 
 	colNames := make([]string, 0, 10)
-	insertNode.ColNames = colNames
 	var colName token.Token
 	for {
 		colName, err = v.Next().
@@ -79,6 +78,7 @@ func (i insertParser) parseInsertingCols(insertNode pnode.InsertNode, v validato
 			SkipFromNext()
 
 		if err != nil {
+			insertNode.ColNames = colNames
 			_ = v.SkipTokens().Type(token.SpaceBreak).SkipFromNext()
 
 			return v.SkipTokens().
