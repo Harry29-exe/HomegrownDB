@@ -9,7 +9,7 @@ import (
 
 type testSentence struct {
 	str        string // sentence for tokenizer
-	pointerPos uint16 // expected pointer position after parsing
+	pointerPos uint32 // expected pointer position after parsing
 }
 
 func createTestTokenSource(str string, t *testing.T) *testTokenSource {
@@ -26,9 +26,9 @@ func createTestTokenSource(str string, t *testing.T) *testTokenSource {
 
 	return &testTokenSource{
 		tokens:      tokens,
-		tokensLen:   uint16(len(tokens)),
+		tokensLen:   uint32(len(tokens)),
 		pointer:     0,
-		checkpoints: make([]uint16, 0, 5),
+		checkpoints: make([]uint32, 0, 5),
 	}
 }
 
@@ -70,10 +70,10 @@ func CorrectSentenceParserTestIsSuccessful(
 
 type testTokenSource struct {
 	tokens    []token.Token
-	tokensLen uint16
-	pointer   uint16
+	tokensLen uint32
+	pointer   uint32
 
-	checkpoints []uint16
+	checkpoints []uint32
 }
 
 func (t *testTokenSource) Next() token.Token {
@@ -98,16 +98,16 @@ func (t *testTokenSource) Current() token.Token {
 	return t.tokens[t.pointer]
 }
 
+func (t *testTokenSource) CurrentTokenIndex() uint32 {
+	return t.pointer
+}
+
 func (t *testTokenSource) History() []token.Token {
 	return t.tokens[0 : t.pointer+1]
 }
 
 func (t *testTokenSource) Checkpoint() {
 	t.checkpoints = append(t.checkpoints, t.pointer)
-}
-
-func (t *testTokenSource) CommitAndCheckpoint() {
-	t.checkpoints[len(t.checkpoints)-1] = t.pointer
 }
 
 func (t *testTokenSource) Commit() {
@@ -134,7 +134,7 @@ func (p parserError) OutputDiffers(t *testing.T, expected, output any, sentence 
 	t.Fail()
 }
 
-func (p parserError) PointerPosDiffers(t *testing.T, expected, actual uint16, sentence string) {
+func (p parserError) PointerPosDiffers(t *testing.T, expected, actual uint32, sentence string) {
 	t.Error("TokenSource pointer position is different than",
 		"expected. Expected: ", expected, " actual: ", actual,
 		"\nIn sentence:\""+sentence+"\"")

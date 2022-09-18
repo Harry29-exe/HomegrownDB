@@ -11,18 +11,18 @@ func NewTokenSource(query string) TokenSource {
 		currentLen:  0,
 		pointer:     0,
 		tokenizer:   tk.NewTokenizer(query),
-		checkpoints: make([]uint16, 0, 8),
+		checkpoints: make([]uint32, 0, 8),
 	}
 }
 
 type tokenSource struct {
 	tokenCache []token.Token
-	currentLen uint16
-	pointer    uint16
+	currentLen uint32
+	pointer    uint32
 
 	tokenizer tk.Tokenizer
 
-	checkpoints []uint16
+	checkpoints []uint32
 }
 
 func (t *tokenSource) Next() token.Token {
@@ -63,16 +63,16 @@ func (t *tokenSource) Current() token.Token {
 	return t.tokenCache[t.pointer]
 }
 
+func (t *tokenSource) CurrentTokenIndex() uint32 {
+	return t.pointer
+}
+
 func (t *tokenSource) History() []token.Token {
 	return t.tokenCache[0 : t.pointer+1]
 }
 
 func (t *tokenSource) Checkpoint() {
 	t.checkpoints = append(t.checkpoints, t.pointer)
-}
-
-func (t *tokenSource) CommitAndCheckpoint() {
-	t.checkpoints[len(t.checkpoints)-1] = t.pointer
 }
 
 func (t *tokenSource) Commit() {
