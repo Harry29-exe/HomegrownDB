@@ -19,7 +19,7 @@ type InsertingRow struct {
 	Values []Value
 }
 
-func NewInsertingValue() InsertingRow {
+func NewInsertingRow() InsertingRow {
 	return InsertingRow{
 		Values: make([]Value, 0, 25),
 	}

@@ -15,6 +15,10 @@ type afterErrorValidator struct {
 	err   error
 }
 
+var _ Validator = afterErrorValidator{}
+var _ TokenValidator = afterErrorValidator{}
+var _ TextTokenValidator = afterErrorValidator{}
+
 // Validator impl
 
 func (v afterErrorValidator) Next() TokenValidator {
@@ -59,6 +63,14 @@ func (v afterErrorValidator) CurrentSequenceAnd(codes ...tk.Code) Validator {
 
 func (v afterErrorValidator) SkipTokens() TokenSkipper {
 	return v
+}
+
+func (v afterErrorValidator) SkipOptFromCurrent(code tk.Code) error {
+	return v.err
+}
+
+func (v afterErrorValidator) SkipOptFromNext(code tk.Code) error {
+	return v.err
 }
 
 // TokenValidator impl

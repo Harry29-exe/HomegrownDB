@@ -3,6 +3,7 @@ package parser_test
 import (
 	"HomegrownDB/backend/internal/parser/internal/tokenizer"
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
+	"HomegrownDB/backend/internal/parser/pnode"
 	"reflect"
 	"testing"
 )
@@ -142,6 +143,11 @@ func (t *testTokenSource) Checkpoint() {
 func (t *testTokenSource) Commit() {
 	lastIndex := len(t.Checkpoints) - 1
 	t.Checkpoints = t.Checkpoints[0:lastIndex]
+}
+
+func (t *testTokenSource) CommitAndInitNode(node *pnode.Node) {
+	node.SetTokenIndexes(t.Checkpoints[len(t.Checkpoints)-1], t.Pointer)
+	t.Commit()
 }
 
 func (t *testTokenSource) Rollback() {

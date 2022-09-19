@@ -34,7 +34,7 @@ func (i insertValues) Parse(source internal.TokenSource, v validator.Validator) 
 
 	source.Next()
 	for {
-		value, err = i.parseValue(source, v)
+		value, err = i.parseRow(source, v)
 		if err != nil {
 			source.Rollback()
 			return values, err
@@ -63,38 +63,32 @@ func (i insertValues) Parse(source internal.TokenSource, v validator.Validator) 
 	}
 }
 
-func (i insertValues) parseValue(source internal.TokenSource, v validator.Validator) (pnode.InsertingRow, error) {
-	err := v.CurrentIsAnd(token.OpeningParenthesis).
-		SkipTokens().
-		TypeMax(token.SpaceBreak, 1).
-		SkipFromNext()
-	if err != nil {
-		return pnode.InsertingRow{}, err
+func (i insertValues) parseRow(source internal.TokenSource, v validator.Validator) (insertingRow pnode.InsertingRow, err error) {
+	if v.CurrentIs(token.OpeningParenthesis) != nil {
+		return
+	} else {
+		_ = v.SkipOptFromNext(token.SpaceBreak)
 	}
 
-	values := pnode.NewInsertingValue()
-	err = values.AddValue(source.Next(), source)
-	if err != nil {
-		return pnode.InsertingRow{}, err
+	rowNode := pnode.NewInsertingRow()
+	if rowNode.AddValue(source.Next(), source) != nil {
+		return
 	}
 
 	for {
-		err = v.SkipTokens().
+		if v.SkipTokens().
 			TypeExactly(token.Comma, 1).
 			TypeMax(token.SpaceBreak, 2).
-			SkipFromNext()
-		if err != nil {
+			SkipFromNext() != nil {
+
 			nextTk := source.Next()
-			if nextTk.Code() == token.SpaceBreak {
-				nextTk = source.Next()
-			}
 			if nextTk.Code() != token.ClosingParenthesis {
-				return values, sqlerr.NewSyntaxError(")", token.ToString(nextTk.Code()), source)
+				return rowNode, sqlerr.NewSyntaxError(")", token.ToString(nextTk.Code()), source)
 			}
-			return values, nil
-		}
-		err = values.AddValue(source.Next(), source)
-		if err != nil {
+
+			return rowNode, nil
+
+		} else if rowNode.AddValue(source.Next(), source) != nil {
 			return pnode.InsertingRow{}, err
 		}
 	}

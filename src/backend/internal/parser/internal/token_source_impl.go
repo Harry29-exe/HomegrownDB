@@ -3,6 +3,7 @@ package internal
 import (
 	tk "HomegrownDB/backend/internal/parser/internal/tokenizer"
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
+	"HomegrownDB/backend/internal/parser/pnode"
 )
 
 func NewTokenSource(query string) TokenSource {
@@ -78,6 +79,11 @@ func (t *tokenSource) Checkpoint() {
 func (t *tokenSource) Commit() {
 	lastIndex := len(t.checkpoints) - 1
 	t.checkpoints = t.checkpoints[0:lastIndex]
+}
+
+func (t *tokenSource) CommitAndInitNode(node *pnode.Node) {
+	node.SetTokenIndexes(t.checkpoints[len(t.checkpoints)-1], t.pointer)
+	t.Commit()
 }
 
 func (t *tokenSource) Rollback() {

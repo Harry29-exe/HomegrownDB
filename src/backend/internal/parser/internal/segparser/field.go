@@ -39,10 +39,11 @@ func (f fieldParser) Parse(source internal.TokenSource, validator validator.Vali
 		return pnode.FieldNode{}, err
 	}
 
-	source.Commit()
-	return pnode.FieldNode{
+	fieldNode := pnode.FieldNode{
 		TableAlias: tableToken.Value(),
 		FieldName:  columnToken.Value(),
 		FieldAlias: columnToken.Value(),
-	}, nil
+	}
+	source.CommitAndInitNode(&fieldNode.Node)
+	return fieldNode, nil
 }

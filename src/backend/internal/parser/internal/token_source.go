@@ -2,6 +2,7 @@ package internal
 
 import (
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
+	"HomegrownDB/backend/internal/parser/pnode"
 )
 
 // TokenSource array like structure where Next moves pointer one token forward
@@ -14,7 +15,8 @@ type TokenSource interface {
 	CurrentTokenIndex() uint32 // CurrentTokenIndex returns index of token that source's pointer is pointing to
 	History() []token.Token    // History returns all token from beginning to the one that Next would return
 
-	Checkpoint() // Checkpoint creates new checkpoint for segparser to rollback
-	Commit()     // Commit deletes last checkpoint
-	Rollback()   // Rollback to last checkpoint and removes this checkpoint
+	Checkpoint()                        // Checkpoint creates new checkpoint for segparser to rollback
+	Commit()                            // Commit deletes last checkpoint
+	CommitAndInitNode(node *pnode.Node) // CommitAndInitNode invoke commit, and set start and end token of received node
+	Rollback()                          // Rollback to last checkpoint and removes this checkpoint
 }

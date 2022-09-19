@@ -3,7 +3,7 @@ package validator
 import (
 	"HomegrownDB/backend/internal/parser/internal"
 	"HomegrownDB/backend/internal/parser/internal/sqlerr"
-	token2 "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
+	token "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 )
 
 func NewValidator(source internal.TokenSource) Validator {
@@ -14,9 +14,13 @@ func NewValidator(source internal.TokenSource) Validator {
 
 type validator struct {
 	source      internal.TokenSource
-	current     token2.Token
-	currentText *token2.TextToken
+	current     token.Token
+	currentText *token.TextToken
 }
+
+var _ Validator = &validator{}
+var _ TokenValidator = &validator{}
+var _ TextTokenValidator = &validator{}
 
 func (v *validator) Init(source internal.TokenSource) {
 	v.source = source
@@ -32,55 +36,55 @@ func (v *validator) Current() TokenValidator {
 	return v
 }
 
-func (v *validator) NextIs(code token2.Code) error {
+func (v *validator) NextIs(code token.Code) error {
 	if tk := v.source.Next(); tk == nil {
-		return sqlerr.NewSyntaxError(token2.ToString(code), "nil", v.source)
+		return sqlerr.NewSyntaxError(token.ToString(code), "nil", v.source)
 	} else if tk.Code() != code {
-		return sqlerr.NewSyntaxError(token2.ToString(code), tk.Value(), v.source)
+		return sqlerr.NewSyntaxError(token.ToString(code), tk.Value(), v.source)
 	}
 	return nil
 }
 
-func (v *validator) NextIsAnd(code token2.Code) Validator {
+func (v *validator) NextIsAnd(code token.Code) Validator {
 	if tk := v.source.Next(); tk == nil {
 		return afterErrorValidator{
 			token: tk,
-			err:   sqlerr.NewSyntaxError(token2.ToString(code), "nil", v.source),
+			err:   sqlerr.NewSyntaxError(token.ToString(code), "nil", v.source),
 		}
 	} else if tk.Code() != code {
 		return afterErrorValidator{
 			token: tk,
-			err:   sqlerr.NewSyntaxError(token2.ToString(code), tk.Value(), v.source),
+			err:   sqlerr.NewSyntaxError(token.ToString(code), tk.Value(), v.source),
 		}
 	}
 	return v
 }
 
-func (v *validator) CurrentIs(code token2.Code) error {
+func (v *validator) CurrentIs(code token.Code) error {
 	if tk := v.source.Current(); tk == nil {
-		return sqlerr.NewSyntaxError(token2.ToString(code), "nil", v.source)
+		return sqlerr.NewSyntaxError(token.ToString(code), "nil", v.source)
 	} else if tk.Code() != code {
-		return sqlerr.NewSyntaxError(token2.ToString(code), tk.Value(), v.source)
+		return sqlerr.NewSyntaxError(token.ToString(code), tk.Value(), v.source)
 	}
 	return nil
 }
 
-func (v *validator) CurrentIsAnd(code token2.Code) Validator {
+func (v *validator) CurrentIsAnd(code token.Code) Validator {
 	if tk := v.source.Current(); tk == nil {
 		return afterErrorValidator{
 			token: tk,
-			err:   sqlerr.NewSyntaxError(token2.ToString(code), "nil", v.source),
+			err:   sqlerr.NewSyntaxError(token.ToString(code), "nil", v.source),
 		}
 	} else if tk.Code() != code {
 		return afterErrorValidator{
 			token: tk,
-			err:   sqlerr.NewSyntaxError(token2.ToString(code), tk.Value(), v.source),
+			err:   sqlerr.NewSyntaxError(token.ToString(code), tk.Value(), v.source),
 		}
 	}
 	return v
 }
 
-func (v *validator) NextSequence(codes ...token2.Code) error {
+func (v *validator) NextSequence(codes ...token.Code) error {
 	v.source.Checkpoint()
 	for _, code := range codes {
 		next := v.source.Next()
@@ -95,7 +99,7 @@ func (v *validator) NextSequence(codes ...token2.Code) error {
 	return nil
 }
 
-func (v *validator) NextSequenceAnd(codes ...token2.Code) Validator {
+func (v *validator) NextSequenceAnd(codes ...token.Code) Validator {
 	v.source.Checkpoint()
 	for _, code := range codes {
 		next := v.source.Next()
@@ -113,7 +117,7 @@ func (v *validator) NextSequenceAnd(codes ...token2.Code) Validator {
 	return nil
 }
 
-func (v *validator) CurrentSequence(codes ...token2.Code) error {
+func (v *validator) CurrentSequence(codes ...token.Code) error {
 	currentToken := v.source.Current()
 	if currentToken.Code() != codes[0] {
 		return sqlerr.NewTokenSyntaxError(codes[0], currentToken.Code(), v.source)
@@ -133,7 +137,7 @@ func (v *validator) CurrentSequence(codes ...token2.Code) error {
 	return nil
 }
 
-func (v *validator) CurrentSequenceAnd(codes ...token2.Code) Validator {
+func (v *validator) CurrentSequenceAnd(codes ...token.Code) Validator {
 	currentToken := v.source.Current()
 	if currentToken.Code() != codes[0] {
 		return afterErrorValidator{
@@ -161,4 +165,20 @@ func (v *validator) CurrentSequenceAnd(codes ...token2.Code) Validator {
 
 func (v *validator) SkipTokens() TokenSkipper {
 	return SkipTokens(v.source)
+}
+
+func (v *validator) SkipOptFromCurrent(code token.Code) error {
+	if v.source.Current().Code() == code {
+		v.source.Next()
+	}
+	return nil
+}
+
+func (v *validator) SkipOptFromNext(code token.Code) error {
+	if v.source.Next().Code() == code {
+		v.source.Next()
+	} else {
+		v.source.Prev()
+	}
+	return nil
 }

@@ -13,7 +13,6 @@ type insert struct{}
 
 func (i insert) Parse(source internal.TokenSource, v validator.Validator) (pnode.InsertNode, error) {
 	source.Checkpoint()
-	startToken := source.CurrentTokenIndex()
 
 	err := v.CurrentSequence(token.Insert, token.SpaceBreak, token.Into, token.SpaceBreak)
 	if err != nil {
@@ -45,15 +44,14 @@ func (i insert) Parse(source internal.TokenSource, v validator.Validator) (pnode
 	}
 
 	source.Next()
-	insertValues, err := InsertValues.Parse(source, v)
+	insertValuesNode, err := InsertValues.Parse(source, v)
 	if err != nil {
 		source.Rollback()
 		return insertNode, err
 	}
-	insertNode.Rows = insertValues
+	insertNode.Rows = insertValuesNode
 
-	source.Commit()
-	insertNode.SetTokenIndexes(startToken, source.CurrentTokenIndex())
+	source.CommitAndInitNode(&insertNode.Node)
 	return insertNode, nil
 }
 
