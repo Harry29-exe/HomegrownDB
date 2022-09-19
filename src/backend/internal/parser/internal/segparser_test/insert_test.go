@@ -15,11 +15,11 @@ func TestSimpleInsertParse(t *testing.T) {
 		"INSERT INTO users  (  name  ,  age  ) VALUES ('bob',15)  , (  'Alice'   ,   24   )",
 	}
 	for _, query := range queries {
-		source := createTestTokenSource(query, t)
+		source := newTestTokenSource(query)
 		v := validator.NewValidator(source)
 
 		node, err := segparser.Insert.Parse(source, v)
-		assert.Eq(len(source.checkpoints), 0, t)
+		assert.Eq(len(source.Checkpoints), 0, t)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -54,11 +54,11 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 	}
 
 	for _, query := range queries {
-		source := createTestTokenSource(query, t)
+		source := newTestTokenSource(query)
 		v := validator.NewValidator(source)
 
 		node, err := segparser.Insert.Parse(source, v)
-		assert.Eq(len(source.checkpoints), 0, t)
+		assert.Eq(len(source.Checkpoints), 0, t)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -92,11 +92,11 @@ func TestInsertParseInvalidQuery(t *testing.T) {
 	}
 
 	for _, query := range queries {
-		source := createTestTokenSource(query, t)
+		source := newTestTokenSource(query)
 		v := validator.NewValidator(source)
 
 		_, err := segparser.Insert.Parse(source, v)
 		assert.NotNil(err, t)
-		assert.Eq(len(source.checkpoints), 0, t)
+		assert.Eq(len(source.Checkpoints), 0, t)
 	}
 }

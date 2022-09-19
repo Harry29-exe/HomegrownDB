@@ -27,7 +27,7 @@ func TestSelectParser_Parse_ShouldParse(t *testing.T) {
 	}
 
 	for _, sentence := range sentences {
-		source := createTestTokenSource(sentence.str, t)
+		source := createTokenSourceAndTestIt(sentence.str, t)
 		selectNode, err := segparser.Select.Parse(source)
 
 		CorrectSentenceParserTestIsSuccessful(

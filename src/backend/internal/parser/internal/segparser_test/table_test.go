@@ -44,7 +44,7 @@ func TestTable_Parse_ShouldParse2(t *testing.T) {
 	}
 }
 func _tableParserPositiveTest(t *testing.T, sentence testSentence, expectedNode pnode.TableNode) {
-	source := createTestTokenSource(sentence.str, t)
+	source := createTokenSourceAndTestIt(sentence.str, t)
 	v := validator.NewValidator(source)
 	output, err := segparser.Table.Parse(source, v)
 
