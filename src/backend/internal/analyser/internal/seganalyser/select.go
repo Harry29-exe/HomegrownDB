@@ -10,7 +10,7 @@ var Select = _select{}
 
 type _select struct{}
 
-func (s _select) Analyse(node pnode.SelectNode, ctx *internal.AnalyserCtx) (anode.Select, error) {
+func (s _select) Analyse(node pnode.Select, ctx *internal.AnalyserCtx) (anode.Select, error) {
 	selectNode := anode.Select{}
 	tablesNode, err := Tables.Analise(node.Tables, ctx)
 	if err != nil {

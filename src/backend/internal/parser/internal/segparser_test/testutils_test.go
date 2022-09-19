@@ -9,7 +9,7 @@ import (
 
 type testSentence struct {
 	str        string // sentence for tokenizer
-	pointerPos uint32 // expected pointer position after parsing
+	pointerPos uint32 // expected Pointer position after parsing
 }
 
 func createTestTokenSource(str string, t *testing.T) *testTokenSource {
@@ -25,9 +25,9 @@ func createTestTokenSource(str string, t *testing.T) *testTokenSource {
 	}
 
 	return &testTokenSource{
-		tokens:      tokens,
-		tokensLen:   uint32(len(tokens)),
-		pointer:     0,
+		Tokens:      tokens,
+		TokensLen:   uint32(len(tokens)),
+		Pointer:     0,
 		checkpoints: make([]uint32, 0, 5),
 	}
 }
@@ -46,9 +46,9 @@ func CorrectSentenceParserTestIsSuccessful(
 		return false
 	}
 
-	// test pointer position
-	if source.pointer != sentence.pointerPos {
-		ParserErr.PointerPosDiffers(t, sentence.pointerPos, source.pointer, sentence.str)
+	// test Pointer position
+	if source.Pointer != sentence.pointerPos {
+		ParserErr.PointerPosDiffers(t, sentence.pointerPos, source.Pointer, sentence.str)
 		return false
 	}
 
@@ -69,45 +69,45 @@ func CorrectSentenceParserTestIsSuccessful(
 }
 
 type testTokenSource struct {
-	tokens    []token.Token
-	tokensLen uint32
-	pointer   uint32
+	Tokens    []token.Token
+	TokensLen uint32
+	Pointer   uint32
 
 	checkpoints []uint32
 }
 
 func (t *testTokenSource) Next() token.Token {
-	t.pointer++
-	if t.pointer < t.tokensLen {
-		return t.tokens[t.pointer]
+	t.Pointer++
+	if t.Pointer < t.TokensLen {
+		return t.Tokens[t.Pointer]
 	}
-	t.pointer--
+	t.Pointer--
 	return token.NilToken()
 }
 
 func (t *testTokenSource) Prev() token.Token {
-	if t.pointer > 0 {
-		t.pointer--
-		return t.tokens[t.pointer]
+	if t.Pointer > 0 {
+		t.Pointer--
+		return t.Tokens[t.Pointer]
 	}
 
 	return token.NilToken()
 }
 
 func (t *testTokenSource) Current() token.Token {
-	return t.tokens[t.pointer]
+	return t.Tokens[t.Pointer]
 }
 
 func (t *testTokenSource) CurrentTokenIndex() uint32 {
-	return t.pointer
+	return t.Pointer
 }
 
 func (t *testTokenSource) History() []token.Token {
-	return t.tokens[0 : t.pointer+1]
+	return t.Tokens[0 : t.Pointer+1]
 }
 
 func (t *testTokenSource) Checkpoint() {
-	t.checkpoints = append(t.checkpoints, t.pointer)
+	t.checkpoints = append(t.checkpoints, t.Pointer)
 }
 
 func (t *testTokenSource) Commit() {
@@ -117,7 +117,7 @@ func (t *testTokenSource) Commit() {
 
 func (t *testTokenSource) Rollback() {
 	lastIndex := len(t.checkpoints) - 1
-	t.pointer = t.checkpoints[lastIndex]
+	t.Pointer = t.checkpoints[lastIndex]
 	t.checkpoints = t.checkpoints[0:lastIndex]
 }
 

@@ -1,6 +1,7 @@
 package pnode
 
 type FieldsNode struct {
+	Node
 	Fields []FieldNode
 }
 
@@ -9,6 +10,7 @@ func (f *FieldsNode) AddField(field FieldNode) {
 }
 
 type FieldNode struct {
+	Node
 	TableAlias string
 	FieldName  string
 	FieldAlias string

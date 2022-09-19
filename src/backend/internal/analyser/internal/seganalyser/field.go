@@ -11,11 +11,11 @@ var Fields = fields{}
 
 type fields struct{}
 
-func (f fields) Analyse(node pnode.FieldsNode, tables anode.Tables, ctx *internal.AnalyserCtx) (anode.SelectFields, error) {
-	fieldsCount := len(node.Fields)
+func (f fields) Analyse(fieldNodes []pnode.FieldNode, tables anode.Tables, ctx *internal.AnalyserCtx) (anode.SelectFields, error) {
+	fieldsCount := len(fieldNodes)
 	fieldsNode := anode.SelectFields{Fields: make([]anode.SelectField, fieldsCount)}
 
-	for i, field := range node.Fields {
+	for i, field := range fieldNodes {
 		table := tables.TableByAlias(field.TableAlias)
 		if table == nil {
 			return anode.SelectFields{}, errors.New("") // todo better message

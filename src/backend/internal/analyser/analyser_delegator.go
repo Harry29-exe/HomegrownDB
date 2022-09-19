@@ -27,7 +27,7 @@ func delegateAnalyse(tree parser.Tree, ctx *internal.AnalyserCtx) (root any, roo
 	switch tree.RootType {
 	case parser.Select:
 		rootType = RootTypeSelect
-		rootPnode, ok := tree.Root.(pnode.SelectNode)
+		rootPnode, ok := tree.Root.(pnode.Select)
 		if !ok {
 			panic(fmt.Sprintf("Could not cast pnode with root type of %d", tree.RootType))
 		}

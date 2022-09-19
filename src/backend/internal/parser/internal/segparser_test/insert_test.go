@@ -1,8 +1,8 @@
 package parser_test
 
 import (
-	"HomegrownDB/backend/internal/parser/internal"
 	"HomegrownDB/backend/internal/parser/internal/segparser"
+	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/common/tests/assert"
 	"testing"
 )
@@ -15,9 +15,11 @@ func TestSimpleInsertParse(t *testing.T) {
 		"INSERT INTO users  (  name  ,  age  ) VALUES ('bob',15)  , (  'Alice'   ,   24   )",
 	}
 	for _, query := range queries {
-		source := internal.NewTokenSource(query)
+		source := createTestTokenSource(query, t)
+		v := validator.NewValidator(source)
 
-		node, err := segparser.InsertParser.Parse(source)
+		node, err := segparser.Insert.Parse(source, v)
+		assert.Eq(len(source.checkpoints), 0, t)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -52,9 +54,11 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 	}
 
 	for _, query := range queries {
-		source := internal.NewTokenSource(query)
+		source := createTestTokenSource(query, t)
+		v := validator.NewValidator(source)
 
-		node, err := segparser.InsertParser.Parse(source)
+		node, err := segparser.Insert.Parse(source, v)
+		assert.Eq(len(source.checkpoints), 0, t)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -88,9 +92,11 @@ func TestInsertParseInvalidQuery(t *testing.T) {
 	}
 
 	for _, query := range queries {
-		source := internal.NewTokenSource(query)
+		source := createTestTokenSource(query, t)
+		v := validator.NewValidator(source)
 
-		_, err := segparser.InsertParser.Parse(source)
+		_, err := segparser.Insert.Parse(source, v)
 		assert.NotNil(err, t)
+		assert.Eq(len(source.checkpoints), 0, t)
 	}
 }

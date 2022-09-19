@@ -8,9 +8,9 @@ import (
 	"HomegrownDB/backend/internal/parser/pnode"
 )
 
-var InsertValues = insertValsParser{}
+var InsertValues = insertValues{}
 
-type insertValsParser struct{}
+type insertValues struct{}
 
 // Parse part of query starting with Values or Value token.
 // String to parse by this method can look like this:
@@ -19,7 +19,8 @@ type insertValsParser struct{}
 //
 // It will start parsing it when current token is Values and return
 // when source pointer is on closing parenthesis
-func (i insertValsParser) Parse(source internal.TokenSource, v validator.Validator) ([]pnode.InsertingRow, error) {
+func (i insertValues) Parse(source internal.TokenSource, v validator.Validator) ([]pnode.InsertingRow, error) {
+	source.Checkpoint()
 	err := v.CurrentIsAnd(token.Values).
 		SkipTokens().
 		TypeMax(token.SpaceBreak, 1).
@@ -35,6 +36,7 @@ func (i insertValsParser) Parse(source internal.TokenSource, v validator.Validat
 	for {
 		value, err = i.parseValue(source, v)
 		if err != nil {
+			source.Rollback()
 			return values, err
 		}
 
@@ -46,19 +48,22 @@ func (i insertValsParser) Parse(source internal.TokenSource, v validator.Validat
 			SkipFromNext()
 		if err != nil {
 			if len(values) > 0 {
+				source.Rollback()
 				return values, nil
 			}
+			source.Commit()
 			return values, err
 		}
 
 		err = v.NextIs(token.OpeningParenthesis)
 		if err != nil {
-			return nil, err
+			source.Rollback()
+			return values, err
 		}
 	}
 }
 
-func (i insertValsParser) parseValue(source internal.TokenSource, v validator.Validator) (pnode.InsertingRow, error) {
+func (i insertValues) parseValue(source internal.TokenSource, v validator.Validator) (pnode.InsertingRow, error) {
 	err := v.CurrentIsAnd(token.OpeningParenthesis).
 		SkipTokens().
 		TypeMax(token.SpaceBreak, 1).

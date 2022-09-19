@@ -53,10 +53,10 @@ func TestField_Parse_ShouldReturnError(t *testing.T) {
 			t.Fail()
 		}
 
-		if source.pointer != sentence.pointerPos {
+		if source.Pointer != sentence.pointerPos {
 			t.Error("after parsing following sentence: ", sentence,
 				"\npointer doesn't end up in expected position. Expected: ",
-				sentence.pointerPos, " Real: ", source.pointer)
+				sentence.pointerPos, " Real: ", source.Pointer)
 			t.Fail()
 		}
 	}

@@ -11,21 +11,21 @@ var Tables = tables{}
 
 type tables struct{}
 
-func (t tables) Analise(node pnode.TablesNode, ctx *internal.AnalyserCtx) (anode.Tables, error) {
-	tablesCount := len(node.Tables)
+func (t tables) Analise(node []pnode.TableNode, ctx *internal.AnalyserCtx) (anode.Tables, error) {
+	tablesCount := len(node)
 	qTables := make([]anode.Table, tablesCount)
 
 	var tableDef table.Definition
 	var err error
 	for i := 0; i < tablesCount; i++ {
-		tableDef, err = ctx.GetTable(node.Tables[i].TableName)
+		tableDef, err = ctx.GetTable(node[i].TableName)
 		if err != nil {
 			return t.nodeFromTables(qTables), err
 		}
 
 		qTables[i] = anode.Table{
 			Def:      tableDef,
-			Alias:    node.Tables[i].TableAlias,
+			Alias:    node[i].TableAlias,
 			QTableId: ctx.NextQTableId(tableDef.TableId()),
 		}
 	}

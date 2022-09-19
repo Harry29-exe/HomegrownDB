@@ -7,14 +7,17 @@ import (
 	"HomegrownDB/backend/internal/parser/pnode"
 )
 
-var InsertParser = insertParser{}
+var Insert = insert{}
 
-type insertParser struct{}
+type insert struct{}
 
-func (i insertParser) Parse(source internal.TokenSource) (pnode.InsertNode, error) {
-	v := validator.NewValidator(source)
+func (i insert) Parse(source internal.TokenSource, v validator.Validator) (pnode.InsertNode, error) {
+	source.Checkpoint()
+	startToken := source.CurrentTokenIndex()
+
 	err := v.CurrentSequence(token.Insert, token.SpaceBreak, token.Into, token.SpaceBreak)
 	if err != nil {
+		source.Rollback()
 		return pnode.InsertNode{}, err
 	}
 	source.Next()
@@ -22,6 +25,7 @@ func (i insertParser) Parse(source internal.TokenSource) (pnode.InsertNode, erro
 
 	table, err := Table.Parse(source, v)
 	if err != nil {
+		source.Rollback()
 		return pnode.InsertNode{}, err
 	}
 	insertNode.Table = table
@@ -30,25 +34,30 @@ func (i insertParser) Parse(source internal.TokenSource) (pnode.InsertNode, erro
 	if err == nil {
 		err = i.parseInsertingCols(&insertNode, v)
 		if err != nil {
+			source.Rollback()
 			return insertNode, err
 		}
 	}
 	err = v.NextIs(token.SpaceBreak)
 	if err != nil {
+		source.Rollback()
 		return insertNode, err
 	}
 
 	source.Next()
 	insertValues, err := InsertValues.Parse(source, v)
 	if err != nil {
+		source.Rollback()
 		return insertNode, err
 	}
 	insertNode.Rows = insertValues
 
+	source.Commit()
+	insertNode.SetTokenIndexes(startToken, source.CurrentTokenIndex())
 	return insertNode, nil
 }
 
-func (i insertParser) parseInsertingCols(insertNode *pnode.InsertNode, v validator.Validator) error {
+func (i insert) parseInsertingCols(insertNode *pnode.InsertNode, v validator.Validator) error {
 	err := v.CurrentIs(token.OpeningParenthesis)
 	if err != nil {
 		return err

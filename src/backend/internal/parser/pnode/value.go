@@ -7,6 +7,7 @@ import (
 )
 
 type Value interface {
+	Node() Node
 	V() any
 	Type() ValueType
 	IsAssignableTo(ctype column.Type) bool
@@ -24,11 +25,16 @@ const (
 // ### IntValue ###
 
 type IntValue struct {
+	N Node
 	v int
 }
 
 var intValueSupportedCTypes = map[column.Type]bool{
 	ctypes.Int2: true,
+}
+
+func (i IntValue) Node() Node {
+	return i.N
 }
 
 func (i IntValue) V() any {
@@ -55,10 +61,15 @@ func (i IntValue) ConvertTo(ctype column.Type) []byte {
 // ### FloatValue
 
 type FloatValue struct {
+	N Node
 	v float64
 }
 
 var floatValueSupportedCTypes = map[column.Type]bool{}
+
+func (i FloatValue) Node() Node {
+	return i.N
+}
 
 func (i FloatValue) V() any {
 	return i.v
@@ -69,7 +80,7 @@ func (i FloatValue) Type() ValueType {
 }
 
 func (i FloatValue) IsAssignableTo(ctype column.Type) bool {
-	return intValueSupportedCTypes[ctype]
+	return floatValueSupportedCTypes[ctype]
 }
 
 func (i FloatValue) ConvertTo(ctype column.Type) []byte {
@@ -82,7 +93,12 @@ func (i FloatValue) ConvertTo(ctype column.Type) []byte {
 // ### StrValue
 
 type StrValue struct {
+	N Node
 	v string
+}
+
+func (i StrValue) Node() Node {
+	return i.N
 }
 
 var strValueSupportedCTypes = map[column.Type]bool{}
@@ -92,11 +108,11 @@ func (i StrValue) V() any {
 }
 
 func (i StrValue) Type() ValueType {
-	return ValueTypeFloat
+	return ValueTypeStr
 }
 
 func (i StrValue) IsAssignableTo(ctype column.Type) bool {
-	return intValueSupportedCTypes[ctype]
+	return strValueSupportedCTypes[ctype]
 }
 
 func (i StrValue) ConvertTo(ctype column.Type) []byte {

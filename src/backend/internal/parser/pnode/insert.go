@@ -9,6 +9,7 @@ import (
 
 // InsertNode represents INSERT query
 type InsertNode struct {
+	Node
 	Table    TableNode
 	ColNames []string
 	Rows     []InsertingRow
