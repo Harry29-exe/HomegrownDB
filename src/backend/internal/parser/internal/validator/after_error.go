@@ -65,11 +65,7 @@ func (v afterErrorValidator) SkipTokens() TokenSkipper {
 	return v
 }
 
-func (v afterErrorValidator) SkipOptFromCurrent(code tk.Code) error {
-	return v.err
-}
-
-func (v afterErrorValidator) SkipOptFromNext(code tk.Code) error {
+func (v afterErrorValidator) SkipSpaceFromNext() error {
 	return v.err
 }
 

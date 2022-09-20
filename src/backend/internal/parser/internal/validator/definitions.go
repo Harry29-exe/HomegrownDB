@@ -21,10 +21,9 @@ type Validator interface {
 	CurrentSequenceAnd(codes ...token.Code) Validator
 
 	SkipTokens() TokenSkipper
-	// SkipOptFromCurrent skips next token with given code if possible,
-	// returns error only if previously chained methods returned error
-	SkipOptFromCurrent(code token.Code) error
-	SkipOptFromNext(code token.Code) error
+	// SkipSpaceFromNext is the same as
+	// Validator.SkipTokens().TypeMax(token.Space, 1).SkipFromNext)
+	SkipSpaceFromNext() error
 }
 
 type TokenValidator interface {

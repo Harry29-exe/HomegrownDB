@@ -23,26 +23,33 @@ func CorrectSentenceParserTestIsSuccessful(
 ) bool {
 	// test if error is nil
 	if parseErr != nil {
-		ParserErr.ParserReturnedErr(t, parseErr, sentence.str)
+		t.Errorf("Parser returned unexpected error: %s while parsing following sentence:\n %s\n", parseErr.Error(), sentence.str)
+		t.Fail()
 		return false
 	}
 
 	// test Pointer position
 	if source.Pointer != sentence.pointerPos {
-		ParserErr.PointerPosDiffers(t, sentence.pointerPos, source.Pointer, sentence.str)
+		t.Errorf("TokenSource pointer position is different than expected.\nExpected: %+v, \nActual: %+v \nIn sentence:%s",
+			sentence.pointerPos, source.Pointer, sentence.str)
+		t.Fail()
 		return false
 	}
 
 	//test uncommitted Checkpoints
 	if len(source.Checkpoints) > 0 {
-		ParserErr.UncommittedCheckpoint(t, sentence.str)
+		t.Errorf("Parser left uncommitted checkpoint parsing following sentence:\n%s", sentence.str)
+		t.Fail()
 		return false
 	}
 
 	// test nodes equals
 
 	if !reflect.DeepEqual(expectedNode, actualNode) {
-		ParserErr.OutputDiffers(t, expectedNode, actualNode, sentence.str)
+		t.Errorf(
+			"Received output is different from expected one.\nExpected: %+v, \nActual: %+v \nIn sentence: %s",
+			expectedNode, actualNode, sentence.str)
+		t.Fail()
 		return false
 	}
 
@@ -159,29 +166,3 @@ func (t *testTokenSource) Rollback() {
 var ParserErr = parserError{}
 
 type parserError struct{}
-
-// OutputDiffers uses testing.T Error for printing error information,
-// and marks test as filed with testing.T Fail
-func (p parserError) OutputDiffers(t *testing.T, expected, output any, sentence string) {
-	t.Error("Received output is different from expected one. "+
-		"Expected: ", expected, "actual: ", output,
-		"\nIn sentence:\""+sentence+"\"")
-	t.Fail()
-}
-
-func (p parserError) PointerPosDiffers(t *testing.T, expected, actual uint32, sentence string) {
-	t.Error("TokenSource pointer position is different than",
-		"expected. Expected: ", expected, " actual: ", actual,
-		"\nIn sentence:\""+sentence+"\"")
-	t.Fail()
-}
-
-func (p parserError) ParserReturnedErr(t *testing.T, err error, sentence string) {
-	t.Error("Parser returned unexpected error: ", err, " while parsing following sentence:\n\"", sentence, "\n")
-	t.Fail()
-}
-
-func (p parserError) UncommittedCheckpoint(t *testing.T, sentence string) {
-	t.Error("Parser left uncommitted checkpoint parsing following sentence:\n\"", sentence, "\"")
-	t.Fail()
-}

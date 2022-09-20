@@ -6,6 +6,7 @@ import (
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/backend/internal/parser/pnode"
+	"fmt"
 )
 
 var InsertValues = insertValues{}
@@ -67,12 +68,16 @@ func (i insertValues) parseRow(source internal.TokenSource, v validator.Validato
 	if v.CurrentIs(token.OpeningParenthesis) != nil {
 		return
 	} else {
-		_ = v.SkipOptFromNext(token.SpaceBreak)
+		_ = v.SkipSpaceFromNext()
 	}
 
 	rowNode := pnode.NewInsertingRow()
-	if rowNode.AddValue(source.Next(), source) != nil {
-		return
+	if !rowNode.AddValue(source.Next()) {
+		return pnode.InsertingRow{}, sqlerr.NewSyntaxError(
+			"value that can be used as column value",
+			fmt.Sprintf("got %s", token.ToString(source.Current().Code())),
+			source,
+		)
 	}
 
 	for {
@@ -81,6 +86,7 @@ func (i insertValues) parseRow(source internal.TokenSource, v validator.Validato
 			TypeMax(token.SpaceBreak, 2).
 			SkipFromNext() != nil {
 
+			_ = v.SkipSpaceFromNext()
 			nextTk := source.Next()
 			if nextTk.Code() != token.ClosingParenthesis {
 				return rowNode, sqlerr.NewSyntaxError(")", token.ToString(nextTk.Code()), source)
@@ -88,8 +94,12 @@ func (i insertValues) parseRow(source internal.TokenSource, v validator.Validato
 
 			return rowNode, nil
 
-		} else if rowNode.AddValue(source.Next(), source) != nil {
-			return pnode.InsertingRow{}, err
+		} else if !rowNode.AddValue(source.Next()) {
+			return pnode.InsertingRow{}, sqlerr.NewSyntaxError(
+				"value that can be used as column value",
+				fmt.Sprintf("got %s", token.ToString(source.Current().Code())),
+				source,
+			)
 		}
 	}
 }

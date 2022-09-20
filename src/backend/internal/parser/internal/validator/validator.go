@@ -174,11 +174,10 @@ func (v *validator) SkipOptFromCurrent(code token.Code) error {
 	return nil
 }
 
-func (v *validator) SkipOptFromNext(code token.Code) error {
-	if v.source.Next().Code() == code {
-		v.source.Next()
-	} else {
+func (v *validator) SkipSpaceFromNext() error {
+	if v.source.Next().Code() != token.SpaceBreak {
 		v.source.Prev()
 	}
+
 	return nil
 }
