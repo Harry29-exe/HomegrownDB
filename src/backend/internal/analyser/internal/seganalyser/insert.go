@@ -8,9 +8,11 @@ import (
 	"HomegrownDB/dbsystem/schema/column"
 )
 
-type Insert struct{}
+var Insert = insert{}
 
-func (i Insert) Analyse(
+type insert struct{}
+
+func (i insert) Analyse(
 	node pnode.InsertNode,
 	ctx *internal.AnalyserCtx,
 ) (anode.Insert, error) {
@@ -34,7 +36,7 @@ func (i Insert) Analyse(
 	panic("Not implemented")
 }
 
-func (i Insert) analyseColumns(
+func (i insert) analyseColumns(
 	node pnode.InsertNode,
 	insertNode anode.Insert,
 ) (ColumnTypesPattern, error) {
