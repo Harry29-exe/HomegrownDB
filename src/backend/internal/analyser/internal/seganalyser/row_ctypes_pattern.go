@@ -19,7 +19,7 @@ type ColumnTypesPattern struct {
 	Types []column.Type
 }
 
-func (p ColumnTypesPattern) RowMatches(node pnode.InsertingRow) bool {
+func (p ColumnTypesPattern) RowMatches(node pnode.InsertingRow) error {
 	if len(p.Types) != len(node.Values) {
 		return false
 	}

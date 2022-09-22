@@ -6,6 +6,8 @@ type Ctx interface {
 	TxId() Id
 	CommandExecuted() uint16
 	IncrementCommandCounter()
+
+	CurrentQuery() *QueryCtx
 }
 
 func NewContext(txId Id) Ctx {
@@ -35,4 +37,9 @@ func (c *context) IncrementCommandCounter() {
 
 func (c *context) QueryWillAccessTable() {
 
+}
+
+func (c *context) CurrentQuery() *QueryCtx {
+	//TODO implement me
+	panic("implement me")
 }

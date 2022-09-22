@@ -10,7 +10,7 @@ type InsertRows struct{}
 func (receiver InsertRows) Analyse(
 	rows []pnode.InsertingRow,
 	pattern ColumnTypesPattern,
-) (anode.Values, error) {
+) (anode.InsertRows, error) {
 	for _, row := range rows {
 		if !pattern.RowMatches(row) {
 			//return anode.Values{}, queryerr.ColumnNotExist()

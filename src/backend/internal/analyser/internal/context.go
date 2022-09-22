@@ -17,6 +17,10 @@ func NewAnalyserCtx(txCtx tx.Ctx, tables stores.RTablesDefs) *AnalyserCtx {
 	}
 }
 
+var (
+	_ stores.RTablesDefs = (*AnalyserCtx)(nil)
+)
+
 type AnalyserCtx struct {
 	tableStore stores.RTablesDefs
 	txCtx      tx.Ctx
@@ -32,7 +36,3 @@ func (c *AnalyserCtx) Table(id table.Id) table.Definition {
 	//TODO implement me
 	panic("implement me")
 }
-
-var (
-	_ stores.RTablesDefs = (*AnalyserCtx)(nil)
-)

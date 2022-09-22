@@ -5,6 +5,7 @@ import (
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/internal/parser/pnode"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -141,6 +142,14 @@ func (t *testTokenSource) CurrentTokenIndex() uint32 {
 
 func (t *testTokenSource) History() []token.Token {
 	return t.TokenCache[0 : t.Pointer+1]
+}
+
+func (t *testTokenSource) Reconstruct(startToken, endToken uint32) string {
+	strBuilder := strings.Builder{}
+	for i := startToken; i < endToken; i++ {
+		strBuilder.WriteString(t.TokenCache[i].Value())
+	}
+	return strBuilder.String()
 }
 
 func (t *testTokenSource) Checkpoint() {

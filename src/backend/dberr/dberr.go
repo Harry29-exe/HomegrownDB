@@ -3,6 +3,7 @@ package dberr
 type DBError interface {
 	error
 	Area() Area
+	MsgCanBeReturnedToClient() bool
 }
 
 type Area = uint8

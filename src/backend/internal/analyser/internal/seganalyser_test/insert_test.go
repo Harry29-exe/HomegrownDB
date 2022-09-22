@@ -21,7 +21,7 @@ func TestInsertSimpleQuery(t *testing.T) {
 
 	query := fmt.Sprintf("INSERT INTO %s (%s, %s, %s) VALUES (2, 3, 4), (5, 6, 7)",
 		tutils.Table1Name, tutils.Table1AwesomeKey, tutils.Table1NonNullColl, tutils.Table1NullableCol)
-	parserTree, err := parser.Parse(query)
+	parserTree, err := parser.Parse(query, txCtx)
 	if err != nil {
 		t.Error(err)
 	}
