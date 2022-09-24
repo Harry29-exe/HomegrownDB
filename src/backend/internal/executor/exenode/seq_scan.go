@@ -7,7 +7,6 @@ import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/dbsystem/stores"
 )
 
 func NewSeqScan(table table.Definition, tableDataIO access.TableDataIO, buffer buffer.DBSharedBuffer) *SeqScan {
@@ -127,5 +126,5 @@ type seqScanBuilder struct{}
 
 func (ssb seqScanBuilder) Build(node plan.Node) ExeNode {
 	seqScanNode := node.(plan.SeqScan)
-	return NewSeqScan(stores.DBTables.Table(seqScanNode.Table), stores.DBTables.TableIO(seqScanNode.Table), buffer.SharedBuffer)
+	return NewSeqScan(table.DBTables.Table(seqScanNode.Table), table.DBTables.TableIO(seqScanNode.Table), buffer.SharedBuffer)
 }

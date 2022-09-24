@@ -2,11 +2,10 @@ package internal
 
 import (
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/dbsystem/stores"
 	"HomegrownDB/dbsystem/tx"
 )
 
-func NewAnalyserCtx(txCtx tx.Ctx, tables stores.RTablesDefs) *AnalyserCtx {
+func NewAnalyserCtx(txCtx tx.Ctx, tables table.RDefsStore) *AnalyserCtx {
 	return &AnalyserCtx{
 		tableStore: tables,
 		txCtx:      txCtx,
@@ -18,11 +17,11 @@ func NewAnalyserCtx(txCtx tx.Ctx, tables stores.RTablesDefs) *AnalyserCtx {
 }
 
 var (
-	_ stores.RTablesDefs = (*AnalyserCtx)(nil)
+	_ table.RDefsStore = (*AnalyserCtx)(nil)
 )
 
 type AnalyserCtx struct {
-	tableStore stores.RTablesDefs
+	tableStore table.RDefsStore
 	txCtx      tx.Ctx
 	tablesCtx
 }

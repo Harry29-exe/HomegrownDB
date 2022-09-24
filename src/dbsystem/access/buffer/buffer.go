@@ -3,13 +3,12 @@ package buffer
 import (
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/dbsystem/stores"
 )
 
 var SharedBuffer DBSharedBuffer
 
 func init() {
-	SharedBuffer = NewSharedBuffer(10_000, stores.DBTables)
+	SharedBuffer = NewSharedBuffer(10_000, table.DBTables)
 }
 
 //todo change methods to operate on ArrayIndexes

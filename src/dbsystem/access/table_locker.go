@@ -1,4 +1,4 @@
-package internal
+package access
 
 import (
 	"HomegrownDB/dbsystem/schema/table"

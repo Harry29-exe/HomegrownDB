@@ -1,7 +1,7 @@
-package stores
+package table
 
 var DBTables *TablesStore
 
 func init() {
-	//todo init Tables variable
+	//todo init Store variable
 }

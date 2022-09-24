@@ -2,7 +2,6 @@ package querry
 
 import (
 	"HomegrownDB/backend"
-	"HomegrownDB/dbsystem/stores"
 	"HomegrownDB/dbsystem/tx"
 	"io"
 	"strings"
@@ -22,9 +21,9 @@ type DBResponse struct {
 func (r *DBRequest) Handle() *DBResponse {
 	var txCtx tx.Ctx
 	if r.txId == 0 {
-		txCtx = stores.DBTxStore.NewCtx()
+		txCtx = tx.DBTxStore.NewCtx()
 	} else {
-		txCtx = stores.DBTxStore.GetCtx(r.txId)
+		txCtx = tx.DBTxStore.GetCtx(r.txId)
 	}
 
 	buff, err := backend.HandleQuery(r.query, txCtx)

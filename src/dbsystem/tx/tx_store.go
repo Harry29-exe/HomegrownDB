@@ -1,7 +1,6 @@
-package stores
+package tx
 
 import (
-	"HomegrownDB/dbsystem/tx"
 	"sync"
 )
 
@@ -9,30 +8,30 @@ var DBTxStore TxStore //todo init
 
 // TxStore todo finish
 type TxStore interface {
-	GetCtx(id tx.Id) tx.Ctx
-	NewCtx() tx.Ctx
-	FinishTx(id tx.Id)
+	GetCtx(id Id) Ctx
+	NewCtx() Ctx
+	FinishTx(id Id)
 }
 type txStore struct {
 	txStoreLock sync.RWMutex
-	ctxMap      map[tx.Id]tx.Ctx
-	nextTxId    tx.Id
+	ctxMap      map[Id]Ctx
+	nextTxId    Id
 }
 
-func (t *txStore) GetCtx(id tx.Id) tx.Ctx {
+func (t *txStore) GetCtx(id Id) Ctx {
 	t.txStoreLock.RLock()
 	defer t.txStoreLock.Unlock()
 	return t.ctxMap[id]
 }
 
-func (t *txStore) NewCtx() tx.Ctx {
+func (t *txStore) NewCtx() Ctx {
 
 	//ctx := tx.NewContext()
 	//todo implement me
 	panic("Not implemented")
 }
 
-func (t *txStore) FinishTx(id tx.Id) {
+func (t *txStore) FinishTx(id Id) {
 	//TODO implement me
 	panic("implement me")
 }

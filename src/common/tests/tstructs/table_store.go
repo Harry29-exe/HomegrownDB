@@ -5,12 +5,11 @@ import (
 	"HomegrownDB/common/errors"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/dbsystem/stores"
 	"fmt"
 	"sync"
 )
 
-func NewTestTableStore(definitions []TestTable, tablesIOs []access.TableDataIO) stores.Tables {
+func NewTestTableStore(definitions []TestTable, tablesIOs []access.TableDataIO) table.Store {
 	definitionsMap := map[table.Id]TestTable{}
 	tableIOs := map[table.Id]access.TableDataIO{}
 	nameTableMap := map[string]table.Id{}
@@ -35,7 +34,7 @@ func NewTestTableStore(definitions []TestTable, tablesIOs []access.TableDataIO) 
 	}
 }
 
-func NewTestTableStoreWithInMemoryIO(definitions ...TestTable) stores.Tables {
+func NewTestTableStoreWithInMemoryIO(definitions ...TestTable) table.Store {
 	definitionsMap := map[table.Id]TestTable{}
 	tableIOs := map[table.Id]access.TableDataIO{}
 	nameTableMap := map[string]table.Id{}

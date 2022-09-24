@@ -2,7 +2,7 @@ package buffer
 
 import (
 	"HomegrownDB/dbsystem/bdata"
-	"HomegrownDB/dbsystem/stores"
+	"HomegrownDB/dbsystem/schema/table"
 	"sync"
 )
 
@@ -10,7 +10,7 @@ import (
 // is saved in SharedBuffer, in this way bufferMapLock will be lock for shorter time
 // see sharedBuffer.loadPage
 
-func NewSharedBuffer(bufferSize uint, tableStore stores.Tables) *sharedBuffer {
+func NewSharedBuffer(bufferSize uint, tableStore table.Store) *sharedBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 	for i := uint(0); i < bufferSize; i++ {
 		descriptorArray[i] = pageDescriptor{
@@ -47,7 +47,7 @@ type sharedBuffer struct {
 
 	pageBufferArray []byte
 
-	tableStore stores.Tables
+	tableStore table.Store
 }
 
 func (b *sharedBuffer) RPage(tag bdata.PageTag) (bdata.RPage, error) {

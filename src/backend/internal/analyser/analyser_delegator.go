@@ -5,12 +5,12 @@ import (
 	"HomegrownDB/backend/internal/analyser/internal/seganalyser"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/parser/pnode"
-	"HomegrownDB/dbsystem/stores"
+	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
 )
 
-func Analyse(tree parser.Tree, txCtx tx.Ctx, tableStore stores.RTablesDefs) (Tree, error) {
+func Analyse(tree parser.Tree, txCtx tx.Ctx, tableStore table.RDefsStore) (Tree, error) {
 	ctx := internal.NewAnalyserCtx(txCtx, tableStore)
 	root, rootNodeType, err := delegateAnalyse(tree, ctx)
 	if err != nil {
