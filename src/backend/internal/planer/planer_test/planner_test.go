@@ -17,7 +17,7 @@ func TestBasicSelectParse(t *testing.T) {
 	}
 
 	assert.Eq(parser.Select, tree.RootType, t)
-	root, ok := tree.Root.(*pnode.Select)
+	root, ok := tree.Root.(pnode.Select)
 	assert.Eq(ok, true, t)
 
 	fields := root.Fields

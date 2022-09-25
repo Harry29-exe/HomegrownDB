@@ -12,39 +12,42 @@ var Select = _select{}
 
 type _select struct{}
 
-func (s _select) Parse(source internal.TokenSource) (*pnode.Select, error) {
+func (s _select) Parse(source internal.TokenSource, v validator.Validator) (pnode.Select, error) {
 	source.Checkpoint()
-	v := validator.NewValidator(source)
 
 	// Select
+	selectNode := pnode.NewSelect()
 	err := v.CurrentIsAnd(token.Select).
 		NextIs(token.SpaceBreak)
 	if err != nil {
-		return nil, err
+		source.Rollback()
+		return selectNode, err
 	}
-	selectNode := pnode.NewSelect()
 
 	// Fields
 	source.Next()
 	err = s.parseFields(&selectNode, source, v)
 	if err != nil {
-		return nil, err
+		source.Rollback()
+		return selectNode, err
 	}
 
 	// From
 	err = v.NextSequence(token.SpaceBreak, token.From, token.SpaceBreak, token.Identifier)
 	if err != nil {
-		return nil, err
+		source.Rollback()
+		return selectNode, err
 	}
 
 	// Tables
 	err = s.parseTables(&selectNode, source, v)
 	if err != nil {
-		return nil, err
+		source.Rollback()
+		return selectNode, err
 	}
 
-	source.Commit()
-	return &selectNode, nil
+	source.CommitAndInitNode(&selectNode.Node)
+	return selectNode, nil
 }
 
 func (s _select) parseFields(

@@ -39,7 +39,7 @@ func (c *QueryCtx) NextQTableId(tableId table.Id) (id QTableId) {
 	id = c.nextQTableId
 	c.qTableIdTableIdMap = append(c.qTableIdTableIdMap, tableId)
 	c.nextQTableId++
-	if int(id) != len(c.qTableIdTableIdMap) {
+	if int(c.nextQTableId) != len(c.qTableIdTableIdMap) {
 		panic("illegal state")
 	}
 

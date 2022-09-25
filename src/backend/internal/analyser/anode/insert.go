@@ -5,5 +5,5 @@ import "HomegrownDB/dbsystem/schema/column"
 type Insert struct {
 	Table   Table
 	Columns []column.OrderId
-	Values  Values
+	Rows    *InsertRows
 }

@@ -21,7 +21,7 @@ type ColumnTypesPattern struct {
 	Types []column.Type
 }
 
-func (p ColumnTypesPattern) RowMatches(node pnode.InsertingRow, ctx tx.Ctx) error {
+func (p ColumnTypesPattern) RowMatches(node pnode.InsertingRow, ctx *tx.Ctx) error {
 	if len(p.Types) != len(node.Values) {
 		return queryerr.NewPatternMatchLenError(len(p.Types), len(node.Values),
 			ctx.CurrentQuery.Reconstruct(node.NodeStartTokenIndex, node.NodeEndTokenIndex))

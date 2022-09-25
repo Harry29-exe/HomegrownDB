@@ -1,30 +1,29 @@
-package access
+package tx
 
 import (
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/dbsystem/tx"
 	"sync"
 )
 
 type TableLocker interface {
 	Id() table.Id
-	RLock(ctx tx.Ctx)
-	RUnlock(ctx tx.Ctx)
-	WLock(ctx tx.Ctx)
-	WUnlock(ctx tx.Ctx)
+	RLock(ctx Ctx)
+	RUnlock(ctx Ctx)
+	WLock(ctx Ctx)
+	WUnlock(ctx Ctx)
 }
 
 func NewTableLocker(tableId table.Id) TableLocker {
 	return &tableLocker{
 		id:                tableId,
 		structLocker:      &sync.Mutex{},
-		rLocksTxIds:       map[tx.Id]bool{},
+		rLocksTxIds:       map[Id]bool{},
 		rLocksStartSignal: make(chan bool),
 		rLocksInProgress:  0,
-		waitingWLocks:     make([]tx.Id, 0, 5),
+		waitingWLocks:     make([]Id, 0, 5),
 		wLockInProgress:   false,
 		wLockInProgressId: 0,
-		wLockStartSignal:  make(chan tx.Id),
+		wLockStartSignal:  make(chan Id),
 	}
 }
 
@@ -32,21 +31,21 @@ type tableLocker struct {
 	id           table.Id
 	structLocker sync.Locker
 
-	rLocksTxIds       map[tx.Id]bool
+	rLocksTxIds       map[Id]bool
 	rLocksStartSignal chan bool
 	rLocksInProgress  uint
 
-	waitingWLocks     []tx.Id
+	waitingWLocks     []Id
 	wLockInProgress   bool
-	wLockInProgressId tx.Id
-	wLockStartSignal  chan tx.Id
+	wLockInProgressId Id
+	wLockStartSignal  chan Id
 }
 
 func (t *tableLocker) Id() table.Id {
 	return t.id
 }
 
-func (t *tableLocker) RLock(ctx tx.Ctx) {
+func (t *tableLocker) RLock(ctx Ctx) {
 	t.structLocker.Lock()
 	if len(t.waitingWLocks) == 0 && !t.wLockInProgress {
 		t.rLocksInProgress++
@@ -63,7 +62,7 @@ func (t *tableLocker) RLock(ctx tx.Ctx) {
 	return
 }
 
-func (t *tableLocker) RUnlock(ctx tx.Ctx) {
+func (t *tableLocker) RUnlock(ctx Ctx) {
 	t.structLocker.Lock()
 	t.rLocksInProgress--
 	delete(t.rLocksTxIds, ctx.Info.TxId())
@@ -73,7 +72,7 @@ func (t *tableLocker) RUnlock(ctx tx.Ctx) {
 	t.structLocker.Unlock()
 }
 
-func (t *tableLocker) WLock(ctx tx.Ctx) {
+func (t *tableLocker) WLock(ctx Ctx) {
 	t.structLocker.Lock()
 	if t.rLocksInProgress == 0 && !t.wLockInProgress {
 		t.wLockInProgress = true
@@ -92,7 +91,7 @@ func (t *tableLocker) WLock(ctx tx.Ctx) {
 	}
 }
 
-func (t *tableLocker) WUnlock(ctx tx.Ctx) {
+func (t *tableLocker) WUnlock(ctx Ctx) {
 	t.structLocker.Lock()
 	t.wLockInProgress = false
 
@@ -101,7 +100,7 @@ func (t *tableLocker) WUnlock(ctx tx.Ctx) {
 	t.structLocker.Unlock()
 }
 
-func (t *tableLocker) nextWLockTx() tx.Id {
+func (t *tableLocker) nextWLockTx() Id {
 	id := t.waitingWLocks[0]
 	length := len(t.waitingWLocks)
 	copy(t.waitingWLocks[:length-1], t.waitingWLocks[1:length])

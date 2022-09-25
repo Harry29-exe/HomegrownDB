@@ -34,8 +34,8 @@ func TestInsertSimpleQuery(t *testing.T) {
 
 	table := insertANode.Table
 	tableId := table.Def.TableId()
-	assert.Eq(table.Def.Name(), "users", t)
-	assert.Eq(table.Alias, "users", t)
+	assert.Eq(table.Def.Name(), table1.Name(), t)
+	assert.Eq(table.Alias, table1.Name(), t)
 	assert.Eq(tableId, table1.TableId(), t)
 
 	assert.Eq(len(insertANode.Columns), 3, t)

@@ -27,18 +27,23 @@ func (i insert) Analyse(
 		Alias:    node.Table.TableAlias,
 	}
 
-	_, err = i.analyseColumns(node, insertNode)
+	pattern, err := i.analyseColumns(node, &insertNode)
 	if err != nil {
 		return insertNode, err
 	}
 
-	//todo implement me
-	panic("Not implemented")
+	rows, err := InsertRows.Analyse(node.Rows, pattern, ctx)
+	if err != nil {
+		return anode.Insert{}, err
+	}
+
+	insertNode.Rows = rows
+	return insertNode, nil
 }
 
 func (i insert) analyseColumns(
 	node pnode.InsertNode,
-	insertNode anode.Insert,
+	insertNode *anode.Insert,
 ) (ColumnTypesPattern, error) {
 	tableDef := insertNode.Table.Def
 

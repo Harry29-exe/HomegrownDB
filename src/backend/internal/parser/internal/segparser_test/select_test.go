@@ -2,6 +2,7 @@ package parser_test
 
 import (
 	"HomegrownDB/backend/internal/parser/internal/segparser"
+	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/common/tests/assert"
 	"testing"
 )
@@ -18,7 +19,8 @@ func TestSelectParser_Parse_ShouldParse(t *testing.T) {
 
 	for _, sentence := range sentences {
 		source := newTestTokenSource(sentence)
-		selectNode, err := segparser.Select.Parse(source)
+		v := validator.NewValidator(source)
+		selectNode, err := segparser.Select.Parse(source, v)
 
 		if err != nil {
 			t.Error(err)

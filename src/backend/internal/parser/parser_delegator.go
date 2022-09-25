@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/backend/internal/parser/internal"
 	"HomegrownDB/backend/internal/parser/internal/segparser"
 	tk "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
+	"HomegrownDB/backend/internal/parser/internal/validator"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -34,13 +35,14 @@ func setTokenHistory(ctx *tx.Ctx, source internal.TokenSource) {
 }
 
 func delegate(source internal.TokenSource) (root any, rootType RootType, err error) {
+	v := validator.NewValidator(source)
 	switch source.Current().Code() {
 	case tk.Select:
 		rootType = Select
-		root, err = segparser.Select.Parse(source)
+		root, err = segparser.Select.Parse(source, v)
 	default:
-		//todo implement me
-		panic("Not implemented")
+		rootType = Insert
+		root, err = segparser.Insert.Parse(source, v)
 	}
 
 	return
