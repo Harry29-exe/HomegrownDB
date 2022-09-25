@@ -16,7 +16,7 @@ func NewInsertRows(rowCount uint, valuesPerRow uint16) *InsertRows {
 	return &InsertRows{
 		dataPtr:      make([]uint32, rowCount*uint(valuesPerRow)+1),
 		data:         make([]byte, 0, rowCount*uint(valuesPerRow)*8),
-		valuesPerRow: 0,
+		valuesPerRow: uint32(valuesPerRow),
 		valuesPut:    0,
 	}
 }
