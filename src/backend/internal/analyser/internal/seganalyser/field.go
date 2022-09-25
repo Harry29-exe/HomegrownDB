@@ -2,8 +2,8 @@ package seganalyser
 
 import (
 	"HomegrownDB/backend/internal/analyser/anode"
-	"HomegrownDB/backend/internal/analyser/internal"
 	"HomegrownDB/backend/internal/parser/pnode"
+	"HomegrownDB/dbsystem/tx"
 	"errors"
 )
 
@@ -11,7 +11,7 @@ var Fields = fields{}
 
 type fields struct{}
 
-func (f fields) Analyse(fieldNodes []pnode.FieldNode, tables anode.Tables, ctx *internal.AnalyserCtx) (anode.SelectFields, error) {
+func (f fields) Analyse(fieldNodes []pnode.FieldNode, tables anode.Tables, ctx *tx.Ctx) (anode.SelectFields, error) {
 	fieldsCount := len(fieldNodes)
 	fieldsNode := anode.SelectFields{Fields: make([]anode.SelectField, fieldsCount)}
 

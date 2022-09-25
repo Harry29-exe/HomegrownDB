@@ -2,16 +2,16 @@ package seganalyser
 
 import (
 	"HomegrownDB/backend/internal/analyser/anode"
-	"HomegrownDB/backend/internal/analyser/internal"
 	"HomegrownDB/backend/internal/parser/pnode"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/tx"
 )
 
 var Tables = tables{}
 
 type tables struct{}
 
-func (t tables) Analise(node []pnode.TableNode, ctx *internal.AnalyserCtx) (anode.Tables, error) {
+func (t tables) Analise(node []pnode.TableNode, ctx *tx.Ctx) (anode.Tables, error) {
 	tablesCount := len(node)
 	qTables := make([]anode.Table, tablesCount)
 
@@ -26,7 +26,7 @@ func (t tables) Analise(node []pnode.TableNode, ctx *internal.AnalyserCtx) (anod
 		qTables[i] = anode.Table{
 			Def:      tableDef,
 			Alias:    node[i].TableAlias,
-			QTableId: ctx.NextQTableId(tableDef.TableId()),
+			QTableId: ctx.CurrentQuery.NextQTableId(tableDef.TableId()),
 		}
 	}
 

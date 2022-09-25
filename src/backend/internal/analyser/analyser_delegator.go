@@ -1,7 +1,6 @@
 package analyser
 
 import (
-	"HomegrownDB/backend/internal/analyser/internal"
 	"HomegrownDB/backend/internal/analyser/internal/seganalyser"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/parser/pnode"
@@ -10,9 +9,8 @@ import (
 	"fmt"
 )
 
-func Analyse(tree parser.Tree, txCtx tx.Ctx, tableStore table.RDefsStore) (Tree, error) {
-	ctx := internal.NewAnalyserCtx(txCtx, tableStore)
-	root, rootNodeType, err := delegateAnalyse(tree, ctx)
+func Analyse(tree parser.Tree, txCtx *tx.Ctx, tableStore table.RDefsStore) (Tree, error) {
+	root, rootNodeType, err := delegateAnalyse(tree, txCtx)
 	if err != nil {
 		return Tree{}, err
 	}
@@ -23,7 +21,7 @@ func Analyse(tree parser.Tree, txCtx tx.Ctx, tableStore table.RDefsStore) (Tree,
 	}, nil
 }
 
-func delegateAnalyse(tree parser.Tree, ctx *internal.AnalyserCtx) (root any, rootType rootType, err error) {
+func delegateAnalyse(tree parser.Tree, ctx *tx.Ctx) (root any, rootType rootType, err error) {
 	switch tree.RootType {
 	case parser.Select:
 		rootType = RootTypeSelect

@@ -16,7 +16,7 @@ func TestNewRow(t *testing.T) {
 		tutils.Table1.AwesomeKey:  24,
 		tutils.Table1.NullableCol: nil,
 		tutils.Table1.NonNullColl: 43,
-	}, tx.NewContext(29))
+	}, tx.NewInfoCtx(29))
 	if err != nil {
 		panic(err.Error())
 	}

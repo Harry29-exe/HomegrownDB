@@ -1,6 +1,7 @@
 package buffer
 
 import (
+	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/schema/table"
 )
@@ -8,7 +9,7 @@ import (
 var SharedBuffer DBSharedBuffer
 
 func init() {
-	SharedBuffer = NewSharedBuffer(10_000, table.DBTables)
+	SharedBuffer = NewSharedBuffer(10_000, table.DBTableStore, access.DBTableIOStore)
 }
 
 //todo change methods to operate on ArrayIndexes

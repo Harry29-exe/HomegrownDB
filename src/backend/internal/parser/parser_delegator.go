@@ -7,7 +7,7 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-func Parse(query string, ctx tx.Ctx) (Tree, error) {
+func Parse(query string, ctx *tx.Ctx) (Tree, error) {
 	tokenSrc := internal.NewTokenSource(query)
 
 	root, rootType, err := delegate(tokenSrc)
@@ -23,14 +23,14 @@ func Parse(query string, ctx tx.Ctx) (Tree, error) {
 		nil
 }
 
-func setTokenHistory(ctx tx.Ctx, source internal.TokenSource) {
+func setTokenHistory(ctx *tx.Ctx, source internal.TokenSource) {
 	tokens := source.History()
 	values := make([]string, len(tokens))
 	for i := 0; i < len(tokens); i++ {
 		values[i] = tokens[i].Value()
 	}
 
-	ctx.CurrentQuery().QueryTokens = values
+	ctx.CurrentQuery.QueryTokens = values
 }
 
 func delegate(source internal.TokenSource) (root any, rootType RootType, err error) {

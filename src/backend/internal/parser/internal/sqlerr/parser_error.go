@@ -39,8 +39,8 @@ type syntaxError struct {
 	currentQuery string
 }
 
-func (t tokenizerError) Error() string {
-	return t.msg
+func (s *syntaxError) MsgCanBeReturnedToClient() bool {
+	return true
 }
 
 func (s *syntaxError) Area() dberr.Area {
@@ -48,7 +48,7 @@ func (s *syntaxError) Area() dberr.Area {
 }
 
 func NewSyntaxTextError(reason string, source internal.TokenSource) dberr.DBError {
-	return &syntaxTextError{
+	return syntaxTextError{
 		reason:       reason,
 		currentQuery: recreateQuery(source),
 	}
@@ -59,12 +59,16 @@ type syntaxTextError struct {
 	currentQuery string
 }
 
-func (s *syntaxTextError) Error() string {
+func (s syntaxTextError) Error() string {
 	return s.currentQuery + " <- " + s.reason
 }
 
-func (s *syntaxTextError) Area() dberr.Area {
+func (s syntaxTextError) Area() dberr.Area {
 	return dberr.Parser
+}
+
+func (s syntaxTextError) MsgCanBeReturnedToClient() bool {
+	return true
 }
 
 func recreateQuery(source internal.TokenSource) string {

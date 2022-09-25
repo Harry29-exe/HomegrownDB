@@ -15,13 +15,14 @@ import (
 func TestSharedBuffer_Overflow(t *testing.T) {
 	table1 := tutils.TestTables.Table1Def()
 	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
-	table1IO := tableStore.TableIO(table1.TableId())
+	ioStore := tstructs.NewInMemTableIO(table1)
+	table1IO := ioStore.TableIO(table1.TableId())
 
 	rand := random.NewRandom(0)
 	table1.FillPages(1_000, table1IO, rand)
 
 	buf := make([]byte, bdata.PageSize)
-	testBuffer := buffer.NewSharedBuffer(100, tableStore)
+	testBuffer := buffer.NewSharedBuffer(100, tableStore, ioStore)
 	for i := bdata.PageId(0); i < 1_000; i++ {
 		tag := bdata.NewPageTag(i, table1)
 		page, err := testBuffer.WPage(tag)
@@ -42,12 +43,13 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 func TestSharedBuffer_ParallelRead(t *testing.T) {
 	table1 := tutils.TestTables.Table1Def()
 	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
-	table1IO := tableStore.TableIO(table1.TableId())
+	ioStore := tstructs.NewInMemTableIO(table1)
+	table1IO := ioStore.TableIO(table1.TableId())
 
 	rand := random.NewRandom(0)
 	table1.FillPages(10, table1IO, rand)
 
-	testBuffer := buffer.NewSharedBuffer(10, tableStore)
+	testBuffer := buffer.NewSharedBuffer(10, tableStore, ioStore)
 
 	tCount := 4
 	waitGroup1 := sync.WaitGroup{}
@@ -73,12 +75,13 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 func TestSharedBuffer_RWLock(t *testing.T) {
 	table1 := tutils.TestTables.Table1Def()
 	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
-	table1IO := tableStore.TableIO(table1.TableId())
+	ioStore := tstructs.NewInMemTableIO(table1)
+	table1IO := ioStore.TableIO(table1.TableId())
 
 	rand := random.NewRandom(0)
 	table1.FillPages(10, table1IO, rand)
 
-	testBuffer := buffer.NewSharedBuffer(10, tableStore)
+	testBuffer := buffer.NewSharedBuffer(10, tableStore, ioStore)
 
 	tag := bdata.NewPageTag(0, table1)
 	_, err := testBuffer.WPage(tag)
@@ -120,12 +123,13 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 func TestSharedBuffer_2xWLock(t *testing.T) {
 	table1 := tutils.TestTables.Table1Def()
 	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
-	table1IO := tableStore.TableIO(table1.TableId())
+	ioStore := tstructs.NewInMemTableIO(table1)
+	table1IO := ioStore.TableIO(table1.TableId())
 
 	rand := random.NewRandom(0)
 	table1.FillPages(10, table1IO, rand)
 
-	testBuffer := buffer.NewSharedBuffer(10, tableStore)
+	testBuffer := buffer.NewSharedBuffer(10, tableStore, ioStore)
 
 	tag := bdata.NewPageTag(0, table1)
 	_, err := testBuffer.WPage(tag)

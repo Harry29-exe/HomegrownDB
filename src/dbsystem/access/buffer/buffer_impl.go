@@ -1,6 +1,7 @@
 package buffer
 
 import (
+	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/schema/table"
 	"sync"
@@ -10,7 +11,7 @@ import (
 // is saved in SharedBuffer, in this way bufferMapLock will be lock for shorter time
 // see sharedBuffer.loadPage
 
-func NewSharedBuffer(bufferSize uint, tableStore table.Store) *sharedBuffer {
+func NewSharedBuffer(bufferSize uint, tableStore table.Store, tableIO access.TableIOStore) DBSharedBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 	for i := uint(0); i < bufferSize; i++ {
 		descriptorArray[i] = pageDescriptor{
@@ -34,7 +35,8 @@ func NewSharedBuffer(bufferSize uint, tableStore table.Store) *sharedBuffer {
 
 		pageBufferArray: make([]byte, bufferSize*uint(bdata.PageSize)),
 
-		tableStore: tableStore,
+		tableStore:   tableStore,
+		tableIOStore: tableIO,
 	}
 }
 
@@ -47,7 +49,8 @@ type sharedBuffer struct {
 
 	pageBufferArray []byte
 
-	tableStore table.Store
+	tableStore   table.Store
+	tableIOStore access.TableIOStore
 }
 
 func (b *sharedBuffer) RPage(tag bdata.PageTag) (bdata.RPage, error) {
@@ -161,7 +164,7 @@ func (b *sharedBuffer) loadPage(tag bdata.PageTag) (ArrayIndex, error) {
 		//todo check if ioLock should not be locked here
 		b.bufferMapLock.Unlock()
 
-		err := b.tableStore.TableIO(tag.TableId).ReadPage(tag.PageId, arraySlot)
+		err := b.tableIOStore.TableIO(tag.TableId).ReadPage(tag.PageId, arraySlot)
 		if err != nil {
 			return handleFailedTableIO(tag, victimIndex, err)
 		}
@@ -182,7 +185,7 @@ func (b *sharedBuffer) flushPage(descriptor *pageDescriptor, pageData []byte) er
 		descriptor.unpin()
 	}()
 
-	err := b.tableStore.TableIO(descriptorTag.TableId).FlushPage(descriptorTag.PageId, pageData)
+	err := b.tableIOStore.TableIO(descriptorTag.TableId).FlushPage(descriptorTag.PageId, pageData)
 	if err != nil {
 		return err
 	}

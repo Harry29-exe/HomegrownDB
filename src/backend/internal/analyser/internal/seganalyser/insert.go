@@ -2,10 +2,10 @@ package seganalyser
 
 import (
 	"HomegrownDB/backend/internal/analyser/anode"
-	"HomegrownDB/backend/internal/analyser/internal"
 	"HomegrownDB/backend/internal/analyser/internal/queryerr"
 	"HomegrownDB/backend/internal/parser/pnode"
 	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/tx"
 )
 
 var Insert = insert{}
@@ -14,7 +14,7 @@ type insert struct{}
 
 func (i insert) Analyse(
 	node pnode.InsertNode,
-	ctx *internal.AnalyserCtx,
+	ctx *tx.Ctx,
 ) (anode.Insert, error) {
 	insertNode := anode.Insert{}
 	table, err := ctx.GetTable(node.Table.TableName)
@@ -23,7 +23,7 @@ func (i insert) Analyse(
 	}
 	insertNode.Table = anode.Table{
 		Def:      table,
-		QTableId: ctx.NextQTableId(table.TableId()),
+		QTableId: ctx.CurrentQuery.NextQTableId(table.TableId()),
 		Alias:    node.Table.TableAlias,
 	}
 

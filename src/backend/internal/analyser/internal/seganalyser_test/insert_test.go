@@ -1,7 +1,6 @@
 package seganalyser_test
 
 import (
-	"HomegrownDB/backend/internal/analyser/internal"
 	"HomegrownDB/backend/internal/analyser/internal/seganalyser"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/parser/pnode"
@@ -17,7 +16,7 @@ func TestInsertSimpleQuery(t *testing.T) {
 	// given
 	table1 := tutils.TestTables.Table1Def()
 	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
-	txCtx := tx.NewContext(25)
+	txCtx := tx.NewContext(25, tableStore)
 
 	query := fmt.Sprintf("INSERT INTO %s (%s, %s, %s) VALUES (2, 3, 4), (5, 6, 7)",
 		tutils.Table1Name, tutils.Table1AwesomeKey, tutils.Table1NonNullColl, tutils.Table1NullableCol)
@@ -28,8 +27,7 @@ func TestInsertSimpleQuery(t *testing.T) {
 	insertPnode := parserTree.Root.(pnode.InsertNode)
 
 	// when
-	aCtx := internal.NewAnalyserCtx(txCtx, tableStore)
-	insertANode, err := seganalyser.Insert.Analyse(insertPnode, aCtx)
+	insertANode, err := seganalyser.Insert.Analyse(insertPnode, txCtx)
 	if err != nil {
 		t.Error(err)
 	}

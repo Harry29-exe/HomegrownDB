@@ -13,9 +13,9 @@ import (
 // CreateTuple creates new TupleToSave from given columnValues and transaction context,
 // Tuple inside is not initialized i.e. it does not have TID (tuple identifier) and ids of
 // objects stored outside tuple should be saved to Tuple
-func CreateTuple(tableDef table.Definition, columnValues map[string]any, txCtx tx.Ctx) (TupleToSave, error) {
+func CreateTuple(tableDef table.Definition, columnValues map[string]any, txInfo *tx.InfoCtx) (TupleToSave, error) {
 	builder := tupleBuilder{table: tableDef}
-	tuple, err := builder.Create(columnValues, txCtx)
+	tuple, err := builder.Create(columnValues, txInfo)
 	if err != nil {
 		return TupleToSave{}, err
 	}
@@ -37,7 +37,7 @@ type tupleBuilder struct {
 	bgValues []BgValueToSave
 }
 
-func (tb *tupleBuilder) Create(columnValues map[string]any, txContext tx.Ctx) (Tuple, error) {
+func (tb *tupleBuilder) Create(columnValues map[string]any, txInfo *tx.InfoCtx) (Tuple, error) {
 	tb.sortMapValues(columnValues)
 	tb.initTupleBuffer()
 	tb.createNullBitmap()
@@ -51,7 +51,7 @@ func (tb *tupleBuilder) Create(columnValues map[string]any, txContext tx.Ctx) (T
 		data:  tb.buffer.Bytes(),
 		table: tb.table,
 	}
-	tb.initTupleWithTxContext(tuple, txContext)
+	tb.initTupleWithTxContext(tuple, txInfo)
 
 	return tuple, nil
 }
@@ -134,7 +134,7 @@ func (tb *tupleBuilder) saveData(data column.DataToSave, col column.Definition) 
 	}
 }
 
-func (tb *tupleBuilder) initTupleWithTxContext(tuple Tuple, ctx tx.Ctx) {
-	tuple.SetCreatedByTx(ctx.TxId())
-	tuple.SetTxCommandCounter(ctx.CommandExecuted())
+func (tb *tupleBuilder) initTupleWithTxContext(tuple Tuple, txInfo *tx.InfoCtx) {
+	tuple.SetCreatedByTx(txInfo.TxId())
+	tuple.SetTxCommandCounter(txInfo.CommandExecuted())
 }

@@ -4,12 +4,14 @@ import (
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/parser/pnode"
 	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/dbsystem/tx"
 	"testing"
 )
 
 func TestBasicSelectParse(t *testing.T) {
 	query := "SELECT b.name, b.species FROM birds b"
-	tree, err := parser.Parse(query)
+	txCtx := tx.NewContext(24, nil)
+	tree, err := parser.Parse(query, txCtx)
 	if err != nil {
 		t.Errorf("Could not parse query becouse of error %s", err)
 	}

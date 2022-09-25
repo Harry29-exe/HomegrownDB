@@ -19,7 +19,7 @@ type DBResponse struct {
 }
 
 func (r *DBRequest) Handle() *DBResponse {
-	var txCtx tx.Ctx
+	var txCtx *tx.Ctx
 	if r.txId == 0 {
 		txCtx = tx.DBTxStore.NewCtx()
 	} else {

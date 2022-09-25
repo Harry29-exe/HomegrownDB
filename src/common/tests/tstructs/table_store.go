@@ -28,7 +28,6 @@ func NewTestTableStore(definitions []TestTable, tablesIOs []access.TableDataIO) 
 		storeLock:       &sync.RWMutex{},
 		nameTableMap:    nameTableMap,
 		definitions:     definitionsMap,
-		tableIOs:        tableIOs,
 		changeListeners: nil,
 		tableIdCounter:  appsync.NewIdResolver(maxId+1, nil),
 	}
@@ -53,7 +52,6 @@ func NewTestTableStoreWithInMemoryIO(definitions ...TestTable) table.Store {
 		storeLock:       &sync.RWMutex{},
 		nameTableMap:    nameTableMap,
 		definitions:     definitionsMap,
-		tableIOs:        tableIOs,
 		changeListeners: nil,
 		tableIdCounter:  appsync.NewIdResolver(maxId+1, nil),
 	}
@@ -64,130 +62,88 @@ type TestTablesStore struct {
 
 	nameTableMap map[string]table.Id
 	definitions  map[table.Id]TestTable
-	tableIOs     map[table.Id]access.TableDataIO
 
 	// store utils
 	changeListeners []func()
 	tableIdCounter  *appsync.IdResolver[table.Id]
 }
 
-func (t *TestTablesStore) GetTable(name string) (table.Definition, error) {
-	t.storeLock.RLock()
-	defer t.storeLock.RUnlock()
+func (i *TestTablesStore) GetTable(name string) (table.Definition, error) {
+	i.storeLock.RLock()
+	defer i.storeLock.RUnlock()
 
-	id, ok := t.nameTableMap[name]
+	id, ok := i.nameTableMap[name]
 	if ok {
-		return t.definitions[id], nil
+		return i.definitions[id], nil
 	}
 	return nil, fmt.Errorf("no table with name: %s", name)
 }
 
-func (t *TestTablesStore) Table(id table.Id) table.Definition {
-	t.storeLock.RLock()
-	defer t.storeLock.RUnlock()
+func (i *TestTablesStore) Table(id table.Id) table.Definition {
+	i.storeLock.RLock()
+	defer i.storeLock.RUnlock()
 
-	return t.definitions[id]
+	return i.definitions[id]
 }
 
-func (t *TestTablesStore) GetTestTable(name string) TestTable {
-	t.storeLock.RLock()
-	defer t.storeLock.RUnlock()
+func (i *TestTablesStore) GetTestTable(name string) TestTable {
+	i.storeLock.RLock()
+	defer i.storeLock.RUnlock()
 
-	id, ok := t.nameTableMap[name]
+	id, ok := i.nameTableMap[name]
 	if ok {
-		return t.definitions[id]
+		return i.definitions[id]
 	}
 	panic(fmt.Sprintf("no table with name: %s", name))
 }
 
-func (t *TestTablesStore) TestTable(id table.Id) TestTable {
-	t.storeLock.RLock()
-	defer t.storeLock.RUnlock()
+func (i *TestTablesStore) TestTable(id table.Id) TestTable {
+	i.storeLock.RLock()
+	defer i.storeLock.RUnlock()
 
-	testTable := t.definitions[id]
-	if t != nil {
+	testTable := i.definitions[id]
+	if i != nil {
 		return testTable
 	}
 	panic(fmt.Sprintf("no table with id: %d", id))
 }
 
-func (t *TestTablesStore) AllTables() []table.Definition {
-	t.storeLock.RLock()
-	defer t.storeLock.RUnlock()
+func (i *TestTablesStore) AllTables() []table.Definition {
+	i.storeLock.RLock()
+	defer i.storeLock.RUnlock()
 
-	length := len(t.definitions)
+	length := len(i.definitions)
 	array := make([]table.Definition, length)
-	for i, def := range t.definitions {
+	for i, def := range i.definitions {
 		array[i] = def
 	}
 	return array
 }
 
-func (t *TestTablesStore) AddTable(table table.WDefinition) error {
-	t.storeLock.Lock()
-	defer t.storeLock.Unlock()
+func (i *TestTablesStore) AddTable(table table.WDefinition) error {
+	i.storeLock.Lock()
+	defer i.storeLock.Unlock()
 
 	testTable := TestTable{table}
-	id := t.tableIdCounter.NextId()
+	id := i.tableIdCounter.NextId()
 	testTable.SetTableId(id)
-	t.nameTableMap[testTable.Name()] = id
-	t.definitions[id] = testTable
-	tableIO := NewInMemoryTableIO()
-	t.tableIOs[id] = tableIO
+	i.nameTableMap[testTable.Name()] = id
+	i.definitions[id] = testTable
 
 	return nil
 }
 
-func (t *TestTablesStore) RemoveTable(id table.Id) error {
-	t.storeLock.Lock()
-	defer t.storeLock.Unlock()
+func (i *TestTablesStore) RemoveTable(id table.Id) error {
+	i.storeLock.Lock()
+	defer i.storeLock.Unlock()
 
-	def, ok := t.definitions[id]
+	def, ok := i.definitions[id]
 	if !ok {
 		return errors.TableNotExist{}
 	}
 
-	delete(t.definitions, id)
-	delete(t.tableIOs, id)
-	delete(t.nameTableMap, def.Name())
+	delete(i.definitions, id)
+	delete(i.nameTableMap, def.Name())
 
 	return nil
-}
-
-func (t *TestTablesStore) GetTableIO(name string) (access.TableDataIO, error) {
-	t.storeLock.RLock()
-	defer t.storeLock.RUnlock()
-
-	id, ok := t.nameTableMap[name]
-	if ok {
-		return t.tableIOs[id], nil
-	}
-	return nil, fmt.Errorf("no table with name: %s", name)
-}
-
-func (t *TestTablesStore) TableIO(id table.Id) access.TableDataIO {
-	t.storeLock.RLock()
-	defer t.storeLock.RUnlock()
-
-	return t.tableIOs[id]
-}
-
-func (t *TestTablesStore) WLockTable(id table.Id) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (t *TestTablesStore) RLockTable(id table.Id) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (t *TestTablesStore) WUnlockTable(id table.Id) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (t *TestTablesStore) RUnlockTable(id table.Id) {
-	//TODO implement me
-	panic("implement me")
 }

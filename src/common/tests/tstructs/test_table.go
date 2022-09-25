@@ -55,7 +55,7 @@ func (t TestTable) RandTuple(rand random.Random) bdata.TupleToSave {
 		values[col.Name()] = t.randValueForColumnType(col.Type(), rand)
 	}
 
-	tuple, err := bdata.CreateTuple(t.WDefinition, values, tx.NewContext(rand.Int31()))
+	tuple, err := bdata.CreateTuple(t.WDefinition, values, tx.NewInfoCtx(rand.Int31()))
 	if err != nil {
 		panic(err.Error())
 	}

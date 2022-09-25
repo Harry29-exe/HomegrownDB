@@ -4,12 +4,17 @@ import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/ctypes"
+	"fmt"
+	"strconv"
 )
 
 type Value interface {
 	Node() Node
 	V() any
+	VasStr() string
 	Type() ValueType
+	TypeAsStr() string
+
 	IsAssignableTo(ctype column.Type) bool
 	ConvertTo(ctype column.Type) []byte
 }
@@ -41,8 +46,16 @@ func (i IntValue) V() any {
 	return i.v
 }
 
+func (i IntValue) VasStr() string {
+	return strconv.Itoa(i.v)
+}
+
 func (i IntValue) Type() ValueType {
 	return ValueTypeInt
+}
+
+func (i IntValue) TypeAsStr() string {
+	return "Int"
 }
 
 func (i IntValue) IsAssignableTo(ctype column.Type) bool {
@@ -75,8 +88,16 @@ func (i FloatValue) V() any {
 	return i.v
 }
 
+func (i FloatValue) VasStr() string {
+	return fmt.Sprintf("%f", i.v)
+}
+
 func (i FloatValue) Type() ValueType {
 	return ValueTypeFloat
+}
+
+func (i FloatValue) TypeAsStr() string {
+	return "Float"
 }
 
 func (i FloatValue) IsAssignableTo(ctype column.Type) bool {
@@ -107,8 +128,16 @@ func (i StrValue) V() any {
 	return i.v
 }
 
+func (i StrValue) VasStr() string {
+	return i.v
+}
+
 func (i StrValue) Type() ValueType {
 	return ValueTypeStr
+}
+
+func (i StrValue) TypeAsStr() string {
+	return "String"
 }
 
 func (i StrValue) IsAssignableTo(ctype column.Type) bool {

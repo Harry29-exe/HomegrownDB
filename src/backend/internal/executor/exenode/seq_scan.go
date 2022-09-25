@@ -126,5 +126,5 @@ type seqScanBuilder struct{}
 
 func (ssb seqScanBuilder) Build(node plan.Node) ExeNode {
 	seqScanNode := node.(plan.SeqScan)
-	return NewSeqScan(table.DBTables.Table(seqScanNode.Table), table.DBTables.TableIO(seqScanNode.Table), buffer.SharedBuffer)
+	return NewSeqScan(table.DBTableStore.Table(seqScanNode.Table), access.DBTableIOStore.TableIO(seqScanNode.Table), buffer.SharedBuffer)
 }

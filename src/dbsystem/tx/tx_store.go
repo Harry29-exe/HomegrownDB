@@ -8,23 +8,23 @@ var DBTxStore TxStore //todo init
 
 // TxStore todo finish
 type TxStore interface {
-	GetCtx(id Id) Ctx
-	NewCtx() Ctx
+	GetCtx(id Id) *Ctx
+	NewCtx() *Ctx
 	FinishTx(id Id)
 }
 type txStore struct {
 	txStoreLock sync.RWMutex
-	ctxMap      map[Id]Ctx
+	ctxMap      map[Id]*Ctx
 	nextTxId    Id
 }
 
-func (t *txStore) GetCtx(id Id) Ctx {
+func (t *txStore) GetCtx(id Id) *Ctx {
 	t.txStoreLock.RLock()
 	defer t.txStoreLock.Unlock()
 	return t.ctxMap[id]
 }
 
-func (t *txStore) NewCtx() Ctx {
+func (t *txStore) NewCtx() *Ctx {
 
 	//ctx := tx.NewContext()
 	//todo implement me

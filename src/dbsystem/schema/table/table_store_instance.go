@@ -1,7 +1,8 @@
 package table
 
-var DBTables *TablesStore
+var DBTableStore *TableStore
 
 func init() {
+	DBTableStore = NewEmptyTableStore()
 	//todo init Store variable
 }

@@ -10,12 +10,12 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-func HandleQuery(query string, txCtx tx.Ctx) (qrow.RowBuffer, error) {
+func HandleQuery(query string, txCtx *tx.Ctx) (qrow.RowBuffer, error) {
 	parseTree, err := parser.Parse(query, txCtx)
 	if err != nil {
 		return nil, err
 	}
-	analyserTree, err := analyser.Analyse(parseTree, txCtx, table.DBTables)
+	analyserTree, err := analyser.Analyse(parseTree, txCtx, table.DBTableStore)
 	if err != nil {
 		return nil, err
 	}

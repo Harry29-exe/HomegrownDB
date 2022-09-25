@@ -13,6 +13,7 @@ type InsertNode struct {
 }
 
 type InsertingRow struct {
+	Node
 	Values []Value
 }
 

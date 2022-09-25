@@ -12,6 +12,14 @@ type tokenizerError struct {
 	msg string
 }
 
+func (t tokenizerError) Error() string {
+	return t.msg
+}
+
+func (t tokenizerError) MsgCanBeReturnedToClient() bool {
+	return true
+}
+
 func (t tokenizerError) Area() dberr.Area {
 	return dberr.Tokenizer
 }

@@ -7,20 +7,19 @@ import (
 	"sync"
 )
 
-type TablesStore struct {
+type TableStore struct {
 	storeLock *sync.RWMutex
 
 	// store data
-	tableDirectoryPath string
-	nameTableMap       map[string]Id
-	definitions        []WDefinition
+	nameTableMap map[string]Id
+	definitions  []WDefinition
 
 	// store utils
 	changeListeners []func()
 	tableIdCounter  *appsync.IdResolver[Id]
 }
 
-func NewTableStore(tableDirectoryPath string, tables []WDefinition) (*TablesStore, error) {
+func NewTableStore(tables []WDefinition) (*TableStore, error) {
 	maxId, missingIds := findMaxAndMissing(tables)
 
 	nameTableMap := map[string]Id{}
@@ -31,7 +30,7 @@ func NewTableStore(tableDirectoryPath string, tables []WDefinition) (*TablesStor
 		definitionsArray[id] = def
 	}
 
-	return &TablesStore{
+	return &TableStore{
 		nameTableMap:    nameTableMap,
 		definitions:     definitionsArray,
 		changeListeners: nil,
@@ -39,13 +38,12 @@ func NewTableStore(tableDirectoryPath string, tables []WDefinition) (*TablesStor
 	}, nil
 }
 
-func NewEmptyTableStore(tableDirectoryPath string) *TablesStore {
-	return &TablesStore{
+func NewEmptyTableStore() *TableStore {
+	return &TableStore{
 		storeLock: &sync.RWMutex{},
 
-		tableDirectoryPath: tableDirectoryPath,
-		nameTableMap:       map[string]Id{},
-		definitions:        nil,
+		nameTableMap: map[string]Id{},
+		definitions:  nil,
 
 		changeListeners: nil,
 		tableIdCounter:  appsync.NewIdResolver(Id(0), nil),
@@ -71,7 +69,7 @@ func findMaxAndMissing(tables []WDefinition) (maxId Id, missing []Id) {
 	return
 }
 
-func (t *TablesStore) GetTable(name string) (Definition, error) {
+func (t *TableStore) GetTable(name string) (Definition, error) {
 	t.storeLock.RLock()
 	defer t.storeLock.RUnlock()
 
@@ -82,13 +80,13 @@ func (t *TablesStore) GetTable(name string) (Definition, error) {
 	return nil, errors.TableNotExist{TableName: name}
 }
 
-func (t *TablesStore) Table(id Id) Definition {
+func (t *TableStore) Table(id Id) Definition {
 	t.storeLock.RLock()
 	defer t.storeLock.RUnlock()
 	return t.definitions[id]
 }
 
-func (t *TablesStore) AllTables() []Definition {
+func (t *TableStore) AllTables() []Definition {
 	t.storeLock.RLock()
 	defer t.storeLock.RUnlock()
 
@@ -101,7 +99,7 @@ func (t *TablesStore) AllTables() []Definition {
 	return allTablesList
 }
 
-func (t *TablesStore) AddTable(table WDefinition) error {
+func (t *TableStore) AddTable(table WDefinition) error {
 	t.storeLock.Lock()
 	defer t.storeLock.Unlock()
 
@@ -117,7 +115,7 @@ func (t *TablesStore) AddTable(table WDefinition) error {
 	return nil
 }
 
-func (t *TablesStore) RemoveTable(id Id) error {
+func (t *TableStore) RemoveTable(id Id) error {
 	t.storeLock.Lock()
 	defer t.storeLock.Unlock()
 

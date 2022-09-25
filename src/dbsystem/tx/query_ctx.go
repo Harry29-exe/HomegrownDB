@@ -5,6 +5,14 @@ import (
 	"strings"
 )
 
+func NewQueryCtx() *QueryCtx {
+	return &QueryCtx{
+		QueryTokens:        nil,
+		nextQTableId:       0,
+		qTableIdTableIdMap: make([]table.Id, 0, 20),
+	}
+}
+
 type QueryCtx struct {
 	QueryTokens []string
 
