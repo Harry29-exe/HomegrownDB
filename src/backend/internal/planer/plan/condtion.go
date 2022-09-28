@@ -21,7 +21,7 @@ type ConditionRawValue interface {
 }
 
 type ConditionTupleValue struct {
-	column column.Definition
+	column column.Def
 	table  table.Definition
 }
 

@@ -1,6 +1,8 @@
 package ctype
 
-type Type interface {
+import "HomegrownDB/common/random"
+
+type CType interface {
 	Reader
 	Operations
 	Debug
@@ -15,9 +17,10 @@ type Reader interface {
 	Skip(data []byte) []byte
 	Value(data []byte) (value []byte)
 	ValueAndSkip(data []byte) (value, next []byte)
-	Copy(data []byte, dest []byte) (copiedBytes int)
+	Copy(dest []byte, data []byte) (copiedBytes int)
 }
 
 type Debug interface {
 	ToStr(val []byte) string
+	Rand(r random.Random) []byte
 }

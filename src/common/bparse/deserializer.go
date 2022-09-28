@@ -26,7 +26,7 @@ func (d *Deserializer) SmString() string {
 
 // MdString read string with 2 bytes length prefix
 func (d *Deserializer) MdString() string {
-	strLen := binary.LittleEndian.Uint16(d.data[d.pointer : d.pointer+2])
+	strLen := binary.BigEndian.Uint16(d.data[d.pointer : d.pointer+2])
 	d.pointer += 2
 
 	pointer := d.pointer
@@ -51,42 +51,42 @@ func (d *Deserializer) Uint16() uint16 {
 	pointer := d.pointer
 	d.pointer += 2
 
-	return binary.LittleEndian.Uint16(d.data[pointer:d.pointer])
+	return binary.BigEndian.Uint16(d.data[pointer:d.pointer])
 }
 
 func (d *Deserializer) Uint32() uint32 {
 	pointer := d.pointer
 	d.pointer += 4
 
-	return binary.LittleEndian.Uint32(d.data[pointer:d.pointer])
+	return binary.BigEndian.Uint32(d.data[pointer:d.pointer])
 }
 
 func (d *Deserializer) Uint64() uint64 {
 	pointer := d.pointer
 	d.pointer += 8
 
-	return binary.LittleEndian.Uint64(d.data[pointer:d.pointer])
+	return binary.BigEndian.Uint64(d.data[pointer:d.pointer])
 }
 
 func (d *Deserializer) Int16() int16 {
 	pointer := d.pointer
 	d.pointer += 2
 
-	return int16(binary.LittleEndian.Uint16(d.data[pointer:d.pointer]))
+	return int16(binary.BigEndian.Uint16(d.data[pointer:d.pointer]))
 }
 
 func (d *Deserializer) Int32() int32 {
 	pointer := d.pointer
 	d.pointer += 4
 
-	return int32(binary.LittleEndian.Uint32(d.data[pointer:d.pointer]))
+	return int32(binary.BigEndian.Uint32(d.data[pointer:d.pointer]))
 }
 
 func (d *Deserializer) Int64() int64 {
 	pointer := d.pointer
 	d.pointer += 8
 
-	return int64(binary.LittleEndian.Uint64(d.data[pointer:d.pointer]))
+	return int64(binary.BigEndian.Uint64(d.data[pointer:d.pointer]))
 }
 
 func (d *Deserializer) IsEmpty() bool {

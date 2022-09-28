@@ -32,7 +32,7 @@ func (p Page) getTupleStart(index TupleIndex) InPagePointer {
 
 func (p Page) setTupleStart(tupleIndex TupleIndex, tupleStart InPagePointer) {
 	ptrStart := poFirstTuplePtr + InPagePointerSize*tupleIndex
-	binary.LittleEndian.PutUint16(p.page[ptrStart:], tupleStart)
+	binary.BigEndian.PutUint16(p.page[ptrStart:], tupleStart)
 }
 
 func (p Page) getPtrPosition(index TupleIndex) InPagePointer {
@@ -45,7 +45,7 @@ func (p Page) getLastPtrPosition() InPagePointer {
 }
 
 func (p Page) setLastPointerPosition(ptr InPagePointer) {
-	binary.LittleEndian.PutUint16(p.page[poPrtToLastTuplePtr:], ptr)
+	binary.BigEndian.PutUint16(p.page[poPrtToLastTuplePtr:], ptr)
 }
 
 func (p Page) getLastTupleStart() InPagePointer {
@@ -53,7 +53,7 @@ func (p Page) getLastTupleStart() InPagePointer {
 }
 
 func (p Page) setLastTupleStart(ptr InPagePointer) {
-	binary.LittleEndian.PutUint16(p.page[poPtrToLastTupleStart:], ptr)
+	binary.BigEndian.PutUint16(p.page[poPtrToLastTupleStart:], ptr)
 }
 
 func (p Page) updateHash() {

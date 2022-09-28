@@ -1,6 +1,8 @@
 package ctype
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type InputType = uint8
 
@@ -10,7 +12,7 @@ const (
 	InputTypeStr   InputType = iota
 )
 
-func ConvInput(input any, cType CType) ([]byte, error) {
+func ConvInput(input any, cType Type) ([]byte, error) {
 	switch input.(type) {
 	case int:
 		return convInputInt(input.(int64), cType)
@@ -23,7 +25,7 @@ func ConvInput(input any, cType CType) ([]byte, error) {
 	}
 }
 
-func ConvInputBuff(dst []byte, input any, cType CType) ([]byte, error) {
+func ConvInputBuff(dst []byte, input any, cType Type) ([]byte, error) {
 	val, err := ConvInput(input, cType)
 	if err != nil {
 		return nil, err

@@ -13,6 +13,6 @@ type QFieldId = uint16
 
 type SelectField struct {
 	Table      table.Definition
-	Column     column.Definition
+	Column     column.Def
 	FieldAlias string
 }

@@ -3,6 +3,8 @@ package seganalyser
 import (
 	"HomegrownDB/backend/internal/analyser/anode"
 	"HomegrownDB/backend/internal/parser/pnode"
+	"HomegrownDB/dbsystem/ctype"
+	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -12,21 +14,22 @@ type insertRows struct{}
 
 func (receiver insertRows) Analyse(
 	rows []pnode.InsertingRow,
-	pattern ColumnTypesPattern,
+	cols []column.Def,
 	ctx *tx.Ctx,
 ) (*anode.InsertRows, error) {
 
-	insertRows := anode.NewInsertRows(uint(len(rows)), uint16(len(pattern.Types)))
+	rowsNode := anode.NewInsertRows(uint(len(rows)), uint16(len(cols)))
 
 	for _, row := range rows {
-		if err := pattern.RowMatches(row, ctx); err != nil {
-			return nil, err
-		}
-
 		for i, val := range row.Values {
-			insertRows.PutValue(val.ConvertTo(pattern.Types[i]))
+			cval, err := ctype.ConvInput(val, cols[i].Type())
+			if err != nil {
+				return nil, err
+			}
+
+			rowsNode.PutValue(cval)
 		}
 	}
 
-	return insertRows, nil
+	return rowsNode, nil
 }

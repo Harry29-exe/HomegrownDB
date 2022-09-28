@@ -2,7 +2,6 @@ package tutils
 
 import (
 	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/column/factory"
 	"HomegrownDB/dbsystem/schema/table"
 )
 
@@ -15,7 +14,7 @@ func NewTestTableBuilder(name string) *TestTableBuilder {
 }
 
 func (ttb *TestTableBuilder) AddColumn(args column.Args) *TestTableBuilder {
-	err := ttb.table.AddColumn(factory.CreateDefinition(args))
+	err := ttb.table.AddColumn(column.NewDefinition(args))
 	if err != nil {
 		panic("could not add column to table during tests")
 	}

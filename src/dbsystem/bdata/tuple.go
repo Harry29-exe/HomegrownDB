@@ -11,7 +11,7 @@ type RTuple interface {
 	TxCommandCounter() uint16
 	TID() TID
 	IsNull(id column.OrderId) bool
-	ColValue(id column.OrderId) column.Value
+	ColValue(id column.OrderId) []byte
 	DataSize() int
 }
 

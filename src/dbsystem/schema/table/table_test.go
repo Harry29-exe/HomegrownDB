@@ -1,9 +1,8 @@
 package table_test
 
 import (
+	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/column/ctypes"
-	"HomegrownDB/dbsystem/schema/column/factory"
 	"HomegrownDB/dbsystem/schema/table"
 	"testing"
 )
@@ -14,7 +13,10 @@ func (b TestTableBuilder) TestTable1() table.Definition {
 	tableDef := table.NewDefinition("test_table1")
 	tableDef.SetTableId(43741)
 	tableDef.SetObjectId(642)
-	tableDef.AddColumn(factory.CreateDefinition(column.ArgsBuilder("col1", ctypes.Int2).Build()))
+	err := tableDef.AddColumn(column.NewDefinition(column.ArgsBuilder("col1", ctype.TypeInt8).Build()))
+	if err != nil {
+		panic("unexpected error")
+	}
 
 	return tableDef
 }

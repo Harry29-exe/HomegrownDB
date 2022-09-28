@@ -54,21 +54,21 @@ func (s *Serializer) Uint8(integer uint8) {
 
 func (s *Serializer) Uint16(integer uint16) {
 	data := make([]byte, 2)
-	binary.LittleEndian.PutUint16(data, integer)
+	binary.BigEndian.PutUint16(data, integer)
 
 	s.buffer = append(s.buffer, data...)
 }
 
 func (s *Serializer) Uint32(integer uint32) {
 	data := make([]byte, 4)
-	binary.LittleEndian.PutUint32(data, integer)
+	binary.BigEndian.PutUint32(data, integer)
 
 	s.buffer = append(s.buffer, data...)
 }
 
 func (s *Serializer) Uint64(integer uint64) {
 	data := make([]byte, 8)
-	binary.LittleEndian.PutUint64(data, integer)
+	binary.BigEndian.PutUint64(data, integer)
 
 	s.buffer = append(s.buffer, data...)
 }

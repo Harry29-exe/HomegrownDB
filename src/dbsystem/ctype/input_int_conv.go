@@ -5,9 +5,9 @@ import (
 	"strconv"
 )
 
-func convInputInt(input int64, cType CType) ([]byte, error) {
+func convInputInt(input int64, cType Type) ([]byte, error) {
 	switch cType {
-	case Int8:
+	case TypeInt8:
 		return bparse.Serialize.Int8(input), nil
 	case Float8:
 		float := float64(input)

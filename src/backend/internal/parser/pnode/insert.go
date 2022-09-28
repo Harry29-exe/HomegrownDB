@@ -23,15 +23,16 @@ func NewInsertingRow() InsertingRow {
 	}
 }
 
-func (v *InsertingRow) AddValue(tk token.Token) bool {
-	var value Value
+func (v *InsertingRow) AddValue(tk token.Token, tokenIndex uint32) bool {
+	value := Value{Node: NewNode(tokenIndex, tokenIndex+1)}
+
 	switch tk.Code() {
 	case token.SqlTextValue:
-		value = StrValue{v: tk.(*token.SqlTextValueToken).InputStr}
+		value.V = tk.Value()
 	case token.Integer:
-		value = IntValue{v: tk.(*token.IntegerToken).Int}
+		value.V = tk.(*token.IntegerToken).Int
 	case token.Float:
-		value = FloatValue{v: tk.(*token.FloatToken).Float}
+		value.V = tk.(*token.FloatToken).Float
 	default:
 		return false
 	}

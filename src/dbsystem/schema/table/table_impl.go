@@ -4,7 +4,6 @@ import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/column/factory"
 	"errors"
 	"math"
 )
@@ -12,8 +11,8 @@ import (
 type StandardTable struct {
 	objectId uint64
 	tableId  Id
-	columns  []column.WDefinition
-	rColumns []column.Definition
+	columns  []column.WDef
+	rColumns []column.Def
 	name     string
 
 	colNameIdMap map[string]column.OrderId
@@ -68,7 +67,7 @@ func (t *StandardTable) Deserialize(tableDef []byte) {
 
 	data := deserializer.RemainedData()
 	for i := column.OrderId(0); i < t.columnsCount; i++ {
-		t.columns[i], data = factory.DeserializeColumnDefinition(data)
+		t.columns[i], data = column.Serialize(data)
 	}
 }
 
@@ -99,20 +98,29 @@ func (t *StandardTable) ColumnsIds(names []string) []column.OrderId {
 	return colIds
 }
 
-func (t *StandardTable) ColumnType(id column.OrderId) ctype.Type {
+func (t *StandardTable) ColumnType(id column.OrderId) ctype.CType {
 	//todo implement me
 	panic("Not implemented")
 }
 
-func (t *StandardTable) Column(index column.OrderId) column.Definition {
+func (t *StandardTable) ColumnByName(name string) (col column.Def, ok bool) {
+	var id column.OrderId
+	id, ok = t.colNameIdMap[name]
+	if !ok {
+		return nil, false
+	}
+	return t.columns[id], true
+}
+
+func (t *StandardTable) Column(index column.OrderId) column.Def {
 	return t.columns[index]
 }
 
-func (t *StandardTable) Columns() []column.Definition {
+func (t *StandardTable) Columns() []column.Def {
 	return t.rColumns
 }
 
-func (t *StandardTable) AddColumn(definition column.WDefinition) error {
+func (t *StandardTable) AddColumn(definition column.WDef) error {
 	_, ok := t.colNameIdMap[definition.Name()]
 	if ok {
 		return errors.New("table already contains column with name:" + definition.Name())

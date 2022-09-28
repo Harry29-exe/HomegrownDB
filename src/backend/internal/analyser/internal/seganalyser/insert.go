@@ -27,12 +27,11 @@ func (i insert) Analyse(
 		Alias:    node.Table.TableAlias,
 	}
 
-	pattern, err := i.analyseColumns(node, &insertNode)
-	if err != nil {
+	if err = i.analyseColumns(node, &insertNode); err != nil {
 		return insertNode, err
 	}
 
-	rows, err := InsertRows.Analyse(node.Rows, pattern, ctx)
+	rows, err := InsertRows.Analyse(node.Rows, insertNode.Columns, ctx)
 	if err != nil {
 		return anode.Insert{}, err
 	}
@@ -44,26 +43,27 @@ func (i insert) Analyse(
 func (i insert) analyseColumns(
 	node pnode.InsertNode,
 	insertNode *anode.Insert,
-) (ColumnTypesPattern, error) {
+) error {
 	tableDef := insertNode.Table.Def
 
 	if node.ColNames == nil {
 		colCount := tableDef.ColumnCount()
-		insertNode.Columns = make([]column.OrderId, colCount)
+		insertNode.Columns = make([]column.Def, colCount)
 		for j := uint16(0); j < colCount; j++ {
-			insertNode.Columns[j] = j
+			insertNode.Columns[j] = tableDef.Column(j)
 		}
-		return NewRowCTypesPattern(insertNode.Columns, tableDef), nil
+		return nil
 	}
 
 	colNames := node.ColNames
-	columns, ok := make([]column.OrderId, len(colNames)), false
+	columns, ok := make([]column.Def, len(colNames)), false
 	insertNode.Columns = columns
 	for j, colName := range colNames {
-		columns[j], ok = tableDef.ColumnId(colName)
+		columns[j], ok = tableDef.ColumnByName(colName)
 		if !ok {
-			return ColumnTypesPattern{}, queryerr.ColumnNotExist(colName, tableDef.Name())
+			return queryerr.ColumnNotExist(colName, tableDef.Name())
 		}
+
 	}
-	return NewRowCTypesPattern(insertNode.Columns, tableDef), nil
+	return nil
 }

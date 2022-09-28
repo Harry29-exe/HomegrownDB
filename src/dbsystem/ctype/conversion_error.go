@@ -13,7 +13,7 @@ func NewConvError(from, fromValue, to string) dberr.DBError {
 	}
 }
 
-func NewInputConvErr(from InputType, fromValue string, to CType) dberr.DBError {
+func NewInputConvErr(from InputType, fromValue string, to Type) dberr.DBError {
 	return ConvError{
 		From:      InputTypeToStr(from),
 		FromValue: fromValue,

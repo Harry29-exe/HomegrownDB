@@ -4,7 +4,6 @@ import (
 	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/bdata"
-	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
@@ -48,10 +47,10 @@ func (t TestTable) PutRandomTupleToPage(tupleCount int, page bdata.Page, rand ra
 }
 
 func (t TestTable) RandTuple(rand random.Random) bdata.TupleToSave {
-	values := map[string]any{}
+	values := map[string][]byte{}
 	for i := uint16(0); i < t.ColumnCount(); i++ {
 		col := t.Column(i)
-		values[col.Name()] = t.randValueForColumnType(col.Type(), rand)
+		values[col.Name()] = col.CType().Rand(rand)
 	}
 
 	tuple, err := bdata.CreateTuple(t.WDefinition, values, tx.NewInfoCtx(rand.Int31()))
@@ -60,15 +59,4 @@ func (t TestTable) RandTuple(rand random.Random) bdata.TupleToSave {
 	}
 
 	return tuple
-}
-
-func (t TestTable) randValueForColumnType(ctype column.Type, random random.Random) any {
-	switch ctype {
-	case ctypes.Int2:
-		return random.Int16()
-
-	default:
-		panic(fmt.Sprintf("type %s not implemented ad TestTable.randValueForColumnType",
-			ctype))
-	}
 }

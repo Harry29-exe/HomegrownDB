@@ -10,9 +10,9 @@ type BgId = uint64
 
 func CreateBgId(tid bdata.TID, columnId column.Id) BgId {
 	id := make([]byte, 8)
-	binary.LittleEndian.PutUint32(id, tid.PageId)
-	binary.LittleEndian.PutUint16(id[4:], tid.TupleIndex)
-	binary.LittleEndian.PutUint16(id[6:], columnId)
+	binary.BigEndian.PutUint32(id, tid.PageId)
+	binary.BigEndian.PutUint16(id[4:], tid.TupleIndex)
+	binary.BigEndian.PutUint16(id[6:], columnId)
 
-	return binary.LittleEndian.Uint64(id)
+	return binary.BigEndian.Uint64(id)
 }

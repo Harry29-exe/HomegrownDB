@@ -72,7 +72,7 @@ func (i insertValues) parseRow(source internal.TokenSource, v validator.Validato
 	}
 
 	rowNode := pnode.NewInsertingRow()
-	if !rowNode.AddValue(source.Next()) {
+	if !rowNode.AddValue(source.Next(), source.CurrentTokenIndex()) {
 		return pnode.InsertingRow{}, sqlerr.NewSyntaxError(
 			"value that can be used as column value",
 			fmt.Sprintf("got %s", token.ToString(source.Current().Code())),
@@ -94,7 +94,7 @@ func (i insertValues) parseRow(source internal.TokenSource, v validator.Validato
 
 			return rowNode, nil
 
-		} else if !rowNode.AddValue(source.Next()) {
+		} else if !rowNode.AddValue(source.Next(), source.CurrentTokenIndex()) {
 			return pnode.InsertingRow{}, sqlerr.NewSyntaxError(
 				"value that can be used as column value",
 				fmt.Sprintf("got %s", token.ToString(source.Current().Code())),

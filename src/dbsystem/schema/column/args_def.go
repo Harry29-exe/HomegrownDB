@@ -1,7 +1,9 @@
 package column
 
+import "HomegrownDB/dbsystem/ctype"
+
 type Args interface {
-	Type() (Type, error)
+	Type() (ctype.Type, error)
 	Name() (string, error)
 	Nullable() (bool, error)
 	Length() (uint32, error)

@@ -24,9 +24,10 @@ type Definition interface {
 	ColumnId(name string) (id column.OrderId, ok bool)
 	ColumnsIds(names []string) []column.OrderId
 
-	ColumnType(id column.OrderId) ctype.Type
-	Column(index column.OrderId) column.Definition
-	Columns() []column.Definition
+	ColumnType(id column.OrderId) ctype.CType
+	ColumnByName(name string) (col column.Def, ok bool)
+	Column(index column.OrderId) column.Def
+	Columns() []column.Def
 }
 
 type WDefinition interface {
@@ -36,7 +37,7 @@ type WDefinition interface {
 	SetObjectId(id uint64)
 	SetName(name string)
 
-	AddColumn(definition column.WDefinition) error
+	AddColumn(definition column.WDef) error
 	RemoveColumn(name string) error
 }
 
@@ -47,8 +48,8 @@ func NewDefinition(name string) WDefinition {
 	table := &StandardTable{
 		tableId:  0,
 		objectId: 0,
-		columns:  []column.WDefinition{},
-		rColumns: []column.Definition{},
+		columns:  []column.WDef{},
+		rColumns: []column.Def{},
 		name:     name,
 
 		colNameIdMap: map[string]column.OrderId{},

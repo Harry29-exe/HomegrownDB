@@ -1,10 +1,11 @@
 package column
 
 import (
+	"HomegrownDB/dbsystem/ctype"
 	"errors"
 )
 
-func ArgsBuilder(name string, ctype Type) *argsBuilder {
+func ArgsBuilder(name string, ctype ctype.Type) *argsBuilder {
 	return &argsBuilder{argsMap: &argsMap{
 		columnType:    ctype,
 		columnTypeSet: true,
@@ -32,7 +33,7 @@ type argsBuilder struct {
 }
 
 type argsMap struct {
-	columnType    Type
+	columnType    ctype.Type
 	columnTypeSet bool
 
 	name    string
@@ -45,14 +46,14 @@ type argsMap struct {
 	lengthSet bool
 }
 
-func (am *argsMap) Type() (Type, error) {
+func (am *argsMap) Type() (ctype.Type, error) {
 	if !am.columnTypeSet {
-		return "", errors.New("arg type not set")
+		return 0, errors.New("arg type not set")
 	}
 	return am.columnType, nil
 }
 
-func (am *argsMap) SetType(colType Type) {
+func (am *argsMap) SetType(colType ctype.Type) {
 	am.columnType = colType
 	am.columnTypeSet = true
 }

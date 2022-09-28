@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+var _ WTuple = Tuple{}
+
 type Tuple struct {
 	data []byte
 
@@ -80,20 +82,20 @@ func (t Tuple) DataSize() int {
 }
 
 func (t Tuple) SetCreatedByTx(txId tx.Id) {
-	binary.LittleEndian.PutUint32(t.data[toTxId:toTxId+tx.IdSize], uint32(txId))
+	binary.BigEndian.PutUint32(t.data[toTxId:toTxId+tx.IdSize], uint32(txId))
 }
 
 func (t Tuple) SetModifiedByTx(tx tx.Id) {
-	binary.LittleEndian.PutUint32(t.modifiedByTxIdSlice(), uint32(tx))
+	binary.BigEndian.PutUint32(t.modifiedByTxIdSlice(), uint32(tx))
 }
 
 func (t Tuple) SetTxCommandCounter(counter tx.Counter) {
-	binary.LittleEndian.PutUint16(t.txCommandCounterSlice(), counter)
+	binary.BigEndian.PutUint16(t.txCommandCounterSlice(), counter)
 }
 
 func (t Tuple) SetTID(tid TID) {
-	binary.LittleEndian.PutUint32(t.tidPageIdSlice(), tid.PageId)
-	binary.LittleEndian.PutUint16(t.tidTupleIndexSlice(), tid.TupleIndex)
+	binary.BigEndian.PutUint32(t.tidPageIdSlice(), tid.PageId)
+	binary.BigEndian.PutUint16(t.tidTupleIndexSlice(), tid.TupleIndex)
 }
 
 // +++++ Binary access methods +++++

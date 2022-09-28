@@ -16,7 +16,7 @@ import (
 func CreateEmptyPage(tableDef table.Definition) Page {
 	rawPage := make([]byte, PageSize)
 	uint16Zero := make([]byte, 2)
-	binary.LittleEndian.PutUint16(uint16Zero, 0)
+	binary.BigEndian.PutUint16(uint16Zero, 0)
 
 	copy(rawPage[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
 	copy(rawPage[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
@@ -111,7 +111,7 @@ func (p Page) InsertTuple(tuple []byte) error {
 
 	tupleStartIndex := lastTupleStart - tupleLen
 	copy(p.page[tupleStartIndex:lastTupleStart], tuple)
-	binary.LittleEndian.PutUint16(p.page[tuplePtrPosition:], tupleStartIndex)
+	binary.BigEndian.PutUint16(p.page[tuplePtrPosition:], tupleStartIndex)
 	p.setLastTupleStart(tupleStartIndex)
 	if insertedAsLast {
 		p.setLastPointerPosition(tuplePtrPosition)

@@ -1,19 +1,19 @@
 package ctype
 
-type CType = uint8
+type Type = uint8
 
 const (
-	Int8 CType = iota
+	TypeInt8 Type = iota
 	Float8
-	Str
+	TypeStr
 )
 
-func CTypeToStr(cType CType) string {
+func CTypeToStr(cType Type) string {
 	return ctypeNames[cType]
 }
 
-var ctypeNames map[CType]string = map[CType]string{
-	Int8:   "Int8",
-	Float8: "Float8",
-	Str:    "Str",
+var ctypeNames map[Type]string = map[Type]string{
+	TypeInt8: "TypeInt8",
+	Float8:   "Float8",
+	TypeStr:  "TypeStr",
 }
