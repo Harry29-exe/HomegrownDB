@@ -2,8 +2,6 @@ package bdata
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/access/lob"
-	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 	"bytes"
@@ -13,7 +11,7 @@ import (
 // CreateTuple creates new TupleToSave from given columnValues and transaction context,
 // Tuple inside is not initialized i.e. it does not have TID (tuple identifier) and ids of
 // objects stored outside tuple should be saved to Tuple
-func CreateTuple(tableDef table.Definition, columnValues map[string]any, txInfo *tx.InfoCtx) (TupleToSave, error) {
+func CreateTuple(tableDef table.Definition, columnValues map[string][]byte, txInfo *tx.InfoCtx) (TupleToSave, error) {
 	builder := tupleBuilder{table: tableDef}
 	tuple, err := builder.Create(columnValues, txInfo)
 	if err != nil {
@@ -21,23 +19,18 @@ func CreateTuple(tableDef table.Definition, columnValues map[string]any, txInfo 
 	}
 
 	return TupleToSave{
-		Tuple:           tuple,
-		BgValuesToSave:  builder.bgValues,
-		LobValuesToSave: builder.lobs,
+		Tuple: tuple,
 	}, nil
 }
 
 type tupleBuilder struct {
 	table        table.Definition
-	sortedValues []any
+	sortedValues [][]byte
 
 	buffer bytes.Buffer
-
-	lobs     []LobValueToSave
-	bgValues []BgValueToSave
 }
 
-func (tb *tupleBuilder) Create(columnValues map[string]any, txInfo *tx.InfoCtx) (Tuple, error) {
+func (tb *tupleBuilder) Create(columnValues map[string][]byte, txInfo *tx.InfoCtx) (Tuple, error) {
 	tb.sortMapValues(columnValues)
 	tb.initTupleBuffer()
 	tb.createNullBitmap()
@@ -56,8 +49,8 @@ func (tb *tupleBuilder) Create(columnValues map[string]any, txInfo *tx.InfoCtx) 
 	return tuple, nil
 }
 
-func (tb *tupleBuilder) sortMapValues(columnValues map[string]any) {
-	tb.sortedValues = make([]any, tb.table.ColumnCount())
+func (tb *tupleBuilder) sortMapValues(columnValues map[string][]byte) {
+	tb.sortedValues = make([][]byte, tb.table.ColumnCount())
 
 	for i := uint16(0); i < tb.table.ColumnCount(); i++ {
 		tb.sortedValues[i] = columnValues[tb.table.ColumnName(i)]
@@ -102,16 +95,10 @@ func (tb *tupleBuilder) createNullBitmap() {
 func (tb *tupleBuilder) serializeColumnValues() error {
 	tableDef := tb.table
 	for i, value := range tb.sortedValues {
-		colDef := tableDef.GetColumn(uint16(i))
+		colDef := tableDef.Column(uint16(i))
 
 		if value != nil {
-			serializer := colDef.DataSerializer()
-			data, err := serializer.SerializeValue(value)
-			if err != nil {
-				return err
-			}
-
-			tb.saveData(data, colDef)
+			tb.buffer.Write(value)
 		} else if !colDef.Nullable() {
 			return fmt.Errorf("column %s is not nullable, so it can not accept null value",
 				colDef.Name())
@@ -120,18 +107,6 @@ func (tb *tupleBuilder) serializeColumnValues() error {
 	}
 
 	return nil
-}
-
-func (tb *tupleBuilder) saveData(data column.DataToSave, col column.Definition) {
-	tb.buffer.Write(data.DataInTuple())
-	if data.StorePlace() == column.StoreInBackground {
-		tb.bgValues = append(tb.bgValues,
-			BgValueToSave{data.Data(), col.GetColumnId()})
-
-	} else if data.StorePlace() == column.StoreInLob {
-		lobId := lob.IdCounter.NextId()
-		tb.lobs = append(tb.lobs, LobValueToSave{data.Data(), lobId})
-	}
 }
 
 func (tb *tupleBuilder) initTupleWithTxContext(tuple Tuple, txInfo *tx.InfoCtx) {

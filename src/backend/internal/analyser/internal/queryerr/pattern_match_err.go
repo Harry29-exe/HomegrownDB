@@ -1,7 +1,7 @@
 package queryerr
 
 import (
-	"HomegrownDB/backend/dberr"
+	"HomegrownDB/dbsystem/dberr"
 	"fmt"
 )
 

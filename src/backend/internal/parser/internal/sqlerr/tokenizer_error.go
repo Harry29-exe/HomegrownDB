@@ -1,6 +1,8 @@
 package sqlerr
 
-import "HomegrownDB/backend/dberr"
+import (
+	"HomegrownDB/dbsystem/dberr"
+)
 
 func (s *syntaxError) Error() string {
 	return "expected: \"" + s.expected + "\" instead got: \"" +

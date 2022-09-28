@@ -21,18 +21,20 @@ func NewRow(tuples []bdata.Tuple, holder RowBuffer) Row {
 	var fieldCount = holder.Fields()
 	var dataPosition = fieldCount*2 + 2
 	var tuple bdata.Tuple
-	var tupleByte int
-	field, skippedBytes := FieldPtr(0), 0
+	var val []byte
+	field := FieldPtr(0)
 	for i, table := range holder.Tables() {
 		tuple = tuples[i]
-		for colOrder, parser := range table.AllColumnParsers() {
+		tupleData := tuple.Data()
+		for colOrder, col := range table.Columns() {
 			if tuple.IsNull(column.OrderId(colOrder)) {
 				slot[field*2] = 0
 				slot[field*2+1] = 0
 			} else {
-				skippedBytes = parser.CopyData(tuple.Data()[tupleByte:], slot[dataPosition:])
+				val, tupleData = col.CType().ValueAndSkip(tupleData)
+				copy(slot, val)
 				bparse.Serialize.PutUInt2(dataPosition, slot[field*2:])
-				dataPosition += uint16(skippedBytes)
+				dataPosition += uint16(len(val))
 			}
 			field++
 		}

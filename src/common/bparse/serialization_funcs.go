@@ -1,6 +1,9 @@
 package bparse
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"math"
+)
 
 var Serialize = serializer{}
 
@@ -52,6 +55,13 @@ func (s serializer) Int8(value int64) []byte {
 func (s serializer) Uint8(value uint64) []byte {
 	bytes := make([]byte, 8)
 	binary.LittleEndian.PutUint64(bytes, value)
+
+	return bytes
+}
+
+func (s serializer) Float8(value float64) []byte {
+	bytes := make([]byte, 8)
+	binary.LittleEndian.PutUint64(bytes, math.Float64bits(value))
 
 	return bytes
 }

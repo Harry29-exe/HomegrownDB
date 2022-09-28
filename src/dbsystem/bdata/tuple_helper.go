@@ -15,18 +15,18 @@ func (th tupleHelper) GetValue(tuple Tuple, tableDef table.Definition, id column
 		return nil
 	}
 	if id == 0 {
-		return tableDef.ColumnParser(0).GetValue(tuple.Data())
+		return tableDef.ColumnType(0).Value(tuple.Data())
 	}
 	remainingData := tuple.Data()
-	parsers := tableDef.AllColumnParsers()
+	columns := tableDef.Columns()
 
 	for i := column.OrderId(0); i < id-1; i++ {
 		if !tuple.IsNull(i) {
-			remainingData = parsers[i].Skip(remainingData)
+			remainingData = columns[i].CType().Skip(remainingData)
 		}
 	}
 
-	return parsers[id].GetValue(remainingData)
+	return columns[id].CType().Value(remainingData)
 }
 
 func (th tupleHelper) GetValueByName(tuple Tuple, tableDef table.Definition, colName string) []byte {

@@ -61,23 +61,18 @@ func (t Tuple) IsNull(id column.OrderId) bool {
 	return value&nullBitmapMasks[divRest] == 0
 }
 
-func (t Tuple) ColValue(id column.OrderId) column.Value {
+func (t Tuple) ColValue(id column.OrderId) []byte {
 	subsequent := t.data[toNullBitmap+t.table.BitmapLen():]
 	for i := uint16(0); i < id; i++ {
 		if t.IsNull(id) {
 			continue
 		}
 		subsequent = t.table.
-			ColumnParser(i).
+			ColumnType(i).
 			Skip(subsequent)
 	}
 
-	val, er := t.table.ColumnParser(id).Parse(subsequent)
-	if er != nil {
-		panic("could not parse table")
-	}
-
-	return val
+	return t.table.ColumnType(id).Value(subsequent)
 }
 
 func (t Tuple) DataSize() int {
@@ -173,7 +168,7 @@ func (t tupleDebugger) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) 
 	builder.WriteRune('\n')
 
 	for i := column.OrderId(0); i < tuple.table.ColumnCount(); i++ {
-		col := tuple.table.GetColumn(i)
+		col := tuple.table.Column(i)
 		if !col.Nullable() {
 			builder.WriteString(fmt.Sprintf("| %s: %d ", col.Name(), -1))
 			continue
@@ -198,16 +193,18 @@ func (t tupleDebugger) stringifyColumnValues(tuple Tuple, arr *strutils.StrArray
 	tabDef := tuple.table
 
 	nextData := tuple.data[toNullBitmap+tabDef.BitmapLen():]
+	var value []byte
 	for i := column.OrderId(0); i < tabDef.ColumnCount(); i++ {
-		col := tabDef.GetColumn(i)
+		col := tabDef.Column(i)
 		if tuple.IsNull(i) {
 			arr.FormatAndAdd("%s: null", col.Name())
 			continue
 		}
 
-		parser := col.DataParser()
-		var value column.Value
-		value, nextData = parser.Parse(nextData)
-		arr.FormatAndAdd("%s: %s", col.Name(), value.ToString())
+		parser := col.CType()
+
+		value, nextData = parser.ValueAndSkip(nextData)
+
+		arr.FormatAndAdd("%s: %s", col.Name(), parser.ToStr(value))
 	}
 }

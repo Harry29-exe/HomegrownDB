@@ -26,7 +26,7 @@ func (f fields) Analyse(fieldNodes []pnode.FieldNode, tables anode.Tables, ctx *
 		} else {
 			fieldsNode.Fields[i] = anode.SelectField{
 				Table:      table,
-				Column:     table.GetColumn(colOrder),
+				Column:     table.Column(colOrder),
 				FieldAlias: field.FieldName,
 			}
 		}

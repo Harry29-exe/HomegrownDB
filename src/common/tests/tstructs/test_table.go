@@ -5,7 +5,6 @@ import (
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/column/ctypes"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
@@ -51,7 +50,7 @@ func (t TestTable) PutRandomTupleToPage(tupleCount int, page bdata.Page, rand ra
 func (t TestTable) RandTuple(rand random.Random) bdata.TupleToSave {
 	values := map[string]any{}
 	for i := uint16(0); i < t.ColumnCount(); i++ {
-		col := t.GetColumn(i)
+		col := t.Column(i)
 		values[col.Name()] = t.randValueForColumnType(col.Type(), rand)
 	}
 

@@ -1,12 +1,14 @@
 package table
 
 import (
+	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
 )
 
 type Definition interface {
 	TableId() Id
-	ObjectId() uint64
+	// OID Object id
+	OID() uint64
 	Name() string
 
 	// Serialize table info, so it can be saved to disc and
@@ -22,15 +24,9 @@ type Definition interface {
 	ColumnId(name string) (id column.OrderId, ok bool)
 	ColumnsIds(names []string) []column.OrderId
 
-	ColumnParser(id column.OrderId) column.DataParser
-	ColumnParsers(ids []column.OrderId) []column.DataParser
-	AllColumnParsers() []column.DataParser
-	ColumnSerializer(id column.OrderId) column.DataSerializer
-	ColumnSerializers(ids []column.OrderId) []column.DataSerializer
-	AllColumnSerializer() []column.DataSerializer
-
-	GetColumn(index column.OrderId) column.Definition
-	AllColumns() []column.Definition
+	ColumnType(id column.OrderId) ctype.Type
+	Column(index column.OrderId) column.Definition
+	Columns() []column.Definition
 }
 
 type WDefinition interface {
@@ -55,10 +51,9 @@ func NewDefinition(name string) WDefinition {
 		rColumns: []column.Definition{},
 		name:     name,
 
-		colNameIdMap:  map[string]column.OrderId{},
-		columnsNames:  nil,
-		columnsCount:  0,
-		columnParsers: nil,
+		colNameIdMap: map[string]column.OrderId{},
+		columnsNames: nil,
+		columnsCount: 0,
 	}
 	table.initInMemoryFields()
 	return table

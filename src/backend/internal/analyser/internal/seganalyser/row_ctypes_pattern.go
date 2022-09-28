@@ -11,7 +11,7 @@ import (
 func NewRowCTypesPattern(colsIds []column.OrderId, table table.Definition) ColumnTypesPattern {
 	pattern := ColumnTypesPattern{Types: make([]column.Type, len(colsIds))}
 	for i, id := range colsIds {
-		pattern.Types[i] = table.GetColumn(id).Type()
+		pattern.Types[i] = table.Column(id).Type()
 	}
 
 	return pattern

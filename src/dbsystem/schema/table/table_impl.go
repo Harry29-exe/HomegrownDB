@@ -2,6 +2,7 @@ package table
 
 import (
 	"HomegrownDB/common/bparse"
+	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/factory"
 	"errors"
@@ -15,10 +16,9 @@ type StandardTable struct {
 	rColumns []column.Definition
 	name     string
 
-	colNameIdMap  map[string]column.OrderId
-	columnsNames  []string
-	columnsCount  uint16
-	columnParsers []column.DataParser
+	colNameIdMap map[string]column.OrderId
+	columnsNames []string
+	columnsCount uint16
 }
 
 func (t *StandardTable) SetTableId(id Id) {
@@ -33,7 +33,7 @@ func (t *StandardTable) SetObjectId(id uint64) {
 	t.objectId = id
 }
 
-func (t *StandardTable) ObjectId() uint64 {
+func (t *StandardTable) OID() uint64 {
 	return t.objectId
 }
 
@@ -99,50 +99,16 @@ func (t *StandardTable) ColumnsIds(names []string) []column.OrderId {
 	return colIds
 }
 
-func (t *StandardTable) ColumnParser(id column.OrderId) column.DataParser {
-	return t.columns[id].DataParser()
+func (t *StandardTable) ColumnType(id column.OrderId) ctype.Type {
+	//todo implement me
+	panic("Not implemented")
 }
 
-func (t *StandardTable) ColumnParsers(ids []column.OrderId) []column.DataParser {
-	parsers := make([]column.DataParser, 0, len(ids))
-	for i, id := range ids {
-		parsers[i] = t.columns[id].DataParser()
-	}
-
-	return parsers
-}
-
-func (t *StandardTable) AllColumnParsers() []column.DataParser {
-	return t.columnParsers
-}
-
-func (t *StandardTable) ColumnSerializer(id column.OrderId) column.DataSerializer {
-	return t.columns[id].DataSerializer()
-}
-
-func (t *StandardTable) ColumnSerializers(ids []column.OrderId) []column.DataSerializer {
-	serializers := make([]column.DataSerializer, 0, len(ids))
-	for i, id := range ids {
-		serializers[i] = t.columns[id].DataSerializer()
-	}
-
-	return serializers
-}
-
-func (t *StandardTable) AllColumnSerializer() []column.DataSerializer {
-	serializers := make([]column.DataSerializer, t.columnsCount)
-	for i := 0; i < int(t.columnsCount); i++ {
-		serializers[i] = t.columns[i].DataSerializer()
-	}
-
-	return serializers
-}
-
-func (t *StandardTable) GetColumn(index column.OrderId) column.Definition {
+func (t *StandardTable) Column(index column.OrderId) column.Definition {
 	return t.columns[index]
 }
 
-func (t *StandardTable) AllColumns() []column.Definition {
+func (t *StandardTable) Columns() []column.Definition {
 	return t.rColumns
 }
 
@@ -155,7 +121,6 @@ func (t *StandardTable) AddColumn(definition column.WDefinition) error {
 	t.rColumns = append(t.rColumns, definition)
 	t.colNameIdMap[definition.Name()] = t.columnsCount
 	t.columnsNames = append(t.columnsNames, definition.Name())
-	t.columnParsers = append(t.columnParsers, definition.DataParser())
 	t.columnsCount++
 
 	return nil
@@ -181,9 +146,6 @@ func (t *StandardTable) RemoveColumn(name string) error {
 	t.columns = t.columns[:len(t.columns)-1]
 	t.rColumns = t.rColumns[:len(t.columns)-1]
 
-	copy(t.columnParsers[colToRemoveId:], t.columnParsers[colToRemoveId+1:])
-	t.columnParsers = t.columnParsers[:len(t.columnParsers)-1]
-
 	t.columnsCount--
 
 	return nil
@@ -191,12 +153,10 @@ func (t *StandardTable) RemoveColumn(name string) error {
 
 func (t *StandardTable) initInMemoryFields() {
 	colCount := len(t.columns)
-	t.columnParsers = make([]column.DataParser, colCount)
 	t.columnsNames = make([]string, colCount)
 	t.colNameIdMap = map[string]column.OrderId{}
 
 	for i, col := range t.columns {
-		t.columnParsers[i] = col.DataParser()
 		t.columnsNames[i] = col.Name()
 		t.colNameIdMap[col.Name()] = column.OrderId(i)
 	}

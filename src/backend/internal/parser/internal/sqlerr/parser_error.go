@@ -1,9 +1,9 @@
 package sqlerr
 
 import (
-	"HomegrownDB/backend/dberr"
 	"HomegrownDB/backend/internal/parser/internal"
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
+	"HomegrownDB/dbsystem/dberr"
 	"strings"
 )
 
