@@ -74,12 +74,12 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 
 		val1 := values[0].Values
 		assert.Eq(len(val1), 2, t)
-		assert.Eq(val1[0].V().(string), "bob", t)
-		assert.Eq(val1[1].V().(int), 15, t)
+		assert.Eq(val1[0].V.(string), "bob", t)
+		assert.Eq(val1[1].V.(int), 15, t)
 		val2 := values[1].Values
 		assert.Eq(len(val2), 2, t)
-		assert.Eq(val2[0].V().(string), "Alice", t)
-		assert.Eq(val2[1].V().(int), 24, t)
+		assert.Eq(val2[0].V.(string), "Alice", t)
+		assert.Eq(val2[1].V.(int), 24, t)
 	}
 }
 

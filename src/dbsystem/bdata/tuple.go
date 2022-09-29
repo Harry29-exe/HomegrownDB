@@ -10,8 +10,8 @@ type RTuple interface {
 	ModifiedByTx() tx.Id
 	TxCommandCounter() uint16
 	TID() TID
-	IsNull(id column.OrderId) bool
-	ColValue(id column.OrderId) []byte
+	IsNull(id column.Order) bool
+	ColValue(id column.Order) []byte
 	DataSize() int
 }
 

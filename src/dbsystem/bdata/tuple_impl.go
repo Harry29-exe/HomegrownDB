@@ -56,14 +56,14 @@ func (t Tuple) TID() TID {
 	}
 }
 
-func (t Tuple) IsNull(id column.OrderId) bool {
+func (t Tuple) IsNull(id column.Order) bool {
 	var byteNumber = id / 8
 	value := t.data[toNullBitmap+byteNumber]
 	divRest := id % 8
 	return value&nullBitmapMasks[divRest] == 0
 }
 
-func (t Tuple) ColValue(id column.OrderId) []byte {
+func (t Tuple) ColValue(id column.Order) []byte {
 	subsequent := t.data[toNullBitmap+t.table.BitmapLen():]
 	for i := uint16(0); i < id; i++ {
 		if t.IsNull(id) {
@@ -169,7 +169,7 @@ func (t tupleDebugger) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) 
 	}
 	builder.WriteRune('\n')
 
-	for i := column.OrderId(0); i < tuple.table.ColumnCount(); i++ {
+	for i := column.Order(0); i < tuple.table.ColumnCount(); i++ {
 		col := tuple.table.Column(i)
 		if !col.Nullable() {
 			builder.WriteString(fmt.Sprintf("| %s: %d ", col.Name(), -1))
@@ -196,7 +196,7 @@ func (t tupleDebugger) stringifyColumnValues(tuple Tuple, arr *strutils.StrArray
 
 	nextData := tuple.data[toNullBitmap+tabDef.BitmapLen():]
 	var value []byte
-	for i := column.OrderId(0); i < tabDef.ColumnCount(); i++ {
+	for i := column.Order(0); i < tabDef.ColumnCount(); i++ {
 		col := tabDef.Column(i)
 		if tuple.IsNull(i) {
 			arr.FormatAndAdd("%s: null", col.Name())

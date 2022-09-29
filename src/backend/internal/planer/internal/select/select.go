@@ -28,7 +28,7 @@ func Plan(node anode.Select) plan.Plan {
 			Name: field.FieldAlias,
 			FieldId: plan.FieldId{
 				PlanTableId: 0,
-				ColumnOrder: field.Column.GetColumnId(), //todo columnId what it is?
+				ColumnOrder: field.Column.Order(), //todo columnId what it is?
 			},
 		}
 	}

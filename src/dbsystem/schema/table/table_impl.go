@@ -2,6 +2,7 @@ package table
 
 import (
 	"HomegrownDB/common/bparse"
+	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
 	"errors"
@@ -15,9 +16,10 @@ type StandardTable struct {
 	rColumns []column.Def
 	name     string
 
-	colNameIdMap map[string]column.OrderId
-	columnsNames []string
-	columnsCount uint16
+	nextColumnId        appsync.SyncCounter[column.Id]
+	columnName_OrderMap map[string]column.Order
+	columnsNames        []string
+	columnsCount        uint16
 }
 
 func (t *StandardTable) SetTableId(id Id) {
@@ -50,7 +52,7 @@ func (t *StandardTable) Serialize() []byte {
 	serializer.Uint64(t.objectId)
 	serializer.MdString(t.name)
 
-	columnCount := uint16(len(t.colNameIdMap))
+	columnCount := uint16(len(t.columnName_OrderMap))
 	serializer.Uint16(columnCount)
 	for _, col := range t.columns {
 		serializer.Append(col.Serialize())
@@ -66,7 +68,7 @@ func (t *StandardTable) Deserialize(tableDef []byte) {
 	t.columnsCount = deserializer.Uint16()
 
 	data := deserializer.RemainedData()
-	for i := column.OrderId(0); i < t.columnsCount; i++ {
+	for i := column.Order(0); i < t.columnsCount; i++ {
 		t.columns[i], data = column.Serialize(data)
 	}
 }
@@ -80,39 +82,44 @@ func (t *StandardTable) ColumnCount() uint16 {
 	return t.columnsCount
 }
 
-func (t *StandardTable) ColumnName(columnId column.OrderId) string {
+func (t *StandardTable) ColumnName(columnId column.Order) string {
 	return t.columnsNames[columnId]
 }
 
-func (t *StandardTable) ColumnId(name string) (order column.OrderId, ok bool) {
-	order, ok = t.colNameIdMap[name]
+func (t *StandardTable) ColumnId(order column.Order) column.Id {
+	return t.columns[order].Id()
+}
+
+func (t *StandardTable) ColumnOrder(name string) (order column.Order, ok bool) {
+	order, ok = t.columnName_OrderMap[name]
 	return
 }
 
-func (t *StandardTable) ColumnsIds(names []string) []column.OrderId {
-	colIds := make([]column.OrderId, 0, len(names))
-	for i, name := range names {
-		colIds[i] = t.colNameIdMap[name]
-	}
-
-	return colIds
-}
-
-func (t *StandardTable) ColumnType(id column.OrderId) ctype.CType {
+func (t *StandardTable) ColumnType(id column.Order) ctype.CType {
 	//todo implement me
 	panic("Not implemented")
 }
 
 func (t *StandardTable) ColumnByName(name string) (col column.Def, ok bool) {
-	var id column.OrderId
-	id, ok = t.colNameIdMap[name]
+	var id column.Order
+	id, ok = t.columnName_OrderMap[name]
 	if !ok {
 		return nil, false
 	}
 	return t.columns[id], true
 }
 
-func (t *StandardTable) Column(index column.OrderId) column.Def {
+// ColumnById todo rewrite this: create columnId_Ordermap initialize it and use it
+func (t *StandardTable) ColumnById(id column.Id) column.Def {
+	for _, def := range t.columns {
+		if def.Id() == id {
+			return def
+		}
+	}
+	panic("no column with provided id")
+}
+
+func (t *StandardTable) Column(index column.Order) column.Def {
 	return t.columns[index]
 }
 
@@ -121,13 +128,16 @@ func (t *StandardTable) Columns() []column.Def {
 }
 
 func (t *StandardTable) AddColumn(definition column.WDef) error {
-	_, ok := t.colNameIdMap[definition.Name()]
+	_, ok := t.columnName_OrderMap[definition.Name()]
 	if ok {
 		return errors.New("table already contains column with name:" + definition.Name())
 	}
+	definition.SetId(t.nextColumnId.GetAndIncrement())
+	definition.SetOrder(t.columnsCount)
+
 	t.columns = append(t.columns, definition)
 	t.rColumns = append(t.rColumns, definition)
-	t.colNameIdMap[definition.Name()] = t.columnsCount
+	t.columnName_OrderMap[definition.Name()] = t.columnsCount
 	t.columnsNames = append(t.columnsNames, definition.Name())
 	t.columnsCount++
 
@@ -135,15 +145,15 @@ func (t *StandardTable) AddColumn(definition column.WDef) error {
 }
 
 func (t *StandardTable) RemoveColumn(name string) error {
-	colToRemoveId, ok := t.colNameIdMap[name]
+	colToRemoveId, ok := t.columnName_OrderMap[name]
 	if !ok {
 		return errors.New("column does not contain column with name: " + name)
 	}
 
-	delete(t.colNameIdMap, name)
-	for colName, colId := range t.colNameIdMap {
+	delete(t.columnName_OrderMap, name)
+	for colName, colId := range t.columnName_OrderMap {
 		if colId > colToRemoveId {
-			t.colNameIdMap[colName] = colId - 1
+			t.columnName_OrderMap[colName] = colId - 1
 		}
 	}
 
@@ -162,11 +172,11 @@ func (t *StandardTable) RemoveColumn(name string) error {
 func (t *StandardTable) initInMemoryFields() {
 	colCount := len(t.columns)
 	t.columnsNames = make([]string, colCount)
-	t.colNameIdMap = map[string]column.OrderId{}
+	t.columnName_OrderMap = map[string]column.Order{}
 
 	for i, col := range t.columns {
 		t.columnsNames[i] = col.Name()
-		t.colNameIdMap[col.Name()] = column.OrderId(i)
+		t.columnName_OrderMap[col.Name()] = column.Order(i)
 	}
 	t.columnsCount = uint16(colCount)
 }

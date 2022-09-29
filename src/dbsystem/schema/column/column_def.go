@@ -2,13 +2,14 @@ package column
 
 import "HomegrownDB/dbsystem/ctype"
 
-type Id = uint16
+type Id = uint32
 
 // Def describes column properties and provides segparser and serializer
 type Def interface {
 	Name() string
 	Nullable() bool
-	GetColumnId() Id
+	Id() Id
+	Order() Order
 	Type() ctype.Type
 	CType() ctype.CType
 
@@ -22,11 +23,12 @@ type Def interface {
 
 type WDef interface {
 	Def
-	SetColumnId(id Id)
+	SetId(id Id)
+	SetOrder(order Order)
 }
 
-// OrderId describes order of column in table
-type OrderId = uint16
+// Order describes order of column in table
+type Order = uint16
 
 func Serialize(data []byte) (col WDef, subsequent []byte) {
 	col = &column{}

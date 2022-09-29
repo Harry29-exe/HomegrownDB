@@ -10,7 +10,7 @@ var TupleHelper = tupleHelper{}
 
 type tupleHelper struct{}
 
-func (th tupleHelper) GetValue(tuple Tuple, tableDef table.Definition, id column.OrderId) []byte {
+func (th tupleHelper) GetValue(tuple Tuple, tableDef table.Definition, id column.Order) []byte {
 	if tuple.IsNull(id) {
 		return nil
 	}
@@ -20,7 +20,7 @@ func (th tupleHelper) GetValue(tuple Tuple, tableDef table.Definition, id column
 	remainingData := tuple.Data()
 	columns := tableDef.Columns()
 
-	for i := column.OrderId(0); i < id-1; i++ {
+	for i := column.Order(0); i < id-1; i++ {
 		if !tuple.IsNull(i) {
 			remainingData = columns[i].CType().Skip(remainingData)
 		}
@@ -30,7 +30,7 @@ func (th tupleHelper) GetValue(tuple Tuple, tableDef table.Definition, id column
 }
 
 func (th tupleHelper) GetValueByName(tuple Tuple, tableDef table.Definition, colName string) []byte {
-	order, ok := tableDef.ColumnId(colName)
+	order, ok := tableDef.ColumnOrder(colName)
 	if !ok {
 		panic(fmt.Sprintf("No column with name %s on table %s", colName, tableDef.Name()))
 	}

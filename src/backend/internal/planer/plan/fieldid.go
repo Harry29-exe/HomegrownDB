@@ -6,5 +6,5 @@ import (
 
 type FieldId struct {
 	PlanTableId TableId
-	ColumnOrder column.OrderId
+	ColumnOrder column.Order
 }

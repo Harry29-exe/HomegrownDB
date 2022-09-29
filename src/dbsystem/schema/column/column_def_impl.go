@@ -8,13 +8,9 @@ type column struct {
 	name     string
 	nullable bool
 	id       Id
+	order    Order
 	typeCode ctype.Type
 	ctype    ctype.CType
-}
-
-func (c *column) SetColumnId(id Id) {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (c *column) Name() string {
@@ -25,8 +21,20 @@ func (c *column) Nullable() bool {
 	return c.nullable
 }
 
-func (c *column) GetColumnId() Id {
+func (c *column) Id() Id {
 	return c.id
+}
+
+func (c *column) SetId(id Id) {
+	c.id = id
+}
+
+func (c *column) Order() Order {
+	return c.order
+}
+
+func (c *column) SetOrder(order Order) {
+	c.order = order
 }
 
 func (c *column) Type() ctype.Type {

@@ -20,7 +20,7 @@ Table1 creates following table definition
 */
 var Table1 = struct {
 	AwesomeKey, NullableCol, NonNullColl       string
-	AwesomeKeyId, NullableColId, NonNullCollId column.OrderId
+	AwesomeKeyId, NullableColId, NonNullCollId column.Order
 }{"awesome_key", "nullable_col", "non_null_coll",
 	0, 1, 2}
 
@@ -35,11 +35,11 @@ func (t testTables) Table1Def() tstructs.TestTable {
 }
 
 const (
-	Table1Name                         = "awesome_table1"
-	Table1AwesomeKey    string         = "awesome_key"
-	Table1NullableCol   string         = "nullable_col"
-	Table1NonNullColl   string         = "non_null_coll"
-	Table1AwesomeKeyId  column.OrderId = 0
-	Table1NullableColId column.OrderId = 1
-	Table1NonNullCollId column.OrderId = 2
+	Table1Name                       = "awesome_table1"
+	Table1AwesomeKey    string       = "awesome_key"
+	Table1NullableCol   string       = "nullable_col"
+	Table1NonNullColl   string       = "non_null_coll"
+	Table1AwesomeKeyId  column.Order = 0
+	Table1NullableColId column.Order = 1
+	Table1NonNullCollId column.Order = 2
 )

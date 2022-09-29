@@ -48,9 +48,9 @@ func TestInsertSimpleQuery(t *testing.T) {
 		assert.Eq(tableId, table1.TableId(), t)
 
 		assert.Eq(len(insertANode.Columns), 3, t)
-		assert.Eq(insertANode.Columns[0], tutils.Table1AwesomeKeyId, t)
-		assert.Eq(insertANode.Columns[1], tutils.Table1NonNullCollId, t)
-		assert.Eq(insertANode.Columns[2], tutils.Table1NullableColId, t)
+		assert.Eq(insertANode.Columns[0].Id(), table1.Column(tutils.Table1AwesomeKeyId).Id(), t)
+		assert.Eq(insertANode.Columns[1].Id(), table1.Column(tutils.Table1NonNullCollId).Id(), t)
+		assert.Eq(insertANode.Columns[2].Id(), table1.Column(tutils.Table1NullableColId).Id(), t)
 
 		rows := insertANode.Rows
 		assert.EqArray(rows.GetValue(0, 0), bparse.Serialize.Int2(2), t)

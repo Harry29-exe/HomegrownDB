@@ -12,6 +12,38 @@ type SyncCounter[T datastructs.Number] interface {
 	Get() T
 }
 
+func NewSyncCounter[T datastructs.Number](start T) SyncCounter[T] {
+	return &GenericSyncCounter[T]{
+		val:  start,
+		lock: 0,
+	}
+}
+
+type GenericSyncCounter[T datastructs.Number] struct {
+	val  T
+	lock SpinLock
+}
+
+func (g *GenericSyncCounter[T]) GetAndIncrement() (v T) {
+	g.lock.Lock()
+	v = g.val
+	g.val++
+	g.lock.Unlock()
+	return
+}
+
+func (g *GenericSyncCounter[T]) IncrementAndGet() (v T) {
+	g.lock.Lock()
+	g.val++
+	v = g.val
+	g.lock.Unlock()
+	return
+}
+
+func (g *GenericSyncCounter[T]) Get() T {
+	return g.val
+}
+
 func NewUint64SyncCounter(startVal uint64) SyncCounter[uint64] {
 	return newUint64Counter(startVal)
 }

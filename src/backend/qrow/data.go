@@ -27,7 +27,7 @@ func NewRow(tuples []bdata.Tuple, holder RowBuffer) Row {
 		tuple = tuples[i]
 		tupleData := tuple.Data()
 		for colOrder, col := range table.Columns() {
-			if tuple.IsNull(column.OrderId(colOrder)) {
+			if tuple.IsNull(column.Order(colOrder)) {
 				slot[field*2] = 0
 				slot[field*2+1] = 0
 			} else {

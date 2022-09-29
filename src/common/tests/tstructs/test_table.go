@@ -23,7 +23,7 @@ func (t TestTable) FillPages(pagesToFill int, tableIO access.TableDataIO, rand r
 
 		if err != nil {
 			filledPages++
-			_, err := tableIO.NewPage(page.Data())
+			_, err = tableIO.NewPage(page.Data())
 			if err != nil {
 				panic("could not create new page")
 			}
