@@ -19,7 +19,8 @@ func NewRow(tuples []bdata.Tuple, holder RowBuffer) Row {
 	slot := holder.GetRowSlot(dataSize)
 
 	var fieldCount = holder.Fields()
-	var dataPosition = fieldCount*2 + 2
+	var dataStart = fieldCount*2 + 2
+	var dataPtr = dataStart
 	var tuple bdata.Tuple
 	var val []byte
 	field := FieldPtr(0)
@@ -28,21 +29,21 @@ func NewRow(tuples []bdata.Tuple, holder RowBuffer) Row {
 		tupleData := tuple.Data()
 		for colOrder, col := range table.Columns() {
 			if tuple.IsNull(column.Order(colOrder)) {
-				slot[field*2] = 0
-				slot[field*2+1] = 0
+				bparse.Serialize.PutUInt2(dataStart, slot[field*2:])
 			} else {
 				val, tupleData = col.CType().ValueAndSkip(tupleData)
-				copy(slot, val)
-				bparse.Serialize.PutUInt2(dataPosition, slot[field*2:])
-				dataPosition += uint16(len(val))
+				copy(slot[dataPtr:], val)
+				bparse.Serialize.PutUInt2(dataPtr, slot[field*2:])
+				dataPtr += uint16(len(val))
 			}
 			field++
 		}
 	}
-	bparse.Serialize.PutUInt2(dataPosition, slot[field*2:])
+	bparse.Serialize.PutUInt2(dataPtr, slot[field*2:])
 
+	dataStartBytes := bparse.Serialize.Uint2(dataStart)
 	for i := (fieldCount - 1) * 2; i > 0; i -= 2 {
-		if slot[i] == 0 && slot[i+1] == 0 {
+		if slot[i] == dataStartBytes[0] && slot[i+1] == dataStartBytes[1] {
 			slot[i] = slot[i+2]
 			slot[i+1] = slot[i+3]
 		}

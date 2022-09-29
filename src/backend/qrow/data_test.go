@@ -14,9 +14,9 @@ import (
 func TestNewRow(t *testing.T) {
 	tableDef := tutils.TestTables.Table1Def()
 	testTuple, err := bdata.CreateTuple(tableDef, map[string][]byte{
-		tutils.Table1.AwesomeKey:  convInput(24, tableDef.Column(tutils.Table1.AwesomeKeyId).Type()),
+		tutils.Table1.AwesomeKey:  convInput(int64(24), tableDef.Column(tutils.Table1.AwesomeKeyId).Type()),
 		tutils.Table1.NullableCol: nil,
-		tutils.Table1.NonNullColl: convInput(43, tableDef.Column(tutils.Table1.NonNullCollId).Type()),
+		tutils.Table1.NonNullColl: convInput(int64(43), tableDef.Column(tutils.Table1.NonNullCollId).Type()),
 	}, tx.NewInfoCtx(29))
 	if err != nil {
 		panic(err.Error())

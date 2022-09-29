@@ -43,14 +43,16 @@ func NewIntegerToken(value string) (*IntegerToken, error) {
 	}
 
 	return &IntegerToken{
-		Token: NewBasicToken(Integer, value),
-		Int:   integer,
+		Token:      NewBasicToken(Integer, value),
+		Int:        int64(integer),
+		IsNegative: value[0] == '-',
 	}, nil
 }
 
 type IntegerToken struct {
 	Token
-	Int int
+	Int        int64
+	IsNegative bool
 }
 
 func NewFloatToken(value string) (*FloatToken, error) {

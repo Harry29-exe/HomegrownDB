@@ -2,8 +2,6 @@ package column
 
 import "HomegrownDB/dbsystem/ctype"
 
-type Id = uint32
-
 // Def describes column properties and provides segparser and serializer
 type Def interface {
 	Name() string
@@ -27,6 +25,8 @@ type WDef interface {
 	SetOrder(order Order)
 }
 
+type Id = uint32
+
 // Order describes order of column in table
 type Order = uint16
 
@@ -36,7 +36,19 @@ func Serialize(data []byte) (col WDef, subsequent []byte) {
 	return
 }
 
-func NewDefinition(args Args) WDef {
-	//todo implement me
-	panic("Not implemented")
+func NewDefinition(name string, nullable bool, cType ctype.Type, args ctype.Args) (WDef, error) {
+	c := &column{
+		name:     name,
+		nullable: nullable,
+		id:       0,
+		order:    0,
+		typeCode: cType,
+		ctype:    nil,
+	}
+	CType, err := ctype.CreateCType(cType, args)
+	if err != nil {
+		return nil, err
+	}
+	c.ctype = CType
+	return c, nil
 }

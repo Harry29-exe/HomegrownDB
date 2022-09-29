@@ -14,4 +14,6 @@ const (
 	Analyser
 	Planer
 	Executor
+
+	DBSystem
 )

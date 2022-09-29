@@ -8,11 +8,11 @@ func NewSqlTextValueToken(value string) (*SqlTextValueToken, error) {
 
 	return &SqlTextValueToken{
 		Token:    NewBasicToken(SqlTextValue, value),
-		InputStr: value[1 : len(value)-1],
+		InnerStr: value[1 : len(value)-1],
 	}, nil
 }
 
 type SqlTextValueToken struct {
 	Token
-	InputStr string // InputStr is string inside quotation marks
+	InnerStr string // InnerStr is string inside quotation marks
 }

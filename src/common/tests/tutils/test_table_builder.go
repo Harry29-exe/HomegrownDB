@@ -1,6 +1,7 @@
 package tutils
 
 import (
+	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
 )
@@ -13,9 +14,11 @@ func NewTestTableBuilder(name string) *TestTableBuilder {
 	return &TestTableBuilder{table: table.NewDefinition(name)}
 }
 
-func (ttb *TestTableBuilder) AddColumn(args column.Args) *TestTableBuilder {
-	err := ttb.table.AddColumn(column.NewDefinition(args))
+func (ttb *TestTableBuilder) AddColumn(name string, nullable bool, cType ctype.Type, args ctype.Args) *TestTableBuilder {
+	col, err := column.NewDefinition(name, nullable, cType, args)
 	if err != nil {
+		panic("could not add column to table during tests")
+	} else if err = ttb.table.AddColumn(col); err != nil {
 		panic("could not add column to table during tests")
 	}
 

@@ -53,11 +53,11 @@ func TestInsertSimpleQuery(t *testing.T) {
 		assert.Eq(insertANode.Columns[2].Id(), table1.Column(tutils.Table1NullableColId).Id(), t)
 
 		rows := insertANode.Rows
-		assert.EqArray(rows.GetValue(0, 0), bparse.Serialize.Int2(2), t)
-		assert.EqArray(rows.GetValue(0, 1), bparse.Serialize.Int2(3), t)
-		assert.EqArray(rows.GetValue(0, 2), bparse.Serialize.Int2(4), t)
-		assert.EqArray(rows.GetValue(1, 0), bparse.Serialize.Int2(5), t)
-		assert.EqArray(rows.GetValue(1, 1), bparse.Serialize.Int2(6), t)
-		assert.EqArray(rows.GetValue(1, 2), bparse.Serialize.Int2(7), t)
+		assert.EqArray(rows.GetValue(0, 0), bparse.Serialize.Int8(2), t)
+		assert.EqArray(rows.GetValue(0, 1), bparse.Serialize.Int8(3), t)
+		assert.EqArray(rows.GetValue(0, 2), bparse.Serialize.Int8(4), t)
+		assert.EqArray(rows.GetValue(1, 0), bparse.Serialize.Int8(5), t)
+		assert.EqArray(rows.GetValue(1, 1), bparse.Serialize.Int8(6), t)
+		assert.EqArray(rows.GetValue(1, 2), bparse.Serialize.Int8(7), t)
 	}
 }

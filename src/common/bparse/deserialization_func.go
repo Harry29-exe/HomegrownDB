@@ -19,6 +19,12 @@ func (d deserializer) MdString(data []byte) (value string, subsequent []byte) {
 	return string(data[2:afterString]), data[afterString:]
 }
 
+func (d deserializer) UInt2(data []byte) (value uint16, subsequent []byte) {
+	value = binary.BigEndian.Uint16(data[:2])
+	subsequent = data[2:]
+	return
+}
+
 func (d deserializer) Int2(data []byte) (value int16, subsequent []byte) {
 	value = int16(binary.BigEndian.Uint16(data[:2]))
 	subsequent = data[2:]

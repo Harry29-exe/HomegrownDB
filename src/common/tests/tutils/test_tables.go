@@ -26,9 +26,9 @@ var Table1 = struct {
 
 func (t testTables) Table1Def() tstructs.TestTable {
 	table := NewTestTableBuilder("awesome_table1").
-		AddColumn(column.ArgsBuilder(Table1.AwesomeKey, ctype.TypeInt8).Build()).
-		AddColumn(column.ArgsBuilder(Table1.NullableCol, ctype.TypeInt8).Nullable(true).Build()).
-		AddColumn(column.ArgsBuilder(Table1.NonNullColl, ctype.TypeInt8).Nullable(false).Build()).
+		AddColumn(Table1.AwesomeKey, false, ctype.TypeInt8, nil).
+		AddColumn(Table1.NullableCol, true, ctype.TypeInt8, nil).
+		AddColumn(Table1.NonNullColl, false, ctype.TypeInt8, nil).
 		GetTable()
 
 	return tstructs.TestTable{WDefinition: table}

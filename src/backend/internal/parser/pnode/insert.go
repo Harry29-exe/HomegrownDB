@@ -28,7 +28,8 @@ func (v *InsertingRow) AddValue(tk token.Token, tokenIndex uint32) bool {
 
 	switch tk.Code() {
 	case token.SqlTextValue:
-		value.V = tk.Value()
+		sqlTextTk := tk.(*token.SqlTextValueToken)
+		value.V = sqlTextTk.InnerStr
 	case token.Integer:
 		value.V = tk.(*token.IntegerToken).Int
 	case token.Float:

@@ -95,9 +95,9 @@ func (t *StandardTable) ColumnOrder(name string) (order column.Order, ok bool) {
 	return
 }
 
+//todo array of ctypes?
 func (t *StandardTable) ColumnType(id column.Order) ctype.CType {
-	//todo implement me
-	panic("Not implemented")
+	return t.columns[id].CType()
 }
 
 func (t *StandardTable) ColumnByName(name string) (col column.Def, ok bool) {

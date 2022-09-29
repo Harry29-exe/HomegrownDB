@@ -22,7 +22,7 @@ func (receiver insertRows) Analyse(
 
 	for _, row := range rows {
 		for i, val := range row.Values {
-			cval, err := ctype.ConvInput(val, cols[i].Type())
+			cval, err := ctype.ConvInput(val.V, cols[i].Type())
 			if err != nil {
 				return nil, err
 			}

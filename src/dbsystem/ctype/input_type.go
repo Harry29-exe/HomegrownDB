@@ -14,7 +14,7 @@ const (
 
 func ConvInput(input any, cType Type) ([]byte, error) {
 	switch input.(type) {
-	case int:
+	case int64:
 		return convInputInt(input.(int64), cType)
 	case float64:
 		return convInputFloat(input.(float64), cType)
