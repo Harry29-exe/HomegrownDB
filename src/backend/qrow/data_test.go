@@ -3,7 +3,7 @@ package qrow_test
 import (
 	"HomegrownDB/backend/qrow"
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/tutils"
+	"HomegrownDB/common/tests/testtable/ttable1"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/table"
@@ -12,11 +12,11 @@ import (
 )
 
 func TestNewRow(t *testing.T) {
-	tableDef := tutils.TestTables.Table1Def()
+	tableDef := ttable1.Def()
 	testTuple, err := bdata.CreateTuple(tableDef, map[string][]byte{
-		tutils.Table1.AwesomeKey:  convInput(int64(24), tableDef.Column(tutils.Table1.AwesomeKeyId).Type()),
-		tutils.Table1.NullableCol: nil,
-		tutils.Table1.NonNullColl: convInput(int64(43), tableDef.Column(tutils.Table1.NonNullCollId).Type()),
+		ttable1.C0AwesomeKey:  convInput(int64(24), tableDef.Column(ttable1.C0AwesomeKeyOrder).Type()),
+		ttable1.C1NullableCol: nil,
+		ttable1.C2NonNullColl: convInput(int64(43), tableDef.Column(ttable1.C2NonNullCollOrder).Type()),
 	}, tx.NewInfoCtx(29))
 	if err != nil {
 		panic(err.Error())
@@ -27,18 +27,18 @@ func TestNewRow(t *testing.T) {
 	dataRow := qrow.NewRow([]bdata.Tuple{testTuple.Tuple}, holder)
 
 	assert.EqArray(
-		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, tutils.Table1.AwesomeKey),
-		dataRow.GetField(tutils.Table1.AwesomeKeyId),
+		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C0AwesomeKey),
+		dataRow.GetField(ttable1.C0AwesomeKeyOrder),
 		t,
 	)
 	assert.EqArray(
-		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, tutils.Table1.NullableCol),
-		dataRow.GetField(tutils.Table1.NullableColId),
+		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C1NullableCol),
+		dataRow.GetField(ttable1.C1NullableColOrder),
 		t,
 	)
 	assert.EqArray(
-		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, tutils.Table1.NonNullColl),
-		dataRow.GetField(tutils.Table1.NonNullCollId),
+		bdata.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C2NonNullColl),
+		dataRow.GetField(ttable1.C2NonNullCollOrder),
 		t,
 	)
 }

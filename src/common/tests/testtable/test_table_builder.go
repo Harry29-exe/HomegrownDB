@@ -1,4 +1,4 @@
-package tutils
+package testtable
 
 import (
 	"HomegrownDB/dbsystem/ctype"

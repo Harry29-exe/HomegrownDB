@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/common/random"
 	"HomegrownDB/common/tests"
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/tutils"
+	"HomegrownDB/common/tests/testtable/ttable1"
 	"HomegrownDB/dbsystem/bdata"
 	"HomegrownDB/dbsystem/schema/table"
 	"fmt"
@@ -38,13 +38,13 @@ func TestCreateEmptyPage(t *testing.T) {
 }
 
 func TestPage_Tuple(t *testing.T) {
-	table := tutils.TestTables.Table1Def()
-	page := bdata.CreateEmptyPage(table)
+	table1 := ttable1.Def()
+	page := bdata.CreateEmptyPage(table1)
 
 	//txCtx1 := tx.NewContext(1)
 	rand := random.NewRandom(13)
 	for tupleIndex := uint16(0); tupleIndex < 20; tupleIndex++ {
-		tuple := table.RandTuple(rand).Tuple
+		tuple := table1.RandTuple(rand).Tuple
 		err := page.InsertTuple(tuple.Data())
 		if err != nil {
 			t.Errorf("could not insert tuple nr %d because of error: %e", tupleIndex, err)
@@ -55,7 +55,7 @@ func TestPage_Tuple(t *testing.T) {
 }
 
 func TestPage_DeleteTuple_FromMiddle(t *testing.T) {
-	table1 := tutils.TestTables.Table1Def()
+	table1 := ttable1.Def()
 	page := bdata.CreateEmptyPage(table1)
 
 	tuples := table1.PutRandomTupleToPage(10, page, random.NewRandom(23))
@@ -69,7 +69,7 @@ func TestPage_DeleteTuple_FromMiddle(t *testing.T) {
 }
 
 func TestPage_DeleteTuple_First(t *testing.T) {
-	table1 := tutils.TestTables.Table1Def()
+	table1 := ttable1.Def()
 	page := bdata.CreateEmptyPage(table1)
 
 	tuples := table1.PutRandomTupleToPage(10, page, random.NewRandom(23))
@@ -87,7 +87,7 @@ func TestPage_DeleteTuple_First(t *testing.T) {
 }
 
 func TestPage_DeleteTuple_Last(t *testing.T) {
-	table1 := tutils.TestTables.Table1Def()
+	table1 := ttable1.Def()
 	page := bdata.CreateEmptyPage(table1)
 
 	tuples := table1.PutRandomTupleToPage(10, page, random.NewRandom(23))

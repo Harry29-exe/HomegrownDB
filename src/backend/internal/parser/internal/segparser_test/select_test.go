@@ -9,11 +9,11 @@ import (
 
 func TestSelectParser_Parse_ShouldParse(t *testing.T) {
 	sentences := []string{
-		"SELECT t1.col1 FROM table1 t1",
+		"SELECT t1.col1 FROM ttable1 t1",
 	}
 
 	tableAlias := "t1"
-	tableName := "table1"
+	tableName := "ttable1"
 	fieldName := "col1"
 	fieldAlias := "col1"
 

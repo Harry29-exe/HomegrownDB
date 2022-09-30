@@ -3,8 +3,8 @@ package buffer_test
 import (
 	"HomegrownDB/common/random"
 	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/common/tests/testtable/ttable1"
 	"HomegrownDB/common/tests/tstructs"
-	"HomegrownDB/common/tests/tutils"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/bdata"
 	"sync"
@@ -13,7 +13,7 @@ import (
 )
 
 func TestSharedBuffer_Overflow(t *testing.T) {
-	table1 := tutils.TestTables.Table1Def()
+	table1 := ttable1.Def()
 	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
 	ioStore := tstructs.NewInMemTableIO(table1)
 	table1IO := ioStore.TableIO(table1.TableId())
@@ -41,7 +41,7 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 }
 
 func TestSharedBuffer_ParallelRead(t *testing.T) {
-	table1 := tutils.TestTables.Table1Def()
+	table1 := ttable1.Def()
 	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
 	ioStore := tstructs.NewInMemTableIO(table1)
 	table1IO := ioStore.TableIO(table1.TableId())
@@ -71,9 +71,9 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	waitGroup2.Wait()
 }
 
-//todo consult chaber if this test can be done better (not using timer)
+// todo consult chaber if this test can be done better (not using timer)
 func TestSharedBuffer_RWLock(t *testing.T) {
-	table1 := tutils.TestTables.Table1Def()
+	table1 := ttable1.Def()
 	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
 	ioStore := tstructs.NewInMemTableIO(table1)
 	table1IO := ioStore.TableIO(table1.TableId())
@@ -119,9 +119,9 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 	<-ch1
 }
 
-//todo consult chaber if this test can be done better (not using timer)
+// todo consult chaber if this test can be done better (not using timer)
 func TestSharedBuffer_2xWLock(t *testing.T) {
-	table1 := tutils.TestTables.Table1Def()
+	table1 := ttable1.Def()
 	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
 	ioStore := tstructs.NewInMemTableIO(table1)
 	table1IO := ioStore.TableIO(table1.TableId())

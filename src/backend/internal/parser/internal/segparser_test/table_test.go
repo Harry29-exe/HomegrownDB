@@ -10,14 +10,14 @@ import (
 func TestTable_Parse_ShouldParse(t *testing.T) {
 	//given
 	sentences := []testSentence{
-		{"table1 t1, table2 t2", 2},
-		{"table1 t1, table2 t2 WHERE", 2},
-		{"table1 t1", 2},
-		{"table1 t1 ", 2},
+		{"ttable1 t1, table2 t2", 2},
+		{"ttable1 t1, table2 t2 WHERE", 2},
+		{"ttable1 t1", 2},
+		{"ttable1 t1 ", 2},
 	}
 
 	expectedNode := pnode.TableNode{
-		TableName:  "table1",
+		TableName:  "ttable1",
 		TableAlias: "t1",
 	}
 
@@ -29,14 +29,14 @@ func TestTable_Parse_ShouldParse(t *testing.T) {
 func TestTable_Parse_ShouldParse2(t *testing.T) {
 	//given
 	sentences := []testSentence{
-		{"table1 WHERE ", 0},
-		{"table1", 0},
-		{"table1, table2 t2", 0},
+		{"ttable1 WHERE ", 0},
+		{"ttable1", 0},
+		{"ttable1, table2 t2", 0},
 	}
 
 	expectedNode := pnode.TableNode{
-		TableName:  "table1",
-		TableAlias: "table1",
+		TableName:  "ttable1",
+		TableAlias: "ttable1",
 	}
 
 	for _, sentence := range sentences {

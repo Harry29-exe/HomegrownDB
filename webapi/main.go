@@ -30,7 +30,7 @@ func main() {
 }
 
 func testTuplePrint() {
-	tableDef := table.NewDefinition("table1")
+	tableDef := table.NewDefinition("ttable1")
 	tableDef.SetTableId(231)
 	tableDef.SetObjectId(4352)
 
