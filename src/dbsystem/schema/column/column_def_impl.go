@@ -5,12 +5,13 @@ import "HomegrownDB/dbsystem/ctype"
 var _ WDef = &column{}
 
 type column struct {
-	name     string
-	nullable bool
-	id       Id
-	order    Order
-	typeCode ctype.Type
-	ctype    ctype.CType
+	name       string
+	nullable   bool
+	id         Id
+	order      Order
+	innerOrder InnerOrder
+	typeCode   ctype.Type
+	ctype      ctype.CType
 }
 
 func (c *column) Name() string {
@@ -35,6 +36,14 @@ func (c *column) Order() Order {
 
 func (c *column) SetOrder(order Order) {
 	c.order = order
+}
+
+func (c *column) InnerOrder() InnerOrder {
+	return c.innerOrder
+}
+
+func (c *column) SetInnerOrder(order InnerOrder) {
+	c.innerOrder = order
 }
 
 func (c *column) Type() ctype.Type {

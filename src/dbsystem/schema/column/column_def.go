@@ -8,6 +8,7 @@ type Def interface {
 	Nullable() bool
 	Id() Id
 	Order() Order
+	InnerOrder() InnerOrder
 	Type() ctype.Type
 	CType() ctype.CType
 
@@ -23,12 +24,16 @@ type WDef interface {
 	Def
 	SetId(id Id)
 	SetOrder(order Order)
+	SetInnerOrder(order InnerOrder)
 }
 
 type Id = uint32
 
 // Order describes order of column in table
 type Order = uint16
+
+// InnerOrder describes order of column in tuple
+type InnerOrder = uint16
 
 func Serialize(data []byte) (col WDef, subsequent []byte) {
 	col = &column{}

@@ -2,7 +2,7 @@ package exenode
 
 import (
 	plan2 "HomegrownDB/backend/internal/planer/plan"
-	qrow2 "HomegrownDB/backend/qrow"
+	"HomegrownDB/backend/qrow2"
 )
 
 type ExeNode interface {
@@ -10,8 +10,6 @@ type ExeNode interface {
 	// it's usually one node but in some cases it can be multiple nodes (e.g. Join)
 	// and sometimes it will be nil (e.g. SeqScan)
 	SetSource(source []ExeNode)
-	// Init initialize node with dataHolder that will be used to create data.R
-	Init(options InitOptions) qrow2.RowBuffer
 	// HasNext returns whether node can return more values
 	HasNext() bool
 	// Next returns next row

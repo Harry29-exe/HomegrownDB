@@ -3,6 +3,7 @@ package exenode
 import (
 	"HomegrownDB/backend/internal/planer/plan"
 	"HomegrownDB/backend/qrow"
+	"HomegrownDB/backend/qrow2"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/bdata"
@@ -21,7 +22,6 @@ type SeqScan struct {
 	tableDef table.Definition
 	tableIO  access.TableDataIO
 	buffer   buffer.DBSharedBuffer
-	holder   qrow.RowBuffer
 
 	page  bdata.PageId
 	tuple bdata.TupleIndex
@@ -33,12 +33,6 @@ func (s *SeqScan) SetSource(source []ExeNode) {
 	panic("This node can not have source, it's programmers error")
 }
 
-func (s *SeqScan) Init(options InitOptions) qrow.RowBuffer {
-	s.holder = qrow.NewBaseRowHolder(qrow.GlobalSlotBuffer, []table.Definition{s.tableDef})
-
-	return s.holder
-}
-
 func (s *SeqScan) Free() {
 	//TODO implement me
 	panic("implement me")
@@ -48,7 +42,7 @@ func (s *SeqScan) HasNext() bool {
 	return s.hasNext
 }
 
-func (s *SeqScan) Next() qrow.Row {
+func (s *SeqScan) Next() qrow2.Row {
 	tag := bdata.PageTag{PageId: s.page, TableId: s.tableDef.TableId()}
 	rPage, err := buffer.SharedBuffer.RPage(tag)
 	if err != nil {
@@ -66,7 +60,7 @@ func (s *SeqScan) Next() qrow.Row {
 		}
 	}
 
-	return qrow.NewRow([]bdata.Tuple{tuple}, s.holder)
+	return
 }
 
 func (s *SeqScan) NextBatch() []qrow.Row {
