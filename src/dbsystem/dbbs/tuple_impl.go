@@ -1,4 +1,4 @@
-package bdata
+package dbbs
 
 import (
 	"HomegrownDB/common/bparse"
@@ -31,7 +31,7 @@ const TupleIndexSize = 2
 
 type InTuplePtr = uint16
 
-func (t Tuple) Data() []byte {
+func (t Tuple) Bytes() []byte {
 	return t.data
 }
 
@@ -79,6 +79,10 @@ func (t Tuple) ColValue(id column.Order) []byte {
 
 func (t Tuple) DataSize() int {
 	return len(t.data) - int(t.table.BitmapLen()+toNullBitmap)
+}
+
+func (t Tuple) HeaderSize() int {
+	return int(t.table.BitmapLen() + toNullBitmap)
 }
 
 func (t Tuple) SetCreatedByTx(txId tx.Id) {

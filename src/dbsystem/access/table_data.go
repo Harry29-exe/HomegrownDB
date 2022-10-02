@@ -2,7 +2,7 @@ package access
 
 import (
 	"HomegrownDB/dbsystem"
-	"HomegrownDB/dbsystem/bdata"
+	"HomegrownDB/dbsystem/dbbs"
 	"fmt"
 	"os"
 	"sync"
@@ -13,21 +13,21 @@ const PageSize = uint32(dbsystem.PageSize)
 
 type TableDataIO interface {
 	// ReadPage reads page with given index to provided buffer
-	ReadPage(pageIndex bdata.PageId, buffer []byte) error
+	ReadPage(pageIndex dbbs.PageId, buffer []byte) error
 	// FlushPage overrides pages at given page index with data from provided buffer
-	FlushPage(pageIndex bdata.PageId, pageData []byte) error
+	FlushPage(pageIndex dbbs.PageId, pageData []byte) error
 	// NewPage saves provided buffer as new page and returns newly created page index
-	NewPage(pageData []byte) (bdata.PageId, error)
+	NewPage(pageData []byte) (dbbs.PageId, error)
 	PageCount() uint32
 
-	ReadBgPage(pageIndex bdata.PageId, buffer []byte) error
-	FlushBgPage(pageIndex bdata.PageId, pageData []byte) error
-	NewBgPage(pageData []byte) (bdata.PageId, error)
+	ReadBgPage(pageIndex dbbs.PageId, buffer []byte) error
+	FlushBgPage(pageIndex dbbs.PageId, pageData []byte) error
+	NewBgPage(pageData []byte) (dbbs.PageId, error)
 	BgPageCount() uint32
 
-	ReadToastPage(pageIndex bdata.PageId, buffer []byte) error
-	FlushToastPage(pageIndex bdata.PageId, pageData []byte) error
-	NewToastPage(pageData []byte) (bdata.PageId, error)
+	ReadToastPage(pageIndex dbbs.PageId, buffer []byte) error
+	FlushToastPage(pageIndex dbbs.PageId, pageData []byte) error
+	NewToastPage(pageData []byte) (dbbs.PageId, error)
 	ToastPageCount() uint32
 }
 
@@ -69,15 +69,15 @@ type tableDataIO struct {
 	toastPageCount     *uint32
 }
 
-func (t *tableDataIO) ReadPage(pageIndex bdata.PageId, buffer []byte) error {
+func (t *tableDataIO) ReadPage(pageIndex dbbs.PageId, buffer []byte) error {
 	return readPage(pageIndex, buffer, t.pagesFile, t.pagesFileLock)
 }
 
-func (t *tableDataIO) FlushPage(pageIndex bdata.PageId, pageData []byte) error {
+func (t *tableDataIO) FlushPage(pageIndex dbbs.PageId, pageData []byte) error {
 	return flushPage(pageIndex, pageData, t.pagesFile, t.pagesFileLock)
 }
 
-func (t *tableDataIO) NewPage(pageData []byte) (bdata.PageId, error) {
+func (t *tableDataIO) NewPage(pageData []byte) (dbbs.PageId, error) {
 	id, err := newPage(pageData, t.pagesFile, t.pagesFileLock)
 	if err == nil {
 		atomic.AddUint32(t.pageCount, 1)
@@ -89,15 +89,15 @@ func (t *tableDataIO) PageCount() uint32 {
 	return *t.pageCount
 }
 
-func (t *tableDataIO) ReadBgPage(pageIndex bdata.PageId, buffer []byte) error {
+func (t *tableDataIO) ReadBgPage(pageIndex dbbs.PageId, buffer []byte) error {
 	return readPage(pageIndex, buffer, t.bgPagesFile, t.bgPagesFileLock)
 }
 
-func (t *tableDataIO) FlushBgPage(pageIndex bdata.PageId, pageData []byte) error {
+func (t *tableDataIO) FlushBgPage(pageIndex dbbs.PageId, pageData []byte) error {
 	return flushPage(pageIndex, pageData, t.bgPagesFile, t.bgPagesFileLock)
 }
 
-func (t *tableDataIO) NewBgPage(pageData []byte) (bdata.PageId, error) {
+func (t *tableDataIO) NewBgPage(pageData []byte) (dbbs.PageId, error) {
 	id, err := newPage(pageData, t.bgPagesFile, t.bgPagesFileLock)
 	if err == nil {
 		atomic.AddUint32(t.bgPageCount, 1)
@@ -109,15 +109,15 @@ func (t *tableDataIO) BgPageCount() uint32 {
 	return *t.bgPageCount
 }
 
-func (t *tableDataIO) ReadToastPage(pageIndex bdata.PageId, buffer []byte) error {
+func (t *tableDataIO) ReadToastPage(pageIndex dbbs.PageId, buffer []byte) error {
 	return readPage(pageIndex, buffer, t.toastPagesFile, t.toastPagesFileLock)
 }
 
-func (t *tableDataIO) FlushToastPage(pageIndex bdata.PageId, pageData []byte) error {
+func (t *tableDataIO) FlushToastPage(pageIndex dbbs.PageId, pageData []byte) error {
 	return flushPage(pageIndex, pageData, t.toastPagesFile, t.toastPagesFileLock)
 }
 
-func (t *tableDataIO) NewToastPage(pageData []byte) (bdata.PageId, error) {
+func (t *tableDataIO) NewToastPage(pageData []byte) (dbbs.PageId, error) {
 	id, err := newPage(pageData, t.toastPagesFile, t.toastPagesFileLock)
 	if err == nil {
 		atomic.AddUint32(t.toastPageCount, 1)
@@ -129,7 +129,7 @@ func (t *tableDataIO) ToastPageCount() uint32 {
 	return *t.toastPageCount
 }
 
-func readPage(pageIndex bdata.PageId, buffer []byte, pagesFile *os.File, fileLock *sync.RWMutex) error {
+func readPage(pageIndex dbbs.PageId, buffer []byte, pagesFile *os.File, fileLock *sync.RWMutex) error {
 	fileLock.RLock()
 	defer fileLock.RUnlock()
 	_, err := pagesFile.ReadAt(buffer, int64(PageSize*pageIndex))
@@ -140,7 +140,7 @@ func readPage(pageIndex bdata.PageId, buffer []byte, pagesFile *os.File, fileLoc
 	return nil
 }
 
-func newPage(pageData []byte, pagesFile *os.File, fileLock *sync.RWMutex) (bdata.PageId, error) {
+func newPage(pageData []byte, pagesFile *os.File, fileLock *sync.RWMutex) (dbbs.PageId, error) {
 	fileLock.Lock()
 	defer fileLock.Unlock()
 
@@ -161,7 +161,7 @@ func newPage(pageData []byte, pagesFile *os.File, fileLock *sync.RWMutex) (bdata
 	return newPageId, nil
 }
 
-func flushPage(pageIndex bdata.PageId, pageData []byte, pagesFile *os.File, fileLock *sync.RWMutex) error {
+func flushPage(pageIndex dbbs.PageId, pageData []byte, pagesFile *os.File, fileLock *sync.RWMutex) error {
 	fileLock.Lock()
 	defer fileLock.Unlock()
 

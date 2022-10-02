@@ -2,7 +2,7 @@ package exenode
 
 import (
 	plan2 "HomegrownDB/backend/internal/planer/plan"
-	"HomegrownDB/backend/qrow2"
+	"HomegrownDB/dbsystem/dbbs"
 )
 
 type ExeNode interface {
@@ -13,11 +13,11 @@ type ExeNode interface {
 	// HasNext returns whether node can return more values
 	HasNext() bool
 	// Next returns next row
-	Next() qrow2.Row
+	Next() dbbs.QRow
 	// NextBatch returns amount of rows that node can read in most effective way
-	NextBatch() []qrow2.Row
+	NextBatch() []dbbs.QRow
 	// All returns all remaining rows
-	All() []qrow2.Row
+	All() []dbbs.QRow
 	// Free send signal to node that it won't be used and should release
 	// all its resources
 	Free()

@@ -2,7 +2,7 @@ package qrow
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/bdata"
+	"HomegrownDB/dbsystem/dbbs"
 	"HomegrownDB/dbsystem/schema/column"
 )
 
@@ -11,7 +11,7 @@ type Row struct {
 	data   []byte // data format described in documentation/executor/Data.svg
 }
 
-func NewRow(tuples []bdata.Tuple, holder RowBuffer) Row {
+func NewRow(tuples []dbbs.Tuple, holder RowBuffer) Row {
 	dataSize := 0
 	for _, tuple := range tuples {
 		dataSize = tuple.DataSize()
@@ -21,12 +21,12 @@ func NewRow(tuples []bdata.Tuple, holder RowBuffer) Row {
 	var fieldCount = holder.Fields()
 	var dataStart = fieldCount*2 + 2
 	var dataPtr = dataStart
-	var tuple bdata.Tuple
+	var tuple dbbs.Tuple
 	var val []byte
 	field := FieldPtr(0)
 	for i, table := range holder.Tables() {
 		tuple = tuples[i]
-		tupleData := tuple.Data()
+		tupleData := tuple.Bytes()
 		for colOrder, col := range table.Columns() {
 			if tuple.IsNull(column.Order(colOrder)) {
 				bparse.Serialize.PutUInt2(dataStart, slot[field*2:])

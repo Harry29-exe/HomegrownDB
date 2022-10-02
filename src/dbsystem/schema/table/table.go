@@ -21,6 +21,8 @@ type Definition interface {
 	BitmapLen() uint16
 	ColumnCount() uint16
 
+	CTypePattern() []ctype.CType
+
 	ColumnName(columnId column.Order) string
 	ColumnOrder(name string) (order column.Order, ok bool)
 	ColumnId(order column.Order) column.Id

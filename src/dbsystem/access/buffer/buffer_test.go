@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/common/tests/testtable/ttable1"
 	"HomegrownDB/common/tests/tstructs"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/bdata"
+	"HomegrownDB/dbsystem/dbbs"
 	"sync"
 	"testing"
 	"time"
@@ -21,10 +21,10 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 	rand := random.NewRandom(0)
 	table1.FillPages(1_000, table1IO, rand)
 
-	buf := make([]byte, bdata.PageSize)
+	buf := make([]byte, dbbs.PageSize)
 	testBuffer := buffer.NewSharedBuffer(100, tableStore, ioStore)
-	for i := bdata.PageId(0); i < 1_000; i++ {
-		tag := bdata.NewPageTag(i, table1)
+	for i := dbbs.PageId(0); i < 1_000; i++ {
+		tag := dbbs.NewPageTag(i, table1)
 		page, err := testBuffer.WPage(tag)
 		if err != nil {
 			t.Errorf("During reading page %d got error: %e", i, err)
@@ -57,7 +57,7 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	waitGroup2 := sync.WaitGroup{}
 	waitGroup2.Add(tCount)
 
-	tag := bdata.PageTag{PageId: 0, TableId: table1.TableId()}
+	tag := dbbs.PageTag{PageId: 0, TableId: table1.TableId()}
 	for i := 0; i < tCount; i++ {
 		go func() {
 			_, _ = testBuffer.RPage(tag)
@@ -83,7 +83,7 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 
 	testBuffer := buffer.NewSharedBuffer(10, tableStore, ioStore)
 
-	tag := bdata.NewPageTag(0, table1)
+	tag := dbbs.NewPageTag(0, table1)
 	_, err := testBuffer.WPage(tag)
 
 	if err != nil {
@@ -131,7 +131,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 
 	testBuffer := buffer.NewSharedBuffer(10, tableStore, ioStore)
 
-	tag := bdata.NewPageTag(0, table1)
+	tag := dbbs.NewPageTag(0, table1)
 	_, err := testBuffer.WPage(tag)
 
 	if err != nil {

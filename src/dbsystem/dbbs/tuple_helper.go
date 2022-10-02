@@ -1,4 +1,4 @@
-package bdata
+package dbbs
 
 import (
 	"HomegrownDB/dbsystem/schema/column"
@@ -15,9 +15,9 @@ func (th tupleHelper) GetValue(tuple Tuple, tableDef table.Definition, id column
 		return nil
 	}
 	if id == 0 {
-		return tableDef.ColumnType(0).Value(tuple.Data())
+		return tableDef.ColumnType(0).Value(tuple.Bytes())
 	}
-	remainingData := tuple.Data()
+	remainingData := tuple.Bytes()
 	columns := tableDef.Columns()
 
 	for i := column.Order(0); i < id-1; i++ {

@@ -2,7 +2,7 @@ package tstructs
 
 import (
 	"HomegrownDB/dbsystem/access"
-	"HomegrownDB/dbsystem/bdata"
+	"HomegrownDB/dbsystem/dbbs"
 	"fmt"
 )
 
@@ -22,7 +22,7 @@ type TestInMemoryTableIO struct {
 
 var pageSize = access.PageSize
 
-func (t *TestInMemoryTableIO) ReadPage(pageIndex bdata.PageId, buffer []byte) error {
+func (t *TestInMemoryTableIO) ReadPage(pageIndex dbbs.PageId, buffer []byte) error {
 	pageStart := pageIndex * pageSize
 	if int(pageStart) > len(t.pages) {
 		return fmt.Errorf("no page with index: %d", pageIndex)
@@ -32,7 +32,7 @@ func (t *TestInMemoryTableIO) ReadPage(pageIndex bdata.PageId, buffer []byte) er
 	return nil
 }
 
-func (t *TestInMemoryTableIO) FlushPage(pageIndex bdata.PageId, pageData []byte) error {
+func (t *TestInMemoryTableIO) FlushPage(pageIndex dbbs.PageId, pageData []byte) error {
 	pageStart := pageIndex * pageSize
 	if int(pageStart) > len(t.pages) {
 		return fmt.Errorf("no page with index: %d", pageIndex)
@@ -42,27 +42,27 @@ func (t *TestInMemoryTableIO) FlushPage(pageIndex bdata.PageId, pageData []byte)
 	return nil
 }
 
-func (t *TestInMemoryTableIO) NewPage(pageData []byte) (bdata.PageId, error) {
+func (t *TestInMemoryTableIO) NewPage(pageData []byte) (dbbs.PageId, error) {
 	t.pages = append(t.pages, pageData...)
 
-	return bdata.PageId(len(t.pages))/pageSize - 1, nil
+	return dbbs.PageId(len(t.pages))/pageSize - 1, nil
 }
 
 func (t *TestInMemoryTableIO) PageCount() uint32 {
 	return uint32(len(t.bgPages)) / pageSize
 }
 
-func (t *TestInMemoryTableIO) ReadBgPage(pageIndex bdata.PageId, buffer []byte) error {
+func (t *TestInMemoryTableIO) ReadBgPage(pageIndex dbbs.PageId, buffer []byte) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t *TestInMemoryTableIO) FlushBgPage(pageIndex bdata.PageId, pageData []byte) error {
+func (t *TestInMemoryTableIO) FlushBgPage(pageIndex dbbs.PageId, pageData []byte) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t *TestInMemoryTableIO) NewBgPage(pageData []byte) (bdata.PageId, error) {
+func (t *TestInMemoryTableIO) NewBgPage(pageData []byte) (dbbs.PageId, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -72,17 +72,17 @@ func (t *TestInMemoryTableIO) BgPageCount() uint32 {
 	panic("implement me")
 }
 
-func (t *TestInMemoryTableIO) ReadToastPage(pageIndex bdata.PageId, buffer []byte) error {
+func (t *TestInMemoryTableIO) ReadToastPage(pageIndex dbbs.PageId, buffer []byte) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t *TestInMemoryTableIO) FlushToastPage(pageIndex bdata.PageId, pageData []byte) error {
+func (t *TestInMemoryTableIO) FlushToastPage(pageIndex dbbs.PageId, pageData []byte) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t *TestInMemoryTableIO) NewToastPage(pageData []byte) (bdata.PageId, error) {
+func (t *TestInMemoryTableIO) NewToastPage(pageData []byte) (dbbs.PageId, error) {
 	//TODO implement me
 	panic("implement me")
 }

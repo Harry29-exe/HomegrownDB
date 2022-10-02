@@ -1,4 +1,4 @@
-package bdata
+package dbbs
 
 import (
 	"HomegrownDB/common/bparse"

@@ -82,6 +82,11 @@ func (t *StandardTable) ColumnCount() uint16 {
 	return t.columnsCount
 }
 
+func (t *StandardTable) CTypePattern() []ctype.CType {
+	//todo implement me
+	panic("Not implemented")
+}
+
 func (t *StandardTable) ColumnName(columnId column.Order) string {
 	return t.columnsNames[columnId]
 }
@@ -95,7 +100,7 @@ func (t *StandardTable) ColumnOrder(name string) (order column.Order, ok bool) {
 	return
 }
 
-//todo array of ctypes?
+// todo array of ctypes?
 func (t *StandardTable) ColumnType(id column.Order) ctype.CType {
 	return t.columns[id].CType()
 }

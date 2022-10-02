@@ -1,4 +1,4 @@
-package bdata
+package dbbs
 
 // For better understanding of struct Page
 // it's recommended to view page.doc.svg diagram
