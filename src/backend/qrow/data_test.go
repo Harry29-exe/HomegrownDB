@@ -13,7 +13,7 @@ import (
 
 func TestNewRow(t *testing.T) {
 	tableDef := ttable1.Def()
-	testTuple, err := dbbs.CreateTuple(tableDef, map[string][]byte{
+	testTuple, err := dbbs.NewTestTuple(tableDef, map[string][]byte{
 		ttable1.C0AwesomeKey:  convInput(int64(24), tableDef.Column(ttable1.C0AwesomeKeyOrder).Type()),
 		ttable1.C1NullableCol: nil,
 		ttable1.C2NonNullColl: convInput(int64(43), tableDef.Column(ttable1.C2NonNullCollOrder).Type()),

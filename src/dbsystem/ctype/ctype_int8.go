@@ -12,11 +12,15 @@ var int8Factory factory = factoryInt8{}
 
 type factoryInt8 struct{}
 
-func (i factoryInt8) Build(args map[string]any) (CType, dberr.DBError) {
-	return int8{}, nil
+func (i factoryInt8) Build(args map[string]any) (*CType, dberr.DBError) {
+	return newCType(
+		int8{},
+		int8{},
+		int8{},
+		false,
+		ToastNone,
+	), nil
 }
-
-var _ CType = &int8{}
 
 type int8 struct{}
 

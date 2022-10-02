@@ -10,7 +10,7 @@ type Def interface {
 	Order() Order
 	InnerOrder() InnerOrder
 	Type() ctype.Type
-	CType() ctype.CType
+	CType() *ctype.CType
 
 	// Serialize should save all important Data to byte stream.
 	// It has to start with MdString of column.Type.

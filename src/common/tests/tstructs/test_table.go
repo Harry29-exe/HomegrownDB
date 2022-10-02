@@ -53,7 +53,7 @@ func (t TestTable) RandTuple(rand random.Random) dbbs.TupleToSave {
 		values[col.Name()] = col.CType().Rand(rand)
 	}
 
-	tuple, err := dbbs.CreateTuple(t.WDefinition, values, tx.NewInfoCtx(rand.Int31()))
+	tuple, err := dbbs.NewTestTuple(t.WDefinition, values, tx.NewInfoCtx(rand.Int31()))
 	if err != nil {
 		panic(err.Error())
 	}

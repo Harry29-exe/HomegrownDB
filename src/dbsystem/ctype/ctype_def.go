@@ -2,14 +2,6 @@ package ctype
 
 import "HomegrownDB/common/random"
 
-type CType interface {
-	Reader
-	Operations
-	Debug
-
-	Toast() ToastStatus
-}
-
 type Operations interface {
 	Equal(v1, v2 []byte) bool
 	Cmp(v1, v2 []byte) int

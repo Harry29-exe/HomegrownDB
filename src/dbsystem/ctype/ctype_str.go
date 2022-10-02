@@ -11,7 +11,7 @@ var strFactory factory = factoryStr{}
 
 type factoryStr struct{}
 
-func (f factoryStr) Build(args map[string]any) (CType, dberr.DBError) {
+func (f factoryStr) Build(args map[string]any) (*CType, dberr.DBError) {
 	ctype := str{}
 
 	length, ok := args["length"]
@@ -50,17 +50,19 @@ func (f factoryStr) Build(args map[string]any) (CType, dberr.DBError) {
 		}
 	}
 
-	return &ctype, nil
+	return newCType(&ctype, &ctype, &ctype, true, ToastStore), nil
 }
+
+var (
+	_ Reader     = &str{}
+	_ Operations = &str{}
+	_ Debug      = &str{}
+)
 
 type str struct {
 	Length        uint32
 	VaryingLength bool
 	UTF8          bool
-}
-
-func (s *str) Toast() ToastStatus {
-	return ToastStore
 }
 
 func (s *str) Skip(data []byte) []byte {
