@@ -5,12 +5,12 @@ import (
 	"HomegrownDB/backend/internal/executor"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/planer"
-	"HomegrownDB/backend/qrow"
+	"HomegrownDB/dbsystem/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 )
 
-func HandleQuery(query string, txCtx *tx.Ctx) (qrow.RowBuffer, error) {
+func HandleQuery(query string, txCtx *tx.Ctx) ([]dbbs.QRow, error) {
 	parseTree, err := parser.Parse(query, txCtx)
 	if err != nil {
 		return nil, err

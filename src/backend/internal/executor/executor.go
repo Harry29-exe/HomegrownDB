@@ -3,16 +3,15 @@ package executor
 import (
 	"HomegrownDB/backend/internal/executor/exenode"
 	"HomegrownDB/backend/internal/planer/plan"
-	"HomegrownDB/backend/qrow"
+	"HomegrownDB/dbsystem/dbbs"
 )
 
-func ExecPlan(plan plan.Plan) qrow.RowBuffer {
+func ExecPlan(plan plan.Plan) []dbbs.QRow {
 	root := plan.RootNode
 	exeNode := delegateCreateExeNode(root)
 	createChildrenNodes(exeNode, plan.RootNode)
 
-	buffer := exeNode.Init(exenode.InitOptions{StoreAllRows: true})
-	return buffer
+	return exeNode.All()
 }
 
 func createChildrenNodes(parent exenode.ExeNode, parentPlan plan.Node) {

@@ -1,10 +1,8 @@
 package querry
 
 import (
-	"HomegrownDB/backend"
 	"HomegrownDB/dbsystem/tx"
 	"io"
-	"strings"
 )
 
 type DBRequest struct {
@@ -19,25 +17,27 @@ type DBResponse struct {
 }
 
 func (r *DBRequest) Handle() *DBResponse {
-	var txCtx *tx.Ctx
-	if r.txId == 0 {
-		txCtx = tx.DBTxStore.NewCtx()
-	} else {
-		txCtx = tx.DBTxStore.GetCtx(r.txId)
-	}
+	//var txCtx *tx.Ctx
+	//if r.txId == 0 {
+	//	txCtx = tx.DBTxStore.NewCtx()
+	//} else {
+	//	txCtx = tx.DBTxStore.GetCtx(r.txId)
+	//}
 
-	buff, err := backend.HandleQuery(r.query, txCtx)
-	if err != nil {
-		return &DBResponse{
-			Body:   strings.NewReader(err.Error()),
-			Status: InvalidQuery,
-		}
-	}
-
-	return &DBResponse{
-		Body:   buff.Reader(),
-		Status: OK,
-	}
+	//todo implement me
+	panic("Not implemented")
+	//buff, err := backend.HandleQuery(r.query, txCtx)
+	//if err != nil {
+	//	return &DBResponse{
+	//		Body:   strings.NewReader(err.Error()),
+	//		Status: InvalidQuery,
+	//	}
+	//}
+	//
+	//return &DBResponse{
+	//	Body:   buff.Reader(),
+	//	Status: OK,
+	//}
 }
 
 type responseStatus = uint8
