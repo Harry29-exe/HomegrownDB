@@ -14,3 +14,4 @@
 - parse tree https://en.wikipedia.org/wiki/Parse_tree
 - b-tree https://www.programiz.com/dsa/b-tree
 - b+tree https://www.programiz.com/dsa/b-plus-tree
+- postgres data aligment https://www.enterprisedb.com/postgres-tutorials/data-alignment-postgresql
