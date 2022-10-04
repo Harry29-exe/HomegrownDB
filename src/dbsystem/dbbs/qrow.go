@@ -47,3 +47,8 @@ func NewQRowFromTuple(tuple RTuple) QRow {
 
 	return qrow
 }
+
+func (qr QRow) Value(index uint32) []byte {
+	//todo implement me
+	panic("Not implemented")
+}

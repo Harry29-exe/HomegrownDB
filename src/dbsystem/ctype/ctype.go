@@ -2,6 +2,7 @@ package ctype
 
 type CType struct {
 	Reader
+	Writer
 	Operations
 	Debug
 
@@ -12,6 +13,7 @@ type CType struct {
 func newCType(reader Reader, op Operations, deb Debug, varLen bool, status ToastStatus) *CType {
 	return &CType{
 		reader,
+		nil,
 		op,
 		deb,
 		varLen,
