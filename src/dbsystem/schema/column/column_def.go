@@ -2,7 +2,7 @@ package column
 
 import "HomegrownDB/dbsystem/ctype"
 
-// Def describes column properties and provides segparser and serializer
+// Def describes column config and provides segparser and serializer
 type Def interface {
 	Name() string
 	Nullable() bool

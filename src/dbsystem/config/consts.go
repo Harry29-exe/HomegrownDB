@@ -1,4 +1,4 @@
-package filepaths
+package config
 
 const (
 	TableDefinition = "/TableDefinition.hdbb"

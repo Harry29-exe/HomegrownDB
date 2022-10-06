@@ -1,4 +1,4 @@
-package sysfiles
+package dbfs
 
 import (
 	"HomegrownDB/dbsystem"
