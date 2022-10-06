@@ -26,9 +26,9 @@ func (i *Insert) HasNext() bool {
 
 // todo(3) rebuild this properly
 func (i *Insert) Next() dbbs.QRow {
-	tuple := dbbs.NewTuple()
-	//todo implement me
-	panic("Not implemented")
+
+	tupleData := i.rowSrc.NextRow()
+	tuple := dbbs.NewTuple(tupleData, i.table, i.txCtx)
 }
 
 func (i *Insert) NextBatch() []dbbs.QRow {

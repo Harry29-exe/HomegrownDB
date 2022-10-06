@@ -7,8 +7,10 @@ type InputRowSrc struct {
 func (rs *InputRowSrc) NextRow() [][]byte {
 	row := make([][]byte, len(rs.Fields))
 	for i, field := range rs.Fields {
-		row[i] = field.
+		row[i] = field.NextValue()
 	}
+
+	return row
 }
 
 type inputRowField struct {
@@ -28,5 +30,5 @@ func (f *inputRowField) NextValue() (val []byte) {
 	}
 
 	qrow := f.Expression.Next()
-	qrow.Pattern
+
 }
