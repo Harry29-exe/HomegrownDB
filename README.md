@@ -9,6 +9,10 @@
 - article how postgresql works https://patshaughnessy.net/2014/10/13/following-a-select-statement-through-postgres-internals
 - postgresql internal docs https://www.postgresql.org/docs/14/overview.html
 
+###Specific
+- free space map https://github.com/postgres/postgres/tree/master/src/backend/storage/freespace
+- buffer https://github.com/postgres/postgres/blob/master/src/backend/storage/buffer/README
+
 ###Additional resources sources
 - hash map in java http://coding-geek.com/how-does-a-hashmap-work-in-java/
 - parse tree https://en.wikipedia.org/wiki/Parse_tree
