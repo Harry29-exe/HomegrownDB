@@ -12,7 +12,7 @@ func CreateNewFSM(table table.Definition) *FreeSpaceMap {
 
 }
 
-func InitFSM(table table.Definition) *FreeSpaceMap {
+func LoadFSM(table table.Definition) *FreeSpaceMap {
 
 }
 
@@ -21,7 +21,7 @@ func InitFSM(table table.Definition) *FreeSpaceMap {
 // page has and helps find one with enough
 // space to fit inserting tuple
 type FreeSpaceMap struct {
-	io IO
+	io io
 
 	table  table.Definition
 	layers uint8
