@@ -2,6 +2,7 @@ package fsm
 
 import (
 	"HomegrownDB/common/datastructs/appsync"
+	"HomegrownDB/common/math2"
 	_ "HomegrownDB/dbsystem/access/dbfs"
 	"HomegrownDB/dbsystem/dbbs"
 	_ "HomegrownDB/dbsystem/schema/table"
@@ -25,10 +26,9 @@ func createNewIO(filepath string) (*io, error) {
 	}
 
 	pagesToCreate := 1
-	for j := uint16(0); j < pageLayers-2; j++ {
-		pagesToCreate *= int(layersInPage)
+	for j := 1; j < pageLayers-1; j++ {
+		pagesToCreate += math2.Power(int(leafNodePerPage), j)
 	}
-	pagesToCreate += 1
 
 	buff := make([]byte, pageSize)
 	for j := 0; j < pagesToCreate; j++ {
@@ -51,8 +51,10 @@ func createNewIO(filepath string) (*io, error) {
 }
 
 type io struct {
-	file        *os.File
-	pageLock    *appsync.ResLockMap[dbbs.PageId]
+	file     *os.File
+	pageLock *appsync.ResLockMap[dbbs.PageId]
+
+	pages       uint32
 	newPageLock *sync.Mutex
 }
 
@@ -60,8 +62,8 @@ func (i *io) createInitialPages() error {
 	i.file.Name()
 
 	pagesToSave := 1
-	for j := uint16(0); j < layersInPage-2; j++ {
-		pagesToSave *= int(layersInPage)
+	for j := uint16(0); j < leafNodePerPage-2; j++ {
+		pagesToSave *= int(leafNodePerPage)
 	}
 	pagesToSave += 1
 
@@ -120,29 +122,29 @@ func (i *io) releaseWPage(id dbbs.PageId) {
 	i.pageLock.WUnlockRes(id)
 }
 
-func (i *io) getRPage(pageId dbbs.PageId, buffer []byte) ([]byte, error) {
+func (i *io) getRPage(pageId dbbs.PageId, buffer []byte) error {
 	i.pageLock.RLockRes(pageId)
 
 	return i.readPage(pageId, buffer)
 }
 
-func (i *io) getWPage(pageId dbbs.PageId, buffer []byte) ([]byte, error) {
+func (i *io) getWPage(pageId dbbs.PageId, buffer []byte) error {
 	i.pageLock.WLockRes(pageId)
 
 	return i.readPage(pageId, buffer)
 }
 
-func (i *io) readPage(pageId dbbs.PageId, buffer []byte) ([]byte, error) {
+func (i *io) readPage(pageId dbbs.PageId, buffer []byte) error {
 	n, err := i.file.ReadAt(buffer, int64(pageId)*int64(pageSize))
 	if err != nil {
-		return nil, err
+		return err
 	} else if n != int(pageSize) {
-		return nil, fmt.Errorf(
+		return fmt.Errorf(
 			"read bytes(%d) are different that page size(%d)",
 			n, pageSize,
 		)
 	}
-	return buffer, nil
+	return nil
 }
 
 func deleteOpenFileAfterErr(file *os.File, causeErr error) error {
