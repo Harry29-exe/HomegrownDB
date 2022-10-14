@@ -6,6 +6,7 @@ import (
 	"HomegrownDB/dbsystem/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
+	"fmt"
 )
 
 // FreeSpaceMap is data structure stores
@@ -40,17 +41,19 @@ func (f *FreeSpaceMap) getInPageRightChildIndex(inPageIndex uint16) uint16 {
 }
 
 func (f *FreeSpaceMap) getPageIndex(inPageNodeIndex uint16, pageIndex uint32) uint32 {
-	pageOffset := uint32(1)
-	pageIndexInLayer := pageIndex - 1
-	pageLayer := 1 // starting from second layer
-	for pageLayerOffsets[pageLayer] < pageIndex {
-		pageOffset += pageLayerOffsets[pageLayer]
-		pageIndexInLayer -= pageLayerOffsets[pageLayer]
+	inLayerNodeIndex := uint32(inPageNodeIndex - nonLeaftNodeCount)
+	if pageIndex == 0 {
+		return inLayerNodeIndex + 1
+	} else if pageIndex < uint32(leafNodePerPage+1) {
+		return inLayerNodeIndex +
+			uint32(leafNodePerPage)*(pageIndex-1) +
+			uint32(leafNodePerPage) + 1
+	} else {
+		panic(fmt.Sprintf("not expected that hight pageIndex = %d "+
+			"(expected that fsm has 3 layers: 0, 1 and 2 so last valid pageIndex = leaftNodePerPage)",
+			pageIndex),
+		)
 	}
-
-	return pageLayerOffsets[pageLayer+1] +
-		pageIndexInLayer*uint32(leafNodePerPage) +
-		uint32(inPageNodeIndex-nonLeaftNodeCount)
 }
 
 func (f *FreeSpaceMap) leafNodeToPageId(inPageIndex uint16, pageIndex uint16, pageLayer uint16) uint16 {
