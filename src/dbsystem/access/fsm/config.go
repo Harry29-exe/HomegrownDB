@@ -8,18 +8,16 @@ const (
 )
 
 var (
-	pageSize          = dbbs.PageSize
-	leafNodePerPage   uint16
-	nonLeaftNodeCount uint16
-	pageLayerOffsets  []uint32
+	availableSpaceDivider uint16
+	pageSize              = dbbs.PageSize
+	leafNodeCount         uint16
+	nonLeafNodeCount      uint16
+	nodeCount             uint16
 )
 
 func init() {
-	leafNodePerPage = (pageSize - headerSize) / 2
-	nonLeaftNodeCount = pageSize - leafNodePerPage
-	pageLayerOffsets = []uint32{
-		0,                           // root has no offset
-		1,                           // root layer has one page
-		uint32(leafNodePerPage) + 1, // 1'st layer has leafNodePerPage pages and root has one page
-	}
+	nonLeafNodeCount = pageSize/2 - 1
+	leafNodeCount = (pageSize - headerSize) - nonLeafNodeCount
+	nodeCount = leafNodeCount + nonLeafNodeCount
+	availableSpaceDivider = dbbs.PageSize / 256
 }
