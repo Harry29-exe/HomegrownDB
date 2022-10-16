@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"HomegrownDB/dbsystem/properties/filepaths"
+	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/schema/table"
 	"os"
 )
@@ -18,7 +18,7 @@ func ReadSchema(tableDirPath string) ([]table.WDefinition, error) {
 		if !dir.IsDir() {
 			continue
 		}
-		tableInfoFilepath := tableDirPath + "/" + dir.Name() + filepaths.TableDefinition
+		tableInfoFilepath := tableDirPath + "/" + dir.Name() + config.TableDefinition
 		tableInfoFile, err := os.Open(tableInfoFilepath)
 		if err != nil {
 			return nil, err

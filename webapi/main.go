@@ -52,7 +52,7 @@ func testTuplePrint() {
 		"col4": 9,
 	}
 	txCtx := tx.NewContext(32)
-	tuple, err := dbbs.CreateTuple(tableDef, colValues, txCtx)
+	tuple, err := dbbs.NewTestTuple(tableDef, colValues, txCtx)
 	if err != nil {
 		println(err.Error())
 		os.Exit(1)

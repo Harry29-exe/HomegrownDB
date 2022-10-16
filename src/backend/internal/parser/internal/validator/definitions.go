@@ -40,6 +40,6 @@ type TextTokenValidator interface {
 	AsciiOnly() TextTokenValidator
 }
 
-//todo delete breakSkiper and implement it on top of validator
+// todo delete breakSkiper and implement it on top of validator
 type BreaksValidator interface {
 }

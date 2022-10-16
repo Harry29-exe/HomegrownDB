@@ -1,115 +1,37 @@
 package dbbs
 
 import (
-	"HomegrownDB/common/bparse"
+	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
-	"bytes"
-	"fmt"
 )
 
-// CreateTuple creates new TupleToSave from given columnValues and transaction context,
-// Tuple inside is not initialized i.e. it does not have TID (tuple identifier) and ids of
-// objects stored outside tuple should be saved to Tuple
-func CreateTuple(tableDef table.Definition, columnValues map[string][]byte, txInfo *tx.InfoCtx) (TupleToSave, error) {
-	builder := tupleBuilder{table: tableDef}
-	tuple, err := builder.Create(columnValues, txInfo)
-	if err != nil {
-		return TupleToSave{}, err
+func NewTuple(values [][]byte, table table.Definition, tx tx.Ctx) Tuple {
+	headerLen := int(toNullBitmap + table.BitmapLen())
+	tupleLen := headerLen
+	for _, value := range values {
+		tupleLen += len(value)
 	}
-
-	return TupleToSave{
-		Tuple: tuple,
-	}, nil
-}
-
-type tupleBuilder struct {
-	table        table.Definition
-	sortedValues [][]byte
-
-	buffer bytes.Buffer
-}
-
-func (tb *tupleBuilder) Create(columnValues map[string][]byte, txInfo *tx.InfoCtx) (Tuple, error) {
-	tb.sortMapValues(columnValues)
-	tb.initTupleBuffer()
-	tb.createNullBitmap()
-
-	err := tb.serializeColumnValues()
-	if err != nil {
-		return Tuple{}, err
-	}
-
 	tuple := Tuple{
-		data:  tb.buffer.Bytes(),
-		table: tb.table,
-	}
-	tb.initTupleWithTxContext(tuple, txInfo)
-
-	return tuple, nil
-}
-
-func (tb *tupleBuilder) sortMapValues(columnValues map[string][]byte) {
-	tb.sortedValues = make([][]byte, tb.table.ColumnCount())
-
-	for i := uint16(0); i < tb.table.ColumnCount(); i++ {
-		tb.sortedValues[i] = columnValues[tb.table.ColumnName(i)]
-	}
-}
-
-func (tb *tupleBuilder) initTupleBuffer() {
-	tb.buffer = bytes.Buffer{}
-	tb.buffer.Write(make([]byte, tupleHeaderSize))
-}
-
-func (tb *tupleBuilder) createNullBitmap() {
-	bitmapLen := tb.table.BitmapLen()
-	nullBitmap := make([]byte, bitmapLen)
-	colCounter := 0
-	currentByte := uint16(0)
-	for ; currentByte < bitmapLen-1; currentByte++ {
-		for bit := uint8(0); bit < 8; bit++ {
-			if tb.sortedValues[colCounter] != nil {
-				nullBitmap[currentByte] = bparse.Bit.
-					SetBit(nullBitmap[currentByte], bit)
-			}
-
-			colCounter++
-		}
+		data:  make([]byte, tupleLen),
+		table: table,
 	}
 
-	colCounter = 0
-	bitsInLastByte := uint8(tb.table.ColumnCount() - (bitmapLen-1)*8)
-	for bit := uint8(0); bit < bitsInLastByte; bit++ {
-		if tb.sortedValues[colCounter] != nil {
-			nullBitmap[currentByte] = bparse.Bit.
-				SetBit(nullBitmap[currentByte], bit)
+	txId := tx.Info.TxId()
+	tuple.SetModifiedByTx(txId)
+	tuple.SetCreatedByTx(txId)
+
+	tupleData := tuple.data[headerLen:]
+	var copiedBytes int
+	for i, value := range values {
+		if value == nil {
+			tuple.SetIsNull(column.Order(i))
+			continue
 		}
 
-		colCounter++
+		copiedBytes = copy(tupleData, value)
+		tupleData = tupleData[copiedBytes:]
 	}
 
-	tb.buffer.Write(nullBitmap)
-}
-
-func (tb *tupleBuilder) serializeColumnValues() error {
-	tableDef := tb.table
-	for i, value := range tb.sortedValues {
-		colDef := tableDef.Column(uint16(i))
-
-		if value != nil {
-			tb.buffer.Write(value)
-		} else if !colDef.Nullable() {
-			return fmt.Errorf("column %s is not nullable, so it can not accept null value",
-				colDef.Name())
-
-		}
-	}
-
-	return nil
-}
-
-func (tb *tupleBuilder) initTupleWithTxContext(tuple Tuple, txInfo *tx.InfoCtx) {
-	tuple.SetCreatedByTx(txInfo.TxId())
-	tuple.SetTxCommandCounter(txInfo.CommandExecuted())
+	return tuple
 }

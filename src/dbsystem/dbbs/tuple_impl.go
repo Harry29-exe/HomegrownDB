@@ -63,6 +63,22 @@ func (t Tuple) IsNull(id column.Order) bool {
 	return value&nullBitmapMasks[divRest] == 0
 }
 
+func (t Tuple) SetIsNull(id column.Order) {
+	byteNumber := id / 8
+	bytePos := toNullBitmap + byteNumber
+
+	divRest := id % 8
+	t.data[bytePos] = bparse.Bit.SetBit(t.data[bytePos], uint8(divRest))
+}
+
+func (t Tuple) SetIsNotNull(id column.Order) {
+	byteNumber := id / 8
+	bytePos := toNullBitmap + byteNumber
+
+	divRest := id % 8
+	t.data[bytePos] = bparse.Bit.ClearBit(t.data[bytePos], uint8(divRest))
+}
+
 func (t Tuple) ColValue(id column.Order) []byte {
 	subsequent := t.data[toNullBitmap+t.table.BitmapLen():]
 	for i := uint16(0); i < id; i++ {

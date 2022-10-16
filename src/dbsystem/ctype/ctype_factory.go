@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func CreateCType(cType Type, args map[string]any) (CType, error) {
+func CreateCType(cType Type, args map[string]any) (*CType, error) {
 	switch cType {
 	case TypeInt8:
 		return int8Factory.Build(args)
@@ -17,7 +17,7 @@ func CreateCType(cType Type, args map[string]any) (CType, error) {
 }
 
 type factory interface {
-	Build(args map[string]any) (CType, dberr.DBError)
+	Build(args map[string]any) (*CType, dberr.DBError)
 }
 
 func NewFactoryArgError(cType, argName, expectedType string) FactoryArgError {

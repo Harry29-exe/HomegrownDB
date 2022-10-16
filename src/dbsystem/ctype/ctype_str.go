@@ -3,6 +3,7 @@ package ctype
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/random"
+	"HomegrownDB/dbsystem/ctype/toast"
 	"HomegrownDB/dbsystem/dberr"
 	"bytes"
 )
@@ -11,7 +12,7 @@ var strFactory factory = factoryStr{}
 
 type factoryStr struct{}
 
-func (f factoryStr) Build(args map[string]any) (CType, dberr.DBError) {
+func (f factoryStr) Build(args map[string]any) (*CType, dberr.DBError) {
 	ctype := str{}
 
 	length, ok := args["length"]
@@ -50,7 +51,7 @@ func (f factoryStr) Build(args map[string]any) (CType, dberr.DBError) {
 		}
 	}
 
-	return &ctype, nil
+	return newCType(&ctype, &ctype, &ctype, true, ToastStore), nil
 }
 
 type str struct {
@@ -59,52 +60,99 @@ type str struct {
 	UTF8          bool
 }
 
-func (s *str) Toast() ToastStatus {
-	return ToastStore
-}
+var _ Reader = &str{}
 
 func (s *str) Skip(data []byte) []byte {
-	if data[0] > 127 { // toast - in bg table
-		l := bparse.Parse.UInt2(data)
-		return data[l+2:]
+	if toast.IsToasted(data[0]) {
+		return data[toast.InTupleSize:]
+	}
+
+	if s.lenIsOneByte(data[0]) {
+		l := s.oneByteLen(data)
+		return data[l:]
 	} else {
-		l := data[0]
-		return data[l+1:]
+		l := s.fourByteLen(data)
+		return data[l:]
+	}
+}
+func (s *str) Copy(dest []byte, data []byte) int {
+	if toast.IsToasted(data[0]) {
+		return copy(dest, data[:toast.InTupleSize])
+	}
+
+	if s.lenIsOneByte(data[0]) {
+		l := s.oneByteLen(data)
+		return copy(dest, data[:l])
+	} else {
+		l := s.fourByteLen(data)
+		return copy(dest, data[:l+1])
 	}
 }
 
 func (s *str) Value(data []byte) []byte {
-	if data[0] > 127 { // toast - in bg table
-		l := bparse.Parse.UInt2(data)
-		return data[2 : l+2]
+	if s.lenIsOneByte(data[0]) {
+		l := s.oneByteLen(data)
+		val := make([]byte, l+3)
+		bparse.Serialize.PutUInt4(uint32(l)+3, val)
+		copy(val[4:], data[1:l])
+
+		return val
 	} else {
-		l := data[0]
-		return data[1 : l+1]
+		l := s.fourByteLen(data)
+		val := make([]byte, l)
+		copy(val, data[:l])
+		return val
 	}
 }
 
 func (s *str) ValueAndSkip(data []byte) (value, next []byte) {
-	if data[0] > 127 { // toast - in bg table
-		l := bparse.Parse.UInt2(data)
-		value = data[2 : l+2]
-		next = data[l+2:]
+	if s.lenIsOneByte(data[0]) { // 1 byte header
+		l := s.oneByteLen(data)
+		next = data[l:]
+		val := make([]byte, l+3)
+		bparse.Serialize.PutUInt4(uint32(l)+3, val)
+		copy(val[4:], data[1:l])
+
+		return val, next
 	} else {
-		l := data[0]
-		value = data[1 : l+1]
-		next = data[l+1:]
+		l := s.fourByteLen(data)
+		value = make([]byte, l)
+		copy(value, data[:l])
+		next = data[l:]
+		return value, next
 	}
-	return
 }
 
-func (s *str) Copy(dest []byte, data []byte) int {
-	if data[0] > 127 {
-		l := bparse.Parse.UInt2(data)
-		return copy(dest, data[:l+2])
-	} else {
-		l := data[0]
-		return copy(dest, data[:l+1])
+var _ Writer = &str{}
+
+func (s *str) WriteTuple(dest []byte, value []byte) int {
+	if toast.IsToasted(value[0]) {
+		return copy(dest, value[:toast.InTupleSize])
 	}
+
+	if s.lenIsOneByte(value[0]) { // 1 byte header
+		l := s.oneByteLen(value)
+		return copy(dest, value[:l])
+	}
+
+	l := s.fourByteLen(value)
+	if toast.IsCompressed(value[0]) {
+		//todo implement me
+		panic("Not implemented")
+	}
+	if l <= 126+4 {
+		dest[0] = uint8(l - 3 + 128)
+		return copy(dest[1:], value[4:l]) + 1
+	}
+	return copy(dest, value[:l])
 }
+
+func (s *str) WriteNormalized(dest []byte, value []byte) int {
+	//TODO implement me
+	panic("implement me")
+}
+
+var _ Operations = &str{}
 
 func (s *str) Equal(v1, v2 []byte) bool {
 	return bytes.Equal(v1, v2)
@@ -113,6 +161,8 @@ func (s *str) Equal(v1, v2 []byte) bool {
 func (s *str) Cmp(v1, v2 []byte) int {
 	return bytes.Compare(v1, v2)
 }
+
+var _ Debug = &str{}
 
 func (s *str) ToStr(val []byte) string {
 	return string(val)
@@ -131,3 +181,21 @@ func (s *str) Rand(r random.Random) []byte {
 
 	return buff.Bytes()
 }
+
+func (s *str) lenIsOneByte(firstByte byte) bool {
+	return firstByte > 127
+}
+
+func (s *str) fourByteLen(data []byte) uint32 {
+	return bparse.Parse.UInt4(data) & strFourByteHeaderMask
+}
+
+func (s *str) oneByteLen(data []byte) uint8 {
+	return data[0] & strOneByteHeaderMask
+}
+
+// 01111111
+var strOneByteHeaderMask = byte(127)
+
+// 00111111 11111111 11111111 11111111
+var strFourByteHeaderMask = uint32(1073741823)

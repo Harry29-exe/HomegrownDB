@@ -3,7 +3,6 @@
 // other parsers. E.g. Select parser will use tables parser
 // and tables parser will use table parser.
 //
-//
 // Each parser should start at internal.TokenSource current token and
 // return value when internal.TokenSource is pointing at last token parsed
 // by parser. E.g. Table parser should start at table name and finish

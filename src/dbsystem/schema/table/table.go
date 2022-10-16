@@ -27,7 +27,7 @@ type Definition interface {
 	ColumnOrder(name string) (order column.Order, ok bool)
 	ColumnId(order column.Order) column.Id
 
-	ColumnType(id column.Order) ctype.CType
+	ColumnType(id column.Order) *ctype.CType
 	ColumnByName(name string) (col column.Def, ok bool)
 	ColumnById(id column.Id) column.Def
 	Column(index column.Order) column.Def

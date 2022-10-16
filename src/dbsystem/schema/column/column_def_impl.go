@@ -11,7 +11,7 @@ type column struct {
 	order      Order
 	innerOrder InnerOrder
 	typeCode   ctype.Type
-	ctype      ctype.CType
+	ctype      *ctype.CType
 }
 
 func (c *column) Name() string {
@@ -50,7 +50,7 @@ func (c *column) Type() ctype.Type {
 	return c.typeCode
 }
 
-func (c *column) CType() ctype.CType {
+func (c *column) CType() *ctype.CType {
 	return c.ctype
 }
 

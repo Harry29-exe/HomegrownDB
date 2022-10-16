@@ -1,38 +1,42 @@
 package exenode
 
 import (
-	"HomegrownDB/backend/qrow"
+	"HomegrownDB/dbsystem/access"
+	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/tx"
 )
 
 type Insert struct {
+	table   table.Definition
+	tableIO access.TableDataIO
+	rowSrc  InputRowSrc
+
+	txCtx          tx.Ctx
+	valuesInserted bool
 }
 
 func (i *Insert) SetSource(source []ExeNode) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (i *Insert) Init(options InitOptions) qrow.RowBuffer {
-	//TODO implement me
-	panic("implement me")
+	panic("operation not supported: leaf exe node")
 }
 
 func (i *Insert) HasNext() bool {
+	return !i.valuesInserted
+}
+
+// todo(3) rebuild this properly
+func (i *Insert) Next() dbbs.QRow {
+
+	tupleData := i.rowSrc.NextRow()
+	tuple := dbbs.NewTuple(tupleData, i.table, i.txCtx)
+}
+
+func (i *Insert) NextBatch() []dbbs.QRow {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (i *Insert) Next() qrow.Row {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (i *Insert) NextBatch() []qrow.Row {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (i *Insert) All() []qrow.Row {
+func (i *Insert) All() []dbbs.QRow {
 	//TODO implement me
 	panic("implement me")
 }

@@ -2,14 +2,6 @@ package ctype
 
 import "HomegrownDB/common/random"
 
-type CType interface {
-	Reader
-	Operations
-	Debug
-
-	Toast() ToastStatus
-}
-
 type Operations interface {
 	Equal(v1, v2 []byte) bool
 	Cmp(v1, v2 []byte) int
@@ -17,14 +9,28 @@ type Operations interface {
 
 type Reader interface {
 	// Skip skips the data belonging to this column
+	// this function supports toasts and lobs
 	Skip(data []byte) []byte
-	// Value of this column (without support data like length)
+	// Copy copies all column data to dest
+	// this function supports toasts and lobs
+	Copy(dest []byte, data []byte) (copiedBytes int)
+
+	// Value returns data in normalized format
+	// (e.g. for string 4 bytes len + str, regardless received storage form)
 	Value(data []byte) (value []byte)
 	// ValueAndSkip gives the same result (but is more efficient)
-	// as calling Value(data) and Skip(data)
+	// as calling Value(data) and Skip(data), but it does not support
+	// toasts and lobs
 	ValueAndSkip(data []byte) (value, next []byte)
-	// Copy copies all column data to dest (with support data like length)
-	Copy(dest []byte, data []byte) (copiedBytes int)
+}
+
+type Writer interface {
+	// WriteTuple rewrites ctype from old tuple/qrow to new tuple
+	// returns written bytes (support toast and lob ptrs)
+	WriteTuple(dest []byte, value []byte) int
+	// WriteNormalized rewrites ctype from old tuple/qrow to byte slice
+	// returns written bytes (don't support toast and lob ptrs)
+	WriteNormalized(dest []byte, value []byte) int
 }
 
 type Debug interface {

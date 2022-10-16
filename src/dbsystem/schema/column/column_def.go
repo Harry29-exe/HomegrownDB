@@ -2,7 +2,7 @@ package column
 
 import "HomegrownDB/dbsystem/ctype"
 
-// Def describes column properties and provides segparser and serializer
+// Def describes column config and provides segparser and serializer
 type Def interface {
 	Name() string
 	Nullable() bool
@@ -10,7 +10,7 @@ type Def interface {
 	Order() Order
 	InnerOrder() InnerOrder
 	Type() ctype.Type
-	CType() ctype.CType
+	CType() *ctype.CType
 
 	// Serialize should save all important Data to byte stream.
 	// It has to start with MdString of column.Type.
