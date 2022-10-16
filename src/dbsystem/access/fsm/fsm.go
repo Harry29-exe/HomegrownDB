@@ -44,6 +44,9 @@ type page struct {
 // returns error if no page fulfill the requirements
 func (f *FreeSpaceMap) FindPage(availableSpace uint16, ctx *tx.Ctx) (dbbs.PageId, error) {
 	percentageSpace := uint8(availableSpace / availableSpaceDivider)
+	if availableSpace%availableSpaceDivider > 0 {
+		percentageSpace++
+	}
 
 	return f.findPage(percentageSpace, ctx)
 }

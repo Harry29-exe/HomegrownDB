@@ -32,14 +32,14 @@ func TestFreeSpaceMap_UpdatePage(t *testing.T) {
 	assert.IsNil(err, t)
 	assert.Eq(receivedPageId, givenPageId, t)
 
-	givenPageId, space = uint32(dbbs.PageSize+5), uint16(1024)
+	givenPageId, space = uint32(dbbs.PageSize+5), uint16(1022)
 	freeSpaceMap.UpdatePage(space, givenPageId)
 	receivedPageId, err = freeSpaceMap.FindPage(space, nil)
 	assert.IsNil(err, t)
 	assert.Eq(receivedPageId, givenPageId, t)
 
 	biggestPageId, biggestSpace := givenPageId, space
-	givenPageId, space = uint32(dbbs.PageSize*2+5), uint16(880)
+	givenPageId, space = uint32(dbbs.PageSize*2+5), uint16(1021)
 	freeSpaceMap.UpdatePage(space, givenPageId)
 	receivedPageId, err = freeSpaceMap.FindPage(biggestSpace, nil)
 	assert.IsNil(err, t)
