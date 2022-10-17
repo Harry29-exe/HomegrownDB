@@ -136,13 +136,16 @@ func (f *FreeSpaceMap) updatePage(space uint8, pageIndex uint32, nodeIndex uint1
 	}
 
 	p.data[nodeIndex] = space
-	for {
+	for nodeIndex != 0 {
 		parentIndex := f.getParentIndex(nodeIndex)
-		if nodeIndex == 0 || p.data[parentIndex] > p.data[nodeIndex] {
+		left, right := f.getLeftNodeIndex(parentIndex), f.getRightNodeIndex(parentIndex)
+		newValue := max(p.data[left], p.data[right])
+
+		nodeIndex = parentIndex
+		if p.data[nodeIndex] == newValue {
 			break
 		}
-		p.data[parentIndex] = p.data[nodeIndex]
-		nodeIndex = parentIndex
+		p.data[nodeIndex] = newValue
 	}
 
 	f.io.flushPage(pageIndex, buffer)
@@ -199,4 +202,11 @@ func (f *FreeSpaceMap) getFsmParentPageIndex(pageIndex uint32) (parentPageIndex 
 
 func (f *FreeSpaceMap) leafNodeToPageId(nodeIndex uint16, pageIndex uint16, pageLayer uint16) uint16 {
 	return (nodeIndex - (leafNodeCount - 1)) + pageLayer*leafNodeCount + pageIndex
+}
+
+func max(v1, v2 uint8) uint8 {
+	if v1 > v2 {
+		return v1
+	}
+	return v2
 }
