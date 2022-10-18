@@ -2,11 +2,10 @@ package fsm_test
 
 import (
 	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/dbsystem/access/dbfs"
 	"HomegrownDB/dbsystem/access/fsm"
 	"HomegrownDB/dbsystem/dbbs"
 	"HomegrownDB/dbsystem/tx"
-	"github.com/google/uuid"
-	"os"
 	"testing"
 )
 
@@ -32,15 +31,12 @@ func TestFreeSpaceMap_UpdatePage(t *testing.T) {
 }
 
 func newUpdatePageTests(t *testing.T) *updatePageTests {
-	newUUID, _ := uuid.NewUUID()
-	filename := os.TempDir() + "/" + newUUID.String()
-
+	inMemFile := dbfs.NewInMemoryFile("")
 	return &updatePageTests{
-		fsMap:    fsm.CreateFreeSpaceMap(filename),
-		t:        t,
-		ctx:      nil,
-		filename: filename,
-		pageIds:  make([]dbbs.PageId, 0, 10),
+		fsMap:   fsm.CreateTestFreeSpaceMap(inMemFile, t),
+		t:       t,
+		ctx:     nil,
+		pageIds: make([]dbbs.PageId, 0, 10),
 	}
 }
 
@@ -49,8 +45,7 @@ type updatePageTests struct {
 	t     *testing.T
 	ctx   *tx.Ctx
 
-	filename string
-	pageIds  []dbbs.PageId
+	pageIds []dbbs.PageId
 }
 
 func (pt *updatePageTests) testFsmUpdate(pageId dbbs.PageId, newSize uint8) {
@@ -94,8 +89,4 @@ func (pt *updatePageTests) toAbsSize(compressedSize uint8) uint16 {
 }
 
 func (pt *updatePageTests) close() {
-	err := os.Remove(pt.filename)
-	if err != nil {
-		pt.t.Error(err.Error())
-	}
 }

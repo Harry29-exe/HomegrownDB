@@ -3,14 +3,20 @@
 package fsm
 
 import (
+	"HomegrownDB/dbsystem/access/dbfs"
 	"HomegrownDB/dbsystem/dbbs"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
 	"os"
+	"testing"
 )
 
 func CreateFreeSpaceMap(filepath string) *FreeSpaceMap {
-	io, err := createNewIO(filepath)
+	file, err := os.Create(filepath)
+	if err != nil {
+		panic(err.Error())
+	}
+	io, err := createNewIO(file)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -24,6 +30,14 @@ func LoadFreeSpaceMap(file *os.File) *FreeSpaceMap {
 		panic("")
 	}
 
+	return &FreeSpaceMap{io: io}
+}
+
+func CreateTestFreeSpaceMap(file dbfs.FileLike, _ *testing.T) *FreeSpaceMap {
+	io, err := createNewIO(file)
+	if err != nil {
+		panic(err.Error())
+	}
 	return &FreeSpaceMap{io: io}
 }
 

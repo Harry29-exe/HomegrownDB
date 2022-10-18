@@ -3,15 +3,15 @@ package fsm
 import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/math2"
+	"HomegrownDB/dbsystem/access/dbfs"
 	_ "HomegrownDB/dbsystem/access/dbfs"
 	"HomegrownDB/dbsystem/dbbs"
 	_ "HomegrownDB/dbsystem/schema/table"
 	"fmt"
-	"os"
 	"sync"
 )
 
-func loadIO(file *os.File) (*io, error) {
+func loadIO(file dbfs.FileLike) (*io, error) {
 	fileStat, err := file.Stat()
 	if err != nil {
 		return nil, err
@@ -24,12 +24,7 @@ func loadIO(file *os.File) (*io, error) {
 	}, nil
 }
 
-func createNewIO(filepath string) (*io, error) {
-	file, err := os.Create(filepath)
-	if err != nil {
-		return nil, err
-	}
-
+func createNewIO(file dbfs.FileLike) (*io, error) {
 	pagesToCreate := 1
 	for j := 1; j < pageLayers-1; j++ {
 		pagesToCreate += math2.Power(int(leafNodeCount), j)
@@ -37,26 +32,17 @@ func createNewIO(filepath string) (*io, error) {
 
 	buff := make([]byte, pageSize)
 	for j := 0; j < pagesToCreate; j++ {
-		n, err := file.Write(buff)
+		_, err := file.Write(buff)
 		if err != nil {
-			return nil, deleteOpenFileAfterErr(file, err)
-		} else if n != int(pageSize) {
-			panic(fmt.Sprintf(
-				"expected that %d bytes will be written to file but %d bytes were written",
-				pageSize, n),
-			)
+			return nil, err
 		}
-	}
-	_, err = file.Seek(0, 0)
-	if err != nil {
-		return nil, err
 	}
 
 	return loadIO(file)
 }
 
 type io struct {
-	file     *os.File
+	file     dbfs.FileLike
 	pageLock *appsync.ResLockMap[dbbs.PageId]
 
 	pages       uint32
@@ -159,31 +145,4 @@ func (i *io) readPage(pageId dbbs.PageId, buffer []byte) error {
 		)
 	}
 	return nil
-}
-
-func deleteOpenFileAfterErr(file *os.File, causeErr error) error {
-	if file == nil {
-		return fmt.Errorf("provided file is nil, after error: %s", causeErr.Error())
-	}
-
-	fName := file.Name()
-	err := file.Close()
-	if err != nil {
-		return fmt.Errorf("not expected error: %s\n "+
-			"while closing file after error: %s",
-			err.Error(),
-			causeErr.Error(),
-		)
-	}
-
-	err = os.Remove(fName)
-	if err != nil {
-		return fmt.Errorf("not expected error: %s\n "+
-			"while deleting file after error: %s",
-			err.Error(),
-			causeErr.Error(),
-		)
-	}
-
-	return causeErr
 }
