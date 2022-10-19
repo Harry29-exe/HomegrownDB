@@ -3,10 +3,10 @@ package fsm
 import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/math2"
-	"HomegrownDB/dbsystem/access/dbfs"
 	_ "HomegrownDB/dbsystem/access/dbfs"
 	"HomegrownDB/dbsystem/dbbs"
 	_ "HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/storage/dbfs"
 	"fmt"
 	"sync"
 )

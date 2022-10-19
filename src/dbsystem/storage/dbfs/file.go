@@ -57,7 +57,7 @@ func (i *InMemoryFile) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-//todo compare to os.File implementation
+// todo compare to os.File implementation
 func (i *InMemoryFile) ReadAt(p []byte, off int64) (n int, err error) {
 	n = copy(p, i.buffer[off:])
 	if n != len(p) {

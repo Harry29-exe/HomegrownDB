@@ -3,8 +3,8 @@
 package fsm
 
 import (
-	"HomegrownDB/dbsystem/access/dbfs"
 	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
 	"os"

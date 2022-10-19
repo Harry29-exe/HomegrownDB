@@ -30,5 +30,8 @@ func (f *inputRowField) NextValue() (val []byte) {
 	}
 
 	qrow := f.Expression.Next()
-
+	if len(qrow.Pattern) > 1 {
+		panic("")
+	}
+	return qrow.Value(0)
 }
