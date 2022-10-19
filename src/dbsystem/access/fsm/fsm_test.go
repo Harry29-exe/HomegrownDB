@@ -9,30 +9,47 @@ import (
 	"testing"
 )
 
-//todo optimize to not write 32MB to disc every time
 func TestFreeSpaceMap_UpdatePage(t *testing.T) {
-	fsmTests := newUpdatePageTests(t)
-	defer fsmTests.close()
+	helper := newFsmTestHelper(t)
+	defer helper.close()
 
-	fsmTests.testFsmUpdate(1, 1)
-	fsmTests.testFsmUpdate(2, 2)
-	fsmTests.testFsmUpdate(0, 3)
-	fsmTests.clear(0)
-	fsmTests.assertFind(2, 2)
+	helper.testFsmUpdate(1, 1)
+	helper.testFsmUpdate(2, 2)
+	helper.testFsmUpdate(0, 3)
+	helper.clear(0)
+	helper.assertFind(2, 2)
+
 	pageId := uint32(dbbs.PageSize)*2 + 7
-	fsmTests.testFsmUpdate(pageId, 8)
-	fsmTests.clear(pageId)
-	fsmTests.assertFind(2, 2)
-	fsmTests.testFsmUpdate(1, 5)
-	fsmTests.clear(1)
-	fsmTests.assertFind(2, 2)
+	helper.testFsmUpdate(pageId, 8)
+	helper.clear(pageId)
 
-	fsmTests.clearAll()
+	helper.assertFind(2, 2)
+	helper.testFsmUpdate(1, 5)
+	helper.clear(1)
+	helper.assertFind(2, 2)
+
+	helper.clearAll()
 }
 
-func newUpdatePageTests(t *testing.T) *updatePageTests {
+func TestFreeSpaceMap_UpdatePage2(t *testing.T) {
+	helper := newFsmTestHelper(t)
+	defer helper.close()
+
+	helper.testFsmUpdate(5, 2)
+	pageId := uint32(dbbs.PageSize)*5 + 7
+	helper.testFsmUpdate(pageId, 255)
+	helper.clear(pageId)
+	helper.assertFind(5, 2)
+
+	helper.clear(5)
+	helper.assertNoFound(1)
+
+	helper.clearAll()
+}
+
+func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 	inMemFile := dbfs.NewInMemoryFile("")
-	return &updatePageTests{
+	return &fsmTestHelper{
 		fsMap:   fsm.CreateTestFreeSpaceMap(inMemFile, t),
 		t:       t,
 		ctx:     nil,
@@ -40,7 +57,7 @@ func newUpdatePageTests(t *testing.T) *updatePageTests {
 	}
 }
 
-type updatePageTests struct {
+type fsmTestHelper struct {
 	fsMap *fsm.FreeSpaceMap
 	t     *testing.T
 	ctx   *tx.Ctx
@@ -48,7 +65,7 @@ type updatePageTests struct {
 	pageIds []dbbs.PageId
 }
 
-func (pt *updatePageTests) testFsmUpdate(pageId dbbs.PageId, newSize uint8) {
+func (pt *fsmTestHelper) testFsmUpdate(pageId dbbs.PageId, newSize uint8) {
 	pt.pageIds = append(pt.pageIds, pageId)
 
 	size := pt.toAbsSize(newSize)
@@ -62,31 +79,35 @@ func (pt *updatePageTests) testFsmUpdate(pageId dbbs.PageId, newSize uint8) {
 	assert.Eq(pageId, foundPageId, pt.t)
 }
 
-func (pt *updatePageTests) assertFind(id dbbs.PageId, size uint8) {
+func (pt *fsmTestHelper) assertFind(id dbbs.PageId, size uint8) {
 	absSize := pt.toAbsSize(size)
 	page, err := pt.fsMap.FindPage(absSize, pt.ctx)
 	assert.IsNil(err, pt.t)
 	assert.Eq(page, id, pt.t)
 }
 
-func (pt *updatePageTests) clear(id dbbs.PageId) {
+func (pt *fsmTestHelper) assertNoFound(size uint8) {
+	_, err := pt.fsMap.FindPage(pt.toAbsSize(size), pt.ctx)
+	assert.NotNil(err, pt.t)
+}
+
+func (pt *fsmTestHelper) clear(id dbbs.PageId) {
 	pt.fsMap.UpdatePage(0, id)
 }
 
-func (pt *updatePageTests) clearAll() {
+func (pt *fsmTestHelper) clearAll() {
 	for _, id := range pt.pageIds {
 		pt.fsMap.UpdatePage(0, id)
 	}
 	pt.pageIds = pt.pageIds[:0]
 
-	_, err := pt.fsMap.FindPage(1, pt.ctx)
-	assert.NotNil(err, pt.t)
+	pt.assertNoFound(1)
 }
 
-func (pt *updatePageTests) toAbsSize(compressedSize uint8) uint16 {
+func (pt *fsmTestHelper) toAbsSize(compressedSize uint8) uint16 {
 	divider := dbbs.PageSize / 256
 	return uint16(compressedSize) * divider
 }
 
-func (pt *updatePageTests) close() {
+func (pt *fsmTestHelper) close() {
 }
