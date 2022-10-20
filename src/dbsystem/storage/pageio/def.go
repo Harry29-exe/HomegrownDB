@@ -1,6 +1,9 @@
 package pageio
 
-import "HomegrownDB/dbsystem/dbbs"
+import (
+	"HomegrownDB/dbsystem/dbbs"
+	"io"
+)
 
 type PageIO interface {
 	// ReadPage reads page with given index to provided buffer
@@ -10,6 +13,8 @@ type PageIO interface {
 	// NewPage saves provided buffer as new page and returns newly created page index
 	NewPage(pageData []byte) (dbbs.PageId, error)
 	PageCount() uint32
+
+	io.Closer
 }
 
 type RWPageIO interface {
@@ -19,10 +24,11 @@ type RWPageIO interface {
 	WPage(pageId dbbs.PageId, buffer []byte) error
 	ReleaseWPage(pageId dbbs.PageId)
 
-	Flush(pageId dbbs.PageId) error
+	Flush(pageId dbbs.PageId, pageData []byte) error
 	NewPage(pageData []byte) (dbbs.PageId, error)
 
 	PageCount() uint32
+	io.Closer
 }
 
 var (

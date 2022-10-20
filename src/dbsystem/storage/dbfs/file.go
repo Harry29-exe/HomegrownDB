@@ -35,9 +35,13 @@ func NewInMemoryFile(filename string) *InMemoryFile {
 type InMemoryFile struct {
 	buffer []byte
 	stat   *fileInfo
+	closed bool
 }
 
 func (i *InMemoryFile) WriteAt(p []byte, off int64) (n int, err error) {
+	if i.closed {
+		return 0, os.ErrClosed
+	}
 	diff := len(i.buffer[off:]) - len(p)
 	if diff >= 0 {
 		return copy(i.buffer[off:], p), nil
@@ -59,6 +63,9 @@ func (i *InMemoryFile) Write(p []byte) (n int, err error) {
 
 // todo compare to os.File implementation
 func (i *InMemoryFile) ReadAt(p []byte, off int64) (n int, err error) {
+	if i.closed {
+		return 0, os.ErrClosed
+	}
 	n = copy(p, i.buffer[off:])
 	if n != len(p) {
 		return n, errors.New("n not equal to len(p)")
@@ -67,6 +74,9 @@ func (i *InMemoryFile) ReadAt(p []byte, off int64) (n int, err error) {
 }
 
 func (i *InMemoryFile) Read(p []byte) (n int, err error) {
+	if i.closed {
+		return 0, os.ErrClosed
+	}
 	//TODO implement me
 	panic("implement me")
 }
@@ -76,12 +86,25 @@ func (i *InMemoryFile) Name() string {
 }
 
 func (i *InMemoryFile) Stat() (fs.FileInfo, error) {
+	if i.closed {
+		return nil, os.ErrClosed
+	}
 	return i.stat, nil
 }
 
 func (i *InMemoryFile) Close() error {
-	i.buffer = nil
-	i.stat = nil
+	if i.closed {
+		return os.ErrClosed
+	}
+	i.closed = true
+	return nil
+}
+
+func (i *InMemoryFile) Reopen() error {
+	if !i.closed {
+		return errors.New("file is not closed")
+	}
+	i.closed = false
 	return nil
 }
 

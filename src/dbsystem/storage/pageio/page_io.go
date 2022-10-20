@@ -7,17 +7,39 @@ import (
 	"sync"
 )
 
+func NewPageIO(file dbfs.FileLike) PageIO {
+	return &pageIO{
+		src:         file,
+		lockMap:     appsync.NewResLockMap[dbbs.PageId](),
+		pageCount:   0,
+		newPageLock: &sync.Mutex{},
+	}
+}
+
+func LoadPageIO(file dbfs.FileLike) PageIO {
+	fileInfo, err := file.Stat()
+	if err != nil {
+		panic(err.Error())
+	}
+	return &pageIO{
+		src:         file,
+		lockMap:     appsync.NewResLockMap[dbbs.PageId](),
+		pageCount:   uint32(fileInfo.Size() / int64(pageSize)),
+		newPageLock: &sync.Mutex{},
+	}
+}
+
 var _ PageIO = &pageIO{}
 
 type pageIO struct {
 	src     dbfs.FileLike
-	lockMap appsync.ResLockMap[dbbs.PageId]
+	lockMap *appsync.ResLockMap[dbbs.PageId]
 
 	pageCount   uint32
 	newPageLock sync.Locker
 }
 
-func (p pageIO) ReadPage(pageIndex dbbs.PageId, buffer []byte) error {
+func (p *pageIO) ReadPage(pageIndex dbbs.PageId, buffer []byte) error {
 	p.lockMap.RLockRes(pageIndex)
 	defer p.lockMap.RUnlockRes(pageIndex)
 
@@ -27,7 +49,7 @@ func (p pageIO) ReadPage(pageIndex dbbs.PageId, buffer []byte) error {
 	return err
 }
 
-func (p pageIO) FlushPage(pageIndex dbbs.PageId, pageData []byte) error {
+func (p *pageIO) FlushPage(pageIndex dbbs.PageId, pageData []byte) error {
 	p.lockMap.WLockRes(pageIndex)
 	defer p.lockMap.WUnlockRes(pageIndex)
 
@@ -36,7 +58,7 @@ func (p pageIO) FlushPage(pageIndex dbbs.PageId, pageData []byte) error {
 	return err
 }
 
-func (p pageIO) NewPage(pageData []byte) (dbbs.PageId, error) {
+func (p *pageIO) NewPage(pageData []byte) (dbbs.PageId, error) {
 	p.newPageLock.Lock()
 	defer p.newPageLock.Unlock()
 
@@ -48,6 +70,10 @@ func (p pageIO) NewPage(pageData []byte) (dbbs.PageId, error) {
 	return p.pageCount, nil
 }
 
-func (p pageIO) PageCount() uint32 {
+func (p *pageIO) PageCount() uint32 {
 	return p.pageCount
+}
+
+func (p *pageIO) Close() error {
+	return p.src.Close()
 }

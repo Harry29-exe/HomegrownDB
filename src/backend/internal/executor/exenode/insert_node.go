@@ -29,6 +29,7 @@ func (i *Insert) Next() dbbs.QRow {
 	tupleData := i.rowSrc.NextRow()
 	tuple := dbbs.NewTuple(tupleData, i.table, i.txCtx)
 
+	return dbbs.NewQRowFromTuple(tuple)
 }
 
 func (i *Insert) NextBatch() []dbbs.QRow {
