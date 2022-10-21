@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io/fs"
 	"os"
-	"time"
 )
 
 var _ FileLike = &InMemoryFile{}
@@ -97,38 +96,4 @@ func (i *InMemoryFile) Reopen() error {
 
 func (i *InMemoryFile) updateStat() {
 	i.stat.size = int64(len(i.buffer))
-}
-
-var _ os.FileInfo = &fileInfo{}
-
-type fileInfo struct {
-	name string
-	size int64
-}
-
-func (f *fileInfo) Name() string {
-	return f.name
-}
-
-func (f *fileInfo) Size() int64 {
-	return f.size
-}
-
-func (f *fileInfo) Mode() fs.FileMode {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (f *fileInfo) ModTime() time.Time {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (f *fileInfo) IsDir() bool {
-	return false
-}
-
-func (f *fileInfo) Sys() any {
-	//TODO implement me
-	panic("implement me")
 }
