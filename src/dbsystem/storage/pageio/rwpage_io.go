@@ -4,14 +4,44 @@ import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/dbbs"
 	"HomegrownDB/dbsystem/storage/dbfs"
+	"errors"
 	"sync"
 )
 
-var _ RWPageIO = &rwPageIO{}
+func NewRWPageIO(file dbfs.FileLike) (ResourceLockIO, error) {
+	if stat, err := file.Stat(); err != nil {
+		return nil, err
+	} else if stat.Size() != 0 {
+		return nil, errors.New("to create new PageIO file must be empty")
+	}
+
+	return &rwPageIO{
+		src:         file,
+		lockMap:     appsync.NewResLockMap[dbbs.PageId](),
+		pageCount:   0,
+		newPageLock: &sync.Mutex{},
+	}, nil
+}
+
+func LoadRWPageIO(file dbfs.FileLike) (ResourceLockIO, error) {
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+
+	return &rwPageIO{
+		src:         file,
+		lockMap:     appsync.NewResLockMap[dbbs.PageId](),
+		pageCount:   uint32(fileInfo.Size() / pageSize),
+		newPageLock: &sync.Mutex{},
+	}, err
+}
+
+var _ ResourceLockIO = &rwPageIO{}
 
 type rwPageIO struct {
 	src     dbfs.FileLike
-	lockMap appsync.ResLockMap[dbbs.PageId]
+	lockMap *appsync.ResLockMap[dbbs.PageId]
 
 	pageCount   uint32
 	newPageLock sync.Locker
@@ -29,7 +59,7 @@ func (io *rwPageIO) RPage(pageId dbbs.PageId, buffer []byte) error {
 }
 
 func (io *rwPageIO) ReleaseRPage(pageId dbbs.PageId) {
-	io.lockMap.RLockRes(pageId)
+	io.lockMap.RUnlockRes(pageId)
 }
 
 func (io *rwPageIO) WPage(pageId dbbs.PageId, buffer []byte) error {
@@ -54,9 +84,10 @@ func (io *rwPageIO) Flush(pageId dbbs.PageId, pageData []byte) error {
 
 func (io *rwPageIO) NewPage(pageData []byte) (dbbs.PageId, error) {
 	io.newPageLock.Lock()
+	defer io.newPageLock.Unlock()
+
 	_, err := io.src.Write(pageData)
 	if err != nil {
-		io.newPageLock.Unlock()
 		return 0, err
 	}
 	io.pageCount++

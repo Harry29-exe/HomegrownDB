@@ -49,8 +49,11 @@ func TestFreeSpaceMap_UpdatePage2(t *testing.T) {
 
 func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 	inMemFile := dbfs.NewInMemoryFile("")
+	fsMap, err := fsm.CreateTestFreeSpaceMap(inMemFile, t)
+	assert.IsNil(err, t)
+
 	return &fsmTestHelper{
-		fsMap:   fsm.CreateTestFreeSpaceMap(inMemFile, t),
+		fsMap:   fsMap,
 		t:       t,
 		ctx:     nil,
 		pageIds: make([]dbbs.PageId, 0, 10),
@@ -70,7 +73,8 @@ func (pt *fsmTestHelper) testFsmUpdate(pageId dbbs.PageId, newSize uint8) {
 
 	size := pt.toAbsSize(newSize)
 
-	pt.fsMap.UpdatePage(size, pageId)
+	err := pt.fsMap.UpdatePage(size, pageId)
+	assert.IsNil(err, pt.t)
 	foundPageId, err := pt.fsMap.FindPage(size, pt.ctx)
 	if err != nil {
 		pt.t.Error(err.Error())

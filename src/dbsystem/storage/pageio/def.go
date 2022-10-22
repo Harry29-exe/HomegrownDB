@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-type PageIO interface {
+type IO interface {
 	// ReadPage reads page with given index to provided buffer
 	ReadPage(pageIndex dbbs.PageId, buffer []byte) error
 	// FlushPage overrides pages at given page index with data from provided buffer
@@ -17,7 +17,7 @@ type PageIO interface {
 	io.Closer
 }
 
-type RWPageIO interface {
+type ResourceLockIO interface {
 	RPage(pageId dbbs.PageId, buffer []byte) error
 	ReleaseRPage(pageId dbbs.PageId)
 

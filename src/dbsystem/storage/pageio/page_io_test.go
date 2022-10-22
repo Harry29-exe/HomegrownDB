@@ -10,10 +10,11 @@ import (
 
 func TestPageIO_Reopen(t *testing.T) {
 	inMemFile := dbfs.NewInMemoryFile("page_io")
-	pageIO := pageio.NewPageIO(inMemFile)
+	pageIO, err := pageio.NewPageIO(inMemFile)
+	assert.IsNil(err, t)
 
 	page0 := createSimplePage()
-	_, err := pageIO.NewPage(page0)
+	_, err = pageIO.NewPage(page0)
 	assert.IsNil(err, t)
 	err = pageIO.Close()
 	assert.IsNil(err, t)
@@ -21,7 +22,8 @@ func TestPageIO_Reopen(t *testing.T) {
 	assert.IsNil(inMemFile.Reopen(), t)
 
 	buff := buffer()
-	loadedPageIO := pageio.LoadPageIO(inMemFile)
+	loadedPageIO, err := pageio.LoadPageIO(inMemFile)
+	assert.IsNil(err, t)
 	err = loadedPageIO.ReadPage(0, buff)
 	assert.IsNil(err, t)
 	assert.EqArray(page0, buff, t)

@@ -27,6 +27,5 @@ type internalError = uint8
 const (
 	none internalError = iota
 	corrupted
-	notUpdated
 	noSpace
 )

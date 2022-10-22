@@ -8,10 +8,10 @@ import (
 	"sync/atomic"
 )
 
-var _ FileLike = &InMemoryFileWithTestLock{}
+var _ FileLike = &InMemLockableFile{}
 
-func NewInMemoryFileWithLocks(filename string) *InMemoryFileWithTestLock {
-	return &InMemoryFileWithTestLock{
+func NewInMemLockableFile(filename string) *InMemLockableFile {
+	return &InMemLockableFile{
 		buffer: make([]byte, 0, 1000),
 		stat: &fileInfo{
 			name: filename,
@@ -25,7 +25,7 @@ func NewInMemoryFileWithLocks(filename string) *InMemoryFileWithTestLock {
 	}
 }
 
-type InMemoryFileWithTestLock struct {
+type InMemLockableFile struct {
 	buffer []byte
 	stat   *fileInfo
 	closed bool
@@ -35,7 +35,7 @@ type InMemoryFileWithTestLock struct {
 	waitingW int32
 }
 
-func (i *InMemoryFileWithTestLock) WriteAt(p []byte, off int64) (n int, err error) {
+func (i *InMemLockableFile) WriteAt(p []byte, off int64) (n int, err error) {
 	if i.closed {
 		return 0, os.ErrClosed
 	}
@@ -54,7 +54,7 @@ func (i *InMemoryFileWithTestLock) WriteAt(p []byte, off int64) (n int, err erro
 	return len(p), nil
 }
 
-func (i *InMemoryFileWithTestLock) Write(p []byte) (n int, err error) {
+func (i *InMemLockableFile) Write(p []byte) (n int, err error) {
 	if i.closed {
 		return 0, errors.New("file is closed")
 	}
@@ -68,7 +68,7 @@ func (i *InMemoryFileWithTestLock) Write(p []byte) (n int, err error) {
 }
 
 // todo compare to os.File implementation
-func (i *InMemoryFileWithTestLock) ReadAt(p []byte, off int64) (n int, err error) {
+func (i *InMemLockableFile) ReadAt(p []byte, off int64) (n int, err error) {
 	if i.closed {
 		return 0, os.ErrClosed
 	}
@@ -82,7 +82,7 @@ func (i *InMemoryFileWithTestLock) ReadAt(p []byte, off int64) (n int, err error
 	return n, nil
 }
 
-func (i *InMemoryFileWithTestLock) Read(p []byte) (n int, err error) {
+func (i *InMemLockableFile) Read(p []byte) (n int, err error) {
 	if i.closed {
 		return 0, os.ErrClosed
 	}
@@ -93,18 +93,18 @@ func (i *InMemoryFileWithTestLock) Read(p []byte) (n int, err error) {
 	panic("implement me")
 }
 
-func (i *InMemoryFileWithTestLock) Name() string {
+func (i *InMemLockableFile) Name() string {
 	return i.stat.name
 }
 
-func (i *InMemoryFileWithTestLock) Stat() (fs.FileInfo, error) {
+func (i *InMemLockableFile) Stat() (fs.FileInfo, error) {
 	if i.closed {
 		return nil, os.ErrClosed
 	}
 	return i.stat, nil
 }
 
-func (i *InMemoryFileWithTestLock) Close() error {
+func (i *InMemLockableFile) Close() error {
 	if i.closed {
 		return os.ErrClosed
 	}
@@ -112,7 +112,7 @@ func (i *InMemoryFileWithTestLock) Close() error {
 	return nil
 }
 
-func (i *InMemoryFileWithTestLock) Reopen() error {
+func (i *InMemLockableFile) Reopen() error {
 	if !i.closed {
 		return errors.New("file is not closed")
 	}
@@ -120,50 +120,50 @@ func (i *InMemoryFileWithTestLock) Reopen() error {
 	return nil
 }
 
-func (i *InMemoryFileWithTestLock) Lock() {
+func (i *InMemLockableFile) Lock() {
 	i.lock.Lock()
 }
 
-func (i *InMemoryFileWithTestLock) Unlock() {
+func (i *InMemLockableFile) Unlock() {
 	i.lock.Unlock()
 }
 
-func (i *InMemoryFileWithTestLock) RLock() {
+func (i *InMemLockableFile) RLock() {
 	i.lock.RLock()
 }
 
-func (i *InMemoryFileWithTestLock) RUnlock() {
+func (i *InMemLockableFile) RUnlock() {
 	i.lock.RUnlock()
 }
 
-func (i *InMemoryFileWithTestLock) GetReadWaiting() int32 {
+func (i *InMemLockableFile) GetReadWaiting() int32 {
 	return i.waitingR
 }
 
-func (i *InMemoryFileWithTestLock) GetWriteWaiting() int32 {
+func (i *InMemLockableFile) GetWriteWaiting() int32 {
 	return i.waitingW
 }
 
-func (i *InMemoryFileWithTestLock) updateStat() {
+func (i *InMemLockableFile) updateStat() {
 	i.stat.size = int64(len(i.buffer))
 }
 
-func (i *InMemoryFileWithTestLock) beforeWrite() {
+func (i *InMemLockableFile) beforeWrite() {
 	atomic.AddInt32(&i.waitingW, 1)
 	i.lock.Lock()
 	atomic.AddInt32(&i.waitingW, -1)
 }
 
-func (i *InMemoryFileWithTestLock) afterWrite() {
+func (i *InMemLockableFile) afterWrite() {
 	i.lock.Unlock()
 }
 
-func (i *InMemoryFileWithTestLock) beforeRead() {
+func (i *InMemLockableFile) beforeRead() {
 	atomic.AddInt32(&i.waitingR, 1)
 	i.lock.RLock()
 	atomic.AddInt32(&i.waitingR, -1)
 }
 
-func (i *InMemoryFileWithTestLock) afterRead() {
+func (i *InMemLockableFile) afterRead() {
 	i.lock.RUnlock()
 }
