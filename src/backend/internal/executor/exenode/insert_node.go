@@ -2,7 +2,7 @@ package exenode
 
 import (
 	"HomegrownDB/dbsystem/access"
-	"HomegrownDB/dbsystem/dbbs"
+	dbbs2 "HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -25,19 +25,19 @@ func (i *Insert) HasNext() bool {
 }
 
 // todo(3) rebuild this properly
-func (i *Insert) Next() dbbs.QRow {
+func (i *Insert) Next() dbbs2.QRow {
 	tupleData := i.rowSrc.NextRow()
-	tuple := dbbs.NewTuple(tupleData, i.table, i.txCtx)
+	tuple := dbbs2.NewTuple(tupleData, i.table, i.txCtx)
 
-	return dbbs.NewQRowFromTuple(tuple)
+	return dbbs2.NewQRowFromTuple(tuple)
 }
 
-func (i *Insert) NextBatch() []dbbs.QRow {
+func (i *Insert) NextBatch() []dbbs2.QRow {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (i *Insert) All() []dbbs.QRow {
+func (i *Insert) All() []dbbs2.QRow {
 	//TODO implement me
 	panic("implement me")
 }

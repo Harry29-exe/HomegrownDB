@@ -2,7 +2,7 @@ package pageio
 
 import (
 	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"errors"
 	"sync"

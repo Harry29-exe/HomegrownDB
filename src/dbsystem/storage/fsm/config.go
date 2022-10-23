@@ -1,6 +1,8 @@
 package fsm
 
-import "HomegrownDB/dbsystem/dbbs"
+import (
+	"HomegrownDB/dbsystem/access/dbbs"
+)
 
 const (
 	pageLayers = 3

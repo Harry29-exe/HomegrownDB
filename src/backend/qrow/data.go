@@ -2,7 +2,7 @@ package qrow
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/column"
 )
 

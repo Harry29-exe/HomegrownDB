@@ -6,15 +6,15 @@ import (
 	"HomegrownDB/dbsystem/schema/table"
 )
 
-type TestTableBuilder struct {
+type Builder struct {
 	table table.WDefinition
 }
 
-func NewTestTableBuilder(name string) *TestTableBuilder {
-	return &TestTableBuilder{table: table.NewDefinition(name)}
+func NewTestTableBuilder(name string) *Builder {
+	return &Builder{table: table.NewDefinition(name)}
 }
 
-func (ttb *TestTableBuilder) AddColumn(name string, nullable bool, cType ctype.Type, args ctype.Args) *TestTableBuilder {
+func (ttb *Builder) AddColumn(name string, nullable bool, cType ctype.Type, args ctype.Args) *Builder {
 	col, err := column.NewDefinition(name, nullable, cType, args)
 	if err != nil {
 		panic("could not add column to table during tests")
@@ -25,14 +25,14 @@ func (ttb *TestTableBuilder) AddColumn(name string, nullable bool, cType ctype.T
 	return ttb
 }
 
-func (ttb *TestTableBuilder) SetIds(tableId table.Id, objectId uint64) *TestTableBuilder {
+func (ttb *Builder) SetIds(tableId table.Id, objectId uint32) *Builder {
 	ttb.table.SetTableId(tableId)
-	ttb.table.SetObjectId(objectId)
+	ttb.table.SetRelationId(objectId)
 
 	return ttb
 }
 
-func (ttb *TestTableBuilder) GetTable() table.WDefinition {
+func (ttb *Builder) GetTable() table.WDefinition {
 	table := ttb.table
 	ttb.table = nil
 

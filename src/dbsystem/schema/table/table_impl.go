@@ -4,13 +4,14 @@ import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/ctype"
+	"HomegrownDB/dbsystem/db"
 	"HomegrownDB/dbsystem/schema/column"
 	"errors"
 	"math"
 )
 
 type StandardTable struct {
-	objectId uint64
+	objectId db.RelationID
 	tableId  Id
 	columns  []column.WDef
 	rColumns []column.Def
@@ -30,11 +31,11 @@ func (t *StandardTable) TableId() Id {
 	return t.tableId
 }
 
-func (t *StandardTable) SetObjectId(id uint64) {
+func (t *StandardTable) SetRelationId(id db.RelationID) {
 	t.objectId = id
 }
 
-func (t *StandardTable) OID() uint64 {
+func (t *StandardTable) RelationId() db.RelationID {
 	return t.objectId
 }
 
@@ -49,7 +50,7 @@ func (t *StandardTable) Name() string {
 func (t *StandardTable) Serialize() []byte {
 	serializer := bparse.NewSerializer()
 
-	serializer.Uint64(t.objectId)
+	serializer.Uint32(t.objectId)
 	serializer.MdString(t.name)
 
 	columnCount := uint16(len(t.columnName_OrderMap))
@@ -63,7 +64,7 @@ func (t *StandardTable) Serialize() []byte {
 
 func (t *StandardTable) Deserialize(tableDef []byte) {
 	deserializer := bparse.NewDeserializer(tableDef)
-	t.objectId = deserializer.Uint64()
+	t.objectId = deserializer.Uint32()
 	t.name = deserializer.MdString()
 	t.columnsCount = deserializer.Uint16()
 

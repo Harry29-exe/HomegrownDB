@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/backend/internal/planer/plan"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/dbbs"
+	dbbs2 "HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
 )
 
@@ -23,8 +23,8 @@ type SeqScan struct {
 	tableIO  access.TableDataIO
 	buffer   buffer.DBSharedBuffer
 
-	page  dbbs.PageId
-	tuple dbbs.TupleIndex
+	page  dbbs2.PageId
+	tuple dbbs2.TupleIndex
 
 	hasNext bool
 }
@@ -42,8 +42,8 @@ func (s *SeqScan) HasNext() bool {
 	return s.hasNext
 }
 
-func (s *SeqScan) Next() dbbs.QRow {
-	tag := dbbs.PageTag{PageId: s.page, TableId: s.tableDef.TableId()}
+func (s *SeqScan) Next() dbbs2.QRow {
+	tag := dbbs2.PageTag{PageId: s.page, Relation: s.tableDef.TableId()}
 	rPage, err := s.buffer.RPage(tag)
 	if err != nil {
 		panic("")
@@ -60,11 +60,11 @@ func (s *SeqScan) Next() dbbs.QRow {
 		}
 	}
 
-	return dbbs.NewQRowFromTuple(tuple)
+	return dbbs2.NewQRowFromTuple(tuple)
 }
 
-func (s *SeqScan) NextBatch() []dbbs.QRow {
-	tag := dbbs.PageTag{PageId: s.page, TableId: s.tableDef.TableId()}
+func (s *SeqScan) NextBatch() []dbbs2.QRow {
+	tag := dbbs2.PageTag{PageId: s.page, Relation: s.tableDef.TableId()}
 	rPage, err := buffer.SharedBuffer.RPage(tag)
 	if err != nil {
 		panic("")
@@ -72,9 +72,9 @@ func (s *SeqScan) NextBatch() []dbbs.QRow {
 
 	defer buffer.SharedBuffer.ReleaseRPage(tag)
 	tCount := rPage.TupleCount()
-	rows := make([]dbbs.QRow, tCount)
+	rows := make([]dbbs2.QRow, tCount)
 	for i := uint16(0); i < tCount; i++ {
-		rows[i] = dbbs.NewQRowFromTuple(rPage.Tuple(i))
+		rows[i] = dbbs2.NewQRowFromTuple(rPage.Tuple(i))
 	}
 
 	s.page += 1
@@ -85,9 +85,9 @@ func (s *SeqScan) NextBatch() []dbbs.QRow {
 	return rows
 }
 
-func (s *SeqScan) All() []dbbs.QRow {
-	tuplesPerPageEstimate := uint32(dbbs.PageSize) / (uint32(s.tableDef.ColumnCount()) * 5)
-	rows := make([]dbbs.QRow, s.tableIO.PageCount()*tuplesPerPageEstimate)
+func (s *SeqScan) All() []dbbs2.QRow {
+	tuplesPerPageEstimate := uint32(dbbs2.PageSize) / (uint32(s.tableDef.ColumnCount()) * 5)
+	rows := make([]dbbs2.QRow, s.tableIO.PageCount()*tuplesPerPageEstimate)
 	for s.page < s.tableIO.PageCount() {
 		rows = s.readPageWhileReadingAll(rows)
 
@@ -98,8 +98,8 @@ func (s *SeqScan) All() []dbbs.QRow {
 	return rows
 }
 
-func (s *SeqScan) readPageWhileReadingAll(rows []dbbs.QRow) []dbbs.QRow {
-	tag := dbbs.PageTag{PageId: s.page, TableId: s.tableDef.TableId()}
+func (s *SeqScan) readPageWhileReadingAll(rows []dbbs2.QRow) []dbbs2.QRow {
+	tag := dbbs2.PageTag{PageId: s.page, Relation: s.tableDef.TableId()}
 	rPage, err := buffer.SharedBuffer.RPage(tag)
 	if err != nil {
 		panic("")
@@ -108,7 +108,7 @@ func (s *SeqScan) readPageWhileReadingAll(rows []dbbs.QRow) []dbbs.QRow {
 	defer buffer.SharedBuffer.ReleaseRPage(tag)
 	tCount := rPage.TupleCount()
 	for i := uint16(0); i < tCount; i++ {
-		rows = append(rows, dbbs.NewQRowFromTuple(rPage.Tuple(i)))
+		rows = append(rows, dbbs2.NewQRowFromTuple(rPage.Tuple(i)))
 	}
 
 	return rows

@@ -4,8 +4,8 @@ import (
 	"HomegrownDB/backend/qrow"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/testtable/ttable1"
+	dbbs2 "HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/ctype"
-	"HomegrownDB/dbsystem/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 	"testing"
@@ -13,7 +13,7 @@ import (
 
 func TestNewRow(t *testing.T) {
 	tableDef := ttable1.Def()
-	testTuple, err := dbbs.NewTestTuple(tableDef, map[string][]byte{
+	testTuple, err := dbbs2.NewTestTuple(tableDef, map[string][]byte{
 		ttable1.C0AwesomeKey:  convInput(int64(24), tableDef.Column(ttable1.C0AwesomeKeyOrder).Type()),
 		ttable1.C1NullableCol: nil,
 		ttable1.C2NonNullColl: convInput(int64(43), tableDef.Column(ttable1.C2NonNullCollOrder).Type()),
@@ -24,20 +24,20 @@ func TestNewRow(t *testing.T) {
 
 	buffer := qrow.NewSlotBuffer(10_000)
 	holder := qrow.NewBaseRowHolder(buffer, []table.Definition{tableDef})
-	dataRow := qrow.NewRow([]dbbs.Tuple{testTuple.Tuple}, holder)
+	dataRow := qrow.NewRow([]dbbs2.Tuple{testTuple.Tuple}, holder)
 
 	assert.EqArray(
-		dbbs.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C0AwesomeKey),
+		dbbs2.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C0AwesomeKey),
 		dataRow.GetField(ttable1.C0AwesomeKeyOrder),
 		t,
 	)
 	assert.EqArray(
-		dbbs.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C1NullableCol),
+		dbbs2.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C1NullableCol),
 		dataRow.GetField(ttable1.C1NullableColOrder),
 		t,
 	)
 	assert.EqArray(
-		dbbs.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C2NonNullColl),
+		dbbs2.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C2NonNullColl),
 		dataRow.GetField(ttable1.C2NonNullCollOrder),
 		t,
 	)

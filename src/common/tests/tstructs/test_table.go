@@ -3,7 +3,7 @@ package tstructs
 import (
 	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/access"
-	"HomegrownDB/dbsystem/dbbs"
+	dbbs2 "HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
@@ -14,7 +14,7 @@ type TestTable struct {
 }
 
 func (t TestTable) FillPages(pagesToFill int, tableIO access.TableDataIO, rand random.Random) {
-	page := dbbs.NewPage(t.WDefinition, make([]byte, pageSize))
+	page := dbbs2.NewPage(t.WDefinition, make([]byte, pageSize))
 	filledPages := 0
 	insertedTuples := 0
 	for filledPages < pagesToFill {
@@ -27,13 +27,13 @@ func (t TestTable) FillPages(pagesToFill int, tableIO access.TableDataIO, rand r
 			if err != nil {
 				panic("could not create new page")
 			}
-			page = dbbs.NewPage(t.WDefinition, make([]byte, pageSize))
+			page = dbbs2.NewPage(t.WDefinition, make([]byte, pageSize))
 		}
 	}
 }
 
-func (t TestTable) PutRandomTupleToPage(tupleCount int, page dbbs.Page, rand random.Random) []dbbs.Tuple {
-	tuples := make([]dbbs.Tuple, tupleCount)
+func (t TestTable) PutRandomTupleToPage(tupleCount int, page dbbs2.Page, rand random.Random) []dbbs2.Tuple {
+	tuples := make([]dbbs2.Tuple, tupleCount)
 	for i := 0; i < tupleCount; i++ {
 		tuple := t.RandTuple(rand).Tuple
 		tuples[i] = tuple
@@ -46,14 +46,14 @@ func (t TestTable) PutRandomTupleToPage(tupleCount int, page dbbs.Page, rand ran
 	return tuples
 }
 
-func (t TestTable) RandTuple(rand random.Random) dbbs.TupleToSave {
+func (t TestTable) RandTuple(rand random.Random) dbbs2.TupleToSave {
 	values := map[string][]byte{}
 	for i := uint16(0); i < t.ColumnCount(); i++ {
 		col := t.Column(i)
 		values[col.Name()] = col.CType().Rand(rand)
 	}
 
-	tuple, err := dbbs.NewTestTuple(t.WDefinition, values, tx.NewInfoCtx(rand.Int31()))
+	tuple, err := dbbs2.NewTestTuple(t.WDefinition, values, tx.NewInfoCtx(rand.Int31()))
 	if err != nil {
 		panic(err.Error())
 	}

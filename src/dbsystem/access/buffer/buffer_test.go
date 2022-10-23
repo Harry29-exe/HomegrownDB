@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/common/tests/testtable/ttable1"
 	"HomegrownDB/common/tests/tstructs"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"sync"
 	"testing"
 	"time"
@@ -57,7 +57,7 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	waitGroup2 := sync.WaitGroup{}
 	waitGroup2.Add(tCount)
 
-	tag := dbbs.PageTag{PageId: 0, TableId: table1.TableId()}
+	tag := dbbs.PageTag{PageId: 0, Relation: table1.RelationId()}
 	for i := 0; i < tCount; i++ {
 		go func() {
 			_, _ = testBuffer.RPage(tag)

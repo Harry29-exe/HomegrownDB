@@ -2,7 +2,7 @@ package buffer
 
 import (
 	"HomegrownDB/dbsystem/access"
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
 )
 

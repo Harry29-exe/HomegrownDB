@@ -3,13 +3,14 @@ package table
 import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/ctype"
+	"HomegrownDB/dbsystem/db"
 	"HomegrownDB/dbsystem/schema/column"
 )
 
 type Definition interface {
 	TableId() Id
 	// OID Object id
-	OID() uint64
+	RelationId() db.RelationID
 	Name() string
 
 	// Serialize table info, so it can be saved to disc and
@@ -38,7 +39,7 @@ type WDefinition interface {
 	Definition
 
 	SetTableId(id Id)
-	SetObjectId(id uint64)
+	SetRelationId(id db.RelationID)
 	SetName(name string)
 
 	AddColumn(definition column.WDef) error

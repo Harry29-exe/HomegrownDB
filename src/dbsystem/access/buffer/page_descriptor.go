@@ -2,7 +2,7 @@ package buffer
 
 import (
 	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"sync"
 )
 

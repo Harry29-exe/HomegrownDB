@@ -3,7 +3,7 @@ package executor
 import (
 	"HomegrownDB/backend/internal/executor/exenode"
 	"HomegrownDB/backend/internal/planer/plan"
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 )
 
 func ExecPlan(plan plan.Plan) []dbbs.QRow {

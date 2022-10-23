@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/backend/internal/executor"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/planer"
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 )

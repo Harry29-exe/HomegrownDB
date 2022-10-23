@@ -1,8 +1,8 @@
 package exenode
 
 import (
-	plan2 "HomegrownDB/backend/internal/planer/plan"
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/backend/internal/planer/plan"
+	"HomegrownDB/dbsystem/access/dbbs"
 )
 
 type ExeNode interface {
@@ -23,12 +23,12 @@ type ExeNode interface {
 	Free()
 }
 
-type PlanTableId = plan2.TableId
+type PlanTableId = plan.TableId
 
 type InitOptions struct {
 	StoreAllRows bool
 }
 
 type Builder interface {
-	Build(node plan2.Node) ExeNode
+	Build(node plan.Node) ExeNode
 }

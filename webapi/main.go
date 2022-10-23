@@ -1,7 +1,7 @@
 package main
 
 import (
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/ctypes"
 	"HomegrownDB/dbsystem/schema/column/factory"
@@ -32,7 +32,7 @@ func main() {
 func testTuplePrint() {
 	tableDef := table.NewDefinition("ttable1")
 	tableDef.SetTableId(231)
-	tableDef.SetObjectId(4352)
+	tableDef.SetRelationId(4352)
 
 	tableDef.AddColumn(factory.CreateDefinition(column.ArgsBuilder("col1", ctypes.Int2).Build()))
 	tableDef.AddColumn(factory.CreateDefinition(column.ArgsBuilder("col2", ctypes.Int2).Build()))

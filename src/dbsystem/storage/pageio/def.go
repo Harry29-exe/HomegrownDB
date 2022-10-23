@@ -1,7 +1,7 @@
 package pageio
 
 import (
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"io"
 )
 

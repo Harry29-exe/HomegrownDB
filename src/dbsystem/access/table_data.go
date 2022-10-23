@@ -2,7 +2,7 @@ package access
 
 import (
 	"HomegrownDB/dbsystem"
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"fmt"
 	"os"
 	"sync"

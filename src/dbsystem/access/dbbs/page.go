@@ -2,6 +2,7 @@ package dbbs
 
 import (
 	"HomegrownDB/dbsystem"
+	"HomegrownDB/dbsystem/db"
 	"HomegrownDB/dbsystem/schema/table"
 )
 
@@ -25,14 +26,14 @@ type PageId = uint32
 const PageIdSize = 4
 
 type PageTag struct {
-	PageId  PageId
-	TableId table.Id
+	PageId   PageId
+	Relation db.RelationID
 }
 
-func NewPageTag(pageIndex PageId, def table.Definition) PageTag {
+func NewPageTag(pageIndex PageId, tableDef table.Definition) PageTag {
 	return PageTag{
-		PageId:  pageIndex,
-		TableId: def.TableId(),
+		PageId:   pageIndex,
+		Relation: tableDef.RelationId(),
 	}
 }
 

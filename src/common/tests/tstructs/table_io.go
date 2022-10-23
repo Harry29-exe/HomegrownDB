@@ -2,7 +2,7 @@ package tstructs
 
 import (
 	"HomegrownDB/dbsystem/access"
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"fmt"
 )
 

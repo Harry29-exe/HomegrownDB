@@ -1,7 +1,7 @@
 package fsm
 
 import (
-	"HomegrownDB/dbsystem/dbbs"
+	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
 )
