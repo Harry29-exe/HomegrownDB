@@ -1,7 +1,8 @@
-package dbbs
+package page
 
 import (
 	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -13,6 +14,9 @@ type RTuple interface {
 	IsNull(id column.Order) bool
 	ColValue(id column.Order) []byte
 	DataSize() int
+
+	Table() table.Definition
+	Data() []byte
 }
 
 type WTuple interface {
@@ -29,7 +33,7 @@ const (
 	sizeOfTxId         = tx.IdSize
 	sizeOfModifiedTxId = tx.IdSize
 	sizeOfTxCounter    = tx.CommandCounterSize
-	sizeOfPageId       = PageIdSize
+	sizeOfPageId       = IdSize
 	sizeOfTupleIndex   = TupleIndexSize
 )
 
@@ -43,5 +47,5 @@ const (
 )
 
 const (
-	tupleHeaderSize = toNullBitmap // size in bytes of tuple header data
+	tupleHeaderSize = toNullBitmap // size in bytes of tuple header bytes
 )

@@ -2,8 +2,8 @@ package qrow
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/storage/page"
 )
 
 type Row struct {
@@ -11,7 +11,7 @@ type Row struct {
 	data   []byte // data format described in documentation/executor/Data.svg
 }
 
-func NewRow(tuples []dbbs.Tuple, holder RowBuffer) Row {
+func NewRow(tuples []page.Tuple, holder RowBuffer) Row {
 	dataSize := 0
 	for _, tuple := range tuples {
 		dataSize = tuple.DataSize()
@@ -21,7 +21,7 @@ func NewRow(tuples []dbbs.Tuple, holder RowBuffer) Row {
 	var fieldCount = holder.Fields()
 	var dataStart = fieldCount*2 + 2
 	var dataPtr = dataStart
-	var tuple dbbs.Tuple
+	var tuple page.Tuple
 	var val []byte
 	field := FieldPtr(0)
 	for i, table := range holder.Tables() {

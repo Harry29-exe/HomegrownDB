@@ -2,8 +2,8 @@ package dbfs_test
 
 import (
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/storage/dbfs"
+	"HomegrownDB/dbsystem/storage/page"
 	"sync"
 	"testing"
 	"time"
@@ -83,7 +83,7 @@ func createInMemoryFileWithTestLock(t *testing.T) (
 ) {
 	filename := "test_file_42"
 	file = dbfs.NewInMemLockableFile(filename)
-	data = make([]byte, dbbs.PageSize)
+	data = make([]byte, page.Size)
 	_, err := file.Write(data)
 	assert.IsNil(err, t)
 	return

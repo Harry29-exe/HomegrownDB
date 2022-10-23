@@ -1,11 +1,11 @@
 package main
 
 import (
-	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/column/ctypes"
 	"HomegrownDB/dbsystem/schema/column/factory"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"os"
 )
@@ -52,13 +52,13 @@ func testTuplePrint() {
 		"col4": 9,
 	}
 	txCtx := tx.NewContext(32)
-	tuple, err := dbbs.NewTestTuple(tableDef, colValues, txCtx)
+	tuple, err := page.NewTestTuple(tableDef, colValues, txCtx)
 	if err != nil {
 		println(err.Error())
 		os.Exit(1)
 	}
 
-	strs := dbbs.TupleDebugger.TupleDescription(tuple.Tuple)
+	strs := page.TupleDebugger.TupleDescription(tuple.Tuple)
 	for _, str := range strs {
 		println(str)
 	}

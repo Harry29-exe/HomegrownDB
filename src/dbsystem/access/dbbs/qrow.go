@@ -3,6 +3,7 @@ package dbbs
 import (
 	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/storage/page"
 	"math"
 )
 
@@ -14,18 +15,19 @@ type QRow struct {
 	Pattern []ctype.CType
 }
 
-func NewQRowFromTuple(tuple RTuple) QRow {
-	t := tuple.(Tuple)
-	columns := t.table.Columns()
+func NewQRowFromTuple(tuple page.RTuple) QRow {
+	t := tuple.(page.Tuple)
+	table := t.Table()
+	columns := table.Columns()
 
-	headerLen := 4 * int(t.table.ColumnCount()+1)
+	headerLen := 4 * int(table.ColumnCount()+1)
 	qrow := QRow{
 		data:    make([]byte, t.DataSize()),
 		ptrs:    make([]uint32, headerLen),
-		Pattern: t.table.CTypePattern(),
+		Pattern: table.CTypePattern(),
 	}
 
-	data := t.data[t.HeaderSize():]
+	data := t.Data()
 	qrowDataPtr := uint32(0)
 	for i, col := range columns {
 		if t.IsNull(column.Order(i)) {

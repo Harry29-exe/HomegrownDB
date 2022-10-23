@@ -1,4 +1,4 @@
-package dbbs
+package page
 
 import (
 	"HomegrownDB/dbsystem/schema/column"

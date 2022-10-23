@@ -1,4 +1,4 @@
-package dbbs
+package page
 
 import (
 	"HomegrownDB/dbsystem/schema/column"
@@ -13,7 +13,7 @@ func NewTuple(values [][]byte, table table.Definition, tx tx.Ctx) Tuple {
 		tupleLen += len(value)
 	}
 	tuple := Tuple{
-		data:  make([]byte, tupleLen),
+		bytes: make([]byte, tupleLen),
 		table: table,
 	}
 
@@ -21,7 +21,7 @@ func NewTuple(values [][]byte, table table.Definition, tx tx.Ctx) Tuple {
 	tuple.SetModifiedByTx(txId)
 	tuple.SetCreatedByTx(txId)
 
-	tupleData := tuple.data[headerLen:]
+	tupleData := tuple.bytes[headerLen:]
 	var copiedBytes int
 	for i, value := range values {
 		if value == nil {

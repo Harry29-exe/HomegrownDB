@@ -1,4 +1,4 @@
-package dbbs
+package page
 
 import (
 	"HomegrownDB/dbsystem"
@@ -7,34 +7,41 @@ import (
 )
 
 type RPage interface {
+	Header() []byte
+	Data() []byte
+	RelationID() db.RelationID
+}
+
+type TableRPage interface {
 	Tuple(tupleIndex uint16) Tuple
 	TupleCount() uint16
 	FreeSpace() uint16
+
+	Data() []byte
 }
 
-type WPage interface {
-	RPage
+type TableWPage interface {
+	TableRPage
 
 	InsertTuple(data []byte) error
 	UpdateTuple(tIndex TupleIndex, tuple []byte)
 	DeleteTuple(tIndex TupleIndex)
-	Data() []byte
 }
 
-type PageId = uint32
+type Id = uint32
 
-const PageIdSize = 4
+const IdSize = 4
 
-type PageTag struct {
-	PageId   PageId
+type Tag struct {
+	PageId   Id
 	Relation db.RelationID
 }
 
-func NewPageTag(pageIndex PageId, tableDef table.Definition) PageTag {
-	return PageTag{
+func NewPageTag(pageIndex Id, tableDef table.Definition) Tag {
+	return Tag{
 		PageId:   pageIndex,
 		Relation: tableDef.RelationId(),
 	}
 }
 
-const PageSize uint16 = dbsystem.PageSize
+const Size uint16 = dbsystem.PageSize

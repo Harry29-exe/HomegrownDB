@@ -1,10 +1,10 @@
-package dbbs
+package page
 
 // +++++ Debug +++++
 var PageHelper = pageHelper{}
 
 type pageHelper struct{}
 
-func (p pageHelper) PageDescription(page Page) {
+func (p pageHelper) PageDescription(page TablePage) {
 
 }

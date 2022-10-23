@@ -3,8 +3,8 @@
 package fsm
 
 import (
-	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/storage/dbfs"
+	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
 	"os"
@@ -70,7 +70,7 @@ type FreeSpaceMap struct {
 
 // FindPage returns number of page with at least the amount of requested space,
 // returns error if no page fulfill the requirements
-func (f *FreeSpaceMap) FindPage(availableSpace uint16, ctx *tx.Ctx) (dbbs.PageId, error) {
+func (f *FreeSpaceMap) FindPage(availableSpace uint16, ctx *tx.Ctx) (page.Id, error) {
 	percentageSpace := uint8(availableSpace / availableSpaceDivider)
 	if availableSpace%availableSpaceDivider > 0 {
 		percentageSpace++
@@ -80,7 +80,7 @@ func (f *FreeSpaceMap) FindPage(availableSpace uint16, ctx *tx.Ctx) (dbbs.PageId
 }
 
 // UpdatePage updates page free space which is set to availableSpace parameter value
-func (f *FreeSpaceMap) UpdatePage(availableSpace uint16, pageId dbbs.PageId) error {
+func (f *FreeSpaceMap) UpdatePage(availableSpace uint16, pageId page.Id) error {
 	lastLayerPageIndex := pageId / uint32(leafNodeCount)
 	nodeIndex := pageId - lastLayerPageIndex*uint32(leafNodeCount) + uint32(nonLeafNodeCount)
 	pageIndex := lastLayerPageIndex + uint32(leafNodeCount) + 1

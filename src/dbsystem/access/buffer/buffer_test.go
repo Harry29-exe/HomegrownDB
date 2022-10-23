@@ -6,7 +6,9 @@ import (
 	"HomegrownDB/common/tests/testtable/ttable1"
 	"HomegrownDB/common/tests/tstructs"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/access/dbbs"
+	"HomegrownDB/dbsystem/storage/dbfs"
+	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/pageio"
 	"sync"
 	"testing"
 	"time"
@@ -14,17 +16,16 @@ import (
 
 func TestSharedBuffer_Overflow(t *testing.T) {
 	table1 := ttable1.Def()
-	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
-	ioStore := tstructs.NewInMemTableIO(table1)
-	table1IO := ioStore.TableIO(table1.TableId())
+	ioStore := pageio.NewStore()
+	table1IO := createAndRegisterTestPageIO(table1, ioStore, t)
 
 	rand := random.NewRandom(0)
 	table1.FillPages(1_000, table1IO, rand)
 
-	buf := make([]byte, dbbs.PageSize)
-	testBuffer := buffer.NewSharedBuffer(100, tableStore, ioStore)
-	for i := dbbs.PageId(0); i < 1_000; i++ {
-		tag := dbbs.NewPageTag(i, table1)
+	buf := make([]byte, page.Size)
+	testBuffer := buffer.NewSharedBuffer(100, ioStore)
+	for i := page.Id(0); i < 1_000; i++ {
+		tag := page.NewPageTag(i, table1)
 		page, err := testBuffer.WPage(tag)
 		if err != nil {
 			t.Errorf("During reading page %d got error: %e", i, err)
@@ -42,14 +43,13 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 
 func TestSharedBuffer_ParallelRead(t *testing.T) {
 	table1 := ttable1.Def()
-	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
-	ioStore := tstructs.NewInMemTableIO(table1)
-	table1IO := ioStore.TableIO(table1.TableId())
+	ioStore := pageio.NewStore()
+	table1IO := createAndRegisterTestPageIO(table1, ioStore, t)
 
 	rand := random.NewRandom(0)
 	table1.FillPages(10, table1IO, rand)
 
-	testBuffer := buffer.NewSharedBuffer(10, tableStore, ioStore)
+	testBuffer := buffer.NewSharedBuffer(10, ioStore)
 
 	tCount := 4
 	waitGroup1 := sync.WaitGroup{}
@@ -57,7 +57,7 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	waitGroup2 := sync.WaitGroup{}
 	waitGroup2.Add(tCount)
 
-	tag := dbbs.PageTag{PageId: 0, Relation: table1.RelationId()}
+	tag := page.Tag{PageId: 0, Relation: table1.RelationId()}
 	for i := 0; i < tCount; i++ {
 		go func() {
 			_, _ = testBuffer.RPage(tag)
@@ -74,16 +74,15 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 // todo consult chaber if this test can be done better (not using timer)
 func TestSharedBuffer_RWLock(t *testing.T) {
 	table1 := ttable1.Def()
-	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
-	ioStore := tstructs.NewInMemTableIO(table1)
-	table1IO := ioStore.TableIO(table1.TableId())
+	ioStore := pageio.NewStore()
+	table1IO := createAndRegisterTestPageIO(table1, ioStore, t)
 
 	rand := random.NewRandom(0)
 	table1.FillPages(10, table1IO, rand)
 
-	testBuffer := buffer.NewSharedBuffer(10, tableStore, ioStore)
+	testBuffer := buffer.NewSharedBuffer(10, ioStore)
 
-	tag := dbbs.NewPageTag(0, table1)
+	tag := page.NewPageTag(0, table1)
 	_, err := testBuffer.WPage(tag)
 
 	if err != nil {
@@ -96,7 +95,7 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 		_, err := testBuffer.RPage(tag)
 		ch1 <- true
 		if err != nil {
-			t.Errorf("testBuffer.RPage returned error: %e", err)
+			t.Errorf("testBuffer.TableRPage returned error: %e", err)
 			return
 		}
 		testBuffer.ReleaseRPage(tag)
@@ -122,16 +121,15 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 // todo consult chaber if this test can be done better (not using timer)
 func TestSharedBuffer_2xWLock(t *testing.T) {
 	table1 := ttable1.Def()
-	tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
-	ioStore := tstructs.NewInMemTableIO(table1)
-	table1IO := ioStore.TableIO(table1.TableId())
+	ioStore := pageio.NewStore()
+	table1IO := createAndRegisterTestPageIO(table1, ioStore, t)
 
 	rand := random.NewRandom(0)
 	table1.FillPages(10, table1IO, rand)
 
-	testBuffer := buffer.NewSharedBuffer(10, tableStore, ioStore)
+	testBuffer := buffer.NewSharedBuffer(10, ioStore)
 
-	tag := dbbs.NewPageTag(0, table1)
+	tag := page.NewPageTag(0, table1)
 	_, err := testBuffer.WPage(tag)
 
 	if err != nil {
@@ -144,7 +142,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 		_, err := testBuffer.WPage(tag)
 		ch1 <- true
 		if err != nil {
-			t.Errorf("testBuffer.RPage returned error: %e", err)
+			t.Errorf("testBuffer.TableRPage returned error: %e", err)
 			return
 		}
 		testBuffer.ReleaseWPage(tag)
@@ -165,4 +163,11 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 	}
 
 	<-ch1
+}
+
+func createAndRegisterTestPageIO(table1 tstructs.TestTable, ioStore *pageio.Store, t *testing.T) pageio.IO {
+	table1IO, err := pageio.NewPageIO(&dbfs.InMemoryFile{})
+	assert.IsNil(err, t)
+	ioStore.Register(table1.RelationId(), table1IO)
+	return table1IO
 }

@@ -1,24 +1,24 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/access"
-	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/pageio"
 )
 
-var SharedBuffer DBSharedBuffer
+var DBSharedBuffer SharedBuffer
 
 func init() {
-	SharedBuffer = NewSharedBuffer(10_000, table.DBTableStore, access.DBTableIOStore)
+	DBSharedBuffer = NewSharedBuffer(10_000, pageio.DBPageIOStore)
 }
 
 // todo change methods to operate on ArrayIndexes
-type DBSharedBuffer interface {
-	RPage(tag dbbs.PageTag) (dbbs.RPage, error)
-	WPage(id dbbs.PageTag) (dbbs.WPage, error)
+type SharedBuffer interface {
+	RPage(tag page.Tag) (page.TableRPage, error)
+	WPage(id page.Tag) (page.TableWPage, error)
 
-	ReleaseWPage(tag dbbs.PageTag)
-	ReleaseRPage(tag dbbs.PageTag)
+	ReleaseWPage(tag page.Tag)
+	ReleaseRPage(tag page.Tag)
 }
 
 type TableSrc interface {
@@ -26,9 +26,9 @@ type TableSrc interface {
 }
 
 type PageIO interface {
-	Read(tag dbbs.PageTag, buffer []byte)
-	Flush(tag dbbs.PageTag, buffer []byte)
-	SaveNew(tag dbbs.PageTag, buffer []byte)
+	Read(tag page.Tag, buffer []byte)
+	Flush(tag page.Tag, buffer []byte)
+	SaveNew(tag page.Tag, buffer []byte)
 }
 
 type ArrayIndex = uint

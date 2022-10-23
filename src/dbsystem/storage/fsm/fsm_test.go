@@ -2,9 +2,9 @@ package fsm_test
 
 import (
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
+	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"testing"
 )
@@ -19,7 +19,7 @@ func TestFreeSpaceMap_UpdatePage(t *testing.T) {
 	helper.clear(0)
 	helper.assertFind(2, 2)
 
-	pageId := uint32(dbbs.PageSize)*2 + 7
+	pageId := uint32(page.Size)*2 + 7
 	helper.testFsmUpdate(pageId, 8)
 	helper.clear(pageId)
 
@@ -36,7 +36,7 @@ func TestFreeSpaceMap_UpdatePage2(t *testing.T) {
 	defer helper.close()
 
 	helper.testFsmUpdate(5, 2)
-	pageId := uint32(dbbs.PageSize)*5 + 7
+	pageId := uint32(page.Size)*5 + 7
 	helper.testFsmUpdate(pageId, 255)
 	helper.clear(pageId)
 	helper.assertFind(5, 2)
@@ -56,7 +56,7 @@ func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 		fsMap:   fsMap,
 		t:       t,
 		ctx:     nil,
-		pageIds: make([]dbbs.PageId, 0, 10),
+		pageIds: make([]page.Id, 0, 10),
 	}
 }
 
@@ -65,10 +65,10 @@ type fsmTestHelper struct {
 	t     *testing.T
 	ctx   *tx.Ctx
 
-	pageIds []dbbs.PageId
+	pageIds []page.Id
 }
 
-func (pt *fsmTestHelper) testFsmUpdate(pageId dbbs.PageId, newSize uint8) {
+func (pt *fsmTestHelper) testFsmUpdate(pageId page.Id, newSize uint8) {
 	pt.pageIds = append(pt.pageIds, pageId)
 
 	size := pt.toAbsSize(newSize)
@@ -83,7 +83,7 @@ func (pt *fsmTestHelper) testFsmUpdate(pageId dbbs.PageId, newSize uint8) {
 	assert.Eq(pageId, foundPageId, pt.t)
 }
 
-func (pt *fsmTestHelper) assertFind(id dbbs.PageId, size uint8) {
+func (pt *fsmTestHelper) assertFind(id page.Id, size uint8) {
 	absSize := pt.toAbsSize(size)
 	page, err := pt.fsMap.FindPage(absSize, pt.ctx)
 	assert.IsNil(err, pt.t)
@@ -95,7 +95,7 @@ func (pt *fsmTestHelper) assertNoFound(size uint8) {
 	assert.NotNil(err, pt.t)
 }
 
-func (pt *fsmTestHelper) clear(id dbbs.PageId) {
+func (pt *fsmTestHelper) clear(id page.Id) {
 	pt.fsMap.UpdatePage(0, id)
 }
 
@@ -109,7 +109,7 @@ func (pt *fsmTestHelper) clearAll() {
 }
 
 func (pt *fsmTestHelper) toAbsSize(compressedSize uint8) uint16 {
-	divider := dbbs.PageSize / 256
+	divider := page.Size / 256
 	return uint16(compressedSize) * divider
 }
 

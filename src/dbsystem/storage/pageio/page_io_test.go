@@ -2,8 +2,8 @@ package pageio_test
 
 import (
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/storage/dbfs"
+	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"testing"
 )
@@ -34,13 +34,13 @@ func TestPageIO_Locks(t *testing.T) {
 }
 
 func createSimplePage() []byte {
-	data := make([]byte, dbbs.PageSize)
-	for i := 0; i < int(dbbs.PageSize); i++ {
+	data := make([]byte, page.Size)
+	for i := 0; i < int(page.Size); i++ {
 		data[i] = byte(i)
 	}
 	return data
 }
 
 func buffer() []byte {
-	return make([]byte, dbbs.PageSize)
+	return make([]byte, page.Size)
 }

@@ -2,8 +2,8 @@ package pageio
 
 import (
 	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/storage/dbfs"
+	"HomegrownDB/dbsystem/storage/page"
 	"errors"
 	"sync"
 )
@@ -17,7 +17,7 @@ func NewRWPageIO(file dbfs.FileLike) (ResourceLockIO, error) {
 
 	return &rwPageIO{
 		src:         file,
-		lockMap:     appsync.NewResLockMap[dbbs.PageId](),
+		lockMap:     appsync.NewResLockMap[page.Id](),
 		pageCount:   0,
 		newPageLock: &sync.Mutex{},
 	}, nil
@@ -31,7 +31,7 @@ func LoadRWPageIO(file dbfs.FileLike) (ResourceLockIO, error) {
 
 	return &rwPageIO{
 		src:         file,
-		lockMap:     appsync.NewResLockMap[dbbs.PageId](),
+		lockMap:     appsync.NewResLockMap[page.Id](),
 		pageCount:   uint32(fileInfo.Size() / pageSize),
 		newPageLock: &sync.Mutex{},
 	}, err
@@ -41,13 +41,13 @@ var _ ResourceLockIO = &rwPageIO{}
 
 type rwPageIO struct {
 	src     dbfs.FileLike
-	lockMap *appsync.ResLockMap[dbbs.PageId]
+	lockMap *appsync.ResLockMap[page.Id]
 
 	pageCount   uint32
 	newPageLock sync.Locker
 }
 
-func (io *rwPageIO) RPage(pageId dbbs.PageId, buffer []byte) error {
+func (io *rwPageIO) RPage(pageId page.Id, buffer []byte) error {
 	io.lockMap.RLockRes(pageId)
 
 	_, err := io.src.ReadAt(buffer, io.calcOffset(pageId))
@@ -58,11 +58,11 @@ func (io *rwPageIO) RPage(pageId dbbs.PageId, buffer []byte) error {
 	return nil
 }
 
-func (io *rwPageIO) ReleaseRPage(pageId dbbs.PageId) {
+func (io *rwPageIO) ReleaseRPage(pageId page.Id) {
 	io.lockMap.RUnlockRes(pageId)
 }
 
-func (io *rwPageIO) WPage(pageId dbbs.PageId, buffer []byte) error {
+func (io *rwPageIO) WPage(pageId page.Id, buffer []byte) error {
 	io.lockMap.WLockRes(pageId)
 
 	_, err := io.src.ReadAt(buffer, io.calcOffset(pageId))
@@ -73,16 +73,16 @@ func (io *rwPageIO) WPage(pageId dbbs.PageId, buffer []byte) error {
 	return nil
 }
 
-func (io *rwPageIO) ReleaseWPage(pageId dbbs.PageId) {
+func (io *rwPageIO) ReleaseWPage(pageId page.Id) {
 	io.lockMap.WUnlockRes(pageId)
 }
 
-func (io *rwPageIO) Flush(pageId dbbs.PageId, pageData []byte) error {
+func (io *rwPageIO) Flush(pageId page.Id, pageData []byte) error {
 	_, err := io.src.WriteAt(pageData, io.calcOffset(pageId))
 	return err
 }
 
-func (io *rwPageIO) NewPage(pageData []byte) (dbbs.PageId, error) {
+func (io *rwPageIO) NewPage(pageData []byte) (page.Id, error) {
 	io.newPageLock.Lock()
 	defer io.newPageLock.Unlock()
 
@@ -102,6 +102,6 @@ func (io *rwPageIO) Close() error {
 	return io.src.Close()
 }
 
-func (io *rwPageIO) calcOffset(pageId dbbs.PageId) int64 {
+func (io *rwPageIO) calcOffset(pageId page.Id) int64 {
 	return pageSize * int64(pageId)
 }

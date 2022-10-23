@@ -1,4 +1,4 @@
-package dbbs
+package page
 
 import (
 	"HomegrownDB/common/bparse"
@@ -41,7 +41,7 @@ func (tb *tupleBuilder) Create(columnValues map[string][]byte, txInfo *tx.InfoCt
 	}
 
 	tuple := Tuple{
-		data:  tb.buffer.Bytes(),
+		bytes: tb.buffer.Bytes(),
 		table: tb.table,
 	}
 	tb.initTupleWithTxContext(tuple, txInfo)

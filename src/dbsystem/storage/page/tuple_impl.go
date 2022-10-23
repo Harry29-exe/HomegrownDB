@@ -1,4 +1,4 @@
-package dbbs
+package page
 
 import (
 	"HomegrownDB/common/bparse"
@@ -14,14 +14,14 @@ import (
 var _ WTuple = Tuple{}
 
 type Tuple struct {
-	data []byte
+	bytes []byte
 
 	table table.Definition
 }
 
 // TID tuple id composed of Id and InPage
 type TID struct {
-	PageId     PageId
+	PageId     Id
 	TupleIndex TupleIndex
 }
 
@@ -32,33 +32,33 @@ const TupleIndexSize = 2
 type InTuplePtr = uint16
 
 func (t Tuple) Bytes() []byte {
-	return t.data
+	return t.bytes
 }
 
 func (t Tuple) CreatedByTx() tx.Id {
-	return tx.Id(bparse.Parse.UInt4(t.data[toTxId:]))
+	return tx.Id(bparse.Parse.UInt4(t.bytes[toTxId:]))
 }
 
 func (t Tuple) ModifiedByTx() tx.Id {
-	return tx.Id(bparse.Parse.UInt4(t.data[toModifiedTxId:]))
+	return tx.Id(bparse.Parse.UInt4(t.bytes[toModifiedTxId:]))
 }
 
 func (t Tuple) TxCommandCounter() uint16 {
-	return bparse.Parse.UInt2(t.data[toTxId:])
+	return bparse.Parse.UInt2(t.bytes[toTxId:])
 }
 
 // TID returns TID of next version of this tuple or
 // TID of this tuple if its newest version
 func (t Tuple) TID() TID {
 	return TID{
-		PageId:     bparse.Parse.UInt4(t.data[toPageId:]),
-		TupleIndex: bparse.Parse.UInt2(t.data[toTupleIndex:]),
+		PageId:     bparse.Parse.UInt4(t.bytes[toPageId:]),
+		TupleIndex: bparse.Parse.UInt2(t.bytes[toTupleIndex:]),
 	}
 }
 
 func (t Tuple) IsNull(id column.Order) bool {
 	var byteNumber = id / 8
-	value := t.data[toNullBitmap+byteNumber]
+	value := t.bytes[toNullBitmap+byteNumber]
 	divRest := id % 8
 	return value&nullBitmapMasks[divRest] == 0
 }
@@ -68,7 +68,7 @@ func (t Tuple) SetIsNull(id column.Order) {
 	bytePos := toNullBitmap + byteNumber
 
 	divRest := id % 8
-	t.data[bytePos] = bparse.Bit.SetBit(t.data[bytePos], uint8(divRest))
+	t.bytes[bytePos] = bparse.Bit.SetBit(t.bytes[bytePos], uint8(divRest))
 }
 
 func (t Tuple) SetIsNotNull(id column.Order) {
@@ -76,11 +76,11 @@ func (t Tuple) SetIsNotNull(id column.Order) {
 	bytePos := toNullBitmap + byteNumber
 
 	divRest := id % 8
-	t.data[bytePos] = bparse.Bit.ClearBit(t.data[bytePos], uint8(divRest))
+	t.bytes[bytePos] = bparse.Bit.ClearBit(t.bytes[bytePos], uint8(divRest))
 }
 
 func (t Tuple) ColValue(id column.Order) []byte {
-	subsequent := t.data[toNullBitmap+t.table.BitmapLen():]
+	subsequent := t.bytes[toNullBitmap+t.table.BitmapLen():]
 	for i := uint16(0); i < id; i++ {
 		if t.IsNull(id) {
 			continue
@@ -93,8 +93,16 @@ func (t Tuple) ColValue(id column.Order) []byte {
 	return t.table.ColumnType(id).Value(subsequent)
 }
 
+func (t Tuple) Data() []byte {
+	return t.bytes[t.HeaderSize():]
+}
+
 func (t Tuple) DataSize() int {
-	return len(t.data) - int(t.table.BitmapLen()+toNullBitmap)
+	return len(t.bytes) - int(t.table.BitmapLen()+toNullBitmap)
+}
+
+func (t Tuple) Table() table.Definition {
+	return t.table
 }
 
 func (t Tuple) HeaderSize() int {
@@ -102,7 +110,7 @@ func (t Tuple) HeaderSize() int {
 }
 
 func (t Tuple) SetCreatedByTx(txId tx.Id) {
-	binary.BigEndian.PutUint32(t.data[toTxId:toTxId+tx.IdSize], uint32(txId))
+	binary.BigEndian.PutUint32(t.bytes[toTxId:toTxId+tx.IdSize], uint32(txId))
 }
 
 func (t Tuple) SetModifiedByTx(tx tx.Id) {
@@ -121,27 +129,27 @@ func (t Tuple) SetTID(tid TID) {
 // +++++ Binary access methods +++++
 
 func (t Tuple) createdByTxIdSlice() []byte {
-	return t.data[toTxId : toTxId+tx.IdSize]
+	return t.bytes[toTxId : toTxId+tx.IdSize]
 }
 
 func (t Tuple) modifiedByTxIdSlice() []byte {
-	return t.data[toModifiedTxId : toModifiedTxId+tx.IdSize]
+	return t.bytes[toModifiedTxId : toModifiedTxId+tx.IdSize]
 }
 
 func (t Tuple) txCommandCounterSlice() []byte {
-	return t.data[toTxCounter : toTxCounter+tx.CommandCounterSize]
+	return t.bytes[toTxCounter : toTxCounter+tx.CommandCounterSize]
 }
 
 func (t Tuple) tidSlice() []byte {
-	return t.data[toPageId : toPageId+PageIdSize+TupleIndexSize]
+	return t.bytes[toPageId : toPageId+IdSize+TupleIndexSize]
 }
 
 func (t Tuple) tidPageIdSlice() []byte {
-	return t.data[toPageId : toPageId+PageIdSize]
+	return t.bytes[toPageId : toPageId+IdSize]
 }
 
 func (t Tuple) tidTupleIndexSlice() []byte {
-	return t.data[toTupleIndex : toTupleIndex+TupleIndexSize]
+	return t.bytes[toTupleIndex : toTupleIndex+TupleIndexSize]
 }
 
 func (t Tuple) NullBitmapSlice() []byte {
@@ -150,7 +158,7 @@ func (t Tuple) NullBitmapSlice() []byte {
 	}
 
 	length := t.table.BitmapLen()
-	return t.data[toNullBitmap : toNullBitmap+length]
+	return t.bytes[toNullBitmap : toNullBitmap+length]
 }
 
 var nullBitmapMasks = [8]byte{
@@ -198,7 +206,7 @@ func (t tupleDebugger) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) 
 
 		byteIndex := i / 8
 		bitIndex := i - byteIndex*8
-		bit := bparse.Bit.GetBit(tuple.data[toNullBitmap+byteIndex], uint8(bitIndex))
+		bit := bparse.Bit.GetBit(tuple.bytes[toNullBitmap+byteIndex], uint8(bitIndex))
 		bitValue := uint8(0)
 		if bit > 0 {
 			bitValue = 1
@@ -214,7 +222,7 @@ func (t tupleDebugger) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) 
 func (t tupleDebugger) stringifyColumnValues(tuple Tuple, arr *strutils.StrArray) {
 	tabDef := tuple.table
 
-	nextData := tuple.data[toNullBitmap+tabDef.BitmapLen():]
+	nextData := tuple.bytes[toNullBitmap+tabDef.BitmapLen():]
 	var value []byte
 	for i := column.Order(0); i < tabDef.ColumnCount(); i++ {
 		col := tabDef.Column(i)

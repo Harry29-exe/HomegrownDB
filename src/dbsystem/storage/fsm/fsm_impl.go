@@ -1,12 +1,12 @@
 package fsm
 
 import (
-	"HomegrownDB/dbsystem/access/dbbs"
+	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
 )
 
-func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (dbbs.PageId, error) {
+func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
 	buffer := make([]byte, pageSize)
 
 	var internalErr internalError
@@ -52,7 +52,7 @@ func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (dbbs.PageId, error) {
 	return f.calcPageId(pageIndex, nodeIndex), nil
 }
 
-func (f *FreeSpaceMap) calcPageId(pageIndex uint32, nodeIndex uint16) dbbs.PageId {
+func (f *FreeSpaceMap) calcPageId(pageIndex uint32, nodeIndex uint16) page.Id {
 	pageIndexInLayer := pageIndex - uint32(leafNodeCount+1)
 	return pageIndexInLayer*uint32(leafNodeCount) + uint32(nodeIndex-nonLeafNodeCount)
 }
