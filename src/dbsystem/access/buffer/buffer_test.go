@@ -25,7 +25,7 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 	buf := make([]byte, page.Size)
 	testBuffer := buffer.NewSharedBuffer(100, ioStore)
 	for i := page.Id(0); i < 1_000; i++ {
-		tag := page.NewPageTag(i, table1)
+		tag := buffer.NewTablePageTag(i, table1)
 		page, err := testBuffer.WPage(tag)
 		if err != nil {
 			t.Errorf("During reading page %d got error: %e", i, err)
@@ -57,7 +57,7 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	waitGroup2 := sync.WaitGroup{}
 	waitGroup2.Add(tCount)
 
-	tag := page.Tag{PageId: 0, Relation: table1.RelationId()}
+	tag := buffer.PageTag{PageId: 0, Relation: table1.RelationId()}
 	for i := 0; i < tCount; i++ {
 		go func() {
 			_, _ = testBuffer.RPage(tag)
@@ -82,7 +82,7 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 
 	testBuffer := buffer.NewSharedBuffer(10, ioStore)
 
-	tag := page.NewPageTag(0, table1)
+	tag := buffer.NewTablePageTag(0, table1)
 	_, err := testBuffer.WPage(tag)
 
 	if err != nil {
@@ -129,7 +129,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 
 	testBuffer := buffer.NewSharedBuffer(10, ioStore)
 
-	tag := page.NewPageTag(0, table1)
+	tag := buffer.NewTablePageTag(0, table1)
 	_, err := testBuffer.WPage(tag)
 
 	if err != nil {

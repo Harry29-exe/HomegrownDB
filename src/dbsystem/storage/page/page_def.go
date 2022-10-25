@@ -13,7 +13,7 @@ type Page interface {
 }
 
 var (
-	_ Page = StdPage{}
+	_ Page = GenericPage{}
 )
 
 type TableRPage interface {
@@ -35,16 +35,16 @@ type Id = uint32
 
 const IdSize = 4
 
-type Tag struct {
-	PageId   Id
-	Relation relation.ID
-}
-
-func NewPageTag(pageIndex Id, tableDef table.Definition) Tag {
-	return Tag{
-		PageId:   pageIndex,
-		Relation: tableDef.RelationId(),
-	}
-}
-
 const Size uint16 = dbsystem.PageSize
+
+var Adapter = adapter{}
+
+type adapter struct{}
+
+func (a adapter) TablePage(page []byte, table table.Definition) TablePage {
+	return NewPage(table, page)
+}
+
+func (a adapter) GenericPage(page []byte, rel relation.Relation) GenericPage {
+	return NewGenericPage(page, rel.RelationID(), uint16(rel.PageInfo().HeaderSize))
+}

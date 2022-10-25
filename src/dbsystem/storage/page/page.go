@@ -4,28 +4,28 @@ import (
 	"HomegrownDB/dbsystem/schema/relation"
 )
 
-func NewStdPage(bytes []byte, relID relation.ID, headerSize uint16) StdPage {
-	return StdPage{
+func NewGenericPage(bytes []byte, relID relation.ID, headerSize uint16) GenericPage {
+	return GenericPage{
 		headerSize: headerSize,
 		relId:      relID,
 		bytes:      bytes,
 	}
 }
 
-type StdPage struct {
+type GenericPage struct {
 	headerSize uint16
 	relId      relation.ID
 	bytes      []byte
 }
 
-func (p StdPage) Header() []byte {
+func (p GenericPage) Header() []byte {
 	return p.bytes[:p.headerSize]
 }
 
-func (p StdPage) Data() []byte {
+func (p GenericPage) Data() []byte {
 	return p.bytes[p.headerSize:]
 }
 
-func (p StdPage) RelationID() relation.ID {
+func (p GenericPage) RelationID() relation.ID {
 	return p.relId
 }
