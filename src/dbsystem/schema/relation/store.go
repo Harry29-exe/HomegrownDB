@@ -1,9 +1,12 @@
-package schema
+package relation
 
 import (
 	"HomegrownDB/common/datastructs/appsync"
 	"sync"
 )
+
+//todo load store from disc
+var DBStore = NewStore()
 
 type Store interface {
 	Get(id ID) Relation

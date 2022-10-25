@@ -11,7 +11,7 @@ import (
 )
 
 type StandardTable struct {
-	objectId schema.ID
+	objectId relation.ID
 	tableId  Id
 	columns  []column.WDef
 	rColumns []column.Def
@@ -31,11 +31,11 @@ func (t *StandardTable) TableId() Id {
 	return t.tableId
 }
 
-func (t *StandardTable) SetRelationId(id schema.ID) {
+func (t *StandardTable) SetRelationId(id relation.ID) {
 	t.objectId = id
 }
 
-func (t *StandardTable) RelationId() schema.ID {
+func (t *StandardTable) RelationId() relation.ID {
 	return t.objectId
 }
 

@@ -8,9 +8,8 @@ import (
 )
 
 type Definition interface {
+	RelationId() relation.ID
 	TableId() Id
-	// OID Object id
-	RelationId() schema.ID
 	Name() string
 
 	// Serialize table info, so it can be saved to disc and
@@ -39,7 +38,7 @@ type WDefinition interface {
 	Definition
 
 	SetTableId(id Id)
-	SetRelationId(id schema.ID)
+	SetRelationId(id relation.ID)
 	SetName(name string)
 
 	AddColumn(definition column.WDef) error

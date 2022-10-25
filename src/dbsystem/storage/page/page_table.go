@@ -13,7 +13,7 @@ import (
 )
 
 //todo add handling for inserting into empty page
-func CreateEmptyPage(tableDef table.Definition) TablePage {
+func EmptyTablePage(tableDef table.Definition) TablePage {
 	rawPage := make([]byte, Size)
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
@@ -40,7 +40,7 @@ func NewPage(definition table.Definition, data []byte) TablePage {
 
 type TablePage struct {
 	table      table.Definition
-	relationID schema.ID
+	relationID relation.ID
 	page       []byte
 }
 
@@ -52,7 +52,7 @@ func (p TablePage) Data() []byte {
 	return p.page[poFirstTuplePtr:]
 }
 
-func (p TablePage) RelationID() schema.ID {
+func (p TablePage) RelationID() relation.ID {
 	return p.relationID
 }
 

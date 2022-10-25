@@ -9,7 +9,7 @@ import (
 var DBSharedBuffer SharedBuffer
 
 func init() {
-	DBSharedBuffer = NewSharedBuffer(10_000, pageio.DBPageIOStore)
+	DBSharedBuffer = NewSharedBuffer(10_000, pageio.DBStore)
 }
 
 // todo change methods to operate on ArrayIndexes
@@ -23,12 +23,6 @@ type SharedBuffer interface {
 
 type TableSrc interface {
 	Table(id table.Id) table.Definition
-}
-
-type PageIO interface {
-	Read(tag page.Tag, buffer []byte)
-	Flush(tag page.Tag, buffer []byte)
-	SaveNew(tag page.Tag, buffer []byte)
 }
 
 type ArrayIndex = uint

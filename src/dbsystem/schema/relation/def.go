@@ -1,4 +1,4 @@
-package schema
+package relation
 
 type ID = uint32
 

@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/dbsystem/storage/dbfs"
 )
 
-var DBPageIOStore = NewStore()
+var DBStore = NewStore()
 
 func LoadStore(file dbfs.FileLike) (*Store, error) {
 	//todo implement me
@@ -13,23 +13,23 @@ func LoadStore(file dbfs.FileLike) (*Store, error) {
 }
 
 func NewStore() *Store {
-	return &Store{ioMap: map[schema.ID]IO{}}
+	return &Store{ioMap: map[relation.ID]IO{}}
 }
 
 type Store struct {
-	ioMap map[schema.ID]IO
+	ioMap map[relation.ID]IO
 }
 
-func (s *Store) Get(id schema.ID) IO {
+func (s *Store) Get(id relation.ID) IO {
 	return s.ioMap[id]
 }
 
-func (s *Store) Exist(id schema.ID) bool {
+func (s *Store) Exist(id relation.ID) bool {
 	_, ok := s.ioMap[id]
 	return ok
 }
 
-func (s *Store) Register(id schema.ID, io IO) {
+func (s *Store) Register(id relation.ID, io IO) {
 	_, ok := s.ioMap[id]
 	if ok {
 		panic("Can't register io when io with same relation id is already registerd")

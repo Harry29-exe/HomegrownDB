@@ -9,7 +9,7 @@ import (
 type Page interface {
 	Header() []byte
 	Data() []byte
-	RelationID() schema.ID
+	RelationID() relation.ID
 }
 
 var (
@@ -37,7 +37,7 @@ const IdSize = 4
 
 type Tag struct {
 	PageId   Id
-	Relation schema.ID
+	Relation relation.ID
 }
 
 func NewPageTag(pageIndex Id, tableDef table.Definition) Tag {
