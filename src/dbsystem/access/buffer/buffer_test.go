@@ -36,7 +36,7 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 			t.Errorf("TableIO returned non nil error: %e", err)
 		}
 		testBuffer.ReleaseWPage(tag)
-		data := page.Data()
+		data := page.Page()
 		assert.EqArray(data, buf, t)
 	}
 }
@@ -166,7 +166,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 }
 
 func createAndRegisterTestPageIO(table1 tstructs.TestTable, ioStore *pageio.Store, t *testing.T) pageio.IO {
-	table1IO, err := pageio.NewPageIO(&dbfs.InMemoryFile{})
+	table1IO, err := pageio.NewPageIO(dbfs.NewInMemoryFile(table1.Name()))
 	assert.IsNil(err, t)
 	ioStore.Register(table1.RelationId(), table1IO)
 	return table1IO

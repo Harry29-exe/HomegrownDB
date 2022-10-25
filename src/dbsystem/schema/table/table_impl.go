@@ -4,14 +4,14 @@ import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/ctype"
-	"HomegrownDB/dbsystem/db"
 	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/schema/relation"
 	"errors"
 	"math"
 )
 
 type StandardTable struct {
-	objectId db.RelationID
+	objectId schema.ID
 	tableId  Id
 	columns  []column.WDef
 	rColumns []column.Def
@@ -31,11 +31,11 @@ func (t *StandardTable) TableId() Id {
 	return t.tableId
 }
 
-func (t *StandardTable) SetRelationId(id db.RelationID) {
+func (t *StandardTable) SetRelationId(id schema.ID) {
 	t.objectId = id
 }
 
-func (t *StandardTable) RelationId() db.RelationID {
+func (t *StandardTable) RelationId() schema.ID {
 	return t.objectId
 }
 

@@ -5,6 +5,7 @@ package page
 // which shows how page's binary representations looks like
 
 import (
+	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/schema/table"
 	"encoding/binary"
 	"errors"
@@ -12,7 +13,6 @@ import (
 )
 
 //todo add handling for inserting into empty page
-
 func CreateEmptyPage(tableDef table.Definition) TablePage {
 	rawPage := make([]byte, Size)
 	uint16Zero := make([]byte, 2)
@@ -31,12 +31,29 @@ func CreateEmptyPage(tableDef table.Definition) TablePage {
 }
 
 func NewPage(definition table.Definition, data []byte) TablePage {
-	return TablePage{definition, data}
+	return TablePage{
+		table:      definition,
+		relationID: definition.RelationId(),
+		page:       data,
+	}
 }
 
 type TablePage struct {
-	table table.Definition
-	page  []byte
+	table      table.Definition
+	relationID schema.ID
+	page       []byte
+}
+
+func (p TablePage) Header() []byte {
+	return p.page[:poFirstTuplePtr]
+}
+
+func (p TablePage) Data() []byte {
+	return p.page[poFirstTuplePtr:]
+}
+
+func (p TablePage) RelationID() schema.ID {
+	return p.relationID
 }
 
 func (p TablePage) Tuple(tIndex TupleIndex) Tuple {
@@ -51,6 +68,10 @@ func (p TablePage) Tuple(tIndex TupleIndex) Tuple {
 		bytes: p.page[tuplePtr:tupleEndPtr],
 		table: p.table,
 	}
+}
+
+func (p TablePage) Page() []byte {
+	return p.page
 }
 
 func (p TablePage) TupleCount() uint16 {
@@ -69,10 +90,6 @@ func (p TablePage) FreeSpace() uint16 {
 		return lastTupleStart - (p.getLastPtrPosition() + InPagePointerSize)
 	}
 	return emptyPageFreeSpace
-}
-
-func (p TablePage) Data() []byte {
-	return p.page
 }
 
 /*

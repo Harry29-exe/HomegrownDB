@@ -2,22 +2,24 @@ package page
 
 import (
 	"HomegrownDB/dbsystem"
-	"HomegrownDB/dbsystem/db"
+	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/schema/table"
 )
 
-type RPage interface {
+type Page interface {
 	Header() []byte
 	Data() []byte
-	RelationID() db.RelationID
+	RelationID() schema.ID
 }
+
+var (
+	_ Page = StdPage{}
+)
 
 type TableRPage interface {
 	Tuple(tupleIndex uint16) Tuple
 	TupleCount() uint16
 	FreeSpace() uint16
-
-	Data() []byte
 }
 
 type TableWPage interface {
@@ -26,6 +28,7 @@ type TableWPage interface {
 	InsertTuple(data []byte) error
 	UpdateTuple(tIndex TupleIndex, tuple []byte)
 	DeleteTuple(tIndex TupleIndex)
+	Page() []byte
 }
 
 type Id = uint32
@@ -34,7 +37,7 @@ const IdSize = 4
 
 type Tag struct {
 	PageId   Id
-	Relation db.RelationID
+	Relation schema.ID
 }
 
 func NewPageTag(pageIndex Id, tableDef table.Definition) Tag {
