@@ -26,7 +26,7 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 	testBuffer := buffer.NewSharedBuffer(100, ioStore)
 	for i := page.Id(0); i < 1_000; i++ {
 		tag := buffer.NewTablePageTag(i, table1)
-		page, err := testBuffer.WPage(tag)
+		pageData, err := testBuffer.WPage(tag)
 		if err != nil {
 			t.Errorf("During reading page %d got error: %e", i, err)
 		}
@@ -36,8 +36,7 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 			t.Errorf("TableIO returned non nil error: %e", err)
 		}
 		testBuffer.ReleaseWPage(tag)
-		data := page.Page()
-		assert.EqArray(data, buf, t)
+		assert.EqArray(pageData, buf, t)
 	}
 }
 

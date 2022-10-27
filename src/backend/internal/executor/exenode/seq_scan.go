@@ -9,7 +9,7 @@ import (
 	page2 "HomegrownDB/dbsystem/storage/page"
 )
 
-func NewSeqScan(table table.Definition, tableDataIO access.TableDataIO, buffer buffer.genericBuffer) *SeqScan {
+func NewSeqScan(table table.Definition, tableDataIO access.TableDataIO, buffer buffer.SharedBuffer) *SeqScan {
 	return &SeqScan{
 		tableDef: table,
 		tableIO:  tableDataIO,
@@ -22,7 +22,7 @@ var _ ExeNode = &SeqScan{}
 type SeqScan struct {
 	tableDef table.Definition
 	tableIO  access.TableDataIO
-	buffer   buffer.genericBuffer
+	buffer   buffer.SharedBuffer
 
 	page  page2.Id
 	tuple page2.TupleIndex
@@ -45,15 +45,15 @@ func (s *SeqScan) HasNext() bool {
 
 func (s *SeqScan) Next() dbbs2.QRow {
 	tag := buffer.PageTag{PageId: s.page, Relation: s.tableDef.RelationId()}
-	rPage, err := s.buffer.RPage(tag)
+	rPage, err := s.buffer.TableRPage(tag, s.tableDef)
 	if err != nil {
 		panic("")
 	}
-	tablePage := page2.Adapter.TablePage(rPage, s.tableDef)
-	defer buffer.DBSharedBuffer.ReleaseRPage(tag)
-	tuple := tablePage.Tuple(s.tuple)
 
-	tCount := tablePage.TupleCount()
+	defer buffer.DBSharedBuffer.ReleaseRPage(tag)
+	tuple := rPage.Tuple(s.tuple)
+
+	tCount := rPage.TupleCount()
 	if tCount == s.tuple+1 {
 		s.tuple = 0
 		s.page += 1
@@ -67,7 +67,7 @@ func (s *SeqScan) Next() dbbs2.QRow {
 
 func (s *SeqScan) NextBatch() []dbbs2.QRow {
 	tag := buffer.PageTag{PageId: s.page, Relation: s.tableDef.RelationId()}
-	rPage, err := buffer.DBSharedBuffer.RPage(tag)
+	rPage, err := buffer.DBSharedBuffer.TableRPage(tag, s.tableDef)
 	if err != nil {
 		panic("")
 	}
@@ -102,7 +102,7 @@ func (s *SeqScan) All() []dbbs2.QRow {
 
 func (s *SeqScan) readPageWhileReadingAll(rows []dbbs2.QRow) []dbbs2.QRow {
 	tag := buffer.PageTag{PageId: s.page, Relation: s.tableDef.RelationId()}
-	rPage, err := buffer.DBSharedBuffer.RPage(tag)
+	rPage, err := buffer.DBSharedBuffer.TableRPage(tag, s.tableDef)
 	if err != nil {
 		panic("")
 	}
