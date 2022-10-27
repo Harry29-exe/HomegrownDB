@@ -4,10 +4,10 @@ import (
 	"HomegrownDB/dbsystem/schema/relation"
 )
 
-func NewGenericPage(bytes []byte, relID relation.ID, headerSize uint16) GenericPage {
+func NewGenericPage(bytes []byte, rel relation.Relation) GenericPage {
 	return GenericPage{
-		headerSize: headerSize,
-		relId:      relID,
+		headerSize: uint16(rel.PageInfo().HeaderSize),
+		relId:      rel.RelationID(),
 		bytes:      bytes,
 	}
 }

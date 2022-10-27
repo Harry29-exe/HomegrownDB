@@ -10,11 +10,31 @@ import (
 var DBSharedBuffer SharedBuffer
 
 func init() {
-	DBSharedBuffer = NewSharedBuffer(10_000, pageio.DBStore)
+	DBSharedBuffer = &bufferProxy{
+		buffer: NewSharedBuffer(10_000, pageio.DBStore),
+	}
+}
+
+type SharedBuffer interface {
+	TableBuffer
+	GenericBuffer
+
+	ReleaseWPage(tag PageTag)
+	ReleaseRPage(tag PageTag)
+}
+
+type TableBuffer interface {
+	TableRPage(tag PageTag, table table.Definition) (page.TableRPage, error)
+	TableWPage(tag PageTag, table table.Definition) (page.TableWPage, error)
+}
+
+type GenericBuffer interface {
+	RGenericPage(tag PageTag, relation relation.Relation) (page.GenericPage, error)
+	WGenericPage(tag PageTag, relation relation.Relation) (page.GenericPage, error)
 }
 
 // todo change methods to operate on ArrayIndexes
-type SharedBuffer interface {
+type genericBuffer interface {
 	RPage(tag PageTag) (Page, error)
 	WPage(tag PageTag) (Page, error)
 

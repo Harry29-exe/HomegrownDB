@@ -10,7 +10,7 @@ import (
 // is saved in DBSharedBuffer, in this way bufferMapLock will be lock for shorter time
 // see sharedBuffer.loadPage
 
-func NewSharedBuffer(bufferSize uint, pageIOStore *pageio.Store) SharedBuffer {
+func NewSharedBuffer(bufferSize uint, pageIOStore *pageio.Store) genericBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 	for i := uint(0); i < bufferSize; i++ {
 		descriptorArray[i] = pageDescriptor{

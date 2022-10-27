@@ -9,7 +9,7 @@ import (
 	page2 "HomegrownDB/dbsystem/storage/page"
 )
 
-func NewSeqScan(table table.Definition, tableDataIO access.TableDataIO, buffer buffer.SharedBuffer) *SeqScan {
+func NewSeqScan(table table.Definition, tableDataIO access.TableDataIO, buffer buffer.genericBuffer) *SeqScan {
 	return &SeqScan{
 		tableDef: table,
 		tableIO:  tableDataIO,
@@ -22,7 +22,7 @@ var _ ExeNode = &SeqScan{}
 type SeqScan struct {
 	tableDef table.Definition
 	tableIO  access.TableDataIO
-	buffer   buffer.SharedBuffer
+	buffer   buffer.genericBuffer
 
 	page  page2.Id
 	tuple page2.TupleIndex
