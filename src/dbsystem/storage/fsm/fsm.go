@@ -3,27 +3,27 @@
 package fsm
 
 import (
+	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
-	"os"
 	"testing"
 )
 
-func CreateFreeSpaceMap(filepath string) (*FreeSpaceMap, error) {
-	file, err := os.Create(filepath)
-	if err != nil {
-		return nil, err
-	}
-	pageIO, err := pageio.NewRWPageIO(file)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = initNewFsmIO(pageIO); err != nil {
-		return nil, err
-	}
+func CreateFreeSpaceMap(buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
+	//file, err := os.Create(filepath)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//pageIO, err := pageio.NewRWPageIO(file)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//if err = initNewFsmIO(pageIO); err != nil {
+	//	return nil, err
+	//}
 
 	return &FreeSpaceMap{io: pageIO}, nil
 }
@@ -65,7 +65,7 @@ func initNewFsmIO(io pageio.ResourceLockIO) error {
 // page has and helps find one with enough
 // space to fit inserting tuple
 type FreeSpaceMap struct {
-	io pageio.ResourceLockIO
+	buff buffer.SharedBuffer
 }
 
 // FindPage returns number of page with at least the amount of requested space,
