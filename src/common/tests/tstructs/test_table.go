@@ -22,8 +22,8 @@ func (t TestTable) FillPages(pagesToFill int, tableIO pageio.IO, rand random.Ran
 		insertedTuples++
 
 		if err != nil {
+			err = tableIO.FlushPage(page.Id(filledPages-1), tablePage.Page())
 			filledPages++
-			_, err = tableIO.NewPage(tablePage.Page())
 			if err != nil {
 				panic("could not create new page")
 			}

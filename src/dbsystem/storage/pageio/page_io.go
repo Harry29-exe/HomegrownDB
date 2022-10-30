@@ -66,18 +66,6 @@ func (p *pageIO) FlushPage(pageIndex page.Id, pageData []byte) error {
 	return err
 }
 
-func (p *pageIO) NewPage(pageData []byte) (page.Id, error) {
-	p.newPageLock.Lock()
-	defer p.newPageLock.Unlock()
-
-	_, err := p.src.Write(pageData)
-	if err != nil {
-		return 0, err
-	}
-	p.pageCount++
-	return p.pageCount, nil
-}
-
 func (p *pageIO) PageCount() uint32 {
 	return p.pageCount
 }

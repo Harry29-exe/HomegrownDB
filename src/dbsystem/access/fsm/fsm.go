@@ -49,15 +49,15 @@ func CreateTestFreeSpaceMap(file dbfs.FileLike, _ *testing.T) (*FreeSpaceMap, er
 	return &FreeSpaceMap{io: pageIO}, nil
 }
 
-func initNewFsmIO(io pageio.ResourceLockIO) error {
-	buff := make([]byte, pageSize)
-	for i := 0; i < int(leafNodeCount+1); i++ {
-		_, err := io.NewPage(buff)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+func initNewFsmIO(fsm *FreeSpaceMap) error {
+	//buff := make([]byte, pageSize)
+	//for i := 0; i < int(leafNodeCount+1); i++ {
+	//	_, err := fsm.buff
+	//	if err != nil {
+	//		return err
+	//	}
+	//}
+	//return nil
 }
 
 // FreeSpaceMap is data structure stores

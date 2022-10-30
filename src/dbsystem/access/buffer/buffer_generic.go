@@ -3,6 +3,7 @@ package buffer
 import (
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"errors"
 	"sync"
 )
 
@@ -161,6 +162,10 @@ func (b *sharedBuffer) loadPage(tag PageTag) (ArrayIndex, error) {
 
 		err := b.ioStore.Get(tag.Relation).ReadPage(tag.PageId, arraySlot)
 		if err != nil {
+			if errors.Is(err, pageio.NoPageErrorType) {
+
+			}
+
 			return handleFailedTableIO(tag, victimIndex, err)
 		}
 

@@ -2,8 +2,8 @@ package fsm_test
 
 import (
 	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/dbsystem/access/fsm"
 	"HomegrownDB/dbsystem/storage/dbfs"
-	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"testing"

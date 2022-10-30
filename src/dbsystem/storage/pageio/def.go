@@ -10,8 +10,7 @@ type IO interface {
 	ReadPage(pageIndex page.Id, buffer []byte) error
 	// FlushPage overrides pages at given page index with data from provided buffer
 	FlushPage(pageIndex page.Id, pageData []byte) error
-	// NewPage saves provided buffer as new page and returns newly created page index
-	NewPage(pageData []byte) (page.Id, error)
+	// PageCount returns number of pages saved to disc
 	PageCount() uint32
 
 	io.Closer
@@ -34,3 +33,13 @@ type ResourceLockIO interface {
 var (
 	pageSize = int64(page.Size)
 )
+
+var NoPageErrorType error = noPageError{}
+
+type noPageError struct {
+	pageId page.Id
+}
+
+func (n noPageError) Error() string {
+	return "No page with given index"
+}

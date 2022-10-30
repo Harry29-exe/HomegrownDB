@@ -3,6 +3,7 @@ module HomegrownDB
 go 1.18
 
 require github.com/gofiber/fiber/v2 v2.36.0
+require github.com/spf13/afero v1.9.2
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
@@ -11,4 +12,5 @@ require (
 	github.com/valyala/fasthttp v1.39.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24 // indirect
+	golang.org/x/text v0.3.7 // indirect
 )
