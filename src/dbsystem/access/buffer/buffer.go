@@ -5,6 +5,7 @@ import (
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/dbsystem/storage/tpage"
 )
 
 var DBSharedBuffer SharedBuffer
@@ -24,8 +25,8 @@ type SharedBuffer interface {
 }
 
 type TableBuffer interface {
-	TableRPage(tag PageTag, table table.Definition) (page.TableRPage, error)
-	TableWPage(tag PageTag, table table.Definition) (page.TableWPage, error)
+	TableRPage(tag PageTag, table table.Definition) (tpage.TableRPage, error)
+	TableWPage(tag PageTag, table table.Definition) (tpage.TableWPage, error)
 }
 
 type GenericBuffer interface {

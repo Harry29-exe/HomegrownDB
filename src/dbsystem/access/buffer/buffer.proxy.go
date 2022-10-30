@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/tpage"
 )
 
 type bufferProxy struct {
@@ -12,20 +13,20 @@ type bufferProxy struct {
 
 var _ SharedBuffer = &bufferProxy{}
 
-func (b *bufferProxy) TableRPage(tag PageTag, table table.Definition) (page.TableRPage, error) {
+func (b *bufferProxy) TableRPage(tag PageTag, table table.Definition) (tpage.TableRPage, error) {
 	rPage, err := b.buffer.RPage(tag)
 	if err != nil {
 		return nil, err
 	}
-	return page.NewPage(table, rPage), nil
+	return tpage.NewPage(table, rPage), nil
 }
 
-func (b *bufferProxy) TableWPage(tag PageTag, table table.Definition) (page.TableWPage, error) {
+func (b *bufferProxy) TableWPage(tag PageTag, table table.Definition) (tpage.TableWPage, error) {
 	wPage, err := b.buffer.WPage(tag)
 	if err != nil {
 		return nil, err
 	}
-	return page.NewPage(table, wPage), nil
+	return tpage.NewPage(table, wPage), nil
 }
 
 func (b *bufferProxy) RGenericPage(tag PageTag, relation relation.Relation) (page.GenericPage, error) {

@@ -1,10 +1,11 @@
-package page
+package tpage
 
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/strutils"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"encoding/binary"
 	"fmt"
@@ -21,7 +22,7 @@ type Tuple struct {
 
 // TID tuple id composed of Id and InPage
 type TID struct {
-	PageId     Id
+	PageId     page.Id
 	TupleIndex TupleIndex
 }
 
@@ -141,11 +142,11 @@ func (t Tuple) txCommandCounterSlice() []byte {
 }
 
 func (t Tuple) tidSlice() []byte {
-	return t.bytes[toPageId : toPageId+IdSize+TupleIndexSize]
+	return t.bytes[toPageId : toPageId+page.IdSize+TupleIndexSize]
 }
 
 func (t Tuple) tidPageIdSlice() []byte {
-	return t.bytes[toPageId : toPageId+IdSize]
+	return t.bytes[toPageId : toPageId+page.IdSize]
 }
 
 func (t Tuple) tidTupleIndexSlice() []byte {

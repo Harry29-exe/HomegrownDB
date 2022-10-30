@@ -1,4 +1,4 @@
-package page
+package tpage
 
 import (
 	"HomegrownDB/common/bparse"

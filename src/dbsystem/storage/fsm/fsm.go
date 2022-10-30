@@ -4,60 +4,34 @@ package fsm
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/storage/dbfs"
+	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/storage/page"
-	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
-	"testing"
 )
 
-func CreateFreeSpaceMap(buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
-	//file, err := os.Create(filepath)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//pageIO, err := pageio.NewRWPageIO(file)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//if err = initNewFsmIO(pageIO); err != nil {
-	//	return nil, err
-	//}
+func CreateFreeSpaceMap(rel relation.Relation, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
+	fsm := &FreeSpaceMap{rel: rel, buff: buff}
+	if err := initNewFsmIO(fsm); err != nil {
+		return fsm, err
+	}
 
-	return &FreeSpaceMap{io: pageIO}, nil
+	return fsm, nil
 }
 
-func LoadFreeSpaceMap(file dbfs.FileLike) (*FreeSpaceMap, error) {
-	pageIO, err := pageio.LoadRWPageIO(file)
-	if err != nil {
-		return nil, err
-	}
-
-	return &FreeSpaceMap{io: pageIO}, nil
-}
-
-func CreateTestFreeSpaceMap(file dbfs.FileLike, _ *testing.T) (*FreeSpaceMap, error) {
-	pageIO, err := pageio.NewRWPageIO(file)
-	if err != nil {
-		return nil, err
-	}
-	if err = initNewFsmIO(pageIO); err != nil {
-		return nil, err
-	}
-
-	return &FreeSpaceMap{io: pageIO}, nil
+func LoadFreeSpaceMap(rel relation.Relation, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
+	return &FreeSpaceMap{rel: rel, buff: buff}, nil
 }
 
 func initNewFsmIO(fsm *FreeSpaceMap) error {
-	//buff := make([]byte, pageSize)
-	//for i := 0; i < int(leafNodeCount+1); i++ {
-	//	_, err := fsm.buff
-	//	if err != nil {
-	//		return err
-	//	}
-	//}
-	//return nil
+	for i := 0; i < int(leafNodeCount+1); i++ {
+		tag := buffer.NewPageTag(page.Id(i), fsm.rel)
+		_, err := fsm.buff.WGenericPage(tag, fsm.rel)
+		if err != nil {
+			return err
+		}
+		fsm.buff.ReleaseWPage(tag)
+	}
+	return nil
 }
 
 // FreeSpaceMap is data structure stores
@@ -65,6 +39,7 @@ func initNewFsmIO(fsm *FreeSpaceMap) error {
 // page has and helps find one with enough
 // space to fit inserting tuple
 type FreeSpaceMap struct {
+	rel  relation.Relation
 	buff buffer.SharedBuffer
 }
 

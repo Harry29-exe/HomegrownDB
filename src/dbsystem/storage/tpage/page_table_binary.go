@@ -1,7 +1,8 @@
-package page
+package tpage
 
 import (
 	"HomegrownDB/common/bparse"
+	"HomegrownDB/dbsystem/storage/page"
 	"crypto/md5"
 	"encoding/binary"
 )
@@ -10,7 +11,7 @@ type InPagePointer = uint16
 
 const InPagePointerSize = 2
 
-var emptyPageFreeSpace = Size - (poFirstTuplePtr + InPagePointerSize)
+var emptyPageFreeSpace = page.Size - (poFirstTuplePtr + InPagePointerSize)
 
 func (p TablePage) getTupleEnd(index TupleIndex) InPagePointer {
 	var tupleEnd InPagePointer
@@ -22,7 +23,7 @@ func (p TablePage) getTupleEnd(index TupleIndex) InPagePointer {
 		index--
 	}
 
-	return Size
+	return page.Size
 }
 
 func (p TablePage) getTupleStart(index TupleIndex) InPagePointer {

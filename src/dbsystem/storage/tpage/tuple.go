@@ -1,8 +1,9 @@
-package page
+package tpage
 
 import (
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -33,7 +34,7 @@ const (
 	sizeOfTxId         = tx.IdSize
 	sizeOfModifiedTxId = tx.IdSize
 	sizeOfTxCounter    = tx.CommandCounterSize
-	sizeOfPageId       = IdSize
+	sizeOfPageId       = page.IdSize
 	sizeOfTupleIndex   = TupleIndexSize
 )
 

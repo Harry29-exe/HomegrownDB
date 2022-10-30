@@ -1,44 +1,45 @@
 package fsm
 
 import (
+	buffer2 "HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
 )
 
 func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
-	buffer := make([]byte, pageSize)
-
 	var internalErr internalError
 	pageIndex, nodeIndex := uint32(0), uint16(0)
 	lastPageIndex, lastNodeIndex := uint32(0), uint16(0)
 	leafNodeVal := uint8(0)
+
+	pageTag := buffer2.NewPageTag(pageIndex, f.rel)
 	for {
-		err := f.io.RPage(pageIndex, buffer)
+		rPage, err := f.buff.RGenericPage(pageTag, f.rel)
 		if err != nil {
 			return 0, err
 		}
-		pageData := buffer[headerSize:]
+		pageData := rPage.Data()
 
 		lastNodeIndex = nodeIndex
 		nodeIndex, internalErr = f.findLeafNode(space, pageData)
-		f.io.ReleaseRPage(pageIndex)
 
-		switch internalErr {
-		case none:
-			break
-		case corrupted:
-			//todo implement me
-			panic("Not implemented")
-		case noSpace:
-			if pageIndex == 0 {
-				return 0, NoFreeSpace{}
+		if internalErr != none {
+			f.buff.ReleaseRPage(pageTag)
+
+			if internalErr == corrupted {
+				//todo implement me
+				panic("Not implemented")
+			} else if internalErr == noSpace {
+				if pageIndex == 0 {
+					return 0, NoFreeSpace{}
+				}
+				err = f.updatePages(leafNodeVal, lastPageIndex, lastNodeIndex)
+				if err != nil {
+					return 0, err
+				}
+				return f.findPage(space, ctx)
 			}
-			err = f.updatePages(leafNodeVal, lastPageIndex, lastNodeIndex)
-			if err != nil {
-				return 0, err
-			}
-			return f.findPage(space, ctx)
 		}
 
 		if pageIndex > uint32(leafNodeCount) {
@@ -49,6 +50,7 @@ func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
 		pageIndex = f.getFsmPageIndex(nodeIndex, pageIndex)
 	}
 
+	f.buff.ReleaseRPage(pageTag)
 	return f.calcPageId(pageIndex, nodeIndex), nil
 }
 
@@ -83,25 +85,21 @@ func (f *FreeSpaceMap) findLeafNode(space uint8, pageData []byte) (uint16, inter
 }
 
 func (f *FreeSpaceMap) updatePages(space uint8, pageIndex uint32, nodeIndex uint16) error {
-	buffer := make([]byte, pageSize)
+	tag := buffer2.NewPageTag(pageIndex, f.rel)
 
-	err := f.getWritePage(pageIndex, buffer)
+	wPage, err := f.buff.WGenericPage(tag, f.rel)
 	if err != nil {
 		return err
 	}
-	pageData := buffer[headerSize:]
+	pageData := wPage.Data()
 	if pageData[nodeIndex] == space {
-		f.io.ReleaseWPage(pageIndex)
+		f.buff.ReleaseWPage(tag)
 		return nil
 	}
 
 	f.updatePage(space, pageData, nodeIndex)
 
-	err = f.io.Flush(pageIndex, buffer)
-	f.io.ReleaseWPage(pageIndex)
-	if err != nil {
-		return err
-	}
+	f.buff.ReleaseWPage(tag)
 
 	if pageIndex != 0 {
 		parentPageIndex, parentNodeIndex := f.getFsmParentPageIndex(pageIndex)
@@ -123,17 +121,6 @@ func (f *FreeSpaceMap) updatePage(space uint8, pageData []byte, nodeIndex uint16
 		}
 		pageData[nodeIndex] = newValue
 	}
-}
-
-func (f *FreeSpaceMap) getWritePage(pageIndex uint32, buffer []byte) error {
-	for f.io.PageCount() <= pageIndex {
-		_, err := f.io.NewPage(buffer)
-		if err != nil {
-			return err
-		}
-	}
-
-	return f.io.WPage(pageIndex, buffer)
 }
 
 func (f *FreeSpaceMap) getParentIndex(childNodeIndex uint16) uint16 {

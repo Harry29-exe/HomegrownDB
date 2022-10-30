@@ -65,7 +65,7 @@ func (b *sharedBuffer) RPage(tag PageTag) (Page, error) {
 	} else {
 		b.bufferMapLock.RUnlock()
 		//todo add locks to new loadPage impl
-		index, err := b.loadPage(tag)
+		index, err := b.loadPage(tag, false)
 		if err != nil {
 			return nil, err
 		}
@@ -90,7 +90,7 @@ func (b *sharedBuffer) WPage(tag PageTag) (Page, error) {
 	} else {
 		b.bufferMapLock.RUnlock()
 		//todo add locks to new loadPage impl
-		index, err := b.loadPage(tag)
+		index, err := b.loadPage(tag, true)
 		if err != nil {
 			return nil, err
 		}
@@ -131,7 +131,7 @@ func (b *sharedBuffer) ReleaseRPage(tag PageTag) {
 
 // todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
 // 2) prawdopodobnie zaimplementować własną hash mape
-func (b *sharedBuffer) loadPage(tag PageTag) (ArrayIndex, error) {
+func (b *sharedBuffer) loadPage(tag PageTag, wMode bool) (ArrayIndex, error) {
 	for {
 		victimIndex := b.clock.FindVictimPage()
 		descriptor := &b.descriptorArray[victimIndex]
@@ -162,11 +162,12 @@ func (b *sharedBuffer) loadPage(tag PageTag) (ArrayIndex, error) {
 
 		err := b.ioStore.Get(tag.Relation).ReadPage(tag.PageId, arraySlot)
 		if err != nil {
-			if errors.Is(err, pageio.NoPageErrorType) {
-
+			if wMode && errors.Is(err, pageio.NoPageErrorType) {
+				//todo implement me
+				panic("Not implemented")
+			} else {
+				return handleFailedTableIO(tag, victimIndex, err)
 			}
-
-			return handleFailedTableIO(tag, victimIndex, err)
 		}
 
 		descriptor.contentLock.Unlock()

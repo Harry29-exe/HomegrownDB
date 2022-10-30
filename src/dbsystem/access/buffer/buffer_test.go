@@ -6,9 +6,9 @@ import (
 	"HomegrownDB/common/tests/testtable/ttable1"
 	"HomegrownDB/common/tests/tstructs"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"github.com/spf13/afero"
 	"sync"
 	"testing"
 	"time"
@@ -165,7 +165,10 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 }
 
 func createAndRegisterTestPageIO(table1 tstructs.TestTable, ioStore *pageio.Store, t *testing.T) pageio.IO {
-	table1IO, err := pageio.NewPageIO(dbfs.NewInMemoryFile(table1.Name()))
+	fs := afero.NewMemMapFs()
+	file, err := fs.Create("table1IO")
+	assert.IsNil(err, t)
+	table1IO, err := pageio.NewPageIO(file)
 	assert.IsNil(err, t)
 	ioStore.Register(table1.RelationId(), table1IO)
 	return table1IO

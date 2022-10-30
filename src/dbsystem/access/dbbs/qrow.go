@@ -3,7 +3,7 @@ package dbbs
 import (
 	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/tpage"
 	"math"
 )
 
@@ -15,8 +15,8 @@ type QRow struct {
 	Pattern []ctype.CType
 }
 
-func NewQRowFromTuple(tuple page.RTuple) QRow {
-	t := tuple.(page.Tuple)
+func NewQRowFromTuple(tuple tpage.RTuple) QRow {
+	t := tuple.(tpage.Tuple)
 	table := t.Table()
 	columns := table.Columns()
 

@@ -5,6 +5,7 @@ import (
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/dbsystem/storage/tpage"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
 )
@@ -14,7 +15,7 @@ type TestTable struct {
 }
 
 func (t TestTable) FillPages(pagesToFill int, tableIO pageio.IO, rand random.Random) {
-	tablePage := page.NewPage(t.WDefinition, make([]byte, pageSize))
+	tablePage := tpage.NewPage(t.WDefinition, make([]byte, pageSize))
 	filledPages := 0
 	insertedTuples := 0
 	for filledPages < pagesToFill {
@@ -27,13 +28,13 @@ func (t TestTable) FillPages(pagesToFill int, tableIO pageio.IO, rand random.Ran
 			if err != nil {
 				panic("could not create new page")
 			}
-			tablePage = page.NewPage(t.WDefinition, make([]byte, pageSize))
+			tablePage = tpage.NewPage(t.WDefinition, make([]byte, pageSize))
 		}
 	}
 }
 
-func (t TestTable) PutRandomTupleToPage(tupleCount int, tablePage page.TablePage, rand random.Random) []page.Tuple {
-	tuples := make([]page.Tuple, tupleCount)
+func (t TestTable) PutRandomTupleToPage(tupleCount int, tablePage tpage.TablePage, rand random.Random) []tpage.Tuple {
+	tuples := make([]tpage.Tuple, tupleCount)
 	for i := 0; i < tupleCount; i++ {
 		tuple := t.RandTuple(rand).Tuple
 		tuples[i] = tuple
@@ -46,14 +47,14 @@ func (t TestTable) PutRandomTupleToPage(tupleCount int, tablePage page.TablePage
 	return tuples
 }
 
-func (t TestTable) RandTuple(rand random.Random) page.TupleToSave {
+func (t TestTable) RandTuple(rand random.Random) tpage.TupleToSave {
 	values := map[string][]byte{}
 	for i := uint16(0); i < t.ColumnCount(); i++ {
 		col := t.Column(i)
 		values[col.Name()] = col.CType().Rand(rand)
 	}
 
-	tuple, err := page.NewTestTuple(t.WDefinition, values, tx.NewInfoCtx(rand.Int31()))
+	tuple, err := tpage.NewTestTuple(t.WDefinition, values, tx.NewInfoCtx(rand.Int31()))
 	if err != nil {
 		panic(err.Error())
 	}

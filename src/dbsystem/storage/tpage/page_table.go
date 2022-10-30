@@ -1,4 +1,4 @@
-package page
+package tpage
 
 // For better understanding of struct TablePage
 // it's recommended to view page.doc.svg diagram
@@ -7,6 +7,7 @@ package page
 import (
 	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/schema/table"
+	page2 "HomegrownDB/dbsystem/storage/page"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -14,7 +15,7 @@ import (
 
 //todo add handling for inserting into empty page
 func EmptyTablePage(tableDef table.Definition) TablePage {
-	rawPage := make([]byte, Size)
+	rawPage := make([]byte, page2.Size)
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
 
@@ -111,7 +112,7 @@ func (p TablePage) InsertTuple(tuple []byte) error {
 	insertedAsLast := true
 	// empty page
 	if lastTupleStart == 0 {
-		lastTupleStart = Size
+		lastTupleStart = page2.Size
 		tuplePtrPosition = poFirstTuplePtr
 	} else {
 		tCount := p.TupleCount()

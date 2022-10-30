@@ -3,7 +3,7 @@ package qrow
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/tpage"
 )
 
 type Row struct {
@@ -11,7 +11,7 @@ type Row struct {
 	data   []byte // data format described in documentation/executor/Data.svg
 }
 
-func NewRow(tuples []page.Tuple, holder RowBuffer) Row {
+func NewRow(tuples []tpage.Tuple, holder RowBuffer) Row {
 	dataSize := 0
 	for _, tuple := range tuples {
 		dataSize = tuple.DataSize()
@@ -21,7 +21,7 @@ func NewRow(tuples []page.Tuple, holder RowBuffer) Row {
 	var fieldCount = holder.Fields()
 	var dataStart = fieldCount*2 + 2
 	var dataPtr = dataStart
-	var tuple page.Tuple
+	var tuple tpage.Tuple
 	var val []byte
 	field := FieldPtr(0)
 	for i, table := range holder.Tables() {

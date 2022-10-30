@@ -1,4 +1,4 @@
-package page_test
+package tpage_test
 
 import (
 	"HomegrownDB/common/random"
@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/testtable/ttable1"
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/tpage"
 	"fmt"
 	"testing"
 )
@@ -17,7 +17,7 @@ func TestCreateEmptyPage(t *testing.T) {
 	tableDef.SetTableId(32)
 	tableDef.SetRelationId(12)
 
-	newPage := page.EmptyTablePage(tableDef)
+	newPage := tpage.EmptyTablePage(tableDef)
 
 	if newPage.TupleCount() != 0 {
 		errMsg := fmt.Sprintf("new page has tuple count different than 0,\n page: %#v", newPage)
@@ -39,7 +39,7 @@ func TestCreateEmptyPage(t *testing.T) {
 
 func TestPage_Tuple(t *testing.T) {
 	table1 := ttable1.Def()
-	page := page.EmptyTablePage(table1)
+	page := tpage.EmptyTablePage(table1)
 
 	//txCtx1 := tx.NewContext(1)
 	rand := random.NewRandom(13)
@@ -56,13 +56,13 @@ func TestPage_Tuple(t *testing.T) {
 
 func TestPage_DeleteTuple_FromMiddle(t *testing.T) {
 	table1 := ttable1.Def()
-	tablePage := page.EmptyTablePage(table1)
+	tablePage := tpage.EmptyTablePage(table1)
 
 	tuples := table1.PutRandomTupleToPage(10, tablePage, random.NewRandom(23))
 	tablePage.DeleteTuple(2)
 	tablePage.DeleteTuple(8)
 
-	assertTuplesList := []page.TupleIndex{0, 1, 3, 4, 5, 6, 7, 9}
+	assertTuplesList := []tpage.TupleIndex{0, 1, 3, 4, 5, 6, 7, 9}
 	for _, tupleIndex := range assertTuplesList {
 		assert.EqArray(tablePage.Tuple(tupleIndex).Bytes(), tuples[tupleIndex].Bytes(), t)
 	}
@@ -70,17 +70,17 @@ func TestPage_DeleteTuple_FromMiddle(t *testing.T) {
 
 func TestPage_DeleteTuple_First(t *testing.T) {
 	table1 := ttable1.Def()
-	tablePage := page.EmptyTablePage(table1)
+	tablePage := tpage.EmptyTablePage(table1)
 
 	tuples := table1.PutRandomTupleToPage(10, tablePage, random.NewRandom(23))
 
 	tablePage.DeleteTuple(0)
-	assertTuplesList := []page.TupleIndex{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	assertTuplesList := []tpage.TupleIndex{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	for _, tupleIndex := range assertTuplesList {
 		assert.EqArray(tablePage.Tuple(tupleIndex).Bytes(), tuples[tupleIndex].Bytes(), t)
 	}
 	tablePage.DeleteTuple(1)
-	assertTuplesList = []page.TupleIndex{2, 3, 4, 5, 6, 7, 8, 9}
+	assertTuplesList = []tpage.TupleIndex{2, 3, 4, 5, 6, 7, 8, 9}
 	for _, tupleIndex := range assertTuplesList {
 		assert.EqArray(tablePage.Tuple(tupleIndex).Bytes(), tuples[tupleIndex].Bytes(), t)
 	}
@@ -88,17 +88,17 @@ func TestPage_DeleteTuple_First(t *testing.T) {
 
 func TestPage_DeleteTuple_Last(t *testing.T) {
 	table1 := ttable1.Def()
-	tablePage := page.EmptyTablePage(table1)
+	tablePage := tpage.EmptyTablePage(table1)
 
 	tuples := table1.PutRandomTupleToPage(10, tablePage, random.NewRandom(23))
 
 	tablePage.DeleteTuple(9)
-	assertTuplesList := []page.TupleIndex{0, 1, 2, 3, 4, 5, 6, 7, 8}
+	assertTuplesList := []tpage.TupleIndex{0, 1, 2, 3, 4, 5, 6, 7, 8}
 	for _, tupleIndex := range assertTuplesList {
 		assert.EqArray(tablePage.Tuple(tupleIndex).Bytes(), tuples[tupleIndex].Bytes(), t)
 	}
 	tablePage.DeleteTuple(8)
-	assertTuplesList = []page.TupleIndex{0, 1, 2, 3, 4, 5, 6, 7}
+	assertTuplesList = []tpage.TupleIndex{0, 1, 2, 3, 4, 5, 6, 7}
 	for _, tupleIndex := range assertTuplesList {
 		assert.EqArray(tablePage.Tuple(tupleIndex).Bytes(), tuples[tupleIndex].Bytes(), t)
 	}

@@ -2,8 +2,7 @@ package fsm_test
 
 import (
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/dbsystem/access/fsm"
-	"HomegrownDB/dbsystem/storage/dbfs"
+	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"testing"
@@ -48,8 +47,10 @@ func TestFreeSpaceMap_UpdatePage2(t *testing.T) {
 }
 
 func newFsmTestHelper(t *testing.T) *fsmTestHelper {
-	inMemFile := dbfs.NewInMemoryFile("")
-	fsMap, err := fsm.CreateTestFreeSpaceMap(inMemFile, t)
+	//buff := buffer.NewSharedBuffer(10_000, )
+	//todo implement me
+	panic("Not implemented")
+	fsMap, err := fsm.CreateFreeSpaceMap(nil, nil)
 	assert.IsNil(err, t)
 
 	return &fsmTestHelper{
@@ -96,12 +97,14 @@ func (pt *fsmTestHelper) assertNoFound(size uint8) {
 }
 
 func (pt *fsmTestHelper) clear(id page.Id) {
-	pt.fsMap.UpdatePage(0, id)
+	err := pt.fsMap.UpdatePage(0, id)
+	assert.IsNil(err, pt.t)
 }
 
 func (pt *fsmTestHelper) clearAll() {
 	for _, id := range pt.pageIds {
-		pt.fsMap.UpdatePage(0, id)
+		err := pt.fsMap.UpdatePage(0, id)
+		assert.IsNil(err, pt.t)
 	}
 	pt.pageIds = pt.pageIds[:0]
 

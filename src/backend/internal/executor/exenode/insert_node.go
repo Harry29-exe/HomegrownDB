@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/dbsystem/access"
 	dbbs2 "HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/tpage"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -28,7 +28,7 @@ func (i *Insert) HasNext() bool {
 // todo(3) rebuild this properly
 func (i *Insert) Next() dbbs2.QRow {
 	tupleData := i.rowSrc.NextRow()
-	tuple := page.NewTuple(tupleData, i.table, i.txCtx)
+	tuple := tpage.NewTuple(tupleData, i.table, i.txCtx)
 
 	return dbbs2.NewQRowFromTuple(tuple)
 }
