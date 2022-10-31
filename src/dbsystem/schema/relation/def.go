@@ -4,10 +4,16 @@ type ID = uint32
 
 type Relation interface {
 	RelationID() ID
-	PageInfo() PageInfo
 }
 
-type PageInfo struct {
-	HeaderSize uint
-	DataSize   uint
+func NewRelation(id ID) Relation {
+	return &relation{id: id}
+}
+
+type relation struct {
+	id ID
+}
+
+func (r *relation) RelationID() ID {
+	return r.id
 }

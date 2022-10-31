@@ -2,9 +2,13 @@ package fsm_test
 
 import (
 	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
+	"github.com/spf13/afero"
 	"testing"
 )
 
@@ -47,10 +51,18 @@ func TestFreeSpaceMap_UpdatePage2(t *testing.T) {
 }
 
 func newFsmTestHelper(t *testing.T) *fsmTestHelper {
-	//buff := buffer.NewSharedBuffer(10_000, )
-	//todo implement me
-	panic("Not implemented")
-	fsMap, err := fsm.CreateFreeSpaceMap(nil, nil)
+	fsmRelation := relation.NewRelation(0)
+	fs := afero.NewMemMapFs()
+	file, err := fs.Create("fsm_pageio")
+	assert.IsNil(err, t)
+
+	store := pageio.NewStore()
+	io, err := pageio.NewPageIO(file)
+	assert.IsNil(err, t)
+	store.Register(fsmRelation.RelationID(), io)
+	buff := buffer.NewSharedBuffer(10_000, store)
+
+	fsMap, err := fsm.CreateFreeSpaceMap(fsmRelation, buff)
 	assert.IsNil(err, t)
 
 	return &fsmTestHelper{

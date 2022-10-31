@@ -3,6 +3,7 @@ package buffer
 import (
 	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/storage/tpage"
@@ -12,13 +13,13 @@ var DBSharedBuffer SharedBuffer
 
 func init() {
 	DBSharedBuffer = &bufferProxy{
-		buffer: NewSharedBuffer(10_000, pageio.DBStore),
+		buffer: newSharedBuffer(10_000, pageio.DBStore),
 	}
 }
 
 type SharedBuffer interface {
 	TableBuffer
-	GenericBuffer
+	FsmBuffer
 
 	ReleaseWPage(tag PageTag)
 	ReleaseRPage(tag PageTag)
@@ -29,15 +30,15 @@ type TableBuffer interface {
 	TableWPage(tag PageTag, table table.Definition) (tpage.TableWPage, error)
 }
 
-type GenericBuffer interface {
-	RGenericPage(tag PageTag, relation relation.Relation) (page.GenericPage, error)
-	WGenericPage(tag PageTag, relation relation.Relation) (page.GenericPage, error)
+type FsmBuffer interface {
+	RFsmPage(tag PageTag) (fsmpage.Page, error)
+	WFsmPage(tag PageTag) (fsmpage.Page, error)
 }
 
 // todo change methods to operate on ArrayIndexes
-type genericBuffer interface {
-	RPage(tag PageTag) (Page, error)
-	WPage(tag PageTag) (Page, error)
+type sharedBuffer interface {
+	RPage(tag PageTag) (buffPage, error)
+	WPage(tag PageTag) (buffPage, error)
 
 	ReleaseWPage(tag PageTag)
 	ReleaseRPage(tag PageTag)
@@ -47,9 +48,12 @@ type TableSrc interface {
 	Table(id table.Id) table.Definition
 }
 
-type ArrayIndex = uint
+type arrayIndex = uint
 
-type Page = []byte
+type buffPage struct {
+	bytes []byte
+	isNew bool
+}
 
 type PageTag struct {
 	PageId   page.Id

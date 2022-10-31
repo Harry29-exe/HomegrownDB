@@ -11,11 +11,11 @@ func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
 	var internalErr internalError
 	pageIndex, nodeIndex := uint32(0), uint16(0)
 	lastPageIndex, lastNodeIndex := uint32(0), uint16(0)
-	leafNodeVal := uint8(0)
+	newLeafNodeVal, leafNodeVal := uint8(0), uint8(0)
 
-	pageTag := buffer2.NewPageTag(pageIndex, f.rel)
 	for {
-		rPage, err := f.buff.RGenericPage(pageTag, f.rel)
+		pageTag := buffer2.NewPageTag(pageIndex, f.rel)
+		rPage, err := f.buff.RFsmPage(pageTag)
 		if err != nil {
 			return 0, err
 		}
@@ -23,34 +23,31 @@ func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
 
 		lastNodeIndex = nodeIndex
 		nodeIndex, internalErr = f.findLeafNode(space, pageData)
+		newLeafNodeVal = pageData[nodeIndex]
+		f.buff.ReleaseRPage(pageTag)
 
-		if internalErr != none {
-			f.buff.ReleaseRPage(pageTag)
-
-			if internalErr == corrupted {
-				//todo implement me
-				panic("Not implemented")
-			} else if internalErr == noSpace {
-				if pageIndex == 0 {
-					return 0, NoFreeSpace{}
-				}
-				err = f.updatePages(leafNodeVal, lastPageIndex, lastNodeIndex)
-				if err != nil {
-					return 0, err
-				}
-				return f.findPage(space, ctx)
+		if internalErr == corrupted {
+			//todo implement me
+			panic("Not implemented")
+		} else if internalErr == noSpace {
+			if pageIndex == 0 {
+				return 0, NoFreeSpace{}
 			}
+			err = f.updatePages(leafNodeVal, lastPageIndex, lastNodeIndex)
+			if err != nil {
+				return 0, err
+			}
+			return f.findPage(space, ctx)
 		}
 
 		if pageIndex > uint32(leafNodeCount) {
 			break
 		}
-		leafNodeVal = pageData[nodeIndex]
+		leafNodeVal = newLeafNodeVal
 		lastPageIndex = pageIndex
 		pageIndex = f.getFsmPageIndex(nodeIndex, pageIndex)
 	}
 
-	f.buff.ReleaseRPage(pageTag)
 	return f.calcPageId(pageIndex, nodeIndex), nil
 }
 
@@ -87,7 +84,7 @@ func (f *FreeSpaceMap) findLeafNode(space uint8, pageData []byte) (uint16, inter
 func (f *FreeSpaceMap) updatePages(space uint8, pageIndex uint32, nodeIndex uint16) error {
 	tag := buffer2.NewPageTag(pageIndex, f.rel)
 
-	wPage, err := f.buff.WGenericPage(tag, f.rel)
+	wPage, err := f.buff.WFsmPage(tag)
 	if err != nil {
 		return err
 	}

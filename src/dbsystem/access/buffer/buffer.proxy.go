@@ -1,14 +1,18 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
+	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/storage/tpage"
 )
 
+func NewSharedBuffer(buffSize uint, store *pageio.Store) SharedBuffer {
+	return &bufferProxy{newSharedBuffer(buffSize, store)}
+}
+
 type bufferProxy struct {
-	buffer genericBuffer
+	buffer sharedBuffer
 }
 
 var _ SharedBuffer = &bufferProxy{}
@@ -18,7 +22,7 @@ func (b *bufferProxy) TableRPage(tag PageTag, table table.Definition) (tpage.Tab
 	if err != nil {
 		return nil, err
 	}
-	return tpage.NewPage(table, rPage), nil
+	return tpage.NewPage(table, rPage.bytes), nil
 }
 
 func (b *bufferProxy) TableWPage(tag PageTag, table table.Definition) (tpage.TableWPage, error) {
@@ -26,23 +30,23 @@ func (b *bufferProxy) TableWPage(tag PageTag, table table.Definition) (tpage.Tab
 	if err != nil {
 		return nil, err
 	}
-	return tpage.NewPage(table, wPage), nil
+	return tpage.NewPage(table, wPage.bytes), nil
 }
 
-func (b *bufferProxy) RGenericPage(tag PageTag, relation relation.Relation) (page.GenericPage, error) {
+func (b *bufferProxy) RFsmPage(tag PageTag) (fsmpage.Page, error) {
 	rPage, err := b.buffer.RPage(tag)
 	if err != nil {
-		return page.GenericPage{}, err
+		return fsmpage.Page{}, err
 	}
-	return page.NewGenericPage(rPage, relation), nil
+	return fsmpage.Page{Bytes: rPage.bytes}, nil
 }
 
-func (b *bufferProxy) WGenericPage(tag PageTag, relation relation.Relation) (page.GenericPage, error) {
+func (b *bufferProxy) WFsmPage(tag PageTag) (fsmpage.Page, error) {
 	wPage, err := b.buffer.WPage(tag)
 	if err != nil {
-		return page.GenericPage{}, err
+		return fsmpage.Page{}, err
 	}
-	return page.NewGenericPage(wPage, relation), nil
+	return fsmpage.Page{Bytes: wPage.bytes}, nil
 }
 
 func (b *bufferProxy) ReleaseWPage(tag PageTag) {

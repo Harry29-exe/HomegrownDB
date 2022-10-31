@@ -16,29 +16,13 @@ type IO interface {
 	io.Closer
 }
 
-type ResourceLockIO interface {
-	RPage(pageId page.Id, buffer []byte) error
-	ReleaseRPage(pageId page.Id)
-
-	WPage(pageId page.Id, buffer []byte) error
-	ReleaseWPage(pageId page.Id)
-
-	Flush(pageId page.Id, pageData []byte) error
-	NewPage(pageData []byte) (page.Id, error)
-
-	PageCount() uint32
-	io.Closer
-}
-
 var (
 	pageSize = int64(page.Size)
 )
 
 var NoPageErrorType error = noPageError{}
 
-type noPageError struct {
-	pageId page.Id
-}
+type noPageError struct{}
 
 func (n noPageError) Error() string {
 	return "No page with given index"

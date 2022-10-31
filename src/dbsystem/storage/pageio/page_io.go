@@ -5,7 +5,6 @@ import (
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
 	"errors"
-	"sync"
 )
 
 func NewPageIO(file dbfs.FileLike) (IO, error) {
@@ -16,10 +15,10 @@ func NewPageIO(file dbfs.FileLike) (IO, error) {
 	}
 
 	return &pageIO{
-		src:         file,
-		lockMap:     appsync.NewResLockMap[page.Id](),
-		pageCount:   0,
-		newPageLock: &sync.Mutex{},
+		src:       file,
+		lockMap:   appsync.NewResLockMap[page.Id](),
+		pageCount: 0,
+		spinLock:  appsync.SpinLock(0),
 	}, nil
 }
 
@@ -30,10 +29,10 @@ func LoadPageIO(file dbfs.FileLike) (IO, error) {
 	}
 
 	return &pageIO{
-		src:         file,
-		lockMap:     appsync.NewResLockMap[page.Id](),
-		pageCount:   uint32(fileInfo.Size() / pageSize),
-		newPageLock: &sync.Mutex{},
+		src:       file,
+		lockMap:   appsync.NewResLockMap[page.Id](),
+		pageCount: uint32(fileInfo.Size() / pageSize),
+		spinLock:  appsync.SpinLock(0),
 	}, err
 }
 
@@ -43,11 +42,15 @@ type pageIO struct {
 	src     dbfs.FileLike
 	lockMap *appsync.ResLockMap[page.Id]
 
-	pageCount   uint32
-	newPageLock sync.Locker
+	pageCount uint32
+	spinLock  appsync.SpinLock
 }
 
 func (p *pageIO) ReadPage(pageIndex page.Id, buffer []byte) error {
+	if pageIndex >= p.pageCount {
+		return NoPageErrorType
+	}
+
 	p.lockMap.RLockRes(pageIndex)
 	defer p.lockMap.RUnlockRes(pageIndex)
 
@@ -63,6 +66,16 @@ func (p *pageIO) FlushPage(pageIndex page.Id, pageData []byte) error {
 
 	offset := int64(pageIndex) * pageSize
 	_, err := p.src.WriteAt(pageData, offset)
+	if err != nil {
+		return err
+	}
+
+	p.spinLock.Lock()
+	if p.pageCount <= pageIndex {
+		p.pageCount = pageIndex + 1
+	}
+	p.spinLock.Unlock()
+
 	return err
 }
 

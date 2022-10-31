@@ -1,11 +1,10 @@
-package buffer_test
+package buffer
 
 import (
 	"HomegrownDB/common/random"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/testtable/ttable1"
 	"HomegrownDB/common/tests/tstructs"
-	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"github.com/spf13/afero"
@@ -17,15 +16,15 @@ import (
 func TestSharedBuffer_Overflow(t *testing.T) {
 	table1 := ttable1.Def()
 	ioStore := pageio.NewStore()
-	table1IO := createAndRegisterTestPageIO(table1, ioStore, t)
+	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
 
 	rand := random.NewRandom(0)
 	table1.FillPages(1_000, table1IO, rand)
 
 	buf := make([]byte, page.Size)
-	testBuffer := buffer.NewSharedBuffer(100, ioStore)
+	testBuffer := newSharedBuffer(100, ioStore)
 	for i := page.Id(0); i < 1_000; i++ {
-		tag := buffer.NewTablePageTag(i, table1)
+		tag := NewTablePageTag(i, table1)
 		pageData, err := testBuffer.WPage(tag)
 		if err != nil {
 			t.Errorf("During reading page %d got error: %e", i, err)
@@ -36,19 +35,19 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 			t.Errorf("TableIO returned non nil error: %e", err)
 		}
 		testBuffer.ReleaseWPage(tag)
-		assert.EqArray(pageData, buf, t)
+		assert.EqArray(pageData.bytes, buf, t)
 	}
 }
 
 func TestSharedBuffer_ParallelRead(t *testing.T) {
 	table1 := ttable1.Def()
 	ioStore := pageio.NewStore()
-	table1IO := createAndRegisterTestPageIO(table1, ioStore, t)
+	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
 
 	rand := random.NewRandom(0)
 	table1.FillPages(10, table1IO, rand)
 
-	testBuffer := buffer.NewSharedBuffer(10, ioStore)
+	testBuffer := newSharedBuffer(10, ioStore)
 
 	tCount := 4
 	waitGroup1 := sync.WaitGroup{}
@@ -56,7 +55,7 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	waitGroup2 := sync.WaitGroup{}
 	waitGroup2.Add(tCount)
 
-	tag := buffer.PageTag{PageId: 0, Relation: table1.RelationId()}
+	tag := PageTag{PageId: 0, Relation: table1.RelationId()}
 	for i := 0; i < tCount; i++ {
 		go func() {
 			_, _ = testBuffer.RPage(tag)
@@ -74,14 +73,14 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 func TestSharedBuffer_RWLock(t *testing.T) {
 	table1 := ttable1.Def()
 	ioStore := pageio.NewStore()
-	table1IO := createAndRegisterTestPageIO(table1, ioStore, t)
+	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
 
 	rand := random.NewRandom(0)
 	table1.FillPages(10, table1IO, rand)
 
-	testBuffer := buffer.NewSharedBuffer(10, ioStore)
+	testBuffer := newSharedBuffer(10, ioStore)
 
-	tag := buffer.NewTablePageTag(0, table1)
+	tag := NewTablePageTag(0, table1)
 	_, err := testBuffer.WPage(tag)
 
 	if err != nil {
@@ -121,14 +120,14 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 func TestSharedBuffer_2xWLock(t *testing.T) {
 	table1 := ttable1.Def()
 	ioStore := pageio.NewStore()
-	table1IO := createAndRegisterTestPageIO(table1, ioStore, t)
+	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
 
 	rand := random.NewRandom(0)
 	table1.FillPages(10, table1IO, rand)
 
-	testBuffer := buffer.NewSharedBuffer(10, ioStore)
+	testBuffer := newSharedBuffer(10, ioStore)
 
-	tag := buffer.NewTablePageTag(0, table1)
+	tag := NewTablePageTag(0, table1)
 	_, err := testBuffer.WPage(tag)
 
 	if err != nil {
@@ -164,7 +163,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 	<-ch1
 }
 
-func createAndRegisterTestPageIO(table1 tstructs.TestTable, ioStore *pageio.Store, t *testing.T) pageio.IO {
+func _createAndRegisterTestPageIO(table1 tstructs.TestTable, ioStore *pageio.Store, t *testing.T) pageio.IO {
 	fs := afero.NewMemMapFs()
 	file, err := fs.Create("table1IO")
 	assert.IsNil(err, t)

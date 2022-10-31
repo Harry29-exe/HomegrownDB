@@ -7,7 +7,7 @@ import (
 
 type pageDescriptor struct {
 	pageTag    PageTag
-	arrayIndex ArrayIndex
+	arrayIndex arrayIndex
 	refCount   uint32
 	usageCount uint32
 

@@ -9,9 +9,9 @@ import (
 
 //todo implement intermediate buffer to which data from TableIO goes before it
 // is saved in DBSharedBuffer, in this way bufferMapLock will be lock for shorter time
-// see sharedBuffer.loadPage
+// see sharedBuff.loadPage
 
-func NewSharedBuffer(bufferSize uint, pageIOStore *pageio.Store) genericBuffer {
+func newSharedBuffer(bufferSize uint, pageIOStore *pageio.Store) sharedBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 	for i := uint(0); i < bufferSize; i++ {
 		descriptorArray[i] = pageDescriptor{
@@ -26,8 +26,8 @@ func NewSharedBuffer(bufferSize uint, pageIOStore *pageio.Store) genericBuffer {
 		}
 	}
 
-	return &sharedBuffer{
-		bufferMap:     map[PageTag]ArrayIndex{},
+	return &sharedBuff{
+		bufferMap:     map[PageTag]arrayIndex{},
 		bufferMapLock: &sync.RWMutex{},
 
 		descriptorArray: descriptorArray,
@@ -39,8 +39,8 @@ func NewSharedBuffer(bufferSize uint, pageIOStore *pageio.Store) genericBuffer {
 	}
 }
 
-type sharedBuffer struct {
-	bufferMap     map[PageTag]ArrayIndex
+type sharedBuff struct {
+	bufferMap     map[PageTag]arrayIndex
 	bufferMapLock *sync.RWMutex
 
 	descriptorArray []pageDescriptor
@@ -51,7 +51,7 @@ type sharedBuffer struct {
 	ioStore *pageio.Store
 }
 
-func (b *sharedBuffer) RPage(tag PageTag) (Page, error) {
+func (b *sharedBuff) RPage(tag PageTag) (buffPage, error) {
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -61,13 +61,12 @@ func (b *sharedBuffer) RPage(tag PageTag) (Page, error) {
 		descriptor.pin()
 		b.bufferMapLock.RUnlock()
 
-		descriptor.contentLock.RLock()
 	} else {
 		b.bufferMapLock.RUnlock()
 		//todo add locks to new loadPage impl
 		index, err := b.loadPage(tag, false)
 		if err != nil {
-			return nil, err
+			return buffPage{}, err
 		}
 
 		descriptor = &b.descriptorArray[index]
@@ -76,10 +75,13 @@ func (b *sharedBuffer) RPage(tag PageTag) (Page, error) {
 	descriptor.contentLock.RLock()
 	descriptor.pin()
 	pageStart := uintptr(pageArrIndex) * uintptr(page.Size)
-	return b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)], nil
+	return buffPage{
+		bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+		isNew: false,
+	}, nil
 }
 
-func (b *sharedBuffer) WPage(tag PageTag) (Page, error) {
+func (b *sharedBuff) WPage(tag PageTag) (buffPage, error) {
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -92,7 +94,7 @@ func (b *sharedBuffer) WPage(tag PageTag) (Page, error) {
 		//todo add locks to new loadPage impl
 		index, err := b.loadPage(tag, true)
 		if err != nil {
-			return nil, err
+			return buffPage{}, err
 		}
 
 		descriptor = &b.descriptorArray[index]
@@ -102,10 +104,13 @@ func (b *sharedBuffer) WPage(tag PageTag) (Page, error) {
 	descriptor.pin()
 	descriptor.contentLock.Lock()
 	pageStart := uintptr(pageArrIndex) * uintptr(page.Size)
-	return b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)], nil
+	return buffPage{
+		bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+		isNew: false,
+	}, nil
 }
 
-func (b *sharedBuffer) ReleaseWPage(tag PageTag) {
+func (b *sharedBuff) ReleaseWPage(tag PageTag) {
 	b.bufferMapLock.RLock()
 	index := b.bufferMap[tag]
 	b.bufferMapLock.RUnlock()
@@ -119,7 +124,7 @@ func (b *sharedBuffer) ReleaseWPage(tag PageTag) {
 	descriptor.unpin()
 }
 
-func (b *sharedBuffer) ReleaseRPage(tag PageTag) {
+func (b *sharedBuff) ReleaseRPage(tag PageTag) {
 	b.bufferMapLock.RLock()
 	index := b.bufferMap[tag]
 	b.bufferMapLock.RUnlock()
@@ -131,7 +136,7 @@ func (b *sharedBuffer) ReleaseRPage(tag PageTag) {
 
 // todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
 // 2) prawdopodobnie zaimplementować własną hash mape
-func (b *sharedBuffer) loadPage(tag PageTag, wMode bool) (ArrayIndex, error) {
+func (b *sharedBuff) loadPage(tag PageTag, wMode bool) (arrayIndex, error) {
 	for {
 		victimIndex := b.clock.FindVictimPage()
 		descriptor := &b.descriptorArray[victimIndex]
@@ -163,8 +168,7 @@ func (b *sharedBuffer) loadPage(tag PageTag, wMode bool) (ArrayIndex, error) {
 		err := b.ioStore.Get(tag.Relation).ReadPage(tag.PageId, arraySlot)
 		if err != nil {
 			if wMode && errors.Is(err, pageio.NoPageErrorType) {
-				//todo implement me
-				panic("Not implemented")
+
 			} else {
 				return handleFailedTableIO(tag, victimIndex, err)
 			}
@@ -175,7 +179,7 @@ func (b *sharedBuffer) loadPage(tag PageTag, wMode bool) (ArrayIndex, error) {
 	}
 }
 
-func (b *sharedBuffer) flushPage(descriptor *pageDescriptor, pageData []byte) error {
+func (b *sharedBuff) flushPage(descriptor *pageDescriptor, pageData []byte) error {
 	descriptorTag := descriptor.pageTag
 	descriptor.pin()
 	descriptor.contentLock.RLock()
@@ -197,7 +201,7 @@ func (b *sharedBuffer) flushPage(descriptor *pageDescriptor, pageData []byte) er
 	return nil
 }
 
-func handleFailedTableIO(tag PageTag, arrayIndex ArrayIndex, err error) (ArrayIndex, error) {
+func handleFailedTableIO(tag PageTag, arrayIndex arrayIndex, err error) (arrayIndex, error) {
 	//todo implement me
 	panic("Not implemented")
 }
