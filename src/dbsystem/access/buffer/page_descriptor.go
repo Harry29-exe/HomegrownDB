@@ -18,7 +18,7 @@ type pageDescriptor struct {
 	descriptorLock   appsync.SpinLock
 }
 
-func (pd *pageDescriptor) InitNewPage(tag PageTag) {
+func (pd *pageDescriptor) Refresh(tag PageTag) {
 	pd.descriptorLock.Lock()
 	pd.refCount = 0
 	pd.usageCount = 2 // set usageCount to 2, so it won't instantly become victim page

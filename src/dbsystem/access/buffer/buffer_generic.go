@@ -61,24 +61,18 @@ func (b *sharedBuff) RPage(tag PageTag) (buffPage, error) {
 		descriptor.pin()
 		b.bufferMapLock.RUnlock()
 
+		descriptor.contentLock.RLock()
+		pageStart := uintptr(pageArrIndex) * uintptr(page.Size)
+		return buffPage{
+			bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+			isNew: false,
+		}, nil
+
 	} else {
 		b.bufferMapLock.RUnlock()
 		//todo add locks to new loadPage impl
-		index, err := b.loadPage(tag, false)
-		if err != nil {
-			return buffPage{}, err
-		}
-
-		descriptor = &b.descriptorArray[index]
+		return b.loadRPage(tag)
 	}
-
-	descriptor.contentLock.RLock()
-	descriptor.pin()
-	pageStart := uintptr(pageArrIndex) * uintptr(page.Size)
-	return buffPage{
-		bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
-		isNew: false,
-	}, nil
 }
 
 func (b *sharedBuff) WPage(tag PageTag) (buffPage, error) {
@@ -88,26 +82,21 @@ func (b *sharedBuff) WPage(tag PageTag) (buffPage, error) {
 	var descriptor *pageDescriptor
 	if ok {
 		descriptor = &b.descriptorArray[pageArrIndex]
+		descriptor.pin()
 		b.bufferMapLock.RUnlock()
+
+		descriptor.contentLock.Lock()
+		pageStart := uintptr(pageArrIndex) * uintptr(page.Size)
+		return buffPage{
+			bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+			isNew: false,
+		}, nil
+
 	} else {
 		b.bufferMapLock.RUnlock()
 		//todo add locks to new loadPage impl
-		index, err := b.loadPage(tag, true)
-		if err != nil {
-			return buffPage{}, err
-		}
-
-		descriptor = &b.descriptorArray[index]
-		pageArrIndex = index
+		return b.loadWPage(tag)
 	}
-
-	descriptor.pin()
-	descriptor.contentLock.Lock()
-	pageStart := uintptr(pageArrIndex) * uintptr(page.Size)
-	return buffPage{
-		bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
-		isNew: false,
-	}, nil
 }
 
 func (b *sharedBuff) ReleaseWPage(tag PageTag) {
@@ -134,9 +123,45 @@ func (b *sharedBuff) ReleaseRPage(tag PageTag) {
 	descriptor.unpin()
 }
 
+func (b *sharedBuff) loadWPage(tag PageTag) (buffPage, error) {
+	descriptor, err := b.loadPage(tag, true)
+	pageIsNew := false
+	if err != nil {
+		if errors.Is(err, pageio.NoPageErrorType) {
+			pageIsNew = true
+		} else {
+			return buffPage{}, err
+		}
+	}
+	descriptor.contentLock.Lock()
+
+	pageStart := uintptr(descriptor.arrayIndex) * uintptr(page.Size)
+	return buffPage{
+		bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+		isNew: pageIsNew,
+	}, nil
+}
+
+func (b *sharedBuff) loadRPage(tag PageTag) (buffPage, error) {
+	descriptor, err := b.loadPage(tag, false)
+	if err != nil {
+		return buffPage{}, err
+	}
+	descriptor.contentLock.RLock()
+
+	pageStart := uintptr(descriptor.arrayIndex) * uintptr(page.Size)
+	return buffPage{
+		bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+		isNew: false,
+	}, nil
+}
+
+// loadPage returns requested page, returned page is already pined to prevent
+// unexpected deletions
+//
 // todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
 // 2) prawdopodobnie zaimplementować własną hash mape
-func (b *sharedBuff) loadPage(tag PageTag, wMode bool) (arrayIndex, error) {
+func (b *sharedBuff) loadPage(tag PageTag, wMode bool) (*pageDescriptor, error) {
 	for {
 		victimIndex := b.clock.FindVictimPage()
 		descriptor := &b.descriptorArray[victimIndex]
@@ -148,7 +173,7 @@ func (b *sharedBuff) loadPage(tag PageTag, wMode bool) (arrayIndex, error) {
 		if descriptor.isDirty {
 			err := b.flushPage(descriptor, arraySlot)
 			if err != nil {
-				return 0, err
+				return nil, err
 			}
 		}
 
@@ -160,22 +185,16 @@ func (b *sharedBuff) loadPage(tag PageTag, wMode bool) (arrayIndex, error) {
 
 		delete(b.bufferMap, descriptor.pageTag)
 		b.bufferMap[tag] = victimIndex
-		descriptor.InitNewPage(tag)
+		descriptor.Refresh(tag)
 		descriptor.contentLock.Lock()
+		descriptor.pin()
 		//todo check if ioLock should not be locked here
 		b.bufferMapLock.Unlock()
 
 		err := b.ioStore.Get(tag.Relation).ReadPage(tag.PageId, arraySlot)
-		if err != nil {
-			if wMode && errors.Is(err, pageio.NoPageErrorType) {
-
-			} else {
-				return handleFailedTableIO(tag, victimIndex, err)
-			}
-		}
-
 		descriptor.contentLock.Unlock()
-		return victimIndex, nil
+
+		return descriptor, err
 	}
 }
 
