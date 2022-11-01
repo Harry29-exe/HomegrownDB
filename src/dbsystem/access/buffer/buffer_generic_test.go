@@ -46,7 +46,7 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 
 	testBuffer := newSharedBuffer(10, ioStore)
 
-	tCount := 4
+	tCount := 16
 	waitGroup1 := sync.WaitGroup{}
 	waitGroup1.Add(tCount)
 	waitGroup2 := sync.WaitGroup{}

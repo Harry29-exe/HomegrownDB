@@ -124,7 +124,7 @@ func (b *sharedBuff) ReleaseRPage(tag page.Tag) {
 }
 
 func (b *sharedBuff) loadWPage(tag page.Tag) (buffPage, error) {
-	descriptor, err := b.loadPage(tag, true)
+	descriptor, err := b.loadPage(tag)
 	pageIsNew := false
 	if err != nil {
 		if errors.Is(err, pageio.NoPageErrorType) {
@@ -143,7 +143,7 @@ func (b *sharedBuff) loadWPage(tag page.Tag) (buffPage, error) {
 }
 
 func (b *sharedBuff) loadRPage(tag page.Tag) (buffPage, error) {
-	descriptor, err := b.loadPage(tag, false)
+	descriptor, err := b.loadPage(tag)
 	if err != nil {
 		return buffPage{}, err
 	}
@@ -161,7 +161,7 @@ func (b *sharedBuff) loadRPage(tag page.Tag) (buffPage, error) {
 //
 // todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
 // 2) prawdopodobnie zaimplementować własną hash mape
-func (b *sharedBuff) loadPage(tag page.Tag, wMode bool) (*pageDescriptor, error) {
+func (b *sharedBuff) loadPage(tag page.Tag) (*pageDescriptor, error) {
 	for {
 		victimIndex := b.clock.FindVictimPage()
 		descriptor := &b.descriptorArray[victimIndex]
@@ -178,7 +178,16 @@ func (b *sharedBuff) loadPage(tag page.Tag, wMode bool) (*pageDescriptor, error)
 		}
 
 		b.bufferMapLock.Lock()
-		if descriptor.refCount != 0 {
+		// checking if other goroutine didn't loaded page
+		arrIndex, ok := b.bufferMap[tag]
+		if ok {
+			descriptor = &b.descriptorArray[arrIndex]
+			descriptor.pin()
+			b.bufferMapLock.Unlock()
+			return descriptor, nil
+
+			// checking if other goroutine didn't start using this page
+		} else if descriptor.refCount != 0 {
 			b.bufferMapLock.Unlock()
 			continue
 		}
