@@ -38,13 +38,13 @@ func TestCreateEmptyPage(t *testing.T) {
 }
 
 func TestPage_Tuple(t *testing.T) {
-	table1 := ttable1.Def()
+	table1 := ttable1.Def(t)
 	page := tpage.EmptyTablePage(table1, t)
 
 	//txCtx1 := tx.NewContext(1)
-	rand := random.NewRandom(13)
+	table1.TUtils.SetRand(random.NewRandom(13))
 	for tupleIndex := uint16(0); tupleIndex < 20; tupleIndex++ {
-		tuple := table1.RandTuple(rand).Tuple
+		tuple := table1.TUtils.RandTuple().Tuple
 		err := page.InsertTuple(tuple.Bytes())
 		if err != nil {
 			t.Errorf("could not insert tuple nr %d because of error: %e", tupleIndex, err)
@@ -55,10 +55,11 @@ func TestPage_Tuple(t *testing.T) {
 }
 
 func TestPage_DeleteTuple_FromMiddle(t *testing.T) {
-	table1 := ttable1.Def()
+	table1 := ttable1.Def(t)
+	table1.TUtils.SetRand(random.NewRandom(23))
 	tablePage := tpage.EmptyTablePage(table1, t)
 
-	tuples := table1.PutRandomTupleToPage(10, tablePage, random.NewRandom(23))
+	tuples := table1.TUtils.PutRandomTupleToPage(10, tablePage)
 	tablePage.DeleteTuple(2)
 	tablePage.DeleteTuple(8)
 
@@ -69,10 +70,11 @@ func TestPage_DeleteTuple_FromMiddle(t *testing.T) {
 }
 
 func TestPage_DeleteTuple_First(t *testing.T) {
-	table1 := ttable1.Def()
+	table1 := ttable1.Def(t)
+	table1.TUtils.SetRand(random.NewRandom(23))
 	tablePage := tpage.EmptyTablePage(table1, t)
 
-	tuples := table1.PutRandomTupleToPage(10, tablePage, random.NewRandom(23))
+	tuples := table1.TUtils.PutRandomTupleToPage(10, tablePage)
 
 	tablePage.DeleteTuple(0)
 	assertTuplesList := []tpage.TupleIndex{1, 2, 3, 4, 5, 6, 7, 8, 9}
@@ -87,10 +89,11 @@ func TestPage_DeleteTuple_First(t *testing.T) {
 }
 
 func TestPage_DeleteTuple_Last(t *testing.T) {
-	table1 := ttable1.Def()
+	table1 := ttable1.Def(t)
+	table1.TUtils.SetRand(random.NewRandom(23))
 	tablePage := tpage.EmptyTablePage(table1, t)
 
-	tuples := table1.PutRandomTupleToPage(10, tablePage, random.NewRandom(23))
+	tuples := table1.TUtils.PutRandomTupleToPage(10, tablePage)
 
 	tablePage.DeleteTuple(9)
 	assertTuplesList := []tpage.TupleIndex{0, 1, 2, 3, 4, 5, 6, 7, 8}

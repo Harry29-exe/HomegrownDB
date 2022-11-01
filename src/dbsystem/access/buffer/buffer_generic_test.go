@@ -1,7 +1,6 @@
 package buffer
 
 import (
-	"HomegrownDB/common/random"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable"
 	"HomegrownDB/common/tests/tutils/testtable/ttable1"
@@ -14,12 +13,11 @@ import (
 )
 
 func TestSharedBuffer_Overflow(t *testing.T) {
-	table1 := ttable1.Def()
+	table1 := ttable1.Def(t)
 	ioStore := pageio.NewStore()
 	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
 
-	rand := random.NewRandom(0)
-	table1.FillPages(1_000, table1IO, rand)
+	table1.TUtils.FillPages(1_000, table1IO)
 
 	buf := make([]byte, page.Size)
 	testBuffer := newSharedBuffer(100, ioStore)
@@ -40,12 +38,11 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 }
 
 func TestSharedBuffer_ParallelRead(t *testing.T) {
-	table1 := ttable1.Def()
+	table1 := ttable1.Def(t)
 	ioStore := pageio.NewStore()
 	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
 
-	rand := random.NewRandom(0)
-	table1.FillPages(10, table1IO, rand)
+	table1.TUtils.FillPages(10, table1IO)
 
 	testBuffer := newSharedBuffer(10, ioStore)
 
@@ -71,12 +68,11 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 
 // todo consult chaber if this test can be done better (not using timer)
 func TestSharedBuffer_RWLock(t *testing.T) {
-	table1 := ttable1.Def()
+	table1 := ttable1.Def(t)
 	ioStore := pageio.NewStore()
 	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
 
-	rand := random.NewRandom(0)
-	table1.FillPages(10, table1IO, rand)
+	table1.TUtils.FillPages(10, table1IO)
 
 	testBuffer := newSharedBuffer(10, ioStore)
 
@@ -118,12 +114,11 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 
 // todo consult chaber if this test can be done better (not using timer)
 func TestSharedBuffer_2xWLock(t *testing.T) {
-	table1 := ttable1.Def()
+	table1 := ttable1.Def(t)
 	ioStore := pageio.NewStore()
 	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
 
-	rand := random.NewRandom(0)
-	table1.FillPages(10, table1IO, rand)
+	table1.TUtils.FillPages(10, table1IO)
 
 	testBuffer := newSharedBuffer(10, ioStore)
 

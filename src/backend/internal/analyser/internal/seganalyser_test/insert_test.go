@@ -23,8 +23,8 @@ func TestInsertSimpleQuery(t *testing.T) {
 
 	for _, query := range queries {
 		// given
-		table1 := ttable12.Def()
-		tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
+		table1 := ttable12.Def(t)
+		tableStore := tstructs.NewTestTableStoreWithInMemoryIO(t, table1)
 		txCtx := tx.NewContext(25, tableStore)
 
 		query := fmt.Sprintf(query, ttable12.TableName, ttable12.C0AwesomeKey, ttable12.C2NonNullColl, ttable12.C1NullableCol)

@@ -3,7 +3,7 @@ package qrow_test
 import (
 	"HomegrownDB/backend/qrow"
 	"HomegrownDB/common/tests/assert"
-	ttable12 "HomegrownDB/common/tests/tutils/testtable/ttable1"
+	"HomegrownDB/common/tests/tutils/testtable/ttable1"
 	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/tpage"
@@ -12,11 +12,11 @@ import (
 )
 
 func TestNewRow(t *testing.T) {
-	tableDef := ttable12.Def()
+	tableDef := ttable1.Def(t)
 	testTuple, err := tpage.NewTestTuple(tableDef, map[string][]byte{
-		ttable12.C0AwesomeKey:  convInput(int64(24), tableDef.Column(ttable12.C0AwesomeKeyOrder).Type()),
-		ttable12.C1NullableCol: nil,
-		ttable12.C2NonNullColl: convInput(int64(43), tableDef.Column(ttable12.C2NonNullCollOrder).Type()),
+		ttable1.C0AwesomeKey:  convInput(int64(24), tableDef.Column(ttable1.C0AwesomeKeyOrder).Type()),
+		ttable1.C1NullableCol: nil,
+		ttable1.C2NonNullColl: convInput(int64(43), tableDef.Column(ttable1.C2NonNullCollOrder).Type()),
 	}, tx.NewInfoCtx(29))
 	if err != nil {
 		panic(err.Error())
@@ -27,18 +27,18 @@ func TestNewRow(t *testing.T) {
 	dataRow := qrow.NewRow([]tpage.Tuple{testTuple.Tuple}, holder)
 
 	assert.EqArray(
-		tpage.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable12.C0AwesomeKey),
-		dataRow.GetField(ttable12.C0AwesomeKeyOrder),
+		tpage.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C0AwesomeKey),
+		dataRow.GetField(ttable1.C0AwesomeKeyOrder),
 		t,
 	)
 	assert.EqArray(
-		tpage.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable12.C1NullableCol),
-		dataRow.GetField(ttable12.C1NullableColOrder),
+		tpage.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C1NullableCol),
+		dataRow.GetField(ttable1.C1NullableColOrder),
 		t,
 	)
 	assert.EqArray(
-		tpage.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable12.C2NonNullColl),
-		dataRow.GetField(ttable12.C2NonNullCollOrder),
+		tpage.TupleHelper.GetValueByName(testTuple.Tuple, tableDef, ttable1.C2NonNullColl),
+		dataRow.GetField(ttable1.C2NonNullCollOrder),
 		t,
 	)
 }

@@ -34,7 +34,7 @@ func (b *bufferProxy) WTablePage(pageId page.Id, table table.Definition) (tpage.
 	}
 
 	if wPage.isNew {
-		return tpage.InitNewPage(table, wPage.bytes), nil
+		return tpage.InitNewPage(table, pageId, wPage.bytes), nil
 	} else {
 		return tpage.AsPage(wPage.bytes, pageId, table), nil
 	}

@@ -32,17 +32,14 @@ func EmptyTablePage(tableDef table.Definition, t *testing.T) TablePage {
 	return page
 }
 
-func InitNewPage(def table.Definition, pageSlot []byte) TablePage {
+func InitNewPage(def table.Definition, pageId page.Id, pageSlot []byte) TablePage {
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
 
 	copy(pageSlot[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
 	copy(pageSlot[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
 
-	page := TablePage{
-		table: def,
-		bytes: pageSlot,
-	}
+	page := AsPage(pageSlot, pageId, def)
 	page.updateHash()
 
 	return page

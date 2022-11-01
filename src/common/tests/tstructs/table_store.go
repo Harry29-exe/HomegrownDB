@@ -8,33 +8,10 @@ import (
 	"HomegrownDB/dbsystem/schema/table"
 	"fmt"
 	"sync"
+	"testing"
 )
 
-func NewTestTableStore(definitions []testtable.TestTable, tablesIOs []access.TableDataIO) table.Store {
-	definitionsMap := map[table.Id]testtable.TestTable{}
-	tableIOs := map[table.Id]access.TableDataIO{}
-	nameTableMap := map[string]table.Id{}
-	maxId := table.Id(0)
-	for i, def := range definitions {
-		id := def.TableId()
-		if id > maxId {
-			maxId = id
-		}
-		definitionsMap[id] = def
-		tableIOs[id] = tablesIOs[i]
-		nameTableMap[def.Name()] = id
-	}
-
-	return &TestTablesStore{
-		storeLock:       &sync.RWMutex{},
-		nameTableMap:    nameTableMap,
-		definitions:     definitionsMap,
-		changeListeners: nil,
-		tableIdCounter:  appsync.NewIdResolver(maxId+1, nil),
-	}
-}
-
-func NewTestTableStoreWithInMemoryIO(definitions ...testtable.TestTable) table.Store {
+func NewTestTableStoreWithInMemoryIO(t *testing.T, definitions ...testtable.TestTable) table.Store {
 	definitionsMap := map[table.Id]testtable.TestTable{}
 	tableIOs := map[table.Id]access.TableDataIO{}
 	nameTableMap := map[string]table.Id{}
@@ -67,6 +44,8 @@ type TestTablesStore struct {
 	// store utils
 	changeListeners []func()
 	tableIdCounter  *appsync.IdResolver[table.Id]
+
+	t *testing.T
 }
 
 func (i *TestTablesStore) GetTable(name string) (table.Definition, error) {
@@ -125,7 +104,7 @@ func (i *TestTablesStore) AddTable(table table.WDefinition) error {
 	i.storeLock.Lock()
 	defer i.storeLock.Unlock()
 
-	testTable := testtable.TestTable{table}
+	testTable := testtable.NewTestTable(table, i.t)
 	id := i.tableIdCounter.NextId()
 	testTable.SetTableId(id)
 	i.nameTableMap[testTable.Name()] = id
