@@ -1,6 +1,7 @@
 package tstructs
 
 import (
+	"HomegrownDB/common/tests/tutils/testtable"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/schema/table"
 	"fmt"
@@ -13,7 +14,7 @@ type InMemTableIOStore struct {
 	nameTableMap map[string]table.Id
 }
 
-func NewInMemTableIO(definitions ...TestTable) access.TableIOStore {
+func NewInMemTableIO(definitions ...testtable.TestTable) access.TableIOStore {
 	tableIOs := map[table.Id]access.TableDataIO{}
 	nameTableMap := map[string]table.Id{}
 

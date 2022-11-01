@@ -12,9 +12,9 @@ Package ttable1 is following table definition
 package ttable1
 
 import (
-	"HomegrownDB/common/tests/testtable"
-	"HomegrownDB/common/tests/tstructs"
+	"HomegrownDB/common/tests/tutils/testtable"
 	"HomegrownDB/dbsystem/ctype"
+	"testing"
 )
 
 /*
@@ -26,12 +26,12 @@ Def creates following table definition
 			non_null_coll  int8  NOT NULL
 	);
 */
-func Def() tstructs.TestTable {
+func Def(t *testing.T) testtable.TestTable {
 	table := testtable.NewTestTableBuilder(TableName).
 		AddColumn(C0AwesomeKey, false, ctype.TypeInt8, nil).
 		AddColumn(C1NullableCol, true, ctype.TypeInt8, nil).
 		AddColumn(C2NonNullColl, false, ctype.TypeInt8, nil).
 		GetTable()
 
-	return tstructs.TestTable{WDefinition: table}
+	return testtable.NewTestTable(table, t)
 }

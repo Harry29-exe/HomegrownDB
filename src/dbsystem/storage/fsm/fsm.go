@@ -29,7 +29,7 @@ func initNewFsmIO(fsm *FreeSpaceMap) error {
 		if err != nil {
 			return err
 		}
-		fsm.buff.ReleaseWPage(tag)
+		fsm.buff.WPageRelease(tag)
 	}
 	return nil
 }

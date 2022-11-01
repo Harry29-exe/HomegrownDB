@@ -45,13 +45,12 @@ func (s *SeqScan) HasNext() bool {
 }
 
 func (s *SeqScan) Next() dbbs2.QRow {
-	tag := buffer.PageTag{PageId: s.page, Relation: s.tableDef.RelationId()}
-	rPage, err := s.buffer.TableRPage(tag, s.tableDef)
+	rPage, err := s.buffer.RTablePage(s.page, s.tableDef)
 	if err != nil {
 		panic("")
 	}
 
-	defer buffer.DBSharedBuffer.ReleaseRPage(tag)
+	defer buffer.DBSharedBuffer.RPageRelease(rPage.PageTag())
 	tuple := rPage.Tuple(s.tuple)
 
 	tCount := rPage.TupleCount()
@@ -67,13 +66,12 @@ func (s *SeqScan) Next() dbbs2.QRow {
 }
 
 func (s *SeqScan) NextBatch() []dbbs2.QRow {
-	tag := buffer.PageTag{PageId: s.page, Relation: s.tableDef.RelationId()}
-	rPage, err := buffer.DBSharedBuffer.TableRPage(tag, s.tableDef)
+	rPage, err := buffer.DBSharedBuffer.RTablePage(s.page, s.tableDef)
 	if err != nil {
 		panic("")
 	}
 
-	defer buffer.DBSharedBuffer.ReleaseRPage(tag)
+	defer buffer.DBSharedBuffer.RPageRelease(rPage.PageTag())
 	tCount := rPage.TupleCount()
 	rows := make([]dbbs2.QRow, tCount)
 	for i := uint16(0); i < tCount; i++ {
@@ -102,13 +100,12 @@ func (s *SeqScan) All() []dbbs2.QRow {
 }
 
 func (s *SeqScan) readPageWhileReadingAll(rows []dbbs2.QRow) []dbbs2.QRow {
-	tag := buffer.PageTag{PageId: s.page, Relation: s.tableDef.RelationId()}
-	rPage, err := buffer.DBSharedBuffer.TableRPage(tag, s.tableDef)
+	rPage, err := buffer.DBSharedBuffer.RTablePage(s.page, s.tableDef)
 	if err != nil {
 		panic("")
 	}
 
-	defer buffer.DBSharedBuffer.ReleaseRPage(tag)
+	defer buffer.DBSharedBuffer.RPageRelease(rPage.PageTag())
 	tCount := rPage.TupleCount()
 	for i := uint16(0); i < tCount; i++ {
 		rows = append(rows, dbbs2.NewQRowFromTuple(rPage.Tuple(i)))

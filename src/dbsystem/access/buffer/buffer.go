@@ -21,27 +21,27 @@ type SharedBuffer interface {
 	TableBuffer
 	FsmBuffer
 
-	ReleaseWPage(tag PageTag)
-	ReleaseRPage(tag PageTag)
+	WPageRelease(tag page.Tag)
+	RPageRelease(tag page.Tag)
 }
 
 type TableBuffer interface {
-	TableRPage(tag PageTag, table table.Definition) (tpage.TableRPage, error)
-	TableWPage(tag PageTag, table table.Definition) (tpage.TableWPage, error)
+	RTablePage(pageId page.Id, table table.Definition) (tpage.TableRPage, error)
+	WTablePage(pageId page.Id, table table.Definition) (tpage.TableWPage, error)
 }
 
 type FsmBuffer interface {
-	RFsmPage(tag PageTag) (fsmpage.Page, error)
-	WFsmPage(tag PageTag) (fsmpage.Page, error)
+	RFsmPage(tag page.Tag) (fsmpage.Page, error)
+	WFsmPage(tag page.Tag) (fsmpage.Page, error)
 }
 
 // todo change methods to operate on ArrayIndexes
 type sharedBuffer interface {
-	RPage(tag PageTag) (buffPage, error)
-	WPage(tag PageTag) (buffPage, error)
+	RPage(tag page.Tag) (buffPage, error)
+	WPage(tag page.Tag) (buffPage, error)
 
-	ReleaseWPage(tag PageTag)
-	ReleaseRPage(tag PageTag)
+	ReleaseWPage(tag page.Tag)
+	ReleaseRPage(tag page.Tag)
 }
 
 type TableSrc interface {
@@ -55,20 +55,15 @@ type buffPage struct {
 	isNew bool
 }
 
-type PageTag struct {
-	PageId   page.Id
-	Relation relation.ID
-}
-
-func NewTablePageTag(pageIndex page.Id, tableDef table.Definition) PageTag {
-	return PageTag{
+func NewTablePageTag(pageIndex page.Id, tableDef table.Definition) page.Tag {
+	return page.Tag{
 		PageId:   pageIndex,
 		Relation: tableDef.RelationId(),
 	}
 }
 
-func NewPageTag(pageIndex page.Id, rel relation.Relation) PageTag {
-	return PageTag{
+func NewPageTag(pageIndex page.Id, rel relation.Relation) page.Tag {
+	return page.Tag{
 		PageId:   pageIndex,
 		Relation: rel.RelationID(),
 	}

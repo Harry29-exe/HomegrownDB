@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/common/random"
 	"HomegrownDB/common/tests"
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/testtable/ttable1"
+	"HomegrownDB/common/tests/tutils/testtable/ttable1"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/tpage"
 	"fmt"
@@ -17,7 +17,7 @@ func TestCreateEmptyPage(t *testing.T) {
 	tableDef.SetTableId(32)
 	tableDef.SetRelationId(12)
 
-	newPage := tpage.EmptyTablePage(tableDef)
+	newPage := tpage.EmptyTablePage(tableDef, t)
 
 	if newPage.TupleCount() != 0 {
 		errMsg := fmt.Sprintf("new page has tuple count different than 0,\n page: %#v", newPage)
@@ -39,7 +39,7 @@ func TestCreateEmptyPage(t *testing.T) {
 
 func TestPage_Tuple(t *testing.T) {
 	table1 := ttable1.Def()
-	page := tpage.EmptyTablePage(table1)
+	page := tpage.EmptyTablePage(table1, t)
 
 	//txCtx1 := tx.NewContext(1)
 	rand := random.NewRandom(13)
@@ -56,7 +56,7 @@ func TestPage_Tuple(t *testing.T) {
 
 func TestPage_DeleteTuple_FromMiddle(t *testing.T) {
 	table1 := ttable1.Def()
-	tablePage := tpage.EmptyTablePage(table1)
+	tablePage := tpage.EmptyTablePage(table1, t)
 
 	tuples := table1.PutRandomTupleToPage(10, tablePage, random.NewRandom(23))
 	tablePage.DeleteTuple(2)
@@ -70,7 +70,7 @@ func TestPage_DeleteTuple_FromMiddle(t *testing.T) {
 
 func TestPage_DeleteTuple_First(t *testing.T) {
 	table1 := ttable1.Def()
-	tablePage := tpage.EmptyTablePage(table1)
+	tablePage := tpage.EmptyTablePage(table1, t)
 
 	tuples := table1.PutRandomTupleToPage(10, tablePage, random.NewRandom(23))
 
@@ -88,7 +88,7 @@ func TestPage_DeleteTuple_First(t *testing.T) {
 
 func TestPage_DeleteTuple_Last(t *testing.T) {
 	table1 := ttable1.Def()
-	tablePage := tpage.EmptyTablePage(table1)
+	tablePage := tpage.EmptyTablePage(table1, t)
 
 	tuples := table1.PutRandomTupleToPage(10, tablePage, random.NewRandom(23))
 

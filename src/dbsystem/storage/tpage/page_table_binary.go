@@ -28,12 +28,12 @@ func (p TablePage) getTupleEnd(index TupleIndex) InPagePointer {
 
 func (p TablePage) getTupleStart(index TupleIndex) InPagePointer {
 	ptrStart := poFirstTuplePtr + InPagePointerSize*index
-	return bparse.Parse.UInt2(p.page[ptrStart : ptrStart+InPagePointerSize])
+	return bparse.Parse.UInt2(p.bytes[ptrStart : ptrStart+InPagePointerSize])
 }
 
 func (p TablePage) setTupleStart(tupleIndex TupleIndex, tupleStart InPagePointer) {
 	ptrStart := poFirstTuplePtr + InPagePointerSize*tupleIndex
-	binary.BigEndian.PutUint16(p.page[ptrStart:], tupleStart)
+	binary.BigEndian.PutUint16(p.bytes[ptrStart:], tupleStart)
 }
 
 func (p TablePage) getPtrPosition(index TupleIndex) InPagePointer {
@@ -42,24 +42,24 @@ func (p TablePage) getPtrPosition(index TupleIndex) InPagePointer {
 
 func (p TablePage) getLastPtrPosition() InPagePointer {
 	return bparse.Parse.UInt2(
-		p.page[poPrtToLastTuplePtr:])
+		p.bytes[poPrtToLastTuplePtr:])
 }
 
 func (p TablePage) setLastPointerPosition(ptr InPagePointer) {
-	binary.BigEndian.PutUint16(p.page[poPrtToLastTuplePtr:], ptr)
+	binary.BigEndian.PutUint16(p.bytes[poPrtToLastTuplePtr:], ptr)
 }
 
 func (p TablePage) getLastTupleStart() InPagePointer {
-	return bparse.Parse.UInt2(p.page[poPtrToLastTupleStart:])
+	return bparse.Parse.UInt2(p.bytes[poPtrToLastTupleStart:])
 }
 
 func (p TablePage) setLastTupleStart(ptr InPagePointer) {
-	binary.BigEndian.PutUint16(p.page[poPtrToLastTupleStart:], ptr)
+	binary.BigEndian.PutUint16(p.bytes[poPtrToLastTupleStart:], ptr)
 }
 
 func (p TablePage) updateHash() {
-	hash := md5.Sum(p.page[poPageHash+pageHashLen:])
-	copy(p.page[poPageHash:poPageHash+pageHashLen], hash[0:pageHashLen])
+	hash := md5.Sum(p.bytes[poPageHash+pageHashLen:])
+	copy(p.bytes[poPageHash:poPageHash+pageHashLen], hash[0:pageHashLen])
 }
 
 // po - page offset to

@@ -3,14 +3,15 @@ package tstructs
 import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/errors"
+	"HomegrownDB/common/tests/tutils/testtable"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/schema/table"
 	"fmt"
 	"sync"
 )
 
-func NewTestTableStore(definitions []TestTable, tablesIOs []access.TableDataIO) table.Store {
-	definitionsMap := map[table.Id]TestTable{}
+func NewTestTableStore(definitions []testtable.TestTable, tablesIOs []access.TableDataIO) table.Store {
+	definitionsMap := map[table.Id]testtable.TestTable{}
 	tableIOs := map[table.Id]access.TableDataIO{}
 	nameTableMap := map[string]table.Id{}
 	maxId := table.Id(0)
@@ -33,8 +34,8 @@ func NewTestTableStore(definitions []TestTable, tablesIOs []access.TableDataIO) 
 	}
 }
 
-func NewTestTableStoreWithInMemoryIO(definitions ...TestTable) table.Store {
-	definitionsMap := map[table.Id]TestTable{}
+func NewTestTableStoreWithInMemoryIO(definitions ...testtable.TestTable) table.Store {
+	definitionsMap := map[table.Id]testtable.TestTable{}
 	tableIOs := map[table.Id]access.TableDataIO{}
 	nameTableMap := map[string]table.Id{}
 	maxId := table.Id(0)
@@ -61,7 +62,7 @@ type TestTablesStore struct {
 	storeLock *sync.RWMutex
 
 	nameTableMap map[string]table.Id
-	definitions  map[table.Id]TestTable
+	definitions  map[table.Id]testtable.TestTable
 
 	// store utils
 	changeListeners []func()
@@ -86,7 +87,7 @@ func (i *TestTablesStore) Table(id table.Id) table.Definition {
 	return i.definitions[id]
 }
 
-func (i *TestTablesStore) GetTestTable(name string) TestTable {
+func (i *TestTablesStore) GetTestTable(name string) testtable.TestTable {
 	i.storeLock.RLock()
 	defer i.storeLock.RUnlock()
 
@@ -97,7 +98,7 @@ func (i *TestTablesStore) GetTestTable(name string) TestTable {
 	panic(fmt.Sprintf("no table with name: %s", name))
 }
 
-func (i *TestTablesStore) TestTable(id table.Id) TestTable {
+func (i *TestTablesStore) TestTable(id table.Id) testtable.TestTable {
 	i.storeLock.RLock()
 	defer i.storeLock.RUnlock()
 
@@ -124,7 +125,7 @@ func (i *TestTablesStore) AddTable(table table.WDefinition) error {
 	i.storeLock.Lock()
 	defer i.storeLock.Unlock()
 
-	testTable := TestTable{table}
+	testTable := testtable.TestTable{table}
 	id := i.tableIdCounter.NextId()
 	testTable.SetTableId(id)
 	i.nameTableMap[testTable.Name()] = id

@@ -24,7 +24,7 @@ func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
 		lastNodeIndex = nodeIndex
 		nodeIndex, internalErr = f.findLeafNode(space, pageData)
 		newLeafNodeVal = pageData[nodeIndex]
-		f.buff.ReleaseRPage(pageTag)
+		f.buff.RPageRelease(pageTag)
 
 		if internalErr == corrupted {
 			//todo implement me
@@ -90,13 +90,13 @@ func (f *FreeSpaceMap) updatePages(space uint8, pageIndex uint32, nodeIndex uint
 	}
 	pageData := wPage.Data()
 	if pageData[nodeIndex] == space {
-		f.buff.ReleaseWPage(tag)
+		f.buff.WPageRelease(tag)
 		return nil
 	}
 
 	f.updatePage(space, pageData, nodeIndex)
 
-	f.buff.ReleaseWPage(tag)
+	f.buff.WPageRelease(tag)
 
 	if pageIndex != 0 {
 		parentPageIndex, parentNodeIndex := f.getFsmParentPageIndex(pageIndex)

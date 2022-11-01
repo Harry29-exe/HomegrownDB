@@ -6,8 +6,8 @@ import (
 	"HomegrownDB/backend/internal/parser/pnode"
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/testtable/ttable1"
 	"HomegrownDB/common/tests/tstructs"
+	ttable12 "HomegrownDB/common/tests/tutils/testtable/ttable1"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
 	"testing"
@@ -23,11 +23,11 @@ func TestInsertSimpleQuery(t *testing.T) {
 
 	for _, query := range queries {
 		// given
-		table1 := ttable1.Def()
+		table1 := ttable12.Def()
 		tableStore := tstructs.NewTestTableStoreWithInMemoryIO(table1)
 		txCtx := tx.NewContext(25, tableStore)
 
-		query := fmt.Sprintf(query, ttable1.TableName, ttable1.C0AwesomeKey, ttable1.C2NonNullColl, ttable1.C1NullableCol)
+		query := fmt.Sprintf(query, ttable12.TableName, ttable12.C0AwesomeKey, ttable12.C2NonNullColl, ttable12.C1NullableCol)
 		parserTree, err := parser.Parse(query, txCtx)
 		if err != nil {
 			t.Error(err)
@@ -48,9 +48,9 @@ func TestInsertSimpleQuery(t *testing.T) {
 		assert.Eq(tableId, table1.TableId(), t)
 
 		assert.Eq(len(insertANode.Columns), 3, t)
-		assert.Eq(insertANode.Columns[0].Id(), table1.Column(ttable1.C0AwesomeKeyOrder).Id(), t)
-		assert.Eq(insertANode.Columns[1].Id(), table1.Column(ttable1.C2NonNullCollOrder).Id(), t)
-		assert.Eq(insertANode.Columns[2].Id(), table1.Column(ttable1.C1NullableColOrder).Id(), t)
+		assert.Eq(insertANode.Columns[0].Id(), table1.Column(ttable12.C0AwesomeKeyOrder).Id(), t)
+		assert.Eq(insertANode.Columns[1].Id(), table1.Column(ttable12.C2NonNullCollOrder).Id(), t)
+		assert.Eq(insertANode.Columns[2].Id(), table1.Column(ttable12.C1NullableColOrder).Id(), t)
 
 		rows := insertANode.Rows
 		assert.EqArray(rows.GetValue(0, 0), bparse.Serialize.Int8(2), t)

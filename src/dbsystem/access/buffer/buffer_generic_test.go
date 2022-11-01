@@ -3,8 +3,8 @@ package buffer
 import (
 	"HomegrownDB/common/random"
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/testtable/ttable1"
-	"HomegrownDB/common/tests/tstructs"
+	"HomegrownDB/common/tests/tutils/testtable"
+	"HomegrownDB/common/tests/tutils/testtable/ttable1"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"github.com/spf13/afero"
@@ -55,7 +55,7 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	waitGroup2 := sync.WaitGroup{}
 	waitGroup2.Add(tCount)
 
-	tag := PageTag{PageId: 0, Relation: table1.RelationId()}
+	tag := page.Tag{PageId: 0, Relation: table1.RelationId()}
 	for i := 0; i < tCount; i++ {
 		go func() {
 			_, _ = testBuffer.RPage(tag)
@@ -93,7 +93,7 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 		_, err := testBuffer.RPage(tag)
 		ch1 <- true
 		if err != nil {
-			t.Errorf("testBuffer.TableRPage returned error: %e", err)
+			t.Errorf("testBuffer.RTablePage returned error: %e", err)
 			return
 		}
 		testBuffer.ReleaseRPage(tag)
@@ -140,7 +140,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 		_, err := testBuffer.WPage(tag)
 		ch1 <- true
 		if err != nil {
-			t.Errorf("testBuffer.TableRPage returned error: %e", err)
+			t.Errorf("testBuffer.RTablePage returned error: %e", err)
 			return
 		}
 		testBuffer.ReleaseWPage(tag)
@@ -163,7 +163,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 	<-ch1
 }
 
-func _createAndRegisterTestPageIO(table1 tstructs.TestTable, ioStore *pageio.Store, t *testing.T) pageio.IO {
+func _createAndRegisterTestPageIO(table1 testtable.TestTable, ioStore *pageio.Store, t *testing.T) pageio.IO {
 	fs := afero.NewMemMapFs()
 	file, err := fs.Create("table1IO")
 	assert.IsNil(err, t)

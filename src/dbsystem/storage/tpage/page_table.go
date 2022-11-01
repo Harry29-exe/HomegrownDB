@@ -7,15 +7,16 @@ package tpage
 import (
 	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/schema/table"
-	page2 "HomegrownDB/dbsystem/storage/page"
+	page "HomegrownDB/dbsystem/storage/page"
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"testing"
 )
 
 //todo add handling for inserting into empty page
-func EmptyTablePage(tableDef table.Definition) TablePage {
-	rawPage := make([]byte, page2.Size)
+func EmptyTablePage(tableDef table.Definition, t *testing.T) TablePage {
+	rawPage := make([]byte, page.Size)
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
 
@@ -24,37 +25,53 @@ func EmptyTablePage(tableDef table.Definition) TablePage {
 
 	page := TablePage{
 		table: tableDef,
-		page:  rawPage,
+		bytes: rawPage,
 	}
 	page.updateHash()
 
 	return page
 }
 
-func NewPage(definition table.Definition, data []byte) TablePage {
+func InitNewPage(def table.Definition, pageSlot []byte) TablePage {
+	uint16Zero := make([]byte, 2)
+	binary.BigEndian.PutUint16(uint16Zero, 0)
+
+	copy(pageSlot[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
+	copy(pageSlot[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
+
+	page := TablePage{
+		table: def,
+		bytes: pageSlot,
+	}
+	page.updateHash()
+
+	return page
+}
+
+func AsPage(data []byte, pageId page.Id, def table.Definition) TablePage {
 	return TablePage{
-		table:      definition,
-		relationID: definition.RelationId(),
-		page:       data,
+		table: def,
+		bytes: data,
+		id:    pageId,
 	}
 }
 
 type TablePage struct {
-	table      table.Definition
-	relationID relation.ID
-	page       []byte
+	table table.Definition
+	id    page.Id
+	bytes []byte
 }
 
 func (p TablePage) Header() []byte {
-	return p.page[:poFirstTuplePtr]
+	return p.bytes[:poFirstTuplePtr]
 }
 
 func (p TablePage) Data() []byte {
-	return p.page[poFirstTuplePtr:]
+	return p.bytes[poFirstTuplePtr:]
 }
 
 func (p TablePage) RelationID() relation.ID {
-	return p.relationID
+	return p.table.RelationId()
 }
 
 func (p TablePage) Tuple(tIndex TupleIndex) Tuple {
@@ -66,13 +83,20 @@ func (p TablePage) Tuple(tIndex TupleIndex) Tuple {
 	tupleEndPtr := p.getTupleEnd(tIndex)
 
 	return Tuple{
-		bytes: p.page[tuplePtr:tupleEndPtr],
+		bytes: p.bytes[tuplePtr:tupleEndPtr],
 		table: p.table,
 	}
 }
 
-func (p TablePage) Page() []byte {
-	return p.page
+func (p TablePage) Bytes() []byte {
+	return p.bytes
+}
+
+func (p TablePage) PageTag() page.Tag {
+	return page.Tag{
+		PageId:   p.id,
+		Relation: p.RelationID(),
+	}
 }
 
 func (p TablePage) TupleCount() uint16 {
@@ -112,7 +136,7 @@ func (p TablePage) InsertTuple(tuple []byte) error {
 	insertedAsLast := true
 	// empty page
 	if lastTupleStart == 0 {
-		lastTupleStart = page2.Size
+		lastTupleStart = page.Size
 		tuplePtrPosition = poFirstTuplePtr
 	} else {
 		tCount := p.TupleCount()
@@ -128,8 +152,8 @@ func (p TablePage) InsertTuple(tuple []byte) error {
 	}
 
 	tupleStartIndex := lastTupleStart - tupleLen
-	copy(p.page[tupleStartIndex:lastTupleStart], tuple)
-	binary.BigEndian.PutUint16(p.page[tuplePtrPosition:], tupleStartIndex)
+	copy(p.bytes[tupleStartIndex:lastTupleStart], tuple)
+	binary.BigEndian.PutUint16(p.bytes[tuplePtrPosition:], tupleStartIndex)
 	p.setLastTupleStart(tupleStartIndex)
 	if insertedAsLast {
 		p.setLastPointerPosition(tuplePtrPosition)
@@ -145,7 +169,7 @@ func (p TablePage) UpdateTuple(tIndex TupleIndex, newTuple []byte) {
 
 	tuplePtr := p.getTupleStart(tIndex)
 	prevTuplePtr := p.getTupleStart(tIndex - 1)
-	tuple := p.page[tuplePtr:prevTuplePtr]
+	tuple := p.bytes[tuplePtr:prevTuplePtr]
 	if len(tuple) != len(newTuple) {
 		panic("When updating tuple it's len must me identical")
 	}
@@ -181,7 +205,7 @@ func (p TablePage) deleteTupleFromMiddle(tIndex TupleIndex) {
 	deletedTupleLen := deletedTupleEnd - deletedTupleStart
 	lastTupleStart := p.getLastTupleStart()
 
-	copy(p.page[lastTupleStart+deletedTupleLen:deletedTupleEnd], p.page[lastTupleStart:deletedTupleStart])
+	copy(p.bytes[lastTupleStart+deletedTupleLen:deletedTupleEnd], p.bytes[lastTupleStart:deletedTupleStart])
 	tCount := p.TupleCount()
 	for i := TupleIndex(0); i < tCount; i++ {
 		if tupleStart := p.getTupleStart(i); tupleStart != 0 && tupleStart < deletedTupleStart {
