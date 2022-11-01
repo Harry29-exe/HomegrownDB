@@ -1,11 +1,11 @@
 package executor
 
 import (
-	exenode2 "HomegrownDB/backend/internal/executor/exenode"
+	exenode "HomegrownDB/backend/internal/executor/exenode"
 	"HomegrownDB/backend/internal/planer/plan"
 )
 
-func delegateCreateExeNode(node plan.Node) exenode2.ExeNode {
+func delegateCreateExeNode(node plan.Node) exenode.ExeNode {
 	builder, ok := exeNodeBuilders[node.Type()]
 	if !ok {
 		//todo implement me
@@ -15,6 +15,6 @@ func delegateCreateExeNode(node plan.Node) exenode2.ExeNode {
 	return builder.Build(node)
 }
 
-var exeNodeBuilders = map[plan.NodeType]exenode2.Builder{
-	plan.SeqScanNode: exenode2.SeqScanBuilder,
+var exeNodeBuilders = map[plan.NodeType]exenode.Builder{
+	plan.SeqScanNode: exenode.SeqScanBuilder,
 }

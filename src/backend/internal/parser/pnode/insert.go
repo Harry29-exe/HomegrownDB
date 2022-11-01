@@ -2,6 +2,7 @@ package pnode
 
 import (
 	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
+	"errors"
 )
 
 // InsertNode represents INSERT query
@@ -14,16 +15,22 @@ type InsertNode struct {
 
 type InsertingRow struct {
 	Node
-	Values []Value
+	Fields []InsertingField
 }
 
 func NewInsertingRow() InsertingRow {
 	return InsertingRow{
-		Values: make([]Value, 0, 25),
+		Fields: make([]InsertingField, 0, 25),
 	}
 }
 
-func (v *InsertingRow) AddValue(tk token.Token, tokenIndex uint32) bool {
+type InsertingField struct {
+	Select *Select
+	Func   *rune // change rune it to Func pnode when it's implemented
+	Value  *Value
+}
+
+func (v *InsertingRow) AppendValue(tk token.Token, tokenIndex uint32) error {
 	value := Value{Node: NewNode(tokenIndex, tokenIndex+1)}
 
 	switch tk.Code() {
@@ -35,9 +42,9 @@ func (v *InsertingRow) AddValue(tk token.Token, tokenIndex uint32) bool {
 	case token.Float:
 		value.V = tk.(*token.FloatToken).Float
 	default:
-		return false
+		return errors.New("token is not value")
 	}
 
-	v.Values = append(v.Values, value)
-	return true
+	v.Fields = append(v.Fields, InsertingField{Value: &value})
+	return nil
 }

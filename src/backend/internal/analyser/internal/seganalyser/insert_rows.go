@@ -12,24 +12,41 @@ var InsertRows = insertRows{}
 
 type insertRows struct{}
 
-func (receiver insertRows) Analyse(
+func (ir insertRows) Analyse(
 	rows []pnode.InsertingRow,
 	cols []column.Def,
 	ctx *tx.Ctx,
-) (*anode.InsertRows, error) {
+) ([]anode.InsertRow, error) {
 
-	rowsNode := anode.NewInsertRows(uint(len(rows)), uint16(len(cols)))
+	rowsNode := make([]anode.InsertRow, len(rows))
 
-	for _, row := range rows {
-		for i, val := range row.Values {
-			cval, err := ctype.ConvInput(val.V, cols[i].Type())
-			if err != nil {
-				return nil, err
-			}
-
-			rowsNode.PutValue(cval)
+	for i, row := range rows {
+		analysedRow, err := ir.analyseRow(row, cols)
+		if err != nil {
+			return nil, err
 		}
+
+		rowsNode[i] = analysedRow
 	}
 
 	return rowsNode, nil
+}
+
+func (ir insertRows) analyseRow(row pnode.InsertingRow, columns []column.Def) (anode.InsertRow, error) {
+	aRow := anode.InsertRow{Fields: make([]anode.InsertField, 0, len(columns))}
+
+	for i, field := range row.Fields {
+		if val := field.Value; val != nil {
+			cval, err := ctype.ConvInput(val.V, columns[i].Type())
+			if err != nil {
+				return anode.InsertRow{}, err
+			}
+
+			aRow.Fields = append(aRow.Fields, anode.InsertField{Value: cval})
+		} else {
+			panic("expression support not yet implemented in insert")
+		}
+	}
+
+	return aRow, nil
 }

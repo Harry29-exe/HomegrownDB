@@ -35,14 +35,14 @@ func TestSimpleInsertParse(t *testing.T) {
 		rows := node.Rows
 		assert.Eq(len(rows), 2, t)
 
-		row1 := rows[0].Values
+		row1 := rows[0].Fields
 		assert.Eq(len(row1), 2, t)
-		assert.Eq(row1[0].V.(string), "bob", t)
-		assert.Eq(row1[1].V.(int64), 15, t)
-		row2 := rows[1].Values
+		assert.Eq(row1[0].Value.V.(string), "bob", t)
+		assert.Eq(row1[1].Value.V.(int64), 15, t)
+		row2 := rows[1].Fields
 		assert.Eq(len(row2), 2, t)
-		assert.Eq(row2[0].V.(string), "Alice", t)
-		assert.Eq(row2[1].V.(int64), 24, t)
+		assert.Eq(row2[0].Value.V.(string), "Alice", t)
+		assert.Eq(row2[1].Value.V.(int64), 24, t)
 	}
 }
 
@@ -72,14 +72,14 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 		values := node.Rows
 		assert.Eq(len(values), 2, t)
 
-		val1 := values[0].Values
+		val1 := values[0].Fields
 		assert.Eq(len(val1), 2, t)
-		assert.Eq(val1[0].V.(string), "bob", t)
-		assert.Eq(val1[1].V.(int64), 15, t)
-		val2 := values[1].Values
+		assert.Eq(val1[0].Value.V.(string), "bob", t)
+		assert.Eq(val1[1].Value.V.(int64), 15, t)
+		val2 := values[1].Fields
 		assert.Eq(len(val2), 2, t)
-		assert.Eq(val2[0].V.(string), "Alice", t)
-		assert.Eq(val2[1].V.(int64), 24, t)
+		assert.Eq(val2[0].Value.V.(string), "Alice", t)
+		assert.Eq(val2[1].Value.V.(int64), 24, t)
 	}
 }
 

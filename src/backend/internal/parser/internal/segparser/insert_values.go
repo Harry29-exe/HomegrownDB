@@ -72,12 +72,9 @@ func (i insertValues) parseRow(source internal.TokenSource, v validator.Validato
 	}
 
 	rowNode := pnode.NewInsertingRow()
-	if !rowNode.AddValue(source.Next(), source.CurrentTokenIndex()) {
-		return pnode.InsertingRow{}, sqlerr.NewSyntaxError(
-			"value that can be used as column value",
-			fmt.Sprintf("got %s", token.ToString(source.Current().Code())),
-			source,
-		)
+	err = i.parseInsertingFieldVal(&rowNode, source, v)
+	if err != nil {
+		return rowNode, err
 	}
 
 	for {
@@ -94,12 +91,27 @@ func (i insertValues) parseRow(source internal.TokenSource, v validator.Validato
 
 			return rowNode, nil
 
-		} else if !rowNode.AddValue(source.Next(), source.CurrentTokenIndex()) {
-			return pnode.InsertingRow{}, sqlerr.NewSyntaxError(
-				"value that can be used as column value",
-				fmt.Sprintf("got %s", token.ToString(source.Current().Code())),
-				source,
-			)
+		} else {
+			err = i.parseInsertingFieldVal(&rowNode, source, v)
+			if err != nil {
+				return rowNode, err
+			}
 		}
 	}
+}
+
+func (i insertValues) parseInsertingFieldVal(rowNode *pnode.InsertingRow, source internal.TokenSource, v validator.Validator) error {
+	if v.NextIs(token.OpeningParenthesis) == nil {
+		panic("select inside insert is not supported yet")
+	} else if v.CurrentIs(token.Identifier) == nil {
+		panic("expression inside insert is not supported yet")
+	} else if err := rowNode.AppendValue(source.Current(), source.CurrentTokenIndex()); err != nil {
+		return sqlerr.NewSyntaxError(
+			"value that can be used as column value",
+			fmt.Sprintf("got %s", token.ToString(source.Current().Code())),
+			source,
+		)
+	}
+
+	return nil
 }

@@ -44,15 +44,21 @@ func (i insert) Parse(source internal.TokenSource, v validator.Validator) (pnode
 	}
 
 	source.Next()
-	insertValuesNode, err := InsertValues.Parse(source, v)
-	if err != nil {
-		source.Rollback()
-		return insertNode, err
-	}
-	insertNode.Rows = insertValuesNode
 
-	source.CommitAndInitNode(&insertNode.Node)
-	return insertNode, nil
+	if err = v.CurrentIs(token.Values); err != nil {
+		//todo implement me
+		panic("Not implemented: insert with query is not yet supported")
+	} else {
+		insertValuesNode, err := InsertValues.Parse(source, v)
+		if err != nil {
+			source.Rollback()
+			return insertNode, err
+		}
+		insertNode.Rows = insertValuesNode
+
+		source.CommitAndInitNode(&insertNode.Node)
+		return insertNode, nil
+	}
 }
 
 func (i insert) parseInsertingCols(insertNode *pnode.InsertNode, v validator.Validator) error {
