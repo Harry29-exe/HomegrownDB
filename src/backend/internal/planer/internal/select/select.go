@@ -13,14 +13,7 @@ func Plan(node anode.Select) plan.Plan {
 		panic("multiple tables select not supported yet!")
 	}
 
-	queryPlan := plan.Plan{
-		Tables: []plan.Table{
-			{
-				TableId:     node.Tables.Tables[0].Def.TableId(),
-				PlanTableId: 0,
-			},
-		},
-	}
+	queryPlan := plan.NewPlan()
 
 	fields := make([]plan.SelectedField, len(node.Fields.Fields))
 	for i, field := range node.Fields.Fields {
@@ -33,13 +26,13 @@ func Plan(node anode.Select) plan.Plan {
 		}
 	}
 
-	queryPlan.RootNode = plan.SelectFields{
+	queryPlan.SetRootNode(plan.SelectFields{
 		Fields: fields,
 		Child: plan.SeqScan{
 			Table:      node.Tables.Tables[0].Def.TableId(),
 			Conditions: nil,
 		},
-	}
+	})
 
 	return queryPlan
 }

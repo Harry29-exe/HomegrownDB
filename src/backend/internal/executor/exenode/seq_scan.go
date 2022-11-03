@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/dbsystem/access/buffer"
 	dbbs2 "HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
-	page2 "HomegrownDB/dbsystem/storage/page"
+	page "HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/tpage"
 )
 
@@ -25,7 +25,7 @@ type SeqScan struct {
 	tableIO  access.TableDataIO
 	buffer   buffer.SharedBuffer
 
-	page  page2.Id
+	page  page.Id
 	tuple tpage.TupleIndex
 
 	hasNext bool
@@ -87,7 +87,7 @@ func (s *SeqScan) NextBatch() []dbbs2.QRow {
 }
 
 func (s *SeqScan) All() []dbbs2.QRow {
-	tuplesPerPageEstimate := uint32(page2.Size) / (uint32(s.tableDef.ColumnCount()) * 5)
+	tuplesPerPageEstimate := uint32(page.Size) / (uint32(s.tableDef.ColumnCount()) * 5)
 	rows := make([]dbbs2.QRow, s.tableIO.PageCount()*tuplesPerPageEstimate)
 	for s.page < s.tableIO.PageCount() {
 		rows = s.readPageWhileReadingAll(rows)

@@ -1,7 +1,7 @@
 package exenode
 
 import (
-	"HomegrownDB/dbsystem/access"
+	"HomegrownDB/backend/internal/planer/plan"
 	dbbs2 "HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/tpage"
@@ -9,9 +9,9 @@ import (
 )
 
 type Insert struct {
-	table   table.Definition
-	tableIO access.TableDataIO
-	rowSrc  InputRowSrc
+	table table.Definition
+
+	rowSrc InputRowSrc
 
 	txCtx          tx.Ctx
 	valuesInserted bool
@@ -46,4 +46,13 @@ func (i *Insert) All() []dbbs2.QRow {
 func (i *Insert) Free() {
 	//TODO implement me
 	panic("implement me")
+}
+
+var InsertBuilder Builder = insertBuilder{}
+
+type insertBuilder struct{}
+
+func (i insertBuilder) Build(node plan.Node, tx *tx.Ctx) ExeNode {
+	//todo implement me
+	panic("Not implemented")
 }

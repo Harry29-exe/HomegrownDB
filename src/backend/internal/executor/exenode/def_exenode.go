@@ -3,6 +3,7 @@ package exenode
 import (
 	"HomegrownDB/backend/internal/planer/plan"
 	"HomegrownDB/dbsystem/access/dbbs"
+	"HomegrownDB/dbsystem/tx"
 )
 
 type ExeNode interface {
@@ -30,5 +31,5 @@ type InitOptions struct {
 }
 
 type Builder interface {
-	Build(node plan.Node) ExeNode
+	Build(node plan.Node, ctx *tx.Ctx) ExeNode
 }

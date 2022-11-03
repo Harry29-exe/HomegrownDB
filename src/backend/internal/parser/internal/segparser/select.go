@@ -39,7 +39,7 @@ func (s _select) Parse(source internal.TokenSource, v validator.Validator) (pnod
 		return selectNode, err
 	}
 
-	// Tables
+	// tables
 	err = s.parseTables(&selectNode, source, v)
 	if err != nil {
 		source.Rollback()
