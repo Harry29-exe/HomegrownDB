@@ -1,4 +1,4 @@
-package dbbs
+package query
 
 import (
 	"HomegrownDB/dbsystem/ctype"
@@ -20,7 +20,7 @@ func NewQRowFromTuple(tuple tpage.RTuple) QRow {
 	table := t.Table()
 	columns := table.Columns()
 
-	headerLen := 4 * int(table.ColumnCount()+1)
+	headerLen := table.ColumnCount() + 1
 	qrow := QRow{
 		data:    make([]byte, t.DataSize()),
 		ptrs:    make([]uint32, headerLen),
@@ -48,6 +48,27 @@ func NewQRowFromTuple(tuple tpage.RTuple) QRow {
 	}
 
 	return qrow
+}
+
+func NewQRowFromValues(values [][]byte, valuesCTypes []ctype.CType) QRow {
+	dataLen := uint32(0)
+	qRowPtrs := make([]uint32, len(values))
+	for i, value := range values {
+		qRowPtrs[i] = dataLen
+		dataLen += uint32(len(value))
+	}
+	qRowPtrs[len(values)] = dataLen
+
+	qRowData := make([]byte, dataLen)
+	for i := 0; i < len(values); i++ {
+		copy(qRowData[qRowPtrs[i]:], values[i])
+	}
+
+	return QRow{
+		ptrs:    qRowPtrs,
+		data:    qRowData,
+		Pattern: valuesCTypes,
+	}
 }
 
 func (qr QRow) Value(index uint32) []byte {

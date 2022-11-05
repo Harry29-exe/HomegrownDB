@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-func NewTuple(values [][]byte, table table.Definition, tx tx.Ctx) Tuple {
+func NewTuple(values [][]byte, table table.Definition, tx *tx.Ctx) Tuple {
 	headerLen := int(toNullBitmap + table.BitmapLen())
 	tupleLen := headerLen
 	for _, value := range values {

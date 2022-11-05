@@ -1,9 +1,9 @@
 package exenode
 
 import (
+	dbbs2 "HomegrownDB/backend/internal/shared/query"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/access/buffer"
-	dbbs2 "HomegrownDB/dbsystem/access/dbbs"
 	"HomegrownDB/dbsystem/schema/table"
 	page "HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/tpage"

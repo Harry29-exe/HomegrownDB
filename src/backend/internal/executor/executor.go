@@ -3,10 +3,10 @@ package executor
 import (
 	"HomegrownDB/backend/internal/executor/exenode"
 	"HomegrownDB/backend/internal/planer/plan"
-	"HomegrownDB/dbsystem/access/dbbs"
+	"HomegrownDB/backend/internal/shared/query"
 )
 
-func ExecPlan(plan plan.Plan) []dbbs.QRow {
+func ExecPlan(plan plan.Plan) []query.QRow {
 	root := plan.RootNode()
 	exeNode := exenode.Build(root, nil)
 

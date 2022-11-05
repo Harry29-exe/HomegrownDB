@@ -1,4 +1,4 @@
-package dbbs
+package query
 
 import "HomegrownDB/dbsystem/ctype"
 
