@@ -7,9 +7,9 @@ import (
 )
 
 func ExecPlan(plan plan.Plan) []dbbs.QRow {
-	root := plan.RootNode
+	root := plan.RootNode()
 	exeNode := delegateCreateExeNode(root)
-	createChildrenNodes(exeNode, plan.RootNode)
+	createChildrenNodes(exeNode, root)
 
 	return exeNode.All()
 }
