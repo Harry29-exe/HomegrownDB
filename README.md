@@ -8,6 +8,9 @@
 - SQLite vde https://www.sqlite.org/vdbe.html
 - article how postgresql works https://patshaughnessy.net/2014/10/13/following-a-select-statement-through-postgres-internals
 - postgresql internal docs https://www.postgresql.org/docs/14/overview.html
+- postgres pro:
+  - MVCC part1 https://postgrespro.com/blog/pgsql/5967856
+  - locks part 1 https://postgrespro.com/blog/pgsql/5967999
 
 ###Specific
 - free space map https://github.com/postgres/postgres/tree/master/src/backend/storage/freespace
