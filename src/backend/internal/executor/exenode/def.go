@@ -2,9 +2,7 @@ package exenode
 
 import (
 	"HomegrownDB/backend/internal/planer/plan"
-	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/dbbs"
-	"HomegrownDB/dbsystem/tx"
 )
 
 type ExeNode interface {
@@ -29,15 +27,4 @@ type PlanTableId = plan.TableId
 
 type InitOptions struct {
 	StoreAllRows bool
-}
-
-type Builder interface {
-	Build(node plan.Node, ctx BuildCtx) ExeNode
-}
-
-type BuildCtx = *buildCtx
-
-type buildCtx struct {
-	tx   *tx.Ctx
-	buff buffer.SharedBuffer
 }

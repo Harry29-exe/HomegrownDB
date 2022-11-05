@@ -22,13 +22,13 @@ func Plan(node anode.Insert) plan.Plan {
 	return p
 }
 
-func convertRowsIntoPlan(rows []anode.InsertRow, p plan.Plan) plan.InsertNodeSrc {
+func convertRowsIntoPlan(rows []anode.InsertRow, p plan.Plan) plan.InsertValuesSrc {
 	insertSrc := make([]plan.InsertRowSrc, len(rows))
 	for i, row := range rows {
 		insertSrc[i] = convertRow(row, p)
 	}
 
-	return plan.InsertNodeSrc{Rows: insertSrc}
+	return plan.InsertValuesSrc{Rows: insertSrc}
 }
 
 func convertRow(row anode.InsertRow, p plan.Plan) plan.InsertRowSrc {

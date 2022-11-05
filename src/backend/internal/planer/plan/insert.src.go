@@ -1,17 +1,17 @@
 package plan
 
-var _ Node = InsertNodeSrc{}
+var _ Node = InsertValuesSrc{}
 
-type InsertNodeSrc struct {
+type InsertValuesSrc struct {
 	Rows []InsertRowSrc
 }
 
-func (i InsertNodeSrc) Type() NodeType {
+func (i InsertValuesSrc) Type() NodeType {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (i InsertNodeSrc) Children() []Node {
+func (i InsertValuesSrc) Children() []Node {
 	return nil
 }
 

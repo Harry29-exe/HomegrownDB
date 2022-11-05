@@ -10,4 +10,6 @@ type NodeType = uint16
 const (
 	SelectFieldsNode NodeType = iota
 	SeqScanNode
+	InsertValuesSrcNode
+	InsertNode
 )

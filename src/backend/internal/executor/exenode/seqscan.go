@@ -1,7 +1,6 @@
 package exenode
 
 import (
-	"HomegrownDB/backend/internal/planer/plan"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/access/buffer"
 	dbbs2 "HomegrownDB/dbsystem/access/dbbs"
@@ -112,13 +111,4 @@ func (s *SeqScan) readPageWhileReadingAll(rows []dbbs2.QRow) []dbbs2.QRow {
 	}
 
 	return rows
-}
-
-var SeqScanBuilder = seqScanBuilder{}
-
-type seqScanBuilder struct{}
-
-func (ssb seqScanBuilder) Build(node plan.Node) ExeNode {
-	seqScanNode := node.(plan.SeqScan)
-	return NewSeqScan(table.DBTableStore.Table(seqScanNode.Table), access.DBTableIOStore.TableIO(seqScanNode.Table), buffer.DBSharedBuffer)
 }

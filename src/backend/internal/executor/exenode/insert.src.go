@@ -1,10 +1,10 @@
 package exenode
 
-type InputRowSrc struct {
+type InsertValuesSrc struct {
 	Fields []inputRowField
 }
 
-func (rs *InputRowSrc) NextRow() [][]byte {
+func (rs *InsertValuesSrc) NextRow() [][]byte {
 	row := make([][]byte, len(rs.Fields))
 	for i, field := range rs.Fields {
 		row[i] = field.NextValue()
