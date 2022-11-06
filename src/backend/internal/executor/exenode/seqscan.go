@@ -44,7 +44,7 @@ func (s *SeqScan) HasNext() bool {
 }
 
 func (s *SeqScan) Next() dbbs2.QRow {
-	rPage, err := s.buffer.RTablePage(s.page, s.tableDef)
+	rPage, err := s.buffer.RTablePage(s.tableDef, s.page)
 	if err != nil {
 		panic("")
 	}
@@ -65,7 +65,7 @@ func (s *SeqScan) Next() dbbs2.QRow {
 }
 
 func (s *SeqScan) NextBatch() []dbbs2.QRow {
-	rPage, err := buffer.DBSharedBuffer.RTablePage(s.page, s.tableDef)
+	rPage, err := buffer.DBSharedBuffer.RTablePage(s.tableDef, s.page)
 	if err != nil {
 		panic("")
 	}
@@ -99,7 +99,7 @@ func (s *SeqScan) All() []dbbs2.QRow {
 }
 
 func (s *SeqScan) readPageWhileReadingAll(rows []dbbs2.QRow) []dbbs2.QRow {
-	rPage, err := buffer.DBSharedBuffer.RTablePage(s.page, s.tableDef)
+	rPage, err := buffer.DBSharedBuffer.RTablePage(s.tableDef, s.page)
 	if err != nil {
 		panic("")
 	}

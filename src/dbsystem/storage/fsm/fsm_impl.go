@@ -15,7 +15,7 @@ func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
 
 	for {
 		pageTag := buffer2.NewPageTag(pageIndex, f.rel)
-		rPage, err := f.buff.RFsmPage(pageTag)
+		rPage, err := f.buff.RFsmPage(nil, 0)
 		if err != nil {
 			return 0, err
 		}
@@ -84,7 +84,7 @@ func (f *FreeSpaceMap) findLeafNode(space uint8, pageData []byte) (uint16, inter
 func (f *FreeSpaceMap) updatePages(space uint8, pageIndex uint32, nodeIndex uint16) error {
 	tag := buffer2.NewPageTag(pageIndex, f.rel)
 
-	wPage, err := f.buff.WFsmPage(tag)
+	wPage, err := f.buff.WFsmPage(nil, 0)
 	if err != nil {
 		return err
 	}

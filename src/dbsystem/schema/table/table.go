@@ -8,7 +8,8 @@ import (
 )
 
 type Definition interface {
-	RelationId() relation.ID
+	relation.Relation
+
 	TableId() Id
 	Name() string
 

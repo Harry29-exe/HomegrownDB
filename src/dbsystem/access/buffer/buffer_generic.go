@@ -1,6 +1,7 @@
 package buffer
 
 import (
+	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"errors"
@@ -11,7 +12,7 @@ import (
 // is saved in DBSharedBuffer, in this way bufferMapLock will be lock for shorter time
 // see sharedBuff.loadPage
 
-func newSharedBuffer(bufferSize uint, pageIOStore *pageio.Store) sharedBuffer {
+func newSharedBuffer(bufferSize uint, pageIOStore *pageio.Store) internalBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 	for i := uint(0); i < bufferSize; i++ {
 		descriptorArray[i] = pageDescriptor{
@@ -51,7 +52,8 @@ type sharedBuff struct {
 	ioStore *pageio.Store
 }
 
-func (b *sharedBuff) RPage(tag page.Tag) (buffPage, error) {
+func (b *sharedBuff) ReadRPage(relation relation.Relation, pageId page.Id, strategy rbm) (buffPage, error) {
+	tag := page.Tag{PageId: pageId, Relation: relation.RelationID()}
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -75,7 +77,8 @@ func (b *sharedBuff) RPage(tag page.Tag) (buffPage, error) {
 	}
 }
 
-func (b *sharedBuff) WPage(tag page.Tag) (buffPage, error) {
+func (b *sharedBuff) ReadWPage(relation relation.Relation, pageId page.Id, strategy rbm) (buffPage, error) {
+	tag := page.Tag{PageId: pageId, Relation: relation.RelationID()}
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]

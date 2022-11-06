@@ -29,9 +29,9 @@ func TestTableBufferWriteRead(t *testing.T) {
 	buff.WPageRelease(wPage1.PageTag())
 
 	//flushing page0 and page1 to 'disc'
-	wPage2, err := buff.WTablePage(2, table1)
+	wPage2, err := buff.WTablePage(table1, 2)
 	assert.IsNil(err, t)
-	wPage3, err := buff.WTablePage(3, table1)
+	wPage3, err := buff.WTablePage(table1, 3)
 	assert.IsNil(err, t)
 	buff.WPageRelease(wPage2.PageTag())
 	buff.WPageRelease(wPage3.PageTag())
@@ -42,7 +42,7 @@ func TestTableBufferWriteRead(t *testing.T) {
 }
 
 func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 testtable.TestTable, io pageio.IO, buff buffer.SharedBuffer, t *testing.T) {
-	wPage, err := buff.WTablePage(pageId, table1)
+	wPage, err := buff.WTablePage(table1, pageId)
 	assert.IsNil(err, t)
 	assert.EqArray(expectedPage, wPage.Bytes(), t)
 
@@ -53,7 +53,7 @@ func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 testtable.Te
 }
 
 func insertTPageWithSingleTuple(pageId page.Id, table1 testtable.TestTable, buff buffer.SharedBuffer, t *testing.T) tpage.TableWPage {
-	wPage0, err := buff.WTablePage(pageId, table1)
+	wPage0, err := buff.WTablePage(table1, pageId)
 	assert.IsNil(err, t)
 	p0Tuple0 := table1.TUtils.RandTuple().Tuple.Bytes()
 	err = wPage0.InsertTuple(p0Tuple0)
@@ -83,7 +83,7 @@ func createTestSharedBuffer(t *testing.T) (testtable.TestTable, pageio.IO, buffe
 	assert.IsNil(err, t)
 	io, err := pageio.NewPageIO(file)
 	assert.IsNil(err, t)
-	pageioStore.Register(table1.RelationId(), io)
+	pageioStore.Register(table1.RelationID(), io)
 
 	buff := buffer.NewSharedBuffer(2, pageioStore)
 	return table1, io, buff

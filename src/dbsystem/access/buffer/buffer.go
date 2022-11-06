@@ -26,22 +26,13 @@ type SharedBuffer interface {
 }
 
 type TableBuffer interface {
-	RTablePage(pageId page.Id, table table.Definition) (tpage.TableRPage, error)
-	WTablePage(pageId page.Id, table table.Definition) (tpage.TableWPage, error)
+	RTablePage(table table.Definition, pageId page.Id) (tpage.TableRPage, error)
+	WTablePage(table table.Definition, pageId page.Id) (tpage.TableWPage, error)
 }
 
 type FsmBuffer interface {
-	RFsmPage(tag page.Tag) (fsmpage.Page, error)
-	WFsmPage(tag page.Tag) (fsmpage.Page, error)
-}
-
-// todo change methods to operate on ArrayIndexes
-type sharedBuffer interface {
-	RPage(tag page.Tag) (buffPage, error)
-	WPage(tag page.Tag) (buffPage, error)
-
-	ReleaseWPage(tag page.Tag)
-	ReleaseRPage(tag page.Tag)
+	RFsmPage(rel relation.Relation, pageId page.Id) (fsmpage.Page, error)
+	WFsmPage(rel relation.Relation, pageId page.Id) (fsmpage.Page, error)
 }
 
 type TableSrc interface {
@@ -50,15 +41,10 @@ type TableSrc interface {
 
 type arrayIndex = uint
 
-type buffPage struct {
-	bytes []byte
-	isNew bool
-}
-
 func NewTablePageTag(pageIndex page.Id, tableDef table.Definition) page.Tag {
 	return page.Tag{
 		PageId:   pageIndex,
-		Relation: tableDef.RelationId(),
+		Relation: tableDef.RelationID(),
 	}
 }
 

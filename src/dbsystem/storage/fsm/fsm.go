@@ -25,7 +25,7 @@ func LoadFreeSpaceMap(rel relation.Relation, buff buffer.SharedBuffer) (*FreeSpa
 func initNewFsmIO(fsm *FreeSpaceMap) error {
 	for i := 0; i < int(leafNodeCount+1); i++ {
 		tag := buffer.NewPageTag(page.Id(i), fsm.rel)
-		_, err := fsm.buff.WFsmPage(tag)
+		_, err := fsm.buff.WFsmPage(nil, 0)
 		if err != nil {
 			return err
 		}

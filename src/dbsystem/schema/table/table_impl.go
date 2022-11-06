@@ -23,6 +23,15 @@ type StandardTable struct {
 	columnsCount        uint16
 }
 
+func (t *StandardTable) RelationID() relation.ID {
+	return t.objectId
+}
+
+func (t *StandardTable) RelationData() relation.Data {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (t *StandardTable) SetTableId(id Id) {
 	t.tableId = id
 }
@@ -33,10 +42,6 @@ func (t *StandardTable) TableId() Id {
 
 func (t *StandardTable) SetRelationId(id relation.ID) {
 	t.objectId = id
-}
-
-func (t *StandardTable) RelationId() relation.ID {
-	return t.objectId
 }
 
 func (t *StandardTable) SetName(name string) {

@@ -23,7 +23,7 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 	testBuffer := newSharedBuffer(100, ioStore)
 	for i := page.Id(0); i < 1_000; i++ {
 		tag := NewTablePageTag(i, table1)
-		pageData, err := testBuffer.WPage(tag)
+		pageData, err := testBuffer.ReadWPage(tag)
 		if err != nil {
 			t.Errorf("During reading page %d got error: %e", i, err)
 		}
@@ -52,10 +52,10 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	waitGroup2 := sync.WaitGroup{}
 	waitGroup2.Add(tCount)
 
-	tag := page.Tag{PageId: 0, Relation: table1.RelationId()}
+	tag := page.Tag{PageId: 0, Relation: table1.RelationID()}
 	for i := 0; i < tCount; i++ {
 		go func() {
-			_, _ = testBuffer.RPage(tag)
+			_, _ = testBuffer.ReadRPage(tag)
 			waitGroup1.Done()
 			waitGroup1.Wait()
 			testBuffer.ReleaseRPage(tag)
@@ -77,7 +77,7 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 	testBuffer := newSharedBuffer(10, ioStore)
 
 	tag := NewTablePageTag(0, table1)
-	_, err := testBuffer.WPage(tag)
+	_, err := testBuffer.ReadWPage(tag)
 
 	if err != nil {
 		t.Fail()
@@ -86,7 +86,7 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 
 	ch1 := make(chan bool)
 	go func() {
-		_, err := testBuffer.RPage(tag)
+		_, err := testBuffer.ReadRPage(tag)
 		ch1 <- true
 		if err != nil {
 			t.Errorf("testBuffer.RTablePage returned error: %e", err)
@@ -123,7 +123,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 	testBuffer := newSharedBuffer(10, ioStore)
 
 	tag := NewTablePageTag(0, table1)
-	_, err := testBuffer.WPage(tag)
+	_, err := testBuffer.ReadWPage(tag)
 
 	if err != nil {
 		t.Fail()
@@ -132,7 +132,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 
 	ch1 := make(chan bool)
 	go func() {
-		_, err := testBuffer.WPage(tag)
+		_, err := testBuffer.ReadWPage(tag)
 		ch1 <- true
 		if err != nil {
 			t.Errorf("testBuffer.RTablePage returned error: %e", err)
@@ -164,6 +164,6 @@ func _createAndRegisterTestPageIO(table1 testtable.TestTable, ioStore *pageio.St
 	assert.IsNil(err, t)
 	table1IO, err := pageio.NewPageIO(file)
 	assert.IsNil(err, t)
-	ioStore.Register(table1.RelationId(), table1IO)
+	ioStore.Register(table1.RelationID(), table1IO)
 	return table1IO
 }

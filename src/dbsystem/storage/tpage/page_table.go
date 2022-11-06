@@ -68,7 +68,7 @@ func (p TablePage) Data() []byte {
 }
 
 func (p TablePage) RelationID() relation.ID {
-	return p.table.RelationId()
+	return p.table.RelationID()
 }
 
 func (p TablePage) Tuple(tIndex TupleIndex) Tuple {

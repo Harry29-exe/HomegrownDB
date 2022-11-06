@@ -4,16 +4,14 @@ type ID = uint32
 
 type Relation interface {
 	RelationID() ID
+	RelationData() Data
 }
 
-func NewRelation(id ID) Relation {
-	return &relation{id: id}
-}
+type Type = uint8
 
-type relation struct {
-	id ID
-}
-
-func (r *relation) RelationID() ID {
-	return r.id
-}
+const (
+	TypeTable Type = iota
+	TypeFsm
+	TypeVm
+	TypeIndex
+)
