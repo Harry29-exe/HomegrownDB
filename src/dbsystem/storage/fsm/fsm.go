@@ -6,11 +6,12 @@ import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
 )
 
 func CreateFreeSpaceMap(rel relation.Relation, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
-	fsm := &FreeSpaceMap{rel: rel, buff: buff}
+	fsm := &FreeSpaceMap{Relation: rel, buff: buff}
 	if err := initNewFsmIO(fsm); err != nil {
 		return fsm, err
 	}
@@ -19,13 +20,13 @@ func CreateFreeSpaceMap(rel relation.Relation, buff buffer.SharedBuffer) (*FreeS
 }
 
 func LoadFreeSpaceMap(rel relation.Relation, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
-	return &FreeSpaceMap{rel: rel, buff: buff}, nil
+	return &FreeSpaceMap{Relation: rel, buff: buff}, nil
 }
 
 func initNewFsmIO(fsm *FreeSpaceMap) error {
 	for i := 0; i < int(leafNodeCount+1); i++ {
-		tag := buffer.NewPageTag(page.Id(i), fsm.rel)
-		_, err := fsm.buff.WFsmPage(nil, 0)
+		tag := pageio.NewPageTag(page.Id(i), fsm.Relation)
+		_, err := fsm.buff.WFsmPage(fsm, page.Id(i))
 		if err != nil {
 			return err
 		}
@@ -39,7 +40,7 @@ func initNewFsmIO(fsm *FreeSpaceMap) error {
 // page has and helps find one with enough
 // space to fit inserting tuple
 type FreeSpaceMap struct {
-	rel  relation.Relation
+	relation.Relation
 	buff buffer.SharedBuffer
 }
 
@@ -61,3 +62,5 @@ func (f *FreeSpaceMap) UpdatePage(availableSpace uint16, pageId page.Id) error {
 	pageIndex := lastLayerPageIndex + uint32(leafNodeCount) + 1
 	return f.updatePages(uint8(availableSpace/availableSpaceDivider), pageIndex, uint16(nodeIndex))
 }
+
+var _ relation.Relation = &FreeSpaceMap{}

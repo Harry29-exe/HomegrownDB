@@ -20,17 +20,25 @@ func newClockSweep(descriptorArray []pageDescriptor) *clockSweep {
 	}
 }
 
-func (c clockSweep) FindVictimPage() (victimIndex uint) {
+// FindVictimPage finds victim page, caller must hold rlock on buffer map
+func (c clockSweep) FindVictimPage() (victimIndex slotIndex) {
 	var descriptor *pageDescriptor
 	for {
 		descriptor = &c.descriptorArray[c.ptr]
 		descriptor.descriptorLock.Lock()
 		if descriptor.usageCount == 0 {
-			descriptor.descriptorLock.Unlock()
+			if descriptor.refCount != 0 {
+				descriptor.usageCount = 2 * descriptor.refCount
+				descriptor.descriptorLock.Unlock()
+			} else {
+				descriptor.usageCount++
+				descriptor.refCount++
+				descriptor.descriptorLock.Unlock()
 
-			victimIndex = c.ptr
-			c.ptr = (c.ptr + 1) % c.size
-			return
+				victimIndex = c.ptr
+				c.ptr = (c.ptr + 1) % c.size
+				return
+			}
 		} else {
 			descriptor.usageCount--
 			descriptor.descriptorLock.Unlock()

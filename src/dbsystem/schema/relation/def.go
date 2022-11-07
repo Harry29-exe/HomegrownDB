@@ -4,7 +4,7 @@ type ID = uint32
 
 type Relation interface {
 	RelationID() ID
-	RelationData() Data
+	Data() Data
 }
 
 type Type = uint8

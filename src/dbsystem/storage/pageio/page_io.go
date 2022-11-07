@@ -15,10 +15,10 @@ func NewPageIO(file dbfs.FileLike) (IO, error) {
 	}
 
 	return &pageIO{
-		src:       file,
-		lockMap:   appsync.NewResLockMap[page.Id](),
-		pageCount: 0,
-		spinLock:  appsync.SpinLock(0),
+		src:           file,
+		lockMap:       appsync.NewResLockMap[page.Id](),
+		pageCount:     0,
+		pageCountLock: appsync.SpinLock(0),
 	}, nil
 }
 
@@ -29,10 +29,10 @@ func LoadPageIO(file dbfs.FileLike) (IO, error) {
 	}
 
 	return &pageIO{
-		src:       file,
-		lockMap:   appsync.NewResLockMap[page.Id](),
-		pageCount: uint32(fileInfo.Size() / pageSize),
-		spinLock:  appsync.SpinLock(0),
+		src:           file,
+		lockMap:       appsync.NewResLockMap[page.Id](),
+		pageCount:     uint32(fileInfo.Size() / pageSize),
+		pageCountLock: appsync.SpinLock(0),
 	}, err
 }
 
@@ -42,8 +42,8 @@ type pageIO struct {
 	src     dbfs.FileLike
 	lockMap *appsync.ResLockMap[page.Id]
 
-	pageCount uint32
-	spinLock  appsync.SpinLock
+	pageCount     uint32
+	pageCountLock appsync.SpinLock
 }
 
 func (p *pageIO) ReadPage(pageIndex page.Id, buffer []byte) error {
@@ -57,7 +57,10 @@ func (p *pageIO) ReadPage(pageIndex page.Id, buffer []byte) error {
 	offset := int64(pageIndex) * pageSize
 	_, err := p.src.ReadAt(buffer, offset)
 
-	return err
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (p *pageIO) FlushPage(pageIndex page.Id, pageData []byte) error {
@@ -70,11 +73,11 @@ func (p *pageIO) FlushPage(pageIndex page.Id, pageData []byte) error {
 		return err
 	}
 
-	p.spinLock.Lock()
+	p.pageCountLock.Lock()
 	if p.pageCount <= pageIndex {
 		p.pageCount = pageIndex + 1
 	}
-	p.spinLock.Unlock()
+	p.pageCountLock.Unlock()
 
 	return err
 }

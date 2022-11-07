@@ -10,7 +10,7 @@ import (
 )
 
 func NewSharedBuffer(buffSize uint, store *pageio.Store) SharedBuffer {
-	return &bufferProxy{newSharedBuffer(buffSize, store)}
+	return &bufferProxy{newBuffer(buffSize, store)}
 }
 
 type bufferProxy struct {
@@ -57,10 +57,10 @@ func (b *bufferProxy) WFsmPage(rel relation.Relation, pageId page.Id) (fsmpage.P
 	return fsmpage.Page{Bytes: wPage.bytes}, nil
 }
 
-func (b *bufferProxy) WPageRelease(tag page.Tag) {
+func (b *bufferProxy) WPageRelease(tag pageio.PageTag) {
 	b.buffer.ReleaseWPage(tag)
 }
 
-func (b *bufferProxy) RPageRelease(tag page.Tag) {
+func (b *bufferProxy) RPageRelease(tag pageio.PageTag) {
 	b.buffer.ReleaseRPage(tag)
 }

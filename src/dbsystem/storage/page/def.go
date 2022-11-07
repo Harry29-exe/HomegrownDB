@@ -2,7 +2,6 @@ package page
 
 import (
 	"HomegrownDB/dbsystem"
-	"HomegrownDB/dbsystem/schema/relation"
 	"math"
 )
 
@@ -16,8 +15,3 @@ const (
 )
 
 const Size uint16 = dbsystem.PageSize
-
-type Tag struct {
-	PageId   Id
-	Relation relation.ID
-}

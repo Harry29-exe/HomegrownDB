@@ -1,8 +1,8 @@
 package fsm
 
 import (
-	buffer2 "HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
 )
@@ -14,8 +14,8 @@ func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
 	newLeafNodeVal, leafNodeVal := uint8(0), uint8(0)
 
 	for {
-		pageTag := buffer2.NewPageTag(pageIndex, f.rel)
-		rPage, err := f.buff.RFsmPage(nil, 0)
+		pageTag := pageio.NewPageTag(pageIndex, f.Relation)
+		rPage, err := f.buff.RFsmPage(f.Relation, pageIndex)
 		if err != nil {
 			return 0, err
 		}
@@ -82,9 +82,9 @@ func (f *FreeSpaceMap) findLeafNode(space uint8, pageData []byte) (uint16, inter
 }
 
 func (f *FreeSpaceMap) updatePages(space uint8, pageIndex uint32, nodeIndex uint16) error {
-	tag := buffer2.NewPageTag(pageIndex, f.rel)
+	tag := pageio.NewPageTag(pageIndex, f)
 
-	wPage, err := f.buff.WFsmPage(nil, 0)
+	wPage, err := f.buff.WFsmPage(f, pageIndex)
 	if err != nil {
 		return err
 	}

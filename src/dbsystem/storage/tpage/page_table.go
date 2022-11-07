@@ -8,6 +8,7 @@ import (
 	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/schema/table"
 	page "HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/pageio"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -89,8 +90,8 @@ func (p TablePage) Bytes() []byte {
 	return p.bytes
 }
 
-func (p TablePage) PageTag() page.Tag {
-	return page.Tag{
+func (p TablePage) PageTag() pageio.PageTag {
+	return pageio.PageTag{
 		PageId:   p.id,
 		Relation: p.RelationID(),
 	}

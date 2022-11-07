@@ -1,6 +1,15 @@
 package relation
 
-type Data struct {
+type Data = *data
+
+func NewData(dirFilePath string, dataSize int64) Data {
+	return &data{
+		dataSize:    dataSize,
+		dirFilepath: dirFilePath,
+	}
+}
+
+type data struct {
 	// dataSize size of all pages in relation
 	dataSize int64
 	// dirFilepath path to directory in which relation
@@ -8,6 +17,10 @@ type Data struct {
 	dirFilepath string
 }
 
-func (d *Data) IncreaseDataSize() {
+func (d Data) IncrDataSize(sizeDelta int64) {
+	d.dataSize += sizeDelta
+}
 
+func (d Data) Size() int64 {
+	return d.dataSize
 }

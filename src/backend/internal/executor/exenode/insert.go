@@ -2,9 +2,7 @@ package exenode
 
 import (
 	"HomegrownDB/backend/internal/shared/query"
-	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/fsm"
@@ -47,13 +45,15 @@ func (i *Insert) Next() query.QRow {
 		i.tupleTemplate[order] = tupleData.Value(uint32(j))
 	}
 
-	tuple := tpage.NewTuple(i.tupleTemplate, i.table, i.txCtx)
-	freePageIndex, err := i.fsm.FindPage(uint16(len(tuple.Data())), i.txCtx)
-	if err != nil {
+	//todo implement me
+	panic("Not implemented")
+	//tuple := tpage.NewTuple(i.tupleTemplate, i.table, i.txCtx)
+	//freePageIndex, err := i.fsm.FindPage(uint16(len(tuple.Data())), i.txCtx)
+	//if err != nil {
 
-	}
+	//}
 
-	return query.NewQRowFromValues([][]byte{bparse.Serialize.Int8(1)}, []ctype.CType{ctype.TypeInt8})
+	//return query.NewQRowFromValues([][]byte{bparse.Serialize.Int8(1)}, []ctype.CType{ctype.TypeInt8})
 }
 
 func (i *Insert) NextBatch() []query.QRow {

@@ -3,6 +3,7 @@ package buffer
 import (
 	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/pageio"
 )
 
 // todo change methods to operate on ArrayIndexes
@@ -10,11 +11,9 @@ type internalBuffer interface {
 	ReadRPage(relation relation.Relation, pageId page.Id, strategy rbm) (buffPage, error)
 	ReadWPage(relation relation.Relation, pageId page.Id, strategy rbm) (buffPage, error)
 
-	ReleaseWPage(tag page.Tag)
-	ReleaseRPage(tag page.Tag)
+	ReleaseWPage(tag pageio.PageTag)
+	ReleaseRPage(tag pageio.PageTag)
 }
-
-const NewPage = page.InvalidId
 
 // rbm  read buffer mode
 type rbm = uint8
@@ -32,7 +31,7 @@ const (
 
 type buffPage struct {
 	bytes          []byte
-	tag            page.Tag
+	tag            pageio.PageTag
 	isNew          bool
 	isReadFromDisc bool
 }

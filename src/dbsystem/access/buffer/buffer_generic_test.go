@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/common/tests/tutils/testtable/ttable1"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
-	"github.com/spf13/afero"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -20,10 +20,10 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 	table1.TUtils.FillPages(1_000, table1IO)
 
 	buf := make([]byte, page.Size)
-	testBuffer := newSharedBuffer(100, ioStore)
+	testBuffer := newBuffer(100, ioStore)
 	for i := page.Id(0); i < 1_000; i++ {
-		tag := NewTablePageTag(i, table1)
-		pageData, err := testBuffer.ReadWPage(tag)
+		tag := pageio.NewTablePageTag(i, table1)
+		pageData, err := testBuffer.ReadWPage(table1, i, rbmReadOrCreate)
 		if err != nil {
 			t.Errorf("During reading page %d got error: %e", i, err)
 		}
@@ -42,20 +42,20 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	ioStore := pageio.NewStore()
 	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
 
+	tCount := 16
 	table1.TUtils.FillPages(10, table1IO)
 
-	testBuffer := newSharedBuffer(10, ioStore)
+	testBuffer := newBuffer(2, ioStore)
 
-	tCount := 16
 	waitGroup1 := sync.WaitGroup{}
 	waitGroup1.Add(tCount)
 	waitGroup2 := sync.WaitGroup{}
 	waitGroup2.Add(tCount)
 
-	tag := page.Tag{PageId: 0, Relation: table1.RelationID()}
+	tag := pageio.PageTag{PageId: 0, Relation: table1.RelationID()}
 	for i := 0; i < tCount; i++ {
 		go func() {
-			_, _ = testBuffer.ReadRPage(tag)
+			_, _ = testBuffer.ReadRPage(table1, 0, rbmReadOrCreate)
 			waitGroup1.Done()
 			waitGroup1.Wait()
 			testBuffer.ReleaseRPage(tag)
@@ -63,6 +63,41 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 		}()
 	}
 
+	waitGroup2.Wait()
+}
+
+func TestSharedBuffer_ParallelDifferentRowRead(t *testing.T) {
+	table1 := ttable1.Def(t)
+	ioStore := pageio.NewStore()
+	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
+
+	tCount := 16
+	table1.TUtils.FillPages(tCount, table1IO)
+
+	testBuffer := newBuffer(uint(tCount), ioStore)
+
+	waitGroup1 := sync.WaitGroup{}
+	waitGroup1.Add(tCount)
+	lock := &sync.RWMutex{}
+	waitGroup2 := sync.WaitGroup{}
+	waitGroup2.Add(tCount)
+
+	for i := 0; i < tCount; i++ {
+		pageId := page.Id(i)
+		go func() {
+			_, _ = testBuffer.ReadRPage(table1, pageId, rbmReadOrCreate)
+			waitGroup1.Done()
+			waitGroup1.Wait()
+			lock.RLock()
+			tag := pageio.PageTag{PageId: pageId, Relation: table1.RelationID()}
+			testBuffer.ReleaseRPage(tag)
+			waitGroup2.Done()
+		}()
+	}
+
+	lock.Lock()
+	waitGroup1.Wait()
+	lock.Unlock()
 	waitGroup2.Wait()
 }
 
@@ -74,10 +109,10 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 
 	table1.TUtils.FillPages(10, table1IO)
 
-	testBuffer := newSharedBuffer(10, ioStore)
+	testBuffer := newBuffer(10, ioStore)
 
-	tag := NewTablePageTag(0, table1)
-	_, err := testBuffer.ReadWPage(tag)
+	tag := pageio.NewTablePageTag(0, table1)
+	_, err := testBuffer.ReadWPage(table1, 0, rbmReadOrCreate)
 
 	if err != nil {
 		t.Fail()
@@ -86,7 +121,7 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 
 	ch1 := make(chan bool)
 	go func() {
-		_, err := testBuffer.ReadRPage(tag)
+		_, err := testBuffer.ReadRPage(table1, 0, rbmReadOrCreate)
 		ch1 <- true
 		if err != nil {
 			t.Errorf("testBuffer.RTablePage returned error: %e", err)
@@ -120,10 +155,10 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 
 	table1.TUtils.FillPages(10, table1IO)
 
-	testBuffer := newSharedBuffer(10, ioStore)
+	testBuffer := newBuffer(10, ioStore)
 
-	tag := NewTablePageTag(0, table1)
-	_, err := testBuffer.ReadWPage(tag)
+	tag := pageio.NewTablePageTag(0, table1)
+	_, err := testBuffer.ReadWPage(table1, 0, rbmReadOrCreate)
 
 	if err != nil {
 		t.Fail()
@@ -132,7 +167,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 
 	ch1 := make(chan bool)
 	go func() {
-		_, err := testBuffer.ReadWPage(tag)
+		_, err = testBuffer.ReadWPage(table1, 0, rbmReadOrCreate)
 		ch1 <- true
 		if err != nil {
 			t.Errorf("testBuffer.RTablePage returned error: %e", err)
@@ -159,8 +194,10 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 }
 
 func _createAndRegisterTestPageIO(table1 testtable.TestTable, ioStore *pageio.Store, t *testing.T) pageio.IO {
-	fs := afero.NewMemMapFs()
-	file, err := fs.Create("table1IO")
+	//fs := afero.NewMemMapFs()
+	//file, err := fs.Create("table1IO")
+	file, err := os.Create("/tmp/643215874.test.go")
+	file.ReadAt([]byte{}, 53)
 	assert.IsNil(err, t)
 	table1IO, err := pageio.NewPageIO(file)
 	assert.IsNil(err, t)

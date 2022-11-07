@@ -27,7 +27,7 @@ func (t *StandardTable) RelationID() relation.ID {
 	return t.objectId
 }
 
-func (t *StandardTable) RelationData() relation.Data {
+func (t *StandardTable) Data() relation.Data {
 	//TODO implement me
 	panic("implement me")
 }

@@ -13,7 +13,7 @@ var DBSharedBuffer SharedBuffer
 
 func init() {
 	DBSharedBuffer = &bufferProxy{
-		buffer: newSharedBuffer(10_000, pageio.DBStore),
+		buffer: newBuffer(10_000, pageio.DBStore),
 	}
 }
 
@@ -21,8 +21,8 @@ type SharedBuffer interface {
 	TableBuffer
 	FsmBuffer
 
-	WPageRelease(tag page.Tag)
-	RPageRelease(tag page.Tag)
+	WPageRelease(tag pageio.PageTag)
+	RPageRelease(tag pageio.PageTag)
 }
 
 type TableBuffer interface {
@@ -35,22 +35,12 @@ type FsmBuffer interface {
 	WFsmPage(rel relation.Relation, pageId page.Id) (fsmpage.Page, error)
 }
 
+const NewPage page.Id = page.InvalidId
+
 type TableSrc interface {
 	Table(id table.Id) table.Definition
 }
 
-type arrayIndex = uint
+type slotIndex = uint
 
-func NewTablePageTag(pageIndex page.Id, tableDef table.Definition) page.Tag {
-	return page.Tag{
-		PageId:   pageIndex,
-		Relation: tableDef.RelationID(),
-	}
-}
-
-func NewPageTag(pageIndex page.Id, rel relation.Relation) page.Tag {
-	return page.Tag{
-		PageId:   pageIndex,
-		Relation: rel.RelationID(),
-	}
-}
+var pageSize = int64(page.Size)
