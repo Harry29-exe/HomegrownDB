@@ -7,11 +7,12 @@ import (
 	"math"
 )
 
-// QRow - query row is representation of data (often converted from tuple or
-// concatenation of tuples) during data processing phase
+// QRow - query row is representation of Data (often converted from tuple or
+// concatenation of tuples) during Data processing phase
 type QRow struct {
-	ptrs    []uint32
-	data    []byte
+	Ptrs []uint32
+	Data []byte
+
 	Pattern []ctype.CType
 }
 
@@ -22,8 +23,8 @@ func NewQRowFromTuple(tuple tpage.RTuple) QRow {
 
 	headerLen := table.ColumnCount() + 1
 	qrow := QRow{
-		data:    make([]byte, t.DataSize()),
-		ptrs:    make([]uint32, headerLen),
+		Data:    make([]byte, t.DataSize()),
+		Ptrs:    make([]uint32, headerLen),
 		Pattern: table.CTypePattern(),
 	}
 
@@ -31,19 +32,19 @@ func NewQRowFromTuple(tuple tpage.RTuple) QRow {
 	qrowDataPtr := uint32(0)
 	for i, col := range columns {
 		if t.IsNull(column.Order(i)) {
-			qrow.ptrs[i+1] = math.MaxUint32
+			qrow.Ptrs[i+1] = math.MaxUint32
 			continue
 		}
 
-		valLen := col.CType().Copy(qrow.data, data)
+		valLen := col.CType().Copy(qrow.Data, data)
 		data = data[valLen:]
 		qrowDataPtr += uint32(valLen)
-		qrow.ptrs[i+1] = qrowDataPtr
+		qrow.Ptrs[i+1] = qrowDataPtr
 	}
 
 	for i := len(columns); i > 0; i-- {
-		if qrow.ptrs[i] == math.MaxUint32 {
-			qrow.ptrs[i] = qrow.ptrs[i+1]
+		if qrow.Ptrs[i] == math.MaxUint32 {
+			qrow.Ptrs[i] = qrow.Ptrs[i+1]
 		}
 	}
 
@@ -65,8 +66,8 @@ func NewQRowFromValues(values [][]byte, valuesCTypes []ctype.CType) QRow {
 	}
 
 	return QRow{
-		ptrs:    qRowPtrs,
-		data:    qRowData,
+		Ptrs:    qRowPtrs,
+		Data:    qRowData,
 		Pattern: valuesCTypes,
 	}
 }

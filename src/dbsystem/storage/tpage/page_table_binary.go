@@ -13,7 +13,7 @@ const InPagePointerSize = 2
 
 var emptyPageFreeSpace = page.Size - (poFirstTuplePtr + InPagePointerSize)
 
-func (p TablePage) getTupleEnd(index TupleIndex) InPagePointer {
+func (p Page) getTupleEnd(index TupleIndex) InPagePointer {
 	var tupleEnd InPagePointer
 	for index > 0 {
 		tupleEnd = p.getTupleStart(index - 1)
@@ -26,38 +26,38 @@ func (p TablePage) getTupleEnd(index TupleIndex) InPagePointer {
 	return page.Size
 }
 
-func (p TablePage) getTupleStart(index TupleIndex) InPagePointer {
+func (p Page) getTupleStart(index TupleIndex) InPagePointer {
 	ptrStart := poFirstTuplePtr + InPagePointerSize*index
 	return bparse.Parse.UInt2(p.bytes[ptrStart : ptrStart+InPagePointerSize])
 }
 
-func (p TablePage) setTupleStart(tupleIndex TupleIndex, tupleStart InPagePointer) {
+func (p Page) setTupleStart(tupleIndex TupleIndex, tupleStart InPagePointer) {
 	ptrStart := poFirstTuplePtr + InPagePointerSize*tupleIndex
 	binary.BigEndian.PutUint16(p.bytes[ptrStart:], tupleStart)
 }
 
-func (p TablePage) getPtrPosition(index TupleIndex) InPagePointer {
+func (p Page) getPtrPosition(index TupleIndex) InPagePointer {
 	return poFirstTuplePtr + index*InPagePointerSize
 }
 
-func (p TablePage) getLastPtrPosition() InPagePointer {
+func (p Page) getLastPtrPosition() InPagePointer {
 	return bparse.Parse.UInt2(
 		p.bytes[poPrtToLastTuplePtr:])
 }
 
-func (p TablePage) setLastPointerPosition(ptr InPagePointer) {
+func (p Page) setLastPointerPosition(ptr InPagePointer) {
 	binary.BigEndian.PutUint16(p.bytes[poPrtToLastTuplePtr:], ptr)
 }
 
-func (p TablePage) getLastTupleStart() InPagePointer {
+func (p Page) getLastTupleStart() InPagePointer {
 	return bparse.Parse.UInt2(p.bytes[poPtrToLastTupleStart:])
 }
 
-func (p TablePage) setLastTupleStart(ptr InPagePointer) {
+func (p Page) setLastTupleStart(ptr InPagePointer) {
 	binary.BigEndian.PutUint16(p.bytes[poPtrToLastTupleStart:], ptr)
 }
 
-func (p TablePage) updateHash() {
+func (p Page) updateHash() {
 	hash := md5.Sum(p.bytes[poPageHash+pageHashLen:])
 	copy(p.bytes[poPageHash:poPageHash+pageHashLen], hash[0:pageHashLen])
 }

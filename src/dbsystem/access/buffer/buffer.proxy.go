@@ -19,7 +19,7 @@ type bufferProxy struct {
 
 var _ SharedBuffer = &bufferProxy{}
 
-func (b *bufferProxy) RTablePage(table table.Definition, pageId page.Id) (tpage.TableRPage, error) {
+func (b *bufferProxy) RTablePage(table table.Definition, pageId page.Id) (tpage.RPage, error) {
 	rPage, err := b.buffer.ReadRPage(table, pageId, rbmRead)
 	if err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func (b *bufferProxy) RTablePage(table table.Definition, pageId page.Id) (tpage.
 	return tpage.AsPage(rPage.bytes, pageId, table), nil
 }
 
-func (b *bufferProxy) WTablePage(table table.Definition, pageId page.Id) (tpage.TableWPage, error) {
+func (b *bufferProxy) WTablePage(table table.Definition, pageId page.Id) (tpage.WPage, error) {
 	wPage, err := b.buffer.ReadWPage(table, pageId, rbmReadOrCreate)
 	if err != nil {
 		return nil, err

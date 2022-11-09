@@ -26,8 +26,8 @@ type SharedBuffer interface {
 }
 
 type TableBuffer interface {
-	RTablePage(table table.Definition, pageId page.Id) (tpage.TableRPage, error)
-	WTablePage(table table.Definition, pageId page.Id) (tpage.TableWPage, error)
+	RTablePage(table table.Definition, pageId page.Id) (tpage.RPage, error)
+	WTablePage(table table.Definition, pageId page.Id) (tpage.WPage, error)
 }
 
 type FsmBuffer interface {

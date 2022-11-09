@@ -104,8 +104,9 @@ func (pt *fsmTestHelper) assertFind(id page.Id, size uint8) {
 }
 
 func (pt *fsmTestHelper) assertNoFound(size uint8) {
-	_, err := pt.fsMap.FindPage(pt.toAbsSize(size), pt.ctx)
-	assert.NotNil(err, pt.t)
+	pageId, err := pt.fsMap.FindPage(pt.toAbsSize(size), pt.ctx)
+	assert.Eq(page.InvalidId, pageId, pt.t)
+	assert.IsNil(err, pt.t)
 }
 
 func (pt *fsmTestHelper) clear(id page.Id) {

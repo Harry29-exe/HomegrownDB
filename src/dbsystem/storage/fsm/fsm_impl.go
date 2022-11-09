@@ -31,7 +31,7 @@ func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
 			panic("Not implemented")
 		} else if internalErr == noSpace {
 			if pageIndex == 0 {
-				return 0, NoFreeSpace{}
+				return page.InvalidId, nil
 			}
 			err = f.updatePages(leafNodeVal, lastPageIndex, lastNodeIndex)
 			if err != nil {

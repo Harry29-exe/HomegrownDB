@@ -45,7 +45,7 @@ type FreeSpaceMap struct {
 }
 
 // FindPage returns number of page with at least the amount of requested space,
-// returns error if no page fulfill the requirements
+// if no page fulfill the requirements returns page.InvalidId
 func (f *FreeSpaceMap) FindPage(availableSpace uint16, ctx *tx.Ctx) (page.Id, error) {
 	percentageSpace := uint8(availableSpace / availableSpaceDivider)
 	if availableSpace%availableSpaceDivider > 0 {

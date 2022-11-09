@@ -52,7 +52,7 @@ func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 testtable.Te
 	assert.EqArray(wPage.Bytes(), wPage0FromIO, t)
 }
 
-func insertTPageWithSingleTuple(pageId page.Id, table1 testtable.TestTable, buff buffer.SharedBuffer, t *testing.T) tpage.TableWPage {
+func insertTPageWithSingleTuple(pageId page.Id, table1 testtable.TestTable, buff buffer.SharedBuffer, t *testing.T) tpage.WPage {
 	wPage0, err := buff.WTablePage(table1, pageId)
 	assert.IsNil(err, t)
 	p0Tuple0 := table1.TUtils.RandTuple().Tuple.Bytes()
@@ -62,13 +62,13 @@ func insertTPageWithSingleTuple(pageId page.Id, table1 testtable.TestTable, buff
 	return wPage0
 }
 
-func copyTPage(tPage tpage.TableRPage) (pageCopy []byte) {
+func copyTPage(tPage tpage.RPage) (pageCopy []byte) {
 	pageCopy = make([]byte, dbsystem.PageSize)
 	switch tablePage := tPage.(type) {
-	case tpage.TablePage:
+	case tpage.Page:
 		copy(pageCopy, tablePage.Bytes())
 	default:
-		panic("not known TableRPage type")
+		panic("not known RPage type")
 	}
 
 	return

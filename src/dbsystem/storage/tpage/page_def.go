@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/dbsystem/storage/pageio"
 )
 
-type TableRPage interface {
+type RPage interface {
 	Tuple(tupleIndex uint16) Tuple
 	TupleCount() uint16
 	FreeSpace() uint16
@@ -12,8 +12,8 @@ type TableRPage interface {
 	PageTag() pageio.PageTag
 }
 
-type TableWPage interface {
-	TableRPage
+type WPage interface {
+	RPage
 
 	InsertTuple(data []byte) error
 	UpdateTuple(tIndex TupleIndex, tuple []byte)

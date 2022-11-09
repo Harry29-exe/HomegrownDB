@@ -16,7 +16,7 @@ import (
 )
 
 //todo add handling for inserting into empty page
-func EmptyTablePage(tableDef table.Definition, t *testing.T) TablePage {
+func EmptyTablePage(tableDef table.Definition, t *testing.T) Page {
 	rawPage := make([]byte, page.Size)
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
@@ -24,7 +24,7 @@ func EmptyTablePage(tableDef table.Definition, t *testing.T) TablePage {
 	copy(rawPage[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
 	copy(rawPage[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
 
-	page := TablePage{
+	page := Page{
 		table: tableDef,
 		bytes: rawPage,
 	}
@@ -33,7 +33,7 @@ func EmptyTablePage(tableDef table.Definition, t *testing.T) TablePage {
 	return page
 }
 
-func InitNewPage(def table.Definition, pageId page.Id, pageSlot []byte) TablePage {
+func InitNewPage(def table.Definition, pageId page.Id, pageSlot []byte) Page {
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
 
@@ -46,33 +46,33 @@ func InitNewPage(def table.Definition, pageId page.Id, pageSlot []byte) TablePag
 	return page
 }
 
-func AsPage(data []byte, pageId page.Id, def table.Definition) TablePage {
-	return TablePage{
+func AsPage(data []byte, pageId page.Id, def table.Definition) Page {
+	return Page{
 		table: def,
 		bytes: data,
 		id:    pageId,
 	}
 }
 
-type TablePage struct {
+type Page struct {
 	table table.Definition
 	id    page.Id
 	bytes []byte
 }
 
-func (p TablePage) Header() []byte {
+func (p Page) Header() []byte {
 	return p.bytes[:poFirstTuplePtr]
 }
 
-func (p TablePage) Data() []byte {
+func (p Page) Data() []byte {
 	return p.bytes[poFirstTuplePtr:]
 }
 
-func (p TablePage) RelationID() relation.ID {
+func (p Page) RelationID() relation.ID {
 	return p.table.RelationID()
 }
 
-func (p TablePage) Tuple(tIndex TupleIndex) Tuple {
+func (p Page) Tuple(tIndex TupleIndex) Tuple {
 	if p.TupleCount() <= tIndex {
 		panic(fmt.Sprintf("TablePage has %d tuples but was requestd tuple with id: %d",
 			p.TupleCount(), tIndex))
@@ -86,18 +86,18 @@ func (p TablePage) Tuple(tIndex TupleIndex) Tuple {
 	}
 }
 
-func (p TablePage) Bytes() []byte {
+func (p Page) Bytes() []byte {
 	return p.bytes
 }
 
-func (p TablePage) PageTag() pageio.PageTag {
+func (p Page) PageTag() pageio.PageTag {
 	return pageio.PageTag{
 		PageId:   p.id,
 		Relation: p.RelationID(),
 	}
 }
 
-func (p TablePage) TupleCount() uint16 {
+func (p Page) TupleCount() uint16 {
 	lastPtrPosition := p.getLastPtrPosition()
 	if lastPtrPosition == 0 {
 		return 0
@@ -108,7 +108,7 @@ func (p TablePage) TupleCount() uint16 {
 	return (lastPtrPosition-InPagePointer(firstPtrIndex))/2 + 1
 }
 
-func (p TablePage) FreeSpace() uint16 {
+func (p Page) FreeSpace() uint16 {
 	if lastTupleStart := p.getLastTupleStart(); lastTupleStart != 0 {
 		return lastTupleStart - (p.getLastPtrPosition() + InPagePointerSize)
 	}
@@ -119,7 +119,7 @@ func (p TablePage) FreeSpace() uint16 {
 todo add inserting tuple to page that have dead index eg. page had tuples 1, 2 and 3
  then tuple 2 was deleted next insert should put new tuple between 1 and 3 */
 
-func (p TablePage) InsertTuple(tuple []byte) error {
+func (p Page) InsertTuple(tuple []byte) error {
 	tupleLen := uint16(len(tuple))
 
 	if tupleLen+InPagePointerSize > p.FreeSpace() {
@@ -160,7 +160,7 @@ func (p TablePage) InsertTuple(tuple []byte) error {
 	return nil
 }
 
-func (p TablePage) UpdateTuple(tIndex TupleIndex, newTuple []byte) {
+func (p Page) UpdateTuple(tIndex TupleIndex, newTuple []byte) {
 	if tIndex <= p.TupleCount() {
 		panic(fmt.Sprintf("page does not contains tuple with index %d", tIndex))
 	}
@@ -175,7 +175,7 @@ func (p TablePage) UpdateTuple(tIndex TupleIndex, newTuple []byte) {
 	copy(tuple, newTuple)
 }
 
-func (p TablePage) DeleteTuple(tIndex TupleIndex) {
+func (p Page) DeleteTuple(tIndex TupleIndex) {
 	tCount := p.TupleCount()
 	if tCount == 0 || tCount <= tIndex {
 		panic(fmt.Sprintf(
@@ -197,7 +197,7 @@ func (p TablePage) DeleteTuple(tIndex TupleIndex) {
 	}
 }
 
-func (p TablePage) deleteTupleFromMiddle(tIndex TupleIndex) {
+func (p Page) deleteTupleFromMiddle(tIndex TupleIndex) {
 	deletedTupleEnd := p.getTupleEnd(tIndex)
 	deletedTupleStart := p.getTupleStart(tIndex)
 	deletedTupleLen := deletedTupleEnd - deletedTupleStart

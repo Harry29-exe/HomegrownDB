@@ -37,7 +37,6 @@ func (i *Insert) HasNext() bool {
 	return i.rowSrc.HasNext()
 }
 
-// todo(3) rebuild this properly
 func (i *Insert) Next() query.QRow {
 	tupleData := i.rowSrc.Next()
 	for j := 0; j < len(i.colOrder); j++ {
@@ -45,25 +44,31 @@ func (i *Insert) Next() query.QRow {
 		i.tupleTemplate[order] = tupleData.Value(uint32(j))
 	}
 
-	//todo implement me
-	panic("Not implemented")
-	//tuple := tpage.NewTuple(i.tupleTemplate, i.table, i.txCtx)
-	//freePageIndex, err := i.fsm.FindPage(uint16(len(tuple.Data())), i.txCtx)
-	//if err != nil {
+	tuple := tpage.NewTuple(i.tupleTemplate, i.table, i.txCtx)
+	insertSuccessful := false
+	for !insertSuccessful {
+		wPage := i.findPage(uint16(len(tuple.Data())))
+		err := wPage.InsertTuple(tuple.Data())
+		if err == nil {
+			insertSuccessful = true
+		}
+		i.buff.WPageRelease(wPage.PageTag())
+	}
 
-	//}
-
-	//return query.NewQRowFromValues([][]byte{bparse.Serialize.Int8(1)}, []ctype.CType{ctype.TypeInt8})
+	return tupleData
 }
 
 func (i *Insert) NextBatch() []query.QRow {
-	//TODO implement me
-	panic("implement me")
+	//todo this is definetly not optimized
+	return []query.QRow{i.Next()}
 }
 
 func (i *Insert) All() []query.QRow {
-	//TODO implement me
-	panic("implement me")
+	rows := make([]query.QRow, 50)
+	for i.rowSrc.HasNext() {
+		rows = append(rows, i.NextBatch()...)
+	}
+	return rows
 }
 
 func (i *Insert) Free() {
@@ -73,4 +78,18 @@ func (i *Insert) Free() {
 
 func (i *Insert) insertIntoNewPage(tuple tpage.Tuple) {
 
+}
+
+func (i *Insert) findPage(neededSpace uint16) tpage.WPage {
+	pageId, err := i.fsm.FindPage(neededSpace, i.txCtx)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	tablePage, err := i.buff.WTablePage(i.table, pageId)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return tablePage
 }

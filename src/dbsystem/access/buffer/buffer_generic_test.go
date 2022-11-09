@@ -121,7 +121,7 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 
 	ch1 := make(chan bool)
 	go func() {
-		_, err := testBuffer.ReadRPage(table1, 0, rbmReadOrCreate)
+		_, err = testBuffer.ReadRPage(table1, 0, rbmReadOrCreate)
 		ch1 <- true
 		if err != nil {
 			t.Errorf("testBuffer.RTablePage returned error: %e", err)
