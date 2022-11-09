@@ -11,6 +11,7 @@
 - postgres pro:
   - MVCC part1 https://postgrespro.com/blog/pgsql/5967856
   - locks part 1 https://postgrespro.com/blog/pgsql/5967999
+- buffer strategy https://github.com/postgres/postgres/blob/master/src/backend/storage/buffer/bufmgr.c#L719
 
 ###Specific
 - free space map https://github.com/postgres/postgres/tree/master/src/backend/storage/freespace
