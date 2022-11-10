@@ -6,7 +6,6 @@ import (
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/planer"
 	"HomegrownDB/backend/internal/shared/query"
-	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -15,7 +14,7 @@ func HandleQuery(query string, txCtx *tx.Ctx) ([]query.QRow, error) {
 	if err != nil {
 		return nil, err
 	}
-	analyserTree, err := analyser.Analyse(parseTree, txCtx, table.DBTableStore)
+	analyserTree, err := analyser.Analyse(parseTree, txCtx)
 	if err != nil {
 		return nil, err
 	}

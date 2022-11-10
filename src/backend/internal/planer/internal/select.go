@@ -1,4 +1,4 @@
-package _select
+package internal
 
 import (
 	"HomegrownDB/backend/internal/analyser/anode"

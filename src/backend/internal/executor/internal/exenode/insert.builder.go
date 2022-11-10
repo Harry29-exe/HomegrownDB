@@ -11,7 +11,7 @@ func init() {
 
 type insertBuilder struct{}
 
-func (i insertBuilder) Build(node plan.Node, ctx BuildCtx) ExeNode {
+func (i insertBuilder) Build(node plan.Node, ctx ExeCtx) ExeNode {
 	insertPlan, ok := node.(*plan.Insert)
 	if !ok {
 		panic("illegal type (expected *plan.Insert)")
@@ -20,7 +20,7 @@ func (i insertBuilder) Build(node plan.Node, ctx BuildCtx) ExeNode {
 	insertExeNode := &Insert{
 		table:  insertPlan.Table,
 		rowSrc: nil,
-		txCtx:  ctx.tx,
+		txCtx:  ctx.Tx,
 	}
 	columns := make([]column.Id, len(insertPlan.Columns))
 	for j, col := range insertPlan.Columns {

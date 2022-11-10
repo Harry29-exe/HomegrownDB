@@ -1,10 +1,9 @@
 package exenode
 
 import (
+	"HomegrownDB/backend/internal/planer/plan"
 	"HomegrownDB/backend/internal/shared/query"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/tpage"
 	"HomegrownDB/dbsystem/tx"
@@ -13,8 +12,7 @@ import (
 var _ ExeNode = &Insert{}
 
 type Insert struct {
-	table   table.Definition
-	columns []column.Id
+	plan *plan.Insert
 
 	rowSrc ExeNode
 
@@ -29,10 +27,6 @@ type Insert struct {
 	colOrder []int
 }
 
-func (i *Insert) SetSource(source []ExeNode) {
-	panic("operation not supported: leaf exe node")
-}
-
 func (i *Insert) HasNext() bool {
 	return i.rowSrc.HasNext()
 }
@@ -44,7 +38,7 @@ func (i *Insert) Next() query.QRow {
 		i.tupleTemplate[order] = tupleData.Value(uint32(j))
 	}
 
-	tuple := tpage.NewTuple(i.tupleTemplate, i.table, i.txCtx)
+	tuple := tpage.NewTuple(i.tupleTemplate, i.plan.Table, i.txCtx)
 	insertSuccessful := false
 	for !insertSuccessful {
 		wPage := i.findPage(uint16(len(tuple.Data())))
@@ -86,7 +80,7 @@ func (i *Insert) findPage(neededSpace uint16) tpage.WPage {
 		panic(err.Error())
 	}
 
-	tablePage, err := i.buff.WTablePage(i.table, pageId)
+	tablePage, err := i.buff.WTablePage(i.plan.Table, pageId)
 	if err != nil {
 		panic(err.Error())
 	}

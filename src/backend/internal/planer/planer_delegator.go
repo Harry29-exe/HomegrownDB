@@ -3,8 +3,8 @@ package planer
 import (
 	"HomegrownDB/backend/internal/analyser"
 	"HomegrownDB/backend/internal/analyser/anode"
+	"HomegrownDB/backend/internal/planer/internal"
 
-	"HomegrownDB/backend/internal/planer/internal/select"
 	"HomegrownDB/backend/internal/planer/plan"
 )
 
@@ -16,7 +16,7 @@ func Plan(tree analyser.Tree) (plan.Plan, error) {
 			//todo implement me
 			panic("Not implemented")
 		}
-		return _select.Plan(aNode), nil
+		return internal.Plan(aNode), nil
 	default:
 		//todo implement me
 		panic("Not implemented")

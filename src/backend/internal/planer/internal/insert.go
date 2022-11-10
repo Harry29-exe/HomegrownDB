@@ -1,4 +1,4 @@
-package insert
+package internal
 
 import (
 	"HomegrownDB/backend/internal/analyser/anode"

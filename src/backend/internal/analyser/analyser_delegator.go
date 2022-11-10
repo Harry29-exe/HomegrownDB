@@ -4,12 +4,11 @@ import (
 	"HomegrownDB/backend/internal/analyser/internal/seganalyser"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/parser/pnode"
-	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/tx"
 	"fmt"
 )
 
-func Analyse(tree parser.Tree, txCtx *tx.Ctx, tableStore table.RDefsStore) (Tree, error) {
+func Analyse(tree parser.Tree, txCtx *tx.Ctx) (Tree, error) {
 	root, rootNodeType, err := delegateAnalyse(tree, txCtx)
 	if err != nil {
 		return Tree{}, err

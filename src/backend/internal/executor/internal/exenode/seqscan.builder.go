@@ -11,7 +11,7 @@ var SeqScanBuilder Builder = seqScanBuilder{}
 
 type seqScanBuilder struct{}
 
-func (ssb seqScanBuilder) Build(node plan.Node, ctx BuildCtx) ExeNode {
+func (ssb seqScanBuilder) Build(node plan.Node, ctx ExeCtx) ExeNode {
 	seqScanNode := node.(plan.SeqScan)
 	return NewSeqScan(
 		table.DBTableStore.Table(seqScanNode.Table),

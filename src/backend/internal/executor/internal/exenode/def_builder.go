@@ -4,22 +4,28 @@ import (
 	"HomegrownDB/backend/internal/planer/plan"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
 )
 
 type Builder interface {
-	Build(node plan.Node, ctx BuildCtx) ExeNode
+	Build(node plan.Node, ctx ExeCtx) ExeNode
 }
 
-type BuildCtx = *buildCtx
+type ExeCtx = *exeCtx
 
-type buildCtx struct {
-	tx         *tx.Ctx
-	buff       buffer.SharedBuffer
-	tableStore table.Store
+type exeCtx struct {
+	Tx     *tx.Ctx
+	Buff   buffer.SharedBuffer
+	Stores Stores
 }
 
-func Build(node plan.Node, ctx BuildCtx) ExeNode {
+type Stores struct {
+	Fsm   fsm.Store
+	Table table.Store
+}
+
+func Build(node plan.Node, ctx ExeCtx) ExeNode {
 	builder, ok := exeNodeBuilders[node.Type()]
 	if !ok {
 		//todo implement me

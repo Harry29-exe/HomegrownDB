@@ -6,10 +6,6 @@ import (
 )
 
 type ExeNode interface {
-	// SetSource sets from node will receive incoming nodes
-	// it's usually one node but in some cases it can be multiple nodes (e.g. Join)
-	// and sometimes it will be nil (e.g. SeqScan)
-	SetSource(source []ExeNode)
 	// HasNext returns whether node can return more values
 	HasNext() bool
 	// Next returns next row

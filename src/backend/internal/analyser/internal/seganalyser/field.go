@@ -13,7 +13,7 @@ type fields struct{}
 
 func (f fields) Analyse(fieldNodes []pnode.FieldNode, tables anode.Tables, ctx *tx.Ctx) (anode.SelectFields, error) {
 	fieldsCount := len(fieldNodes)
-	fieldsNode := anode.SelectFields{Fields: make([]anode.SelectField, fieldsCount)}
+	fieldsNode := make([]anode.SelectField, fieldsCount)
 
 	for i, field := range fieldNodes {
 		table := tables.TableByAlias(field.TableAlias)
@@ -24,10 +24,14 @@ func (f fields) Analyse(fieldNodes []pnode.FieldNode, tables anode.Tables, ctx *
 		if colOrder, ok := table.ColumnOrder(field.FieldName); !ok {
 			return anode.SelectFields{}, errors.New("") // todo better message
 		} else {
-			fieldsNode.Fields[i] = anode.SelectField{
-				Table:      table,
-				Column:     table.Column(colOrder),
-				FieldAlias: field.FieldName,
+			qTableId, ok := ctx.CurrentQuery.GetQTableId(field.TableAlias)
+			if !ok {
+				return fieldsNode, errors.New("no table with alias: " + field.TableAlias)
+			}
+
+			fieldsNode[i] = anode.SelectField{
+				Table:  qTableId,
+				Column: colOrder,
 			}
 		}
 	}

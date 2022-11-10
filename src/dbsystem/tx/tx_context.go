@@ -9,7 +9,7 @@ type Ctx struct {
 	tableStore    table.RDefsStore
 
 	Info         *InfoCtx
-	CurrentQuery *QueryCtx
+	CurrentQuery *queryCtx
 }
 
 func NewContext(txId Id, tableStore table.RDefsStore) *Ctx {
