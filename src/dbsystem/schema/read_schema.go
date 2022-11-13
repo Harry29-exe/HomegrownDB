@@ -6,14 +6,14 @@ import (
 	"os"
 )
 
-func ReadSchema(tableDirPath string) ([]table.WDefinition, error) {
+func ReadSchema(tableDirPath string) ([]table.Definition, error) {
 	tableDir, err := os.Open(tableDirPath)
 
 	if err != nil {
 		return nil, err
 	}
 	tableDirs, err := tableDir.ReadDir(0)
-	tableArray := make([]table.WDefinition, len(tableDirs))
+	tableArray := make([]table.Definition, len(tableDirs))
 	for i, dir := range tableDirs {
 		if !dir.IsDir() {
 			continue

@@ -7,7 +7,7 @@ import (
 	"HomegrownDB/dbsystem/schema/relation"
 )
 
-type Definition interface {
+type RDefinition interface {
 	relation.Relation
 
 	TableId() Id
@@ -35,8 +35,8 @@ type Definition interface {
 	Columns() []column.Def
 }
 
-type WDefinition interface {
-	Definition
+type Definition interface {
+	RDefinition
 
 	SetTableId(id Id)
 	SetRelationId(id relation.ID)
@@ -49,7 +49,7 @@ type WDefinition interface {
 // Id of table object, 0 if id is invalid
 type Id = uint16
 
-func NewDefinition(name string) WDefinition {
+func NewDefinition(name string) Definition {
 	table := &StandardTable{
 		tableId:  0,
 		objectId: 0,
@@ -66,7 +66,7 @@ func NewDefinition(name string) WDefinition {
 	return table
 }
 
-func Deserialize(data []byte) WDefinition {
+func Deserialize(data []byte) Definition {
 	def := &StandardTable{}
 	def.Deserialize(data)
 

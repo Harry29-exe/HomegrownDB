@@ -8,7 +8,7 @@ type Node interface {
 type NodeType = uint16
 
 const (
-	SelectFieldsNode NodeType = iota
+	ReduceFieldsNode NodeType = iota
 	SeqScanNode
 	InsertValuesSrcNode
 	InsertNode

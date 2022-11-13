@@ -17,7 +17,7 @@ var _ WTuple = Tuple{}
 type Tuple struct {
 	bytes []byte
 
-	table table.Definition
+	table table.RDefinition
 }
 
 // TID tuple id composed of Id and InPage
@@ -102,7 +102,7 @@ func (t Tuple) DataSize() int {
 	return len(t.bytes) - int(t.table.BitmapLen()+toNullBitmap)
 }
 
-func (t Tuple) Table() table.Definition {
+func (t Tuple) Table() table.RDefinition {
 	return t.table
 }
 

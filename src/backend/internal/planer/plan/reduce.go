@@ -1,20 +1,18 @@
 package plan
 
-type SelectFields struct {
-	Fields []SelectedField
+import (
+	"HomegrownDB/backend/internal/shared/qctx"
+)
+
+type ReduceFields struct {
+	Fields []qctx.QFieldId
 	Child  Node
 }
 
-// todo probably rework this
-type SelectedField struct {
-	Name    string
-	FieldId FieldId
+func (s ReduceFields) Type() NodeType {
+	return ReduceFieldsNode
 }
 
-func (s SelectFields) Type() NodeType {
-	return SelectFieldsNode
-}
-
-func (s SelectFields) Children() []Node {
+func (s ReduceFields) Children() []Node {
 	return []Node{s.Child}
 }

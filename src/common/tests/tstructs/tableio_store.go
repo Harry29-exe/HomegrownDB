@@ -49,12 +49,12 @@ func (i *InMemTableIOStore) TableIO(id table.Id) access.TableDataIO {
 	return i.tableIOs[id]
 }
 
-func (i *InMemTableIOStore) NewTableIO(definition table.Definition) error {
+func (i *InMemTableIOStore) NewTableIO(definition table.RDefinition) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (i *InMemTableIOStore) RemoveTableIO(definition table.Definition) error {
+func (i *InMemTableIOStore) RemoveTableIO(definition table.RDefinition) error {
 	//TODO implement me
 	panic("implement me")
 }

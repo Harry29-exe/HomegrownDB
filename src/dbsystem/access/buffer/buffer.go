@@ -26,8 +26,8 @@ type SharedBuffer interface {
 }
 
 type TableBuffer interface {
-	RTablePage(table table.Definition, pageId page.Id) (tpage.RPage, error)
-	WTablePage(table table.Definition, pageId page.Id) (tpage.WPage, error)
+	RTablePage(table table.RDefinition, pageId page.Id) (tpage.RPage, error)
+	WTablePage(table table.RDefinition, pageId page.Id) (tpage.WPage, error)
 }
 
 type FsmBuffer interface {
@@ -38,7 +38,7 @@ type FsmBuffer interface {
 const NewPage page.Id = page.InvalidId
 
 type TableSrc interface {
-	Table(id table.Id) table.Definition
+	Table(id table.Id) table.RDefinition
 }
 
 type slotIndex = uint

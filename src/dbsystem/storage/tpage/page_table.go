@@ -16,7 +16,7 @@ import (
 )
 
 //todo add handling for inserting into empty page
-func EmptyTablePage(tableDef table.Definition, t *testing.T) Page {
+func EmptyTablePage(tableDef table.RDefinition, t *testing.T) Page {
 	rawPage := make([]byte, page.Size)
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
@@ -33,7 +33,7 @@ func EmptyTablePage(tableDef table.Definition, t *testing.T) Page {
 	return page
 }
 
-func InitNewPage(def table.Definition, pageId page.Id, pageSlot []byte) Page {
+func InitNewPage(def table.RDefinition, pageId page.Id, pageSlot []byte) Page {
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
 
@@ -46,7 +46,7 @@ func InitNewPage(def table.Definition, pageId page.Id, pageSlot []byte) Page {
 	return page
 }
 
-func AsPage(data []byte, pageId page.Id, def table.Definition) Page {
+func AsPage(data []byte, pageId page.Id, def table.RDefinition) Page {
 	return Page{
 		table: def,
 		bytes: data,
@@ -55,7 +55,7 @@ func AsPage(data []byte, pageId page.Id, def table.Definition) Page {
 }
 
 type Page struct {
-	table table.Definition
+	table table.RDefinition
 	id    page.Id
 	bytes []byte
 }

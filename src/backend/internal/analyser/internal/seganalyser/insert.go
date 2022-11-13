@@ -23,7 +23,7 @@ func (i insert) Analyse(
 	}
 	insertNode.Table = anode.Table{
 		Def:      table,
-		QTableId: ctx.CurrentQuery.NextQTableId(table.TableId()),
+		QTableId: ctx.CurrentQuery.GetOrCreateQTableId(node.Table.TableAlias, table.TableId()),
 		Alias:    node.Table.TableAlias,
 	}
 

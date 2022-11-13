@@ -5,10 +5,10 @@ import (
 	"HomegrownDB/backend/internal/parser/internal/segparser"
 	tk "HomegrownDB/backend/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/internal/parser/internal/validator"
-	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/backend/internal/shared/qctx"
 )
 
-func Parse(query string, ctx *tx.Ctx) (Tree, error) {
+func Parse(query string, ctx qctx.QueryCtx) (Tree, error) {
 	tokenSrc := internal.NewTokenSource(query)
 
 	root, rootType, err := delegate(tokenSrc)
@@ -24,14 +24,14 @@ func Parse(query string, ctx *tx.Ctx) (Tree, error) {
 		nil
 }
 
-func setTokenHistory(ctx *tx.Ctx, source internal.TokenSource) {
+func setTokenHistory(ctx qctx.QueryCtx, source internal.TokenSource) {
 	tokens := source.History()
 	values := make([]string, len(tokens))
 	for i := 0; i < len(tokens); i++ {
 		values[i] = tokens[i].Value()
 	}
 
-	ctx.CurrentQuery.QueryTokens = values
+	ctx.QueryTokens = values
 }
 
 func delegate(source internal.TokenSource) (root any, rootType RootType, err error) {

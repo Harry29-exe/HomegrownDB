@@ -12,9 +12,9 @@ import (
 	"testing"
 )
 
-func NewTestTable(def table.WDefinition, t *testing.T) TestTable {
+func NewTestTable(def table.Definition, t *testing.T) TestTable {
 	return TestTable{
-		WDefinition: def,
+		Definition: def,
 		TUtils: TUtils{
 			table: def,
 			rand:  random.NewRandom(0),
@@ -24,7 +24,7 @@ func NewTestTable(def table.WDefinition, t *testing.T) TestTable {
 }
 
 type TestTable struct {
-	table.WDefinition
+	table.Definition
 	TUtils TUtils
 	T      *testing.T
 }
@@ -33,7 +33,7 @@ var pageSize = dbsystem.PageSize
 
 type TUtils struct {
 	rand  random.Random
-	table table.WDefinition
+	table table.Definition
 }
 
 func (t *TUtils) SetRand(rand random.Random) {

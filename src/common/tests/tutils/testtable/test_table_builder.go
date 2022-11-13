@@ -7,7 +7,7 @@ import (
 )
 
 type Builder struct {
-	table table.WDefinition
+	table table.Definition
 }
 
 func NewTestTableBuilder(name string) *Builder {
@@ -32,7 +32,7 @@ func (ttb *Builder) SetIds(tableId table.Id, objectId uint32) *Builder {
 	return ttb
 }
 
-func (ttb *Builder) GetTable() table.WDefinition {
+func (ttb *Builder) GetTable() table.Definition {
 	table := ttb.table
 	ttb.table = nil
 

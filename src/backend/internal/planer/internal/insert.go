@@ -5,7 +5,11 @@ import (
 	"HomegrownDB/backend/internal/planer/plan"
 )
 
-func Plan(node anode.Insert) plan.Plan {
+var Insert = insert{}
+
+type insert struct{}
+
+func (i insert) Plan(node anode.Insert) plan.Plan {
 	p := plan.NewPlan()
 	insertPlan := &plan.Insert{
 		Table:   node.Table.Def,

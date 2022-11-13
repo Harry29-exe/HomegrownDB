@@ -11,7 +11,7 @@ import (
 // NewTestTuple creates new TupleToSave from given columnValues and transaction context,
 // Tuple inside is not initialized i.e. it does not have TID (tuple identifier) and ids of
 // objects stored outside tuple should be saved to Tuple
-func NewTestTuple(tableDef table.Definition, columnValues map[string][]byte, txInfo *tx.InfoCtx) (TupleToSave, error) {
+func NewTestTuple(tableDef table.RDefinition, columnValues map[string][]byte, txInfo *tx.InfoCtx) (TupleToSave, error) {
 	builder := tupleBuilder{table: tableDef}
 	tuple, err := builder.Create(columnValues, txInfo)
 	if err != nil {
@@ -24,7 +24,7 @@ func NewTestTuple(tableDef table.Definition, columnValues map[string][]byte, txI
 }
 
 type tupleBuilder struct {
-	table        table.Definition
+	table        table.RDefinition
 	sortedValues [][]byte
 
 	buffer bytes.Buffer

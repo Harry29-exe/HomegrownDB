@@ -8,7 +8,7 @@ import (
 var _ Node = &Insert{}
 
 type Insert struct {
-	Table   table.Definition
+	Table   table.RDefinition
 	Columns []column.Def
 	Src     Node
 }
