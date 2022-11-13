@@ -10,7 +10,7 @@ import (
 	"math"
 )
 
-type StandardTable struct {
+type StdTable struct {
 	objectId relation.ID
 	tableId  Id
 	columns  []column.WDef
@@ -23,36 +23,41 @@ type StandardTable struct {
 	columnsCount        uint16
 }
 
-func (t *StandardTable) RelationID() relation.ID {
+func (t *StdTable) RelationID() relation.ID {
 	return t.objectId
 }
 
-func (t *StandardTable) Data() relation.Data {
+func (t *StdTable) Data() relation.Data {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t *StandardTable) SetTableId(id Id) {
+func (t *StdTable) SetTableId(id Id) {
 	t.tableId = id
 }
 
-func (t *StandardTable) TableId() Id {
+func (t *StdTable) TableId() Id {
 	return t.tableId
 }
 
-func (t *StandardTable) SetRelationId(id relation.ID) {
+func (t *StdTable) Hash() string {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (t *StdTable) SetRelationId(id relation.ID) {
 	t.objectId = id
 }
 
-func (t *StandardTable) SetName(name string) {
+func (t *StdTable) SetName(name string) {
 	t.name = name
 }
 
-func (t *StandardTable) Name() string {
+func (t *StdTable) Name() string {
 	return t.name
 }
 
-func (t *StandardTable) Serialize() []byte {
+func (t *StdTable) Serialize() []byte {
 	serializer := bparse.NewSerializer()
 
 	serializer.Uint32(t.objectId)
@@ -67,7 +72,7 @@ func (t *StandardTable) Serialize() []byte {
 	return serializer.GetBytes()
 }
 
-func (t *StandardTable) Deserialize(tableDef []byte) {
+func (t *StdTable) Deserialize(tableDef []byte) {
 	deserializer := bparse.NewDeserializer(tableDef)
 	t.objectId = deserializer.Uint32()
 	t.name = deserializer.MdString()
@@ -80,38 +85,38 @@ func (t *StandardTable) Deserialize(tableDef []byte) {
 }
 
 // BitmapLen returns number of bytes in tuple that constitute null bitmap
-func (t *StandardTable) BitmapLen() uint16 {
+func (t *StdTable) BitmapLen() uint16 {
 	return uint16(math.Ceil(float64(t.columnsCount) / 8))
 }
 
-func (t *StandardTable) ColumnCount() uint16 {
+func (t *StdTable) ColumnCount() uint16 {
 	return t.columnsCount
 }
 
-func (t *StandardTable) CTypePattern() []ctype.CType {
+func (t *StdTable) CTypePattern() []ctype.CType {
 	//todo implement me
 	panic("Not implemented")
 }
 
-func (t *StandardTable) ColumnName(columnId column.Order) string {
+func (t *StdTable) ColumnName(columnId column.Order) string {
 	return t.columnsNames[columnId]
 }
 
-func (t *StandardTable) ColumnId(order column.Order) column.Id {
+func (t *StdTable) ColumnId(order column.Order) column.Id {
 	return t.columns[order].Id()
 }
 
-func (t *StandardTable) ColumnOrder(name string) (order column.Order, ok bool) {
+func (t *StdTable) ColumnOrder(name string) (order column.Order, ok bool) {
 	order, ok = t.columnName_OrderMap[name]
 	return
 }
 
 // todo array of ctypes?
-func (t *StandardTable) ColumnType(id column.Order) *ctype.CType {
+func (t *StdTable) ColumnType(id column.Order) *ctype.CType {
 	return t.columns[id].CType()
 }
 
-func (t *StandardTable) ColumnByName(name string) (col column.Def, ok bool) {
+func (t *StdTable) ColumnByName(name string) (col column.Def, ok bool) {
 	var id column.Order
 	id, ok = t.columnName_OrderMap[name]
 	if !ok {
@@ -121,7 +126,7 @@ func (t *StandardTable) ColumnByName(name string) (col column.Def, ok bool) {
 }
 
 // ColumnById todo rewrite this: create columnId_Ordermap initialize it and use it
-func (t *StandardTable) ColumnById(id column.Id) column.Def {
+func (t *StdTable) ColumnById(id column.Id) column.Def {
 	for _, def := range t.columns {
 		if def.Id() == id {
 			return def
@@ -130,15 +135,15 @@ func (t *StandardTable) ColumnById(id column.Id) column.Def {
 	panic("no column with provided id")
 }
 
-func (t *StandardTable) Column(index column.Order) column.Def {
+func (t *StdTable) Column(index column.Order) column.Def {
 	return t.columns[index]
 }
 
-func (t *StandardTable) Columns() []column.Def {
+func (t *StdTable) Columns() []column.Def {
 	return t.rColumns
 }
 
-func (t *StandardTable) AddColumn(definition column.WDef) error {
+func (t *StdTable) AddColumn(definition column.WDef) error {
 	_, ok := t.columnName_OrderMap[definition.Name()]
 	if ok {
 		return errors.New("table already contains column with name:" + definition.Name())
@@ -155,7 +160,7 @@ func (t *StandardTable) AddColumn(definition column.WDef) error {
 	return nil
 }
 
-func (t *StandardTable) RemoveColumn(name string) error {
+func (t *StdTable) RemoveColumn(name string) error {
 	colToRemoveId, ok := t.columnName_OrderMap[name]
 	if !ok {
 		return errors.New("column does not contain column with name: " + name)
@@ -180,7 +185,7 @@ func (t *StandardTable) RemoveColumn(name string) error {
 	return nil
 }
 
-func (t *StandardTable) initInMemoryFields() {
+func (t *StdTable) initInMemoryFields() {
 	colCount := len(t.columns)
 	t.columnsNames = make([]string, colCount)
 	t.columnName_OrderMap = map[string]column.Order{}

@@ -11,11 +11,7 @@ type insert struct{}
 
 func (i insert) Plan(node anode.Insert) plan.Plan {
 	p := plan.NewPlan()
-	insertPlan := &plan.Insert{
-		Table:   node.Table.Def,
-		Columns: node.Columns,
-	}
-	p.AddTable(node.Table)
+	insertPlan := plan.NewInsert(node.Table, node.Columns)
 
 	if node.Expression != nil {
 		panic("not supported yes (expression inside insert)")

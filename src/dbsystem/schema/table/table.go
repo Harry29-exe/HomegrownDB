@@ -12,6 +12,7 @@ type RDefinition interface {
 
 	TableId() Id
 	Name() string
+	Hash() string
 
 	// Serialize table info, so it can be saved to disc and
 	// later deserialize into table object
@@ -50,7 +51,7 @@ type Definition interface {
 type Id = uint16
 
 func NewDefinition(name string) Definition {
-	table := &StandardTable{
+	table := &StdTable{
 		tableId:  0,
 		objectId: 0,
 		columns:  []column.WDef{},
@@ -67,7 +68,7 @@ func NewDefinition(name string) Definition {
 }
 
 func Deserialize(data []byte) Definition {
-	def := &StandardTable{}
+	def := &StdTable{}
 	def.Deserialize(data)
 
 	return def

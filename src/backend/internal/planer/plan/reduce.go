@@ -5,7 +5,7 @@ import (
 )
 
 type ReduceFields struct {
-	Fields []qctx.QFieldId
+	Fields []qctx.QColumnId
 	Child  Node
 }
 

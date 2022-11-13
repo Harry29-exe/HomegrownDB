@@ -12,7 +12,7 @@ var (
 	MaxQTableId     QTableId = math.MaxUint16 - 1
 )
 
-type QFieldId struct {
+type QColumnId struct {
 	QTableId QTableId
 	ColOrder column.Order
 }

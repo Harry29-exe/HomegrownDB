@@ -1,7 +1,6 @@
 package exenode
 
 import (
-	"HomegrownDB/backend/internal/planer/plan"
 	"HomegrownDB/backend/internal/shared/query"
 )
 
@@ -18,8 +17,6 @@ type ExeNode interface {
 	// all its resources
 	Free()
 }
-
-type PlanTableId = plan.TableId
 
 type InitOptions struct {
 	StoreAllRows bool

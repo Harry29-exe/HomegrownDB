@@ -5,27 +5,27 @@ import (
 	"HomegrownDB/backend/internal/analyser/anode"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/parser/pnode"
+	"HomegrownDB/backend/internal/shared/qctx"
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/dbsystem/tx"
 	"testing"
 )
 
 func TestBasicSelect1(t *testing.T) {
 	query := "SELECT b.name, b.species FROM birds b"
-	txCtx := tx.NewContext(24, nil)
-	ptree := BasicSelect1.parse(query, txCtx, t)
-	atree := BasicSelect1.analyse(ptree, txCtx, t)
+	//ctx := qctx.NewQueryCtx()
+	//ptree := BasicSelect1.parse(query, txCtx, t)
+	//atree := BasicSelect1.analyse(ptree, txCtx, t)
 	//todo implement me
 	panic("Not implemented")
-	println(atree)
+	println(query)
 }
 
 type basicSelect1 struct{}
 
 var BasicSelect1 = basicSelect1{}
 
-func (b basicSelect1) parse(query string, txCtx *tx.Ctx, t *testing.T) parser.Tree {
-	ptree, err := parser.Parse(query, txCtx)
+func (b basicSelect1) parse(query string, ctx qctx.QueryCtx, t *testing.T) parser.Tree {
+	ptree, err := parser.Parse(query, ctx)
 	if err != nil {
 		t.Errorf("Could not parse query becouse of error %s", err)
 	}
@@ -55,16 +55,17 @@ func (b basicSelect1) parse(query string, txCtx *tx.Ctx, t *testing.T) parser.Tr
 	return ptree
 }
 
-func (b basicSelect1) analyse(ptree parser.Tree, ctx *tx.Ctx, t *testing.T) analyser.Tree {
+func (b basicSelect1) analyse(ptree parser.Tree, ctx qctx.QueryCtx, t *testing.T) analyser.Tree {
 	atree, err := analyser.Analyse(ptree, ctx)
 	assert.IsNil(err, t)
 	assert.Eq(atree.RootType, analyser.RootTypeSelect, t)
 	root, ok := atree.Root.(anode.Select)
 	assert.Eq(true, ok, t)
-	assert.Eq(1, len(root.Tables.Tables), t)
-	ptreeRoot := ptree.Root.(pnode.Select)
-	assert.Eq(ptreeRoot.Tables[0].TableName, root.Tables.Tables[0].Def.Name(), t)
-	assert.Eq(ptreeRoot.Tables[0].TableAlias, root.Tables.Tables[0].Alias, t)
+	_ = root
+	//assert.Eq(1, len(root.Tables.Tables), t)
+	//ptreeRoot := ptree.Root.(pnode.Select)
+	//assert.Eq(ptreeRoot.Tables[0].TableName, root.Tables.Tables[0].Def.Name(), t)
+	//assert.Eq(ptreeRoot.Tables[0].TableAlias, root.Tables.Tables[0].Alias, t)
 
 	//todo implement me
 	panic("Not implemented")

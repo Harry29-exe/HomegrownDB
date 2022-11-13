@@ -4,12 +4,12 @@ import (
 	"HomegrownDB/backend/internal/analyser/internal/seganalyser"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/parser/pnode"
-	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/backend/internal/shared/qctx"
 	"fmt"
 )
 
-func Analyse(tree parser.Tree, txCtx *tx.Ctx) (Tree, error) {
-	root, rootNodeType, err := delegateAnalyse(tree, txCtx)
+func Analyse(tree parser.Tree, ctx qctx.QueryCtx) (Tree, error) {
+	root, rootNodeType, err := delegateAnalyse(tree, ctx)
 	if err != nil {
 		return Tree{}, err
 	}
@@ -20,7 +20,7 @@ func Analyse(tree parser.Tree, txCtx *tx.Ctx) (Tree, error) {
 	}, nil
 }
 
-func delegateAnalyse(tree parser.Tree, ctx *tx.Ctx) (root any, rootType rootType, err error) {
+func delegateAnalyse(tree parser.Tree, ctx qctx.QueryCtx) (root any, rootType rootType, err error) {
 	switch tree.RootType {
 	case parser.Select:
 		rootType = RootTypeSelect
