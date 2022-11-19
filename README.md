@@ -1,7 +1,7 @@
-#HomegrownDB
+# HomegrownDB
 
-##Used Sources
-###Main DB sources
+## Used Sources
+### Main DB sources
 - base tutorial https://cstack.github.io/db_tutorial/
 - how db works long article http://coding-geek.com/how-databases-work/
 - SQLite docs https://www.sqlite.org/arch.html
@@ -14,11 +14,15 @@
 - buffer strategy https://github.com/postgres/postgres/blob/master/src/backend/storage/buffer/bufmgr.c#L719
 - postgres reporisotrium parse nodes: https://doxygen.postgresql.org/primnodes_8h_source.html
 
-###Specific
+
+### other
+- postgres query parser python util: https://github.com/lelit/pglast
+
+### Specific
 - free space map https://github.com/postgres/postgres/tree/master/src/backend/storage/freespace
 - buffer https://github.com/postgres/postgres/blob/master/src/backend/storage/buffer/README
 
-###Additional resources sources
+### Additional resources sources
 - hash map in java http://coding-geek.com/how-does-a-hashmap-work-in-java/
 - parse tree https://en.wikipedia.org/wiki/Parse_tree
 - b-tree https://www.programiz.com/dsa/b-tree
