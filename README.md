@@ -23,6 +23,7 @@
     - nodes: https://doxygen.postgresql.org/nodes_8h_source.html
   - free space map https://github.com/postgres/postgres/tree/master/src/backend/storage/freespace
   - buffer https://github.com/postgres/postgres/blob/master/src/backend/storage/buffer/README
+  - executor tuple format: https://doxygen.postgresql.org/tuptable_8h_source.html
 
 ### other
 - postgres query parser python util: https://github.com/lelit/pglast
