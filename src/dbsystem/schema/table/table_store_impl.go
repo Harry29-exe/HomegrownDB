@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-func NewTableStore(tables []Definition) (Store, error) {
+func NewTableStore(tables []Definition) (Store, error) { //todo delete this error
 	maxId, missingIds := findMaxAndMissing(tables)
 
 	nameTableMap := map[string]Id{}

@@ -5,24 +5,30 @@ import (
 	"HomegrownDB/backend/internal/analyser/anode"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/parser/pnode"
+	"HomegrownDB/backend/internal/planer/planer_test/internal"
 	"HomegrownDB/backend/internal/shared/qctx"
 	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/common/tests/tutils/testtable/ttable2"
+	"HomegrownDB/dbsystem/schema/table"
 	"testing"
 )
 
 func TestBasicSelect1(t *testing.T) {
 	query := "SELECT b.name, b.species FROM birds b"
-	//ctx := qctx.NewQueryCtx()
-	//ptree := BasicSelect1.parse(query, txCtx, t)
-	//atree := BasicSelect1.analyse(ptree, txCtx, t)
-	//todo implement me
-	panic("Not implemented")
-	println(query)
+	table2 := ttable2.Def(t)
+	tableStore, _ := table.NewTableStore([]table.Definition{table2})
+	ctx := qctx.NewQueryCtx(tableStore)
+
+	helper := basicSelect1{aNode: internal.ANode{T: t}}
+	ptree := helper.parse(query, ctx, t)
+	atree := helper.analyse(ptree, ctx, t)
+
+	_ = atree
 }
 
-type basicSelect1 struct{}
-
-var BasicSelect1 = basicSelect1{}
+type basicSelect1 struct {
+	aNode internal.ANode
+}
 
 func (b basicSelect1) parse(query string, ctx qctx.QueryCtx, t *testing.T) parser.Tree {
 	ptree, err := parser.Parse(query, ctx)
@@ -61,11 +67,9 @@ func (b basicSelect1) analyse(ptree parser.Tree, ctx qctx.QueryCtx, t *testing.T
 	assert.Eq(atree.RootType, analyser.RootTypeSelect, t)
 	root, ok := atree.Root.(anode.Select)
 	assert.Eq(true, ok, t)
-	_ = root
-	//assert.Eq(1, len(root.Tables.Tables), t)
-	//ptreeRoot := ptree.Root.(pnode.Select)
-	//assert.Eq(ptreeRoot.Tables[0].TableName, root.Tables.Tables[0].Def.Name(), t)
-	//assert.Eq(ptreeRoot.Tables[0].TableAlias, root.Tables.Tables[0].Alias, t)
+
+	pTreeRoot := ptree.Root.(pnode.Select)
+	b.aNode.CmpTables(pTreeRoot.Tables, root.Tables, ctx)
 
 	//todo implement me
 	panic("Not implemented")

@@ -16,12 +16,18 @@ type Plan interface {
 	SetRootNode(node Node)
 
 	Tables() []Table
+	GetTable(id table.Id) table.Definition
 }
 
 type plan struct {
 	rootNode Node
 
 	tables []Table
+}
+
+func (p *plan) GetTable(id table.Id) table.Definition {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (p *plan) RootNode() Node {

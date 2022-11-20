@@ -12,6 +12,13 @@ func Eq[T comparable](v1, v2 T, t *testing.T) {
 	}
 }
 
+func NotEq[T comparable](v1, v2 T, t *testing.T) {
+	if v1 == v2 {
+		t.Errorf("Value %+v and %+v are equal", v1, v2)
+		debug.PrintStack()
+	}
+}
+
 func NotNil(val interface{}, t *testing.T) {
 	if val == nil {
 		t.Errorf("Value is nil")

@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/backend/internal/planer/plan"
 	"HomegrownDB/backend/internal/shared/query"
 	"HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/tpage"
 	"HomegrownDB/dbsystem/tx"
@@ -12,10 +13,12 @@ import (
 var _ ExeNode = &Insert{}
 
 type Insert struct {
-	plan *plan.Insert
+	plan     plan.Plan
+	planNode plan.Insert
 
 	rowSrc ExeNode
 
+	table table.Definition
 	buff  buffer.SharedBuffer
 	fsm   *fsm.FreeSpaceMap
 	txCtx *tx.Ctx
@@ -38,7 +41,7 @@ func (i *Insert) Next() query.QRow {
 		i.tupleTemplate[order] = tupleData.Value(uint32(j))
 	}
 
-	tuple := tpage.NewTuple(i.tupleTemplate, i.plan.Table, i.txCtx)
+	tuple := tpage.NewTuple(i.tupleTemplate, i.table, i.txCtx)
 	insertSuccessful := false
 	for !insertSuccessful {
 		wPage := i.findPage(uint16(len(tuple.Data())))
@@ -80,7 +83,7 @@ func (i *Insert) findPage(neededSpace uint16) tpage.WPage {
 		panic(err.Error())
 	}
 
-	tablePage, err := i.buff.WTablePage(i.plan.Table, pageId)
+	tablePage, err := i.buff.WTablePage(i.table, pageId)
 	if err != nil {
 		panic(err.Error())
 	}

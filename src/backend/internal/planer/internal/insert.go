@@ -3,6 +3,8 @@ package internal
 import (
 	"HomegrownDB/backend/internal/analyser/anode"
 	"HomegrownDB/backend/internal/planer/plan"
+	"HomegrownDB/backend/internal/shared/qctx"
+	"HomegrownDB/dbsystem/schema/column"
 )
 
 var Insert = insert{}
@@ -11,7 +13,7 @@ type insert struct{}
 
 func (i insert) Plan(node anode.Insert) plan.Plan {
 	p := plan.NewPlan()
-	insertPlan := plan.NewInsert(node.Table, node.Columns)
+	insertPlan := plan.NewInsert(node.Table, qcolsToColOrder(node.Columns))
 
 	if node.Expression != nil {
 		panic("not supported yes (expression inside insert)")
@@ -46,4 +48,12 @@ func convertRow(row anode.InsertRow, p plan.Plan) plan.InsertRowSrc {
 	}
 
 	return insertSrc
+}
+
+func qcolsToColOrder(columns []qctx.QColumnId) []column.Order {
+	cols := make([]column.Order, len(columns))
+	for i := 0; i < len(columns); i++ {
+		cols[i] = columns[i].ColOrder
+	}
+	return cols
 }
