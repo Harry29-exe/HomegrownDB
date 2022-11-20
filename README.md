@@ -11,16 +11,22 @@
 - postgres pro:
   - MVCC part1 https://postgrespro.com/blog/pgsql/5967856
   - locks part 1 https://postgrespro.com/blog/pgsql/5967999
+  - queries in postgres
 - buffer strategy https://github.com/postgres/postgres/blob/master/src/backend/storage/buffer/bufmgr.c#L719
 - postgres reporisotrium parse nodes: https://doxygen.postgresql.org/primnodes_8h_source.html
 - plan types explained: https://www.pgmustard.com/blog/2019/9/17/postgres-execution-plans-field-glossary
+- postgres src:
+  - nodes:
+    - primitive nodes: https://doxygen.postgresql.org/primnodes_8h_source.html
+    - parse nodes: https://doxygen.postgresql.org/parsenodes_8h_source.html
+    - plan nodes: https://doxygen.postgresql.org/plannodes_8h_source.html
+    - nodes: https://doxygen.postgresql.org/nodes_8h_source.html
+  - free space map https://github.com/postgres/postgres/tree/master/src/backend/storage/freespace
+  - buffer https://github.com/postgres/postgres/blob/master/src/backend/storage/buffer/README
 
 ### other
 - postgres query parser python util: https://github.com/lelit/pglast
 
-### Specific
-- free space map https://github.com/postgres/postgres/tree/master/src/backend/storage/freespace
-- buffer https://github.com/postgres/postgres/blob/master/src/backend/storage/buffer/README
 
 ### Additional resources sources
 - hash map in java http://coding-geek.com/how-does-a-hashmap-work-in-java/
