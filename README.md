@@ -13,7 +13,7 @@
   - locks part 1 https://postgrespro.com/blog/pgsql/5967999
 - buffer strategy https://github.com/postgres/postgres/blob/master/src/backend/storage/buffer/bufmgr.c#L719
 - postgres reporisotrium parse nodes: https://doxygen.postgresql.org/primnodes_8h_source.html
-
+- plan types explained: https://www.pgmustard.com/blog/2019/9/17/postgres-execution-plans-field-glossary
 
 ### other
 - postgres query parser python util: https://github.com/lelit/pglast
