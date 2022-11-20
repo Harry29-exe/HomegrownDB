@@ -7,7 +7,9 @@
 - SQLite docs https://www.sqlite.org/arch.html
 - SQLite vde https://www.sqlite.org/vdbe.html
 - article how postgresql works https://patshaughnessy.net/2014/10/13/following-a-select-statement-through-postgres-internals
-- postgresql internal docs https://www.postgresql.org/docs/14/overview.html
+- postgres docs:
+  - internal docs https://www.postgresql.org/docs/14/overview.html
+  - executor docs: https://www.postgresql.org/docs/current/executor.html
 - postgres pro:
   - MVCC part1 https://postgrespro.com/blog/pgsql/5967856
   - locks part 1 https://postgrespro.com/blog/pgsql/5967999
