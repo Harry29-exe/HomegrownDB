@@ -1,19 +1,14 @@
 package expr
 
 import (
-	"HomegrownDB/backend/internal/shared/query"
 	"HomegrownDB/backend/new/internal/node"
-	"HomegrownDB/dbsystem/storage/tpage"
+	"HomegrownDB/backend/new/query"
 )
 
-func ExecExprTuple(row query.QRow, expr node.Expr) {
+func ExecExprTuple(tuple query.TupleSlot, expr node.Expr) {
 
 }
 
-func ExecExprRawTuple(tuple tpage.Tuple, expr node.Expr) {
-
-}
-
-func Exec() {
+func ExecExprTuples(tuple1, tuple2 query.TupleSlot, expr node.Expr) {
 
 }

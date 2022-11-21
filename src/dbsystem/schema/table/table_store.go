@@ -12,7 +12,7 @@ type RDefsStore interface {
 	// returns InvalidTableId
 	FindTable(name string) Id
 
-	AccessTable(id Id, lockMode tableLockMode) Definition
+	AccessTable(id Id, lockMode TableLockMode) Definition
 }
 
 type WDefsStore interface {
@@ -26,9 +26,9 @@ var (
 	MaxTableId     Id = math.MaxUint16 - 1
 )
 
-type tableLockMode = uint8
+type TableLockMode = uint8
 
 const (
-	RLockMode tableLockMode = iota
+	RLockMode TableLockMode = iota
 	WLockMode
 )

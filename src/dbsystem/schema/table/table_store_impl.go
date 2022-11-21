@@ -78,7 +78,7 @@ func (t *stdStore) FindTable(name string) Id {
 	return id
 }
 
-func (t *stdStore) AccessTable(id Id, lockMode tableLockMode) Definition {
+func (t *stdStore) AccessTable(id Id, lockMode TableLockMode) Definition {
 	//todo add locking here
 	return t.definitions[id]
 }

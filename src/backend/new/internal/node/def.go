@@ -1,7 +1,11 @@
 package node
 
-type Type = uint16
+type Node struct {
+	Tag
+}
+
+type Tag = uint16
 
 const (
-	TypeExpr Type = iota
+	TypeExpr Tag = iota
 )

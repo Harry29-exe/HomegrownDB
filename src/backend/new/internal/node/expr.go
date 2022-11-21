@@ -1,4 +1,7 @@
 package node
 
-type Expr struct {
+type Expr = *expr
+
+type expr struct {
+	Node
 }
