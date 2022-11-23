@@ -1,9 +1,17 @@
-package node
+package pnode
 
-import "HomegrownDB/backend/new/internal/node"
+func NewResultTarget(name string, val Node) ResultTarget {
+	return ResultTarget{
+		node: node{
+			tag: TagResultTarget,
+		},
+		Name: name,
+		val:  val,
+	}
+}
 
 type ResultTarget struct {
-	PNode
+	node
 	/* Name is in:
 	- select - nullable selecting field alias
 	- insert - inserting column name
@@ -15,22 +23,36 @@ type ResultTarget struct {
 	- insert - not used
 	- update - expression to get field value
 	*/
-	val *node.Node
+	val Node
+}
+
+func NewColumnRef(name, tableAlias string) ColumnRef {
+	return ColumnRef{
+		node:       node{tag: TagColumnRef},
+		Name:       name,
+		TableAlias: tableAlias,
+	}
+}
+
+type ColumnRef struct {
+	node
+	Name       string // Name of referenced column
+	TableAlias string // TableAlias column's table alias or ""
 }
 
 // RangeVar range variable used in from clauses (basically table)
 type RangeVar struct {
-	PNode
+	node
 	RelName string
 	Alias   string
 }
 
 type AExpr struct {
-	PNode
+	node
 	Kind         AExprKind
 	OperatorName string
-	Left         *PNode
-	Right        *PNode
+	Left         *node
+	Right        *node
 }
 
 type AExprKind = uint8
