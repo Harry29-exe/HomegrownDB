@@ -1,6 +1,7 @@
 package assert
 
 import (
+	"reflect"
 	"runtime/debug"
 	"testing"
 )
@@ -15,6 +16,13 @@ func Eq[T comparable](v1, v2 T, t *testing.T) {
 func NotEq[T comparable](v1, v2 T, t *testing.T) {
 	if v1 == v2 {
 		t.Errorf("Value %+v and %+v are equal", v1, v2)
+		debug.PrintStack()
+	}
+}
+
+func EqDeep[T any](v1, v2 T, t *testing.T) {
+	if !reflect.DeepEqual(v1, v2) {
+		t.Errorf("Value %+v and %+v are not equal", v1, v2)
 		debug.PrintStack()
 	}
 }

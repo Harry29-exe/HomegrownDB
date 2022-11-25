@@ -1,10 +1,10 @@
 package segparser
 
 import (
-	"HomegrownDB/backend/internal/parser/internal"
-	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
-	"HomegrownDB/backend/internal/parser/internal/validator"
-	"HomegrownDB/backend/internal/parser/pnode"
+	"HomegrownDB/backend/new/internal/parser/internal"
+	"HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
+	"HomegrownDB/backend/new/internal/parser/internal/validator"
+	"HomegrownDB/backend/new/internal/pnode"
 )
 
 var Table = tableParser{}
@@ -12,7 +12,7 @@ var Table = tableParser{}
 type tableParser struct {
 }
 
-func (t tableParser) Parse(source internal.TokenSource, validator validator.Validator) (pnode.TableNode, error) {
+func (t tableParser) Parse(source internal.TokenSource, validator validator.Validator) (pnode.RangeVar, error) {
 	source.Checkpoint()
 
 	name, err := validator.Current().
@@ -22,13 +22,13 @@ func (t tableParser) Parse(source internal.TokenSource, validator validator.Vali
 		Check()
 	if err != nil {
 		source.Rollback()
-		return pnode.TableNode{}, err
+		return pnode.RangeVar{}, err
 	}
 
 	err = validator.NextSequence(token.SpaceBreak, token.Identifier)
 	if err != nil {
 		source.Commit()
-		return pnode.TableNode{TableName: name.Value(), TableAlias: name.Value()}, nil
+		return pnode.RangeVar{RelName: name.Value(), Alias: name.Value()}, nil
 	}
 
 	alias, err := validator.Current().
@@ -38,12 +38,12 @@ func (t tableParser) Parse(source internal.TokenSource, validator validator.Vali
 		Check()
 	if err != nil {
 		source.Rollback()
-		return pnode.TableNode{}, err
+		return pnode.RangeVar{}, err
 	}
 
 	source.Commit()
-	return pnode.TableNode{
-		TableName:  name.Value(),
-		TableAlias: alias.Value(),
+	return pnode.RangeVar{
+		RelName: name.Value(),
+		Alias:   alias.Value(),
 	}, nil
 }

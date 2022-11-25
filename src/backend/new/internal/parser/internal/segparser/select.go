@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/backend/new/internal/parser/internal/sqlerr"
 	"HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/new/internal/parser/internal/validator"
-	"HomegrownDB/backend/new/internal/pnode
+	"HomegrownDB/backend/new/internal/pnode"
 )
 
 var Select = _select{}
@@ -26,7 +26,7 @@ func (s _select) Parse(source internal.TokenSource, v validator.Validator) (pnod
 
 	// Fields
 	source.Next()
-	err = s.parseFields(&selectNode, source, v)
+	err = s.parseFields(selectNode, source, v)
 	if err != nil {
 		source.Rollback()
 		return selectNode, err
@@ -40,18 +40,18 @@ func (s _select) Parse(source internal.TokenSource, v validator.Validator) (pnod
 	}
 
 	// tables
-	err = s.parseTables(&selectNode, source, v)
+	err = s.parseTables(selectNode, source, v)
 	if err != nil {
 		source.Rollback()
 		return selectNode, err
 	}
 
-	source.CommitAndInitNode(&selectNode.node)
+	source.CommitAndInitNode(&selectNode)
 	return selectNode, nil
 }
 
 func (s _select) parseFields(
-	selectNode *pnode.SelectStmt,
+	selectNode pnode.SelectStmt,
 	source internal.TokenSource,
 	v validator.Validator,
 ) error {
@@ -64,12 +64,12 @@ func (s _select) parseFields(
 			return sqlerr.NewSyntaxError(token.ToString(token.Identifier), parsingToken.Value(), source)
 		}
 
-		field, err := TargetEntry.Parse(source, v)
+		field, err := TargetEntry.Parse(source, v, TargetEntrySelect)
 		if err != nil {
 			source.Rollback()
 			return err
 		}
-		selectNode.AddField(field)
+		selectNode.Targets = append(selectNode.Targets, field)
 
 		err = v.SkipTokens().
 			Type(token.SpaceBreak).
@@ -85,7 +85,7 @@ func (s _select) parseFields(
 }
 
 func (s _select) parseTables(
-	selectNode *pnode.Select,
+	selectNode pnode.SelectStmt,
 	source internal.TokenSource,
 	v validator.Validator,
 ) error {
@@ -96,7 +96,7 @@ func (s _select) parseTables(
 		if err != nil {
 			return err
 		}
-		selectNode.Tables = append(selectNode.Tables, table)
+		selectNode.From = append(selectNode.From, table)
 
 		err = v.SkipTokens().
 			Type(token.SpaceBreak).

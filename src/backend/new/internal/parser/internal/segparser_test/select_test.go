@@ -1,8 +1,9 @@
 package parser_test
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/segparser"
-	"HomegrownDB/backend/internal/parser/internal/validator"
+	"HomegrownDB/backend/new/internal/parser/internal/segparser"
+	"HomegrownDB/backend/new/internal/parser/internal/validator"
+	"HomegrownDB/backend/new/internal/pnode"
 	"HomegrownDB/common/tests/assert"
 	"testing"
 )
@@ -12,10 +13,12 @@ func TestSelectParser_Parse_ShouldParse(t *testing.T) {
 		"SELECT t1.col1 FROM ttable1 t1",
 	}
 
-	tableAlias := "t1"
-	tableName := "ttable1"
-	fieldName := "col1"
-	fieldAlias := "col1"
+	rangeVar := pnode.NewRangeVar("ttable1", "t1")
+	from := []pnode.RangeVar{rangeVar}
+
+	col1Ref := pnode.NewColumnRef("col1", "t1")
+	col1 := pnode.NewResultTarget("", &col1Ref)
+	targetList := []pnode.ResultTarget{col1}
 
 	for _, sentence := range sentences {
 		source := newTestTokenSource(sentence)
@@ -26,15 +29,8 @@ func TestSelectParser_Parse_ShouldParse(t *testing.T) {
 			t.Error(err)
 		}
 
-		assert.Eq(len(selectNode.Tables), 1, t)
-		table := selectNode.Tables[0]
-		assert.Eq(table.TableName, tableName, t)
-		assert.Eq(table.TableAlias, tableAlias, t)
-
-		assert.Eq(len(selectNode.Fields), 1, t)
-		field := selectNode.Fields[0]
-		assert.Eq(field.FieldName, fieldName, t)
-		assert.Eq(field.FieldAlias, fieldAlias, t)
+		assert.EqDeep(selectNode.Targets, targetList, t)
+		assert.EqDeep(selectNode.From, from, t)
 	}
 
 }

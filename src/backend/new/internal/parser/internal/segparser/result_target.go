@@ -24,37 +24,16 @@ type targetEntry struct{}
 func (f targetEntry) Parse(source internal.TokenSource, validator validator.Validator, mode targetEntryMode) (pnode.ResultTarget, error) {
 	source.Checkpoint()
 
-	tableToken, err := validator.Current().
-		Has(token.Identifier).
-		IsTextToken().
-		DontStartWithDigit().
-		AsciiOnly().
-		Check()
-
-	if err != nil {
-		source.Rollback()
-		return pnode.ResultTarget{}, err
+	switch mode {
+	case TargetEntrySelect:
+		return f.parseSelect(source, validator)
+	case TargetEntryInset:
+	case TargetEntryUpdate:
+		//todo implement me
+		panic("Not implemented")
 	}
 
-	columnToken, err := validator.
-		NextIsAnd(token.Dot).
-		Next().IsTextToken().
-		DontStartWithDigit().
-		AsciiOnly().
-		Check()
-
-	if err != nil {
-		source.Rollback()
-		return pnode.FieldNode{}, err
-	}
-
-	fieldNode := pnode.FieldNode{
-		TableAlias: tableToken.Value(),
-		FieldName:  columnToken.Value(),
-		FieldAlias: columnToken.Value(),
-	}
-	source.CommitAndInitNode(&fieldNode.Node)
-	return fieldNode, nil
+	panic("not supported mode")
 }
 
 func (f targetEntry) parseSelect(src internal.TokenSource, v validator.Validator) (pnode.ResultTarget, error) {
@@ -65,22 +44,32 @@ func (f targetEntry) parseSelect(src internal.TokenSource, v validator.Validator
 		src.Checkpoint()
 		tableAlias, colName := src.GetPtrRelative(-2), src.GetPtrRelative(0)
 		colRef := pnode.NewColumnRef(colName.Value(), tableAlias.Value())
-		src.CommitAndInitNode(colRef)
-
-		resultTarget := pnode.NewResultTarget("", colRef)
 		_ = src.Next()
-		src.CommitAndInitNode(resultTarget)
+		src.CommitAndInitNode(&colRef)
+
+		resultTarget := pnode.NewResultTarget("", &colRef)
+		src.CommitAndInitNode(&resultTarget)
 
 		return resultTarget, nil
 	}
 
 	//todo add function support
 
-	err := v.CurrentIs(token.Identifier)
+	err = v.CurrentIs(token.Identifier)
 	if err == nil {
+		src.Checkpoint()
 		colName := src.Current().Value()
+		colRef := pnode.NewColumnRef(colName, "")
+		_ = src.Next()
+		src.CommitAndInitNode(&colRef)
 
+		resultTarget := pnode.NewResultTarget("", &colRef)
+		src.CommitAndInitNode(&resultTarget)
+
+		return resultTarget, nil
 	}
+
+	return pnode.ResultTarget{}, errors.New("could not parse field") //todo better err
 }
 
 func (f targetEntry) parseAlias(resultTarget *pnode.ResultTarget, src internal.TokenSource, v validator.Validator) error {

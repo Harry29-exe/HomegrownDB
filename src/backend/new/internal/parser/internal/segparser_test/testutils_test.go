@@ -1,9 +1,9 @@
 package parser_test
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/tokenizer"
-	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
-	"HomegrownDB/backend/internal/parser/pnode"
+	"HomegrownDB/backend/new/internal/parser/internal/tokenizer"
+	"HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
+	"HomegrownDB/backend/new/internal/pnode"
 	"reflect"
 	"strings"
 	"testing"
@@ -98,6 +98,14 @@ type testTokenSource struct {
 	Checkpoints []uint32
 }
 
+func (t *testTokenSource) Get(index uint) token.Token {
+	return t.TokenCache[index]
+}
+
+func (t *testTokenSource) GetPtrRelative(index int) token.Token {
+	return t.TokenCache[int(t.Pointer)+index]
+}
+
 func (t *testTokenSource) Next() token.Token {
 	t.Pointer++
 	if t.Pointer < t.CurrentLen {
@@ -161,8 +169,9 @@ func (t *testTokenSource) Commit() {
 	t.Checkpoints = t.Checkpoints[0:lastIndex]
 }
 
-func (t *testTokenSource) CommitAndInitNode(node *pnode.Node) {
-	node.SetTokenIndexes(t.Checkpoints[len(t.Checkpoints)-1], t.Pointer)
+func (t *testTokenSource) CommitAndInitNode(node pnode.Node) {
+	node.SetStartToken(uint(t.Checkpoints[len(t.Checkpoints)-1]))
+	node.SetEndToken(uint(t.Pointer))
 	t.Commit()
 }
 

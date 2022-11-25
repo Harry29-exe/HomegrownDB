@@ -1,11 +1,11 @@
 package segparser
 
 import (
-	"HomegrownDB/backend/internal/parser/internal"
-	"HomegrownDB/backend/internal/parser/internal/sqlerr"
-	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
-	"HomegrownDB/backend/internal/parser/internal/validator"
-	"HomegrownDB/backend/internal/parser/pnode"
+	"HomegrownDB/backend/new/internal/parser/internal"
+	"HomegrownDB/backend/new/internal/parser/internal/sqlerr"
+	"HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
+	"HomegrownDB/backend/new/internal/parser/internal/validator"
+	"HomegrownDB/backend/new/internal/pnode"
 	"fmt"
 )
 
@@ -20,7 +20,7 @@ type insertValues struct{}
 //
 // It will start parsing it when current token is Values and return
 // when source pointer is on closing parenthesis
-func (i insertValues) Parse(source internal.TokenSource, v validator.Validator) ([]pnode.InsertingRow, error) {
+func (i insertValues) Parse(source internal.TokenSource, v validator.Validator) (pnode.SelectStmt, error) {
 	source.Checkpoint()
 	err := v.CurrentIsAnd(token.Values).
 		SkipTokens().
@@ -30,8 +30,7 @@ func (i insertValues) Parse(source internal.TokenSource, v validator.Validator) 
 		return nil, err
 	}
 
-	values := make([]pnode.InsertingRow, 0, 25)
-	var value pnode.InsertingRow
+	selectStmt := pnode.NewSelectStmt()
 
 	source.Next()
 	for {
@@ -64,7 +63,7 @@ func (i insertValues) Parse(source internal.TokenSource, v validator.Validator) 
 	}
 }
 
-func (i insertValues) parseRow(source internal.TokenSource, v validator.Validator) (insertingRow pnode.InsertingRow, err error) {
+func (i insertValues) parseRow(source internal.TokenSource, v validator.Validator) (insertingRow []pnode.Node, err error) {
 	if v.CurrentIs(token.OpeningParenthesis) != nil {
 		return
 	} else {

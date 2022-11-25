@@ -40,6 +40,14 @@ type ColumnRef struct {
 	TableAlias string // TableAlias column's table alias or ""
 }
 
+func NewRangeVar(relName string, alias string) RangeVar {
+	return RangeVar{
+		node:    node{tag: TagRangeVar},
+		RelName: relName,
+		Alias:   alias,
+	}
+}
+
 // RangeVar range variable used in from clauses (basically table)
 type RangeVar struct {
 	node

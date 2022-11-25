@@ -1,33 +1,33 @@
 package segparser
 
 import (
-	"HomegrownDB/backend/internal/parser/internal"
-	"HomegrownDB/backend/internal/parser/internal/tokenizer/token"
-	"HomegrownDB/backend/internal/parser/internal/validator"
-	"HomegrownDB/backend/internal/parser/pnode"
+	"HomegrownDB/backend/new/internal/parser/internal"
+	"HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
+	"HomegrownDB/backend/new/internal/parser/internal/validator"
+	"HomegrownDB/backend/new/internal/pnode"
 )
 
 var Insert = insert{}
 
 type insert struct{}
 
-func (i insert) Parse(source internal.TokenSource, v validator.Validator) (pnode.InsertNode, error) {
+func (i insert) Parse(source internal.TokenSource, v validator.Validator) (pnode.InsertStmt, error) {
 	source.Checkpoint()
 
 	err := v.CurrentSequence(token.Insert, token.SpaceBreak, token.Into, token.SpaceBreak)
 	if err != nil {
 		source.Rollback()
-		return pnode.InsertNode{}, err
+		return nil, err
 	}
 	source.Next()
-	insertNode := pnode.InsertNode{}
+	insertNode := pnode.NewInsertStmt()
 
-	table, err := Table.Parse(source, v)
+	relation, err := Table.Parse(source, v)
 	if err != nil {
 		source.Rollback()
-		return pnode.InsertNode{}, err
+		return nil, err
 	}
-	insertNode.Table = table
+	insertNode.Relation = relation
 
 	err = v.NextSequence(token.SpaceBreak, token.OpeningParenthesis)
 	if err == nil {
