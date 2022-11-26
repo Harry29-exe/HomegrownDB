@@ -1,8 +1,9 @@
 package parser_test
 
 import (
-	"HomegrownDB/backend/internal/parser/internal/segparser"
-	"HomegrownDB/backend/internal/parser/internal/validator"
+	"HomegrownDB/backend/new/internal/parser/internal/segparser"
+	"HomegrownDB/backend/new/internal/parser/internal/validator"
+	"HomegrownDB/backend/new/internal/pnode"
 	"HomegrownDB/common/tests/assert"
 	"testing"
 )
@@ -14,6 +15,13 @@ func TestSimpleInsertParse(t *testing.T) {
 		"INSERT INTO users (name,age) VALUES ('bob',15),('Alice' ,   24 )",
 		"INSERT INTO users  (  name  ,  age  ) VALUES ('bob',15)  , (  'Alice'   ,   24   )",
 	}
+
+	expectedTree := pnode.NewInsertStmt()
+	expectedTree.Columns = []pnode.ResultTarget{
+		pnode.NewResultTarget("", pnode.NewColumnRef("name", "")),
+		pnode.NewResultTarget("", pnode.NewColumnRef("age", "")),
+	}
+
 	for _, query := range queries {
 		source := newTestTokenSource(query)
 		v := validator.NewValidator(source)

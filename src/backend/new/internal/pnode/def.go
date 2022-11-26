@@ -9,9 +9,9 @@ type Node interface {
 	// EndToken index of first token after this node
 	EndToken() uint
 	SetEndToken(index uint)
-}
 
-var _ Node = &node{}
+	Equal(node Node) bool
+}
 
 type node struct {
 	tag        Tag
@@ -20,42 +20,38 @@ type node struct {
 }
 
 func (p *node) Tag() Tag {
-	//TODO implement me
-	panic("implement me")
+	return p.tag
 }
 
 func (p *node) SetTag(tag Tag) {
-	//TODO implement me
-	panic("implement me")
+	p.tag = tag
 }
 
 func (p *node) StartToken() uint {
-	//TODO implement me
-	panic("implement me")
+	return p.startToken
 }
 
 func (p *node) SetStartToken(index uint) {
-	//TODO implement me
-	panic("implement me")
+	p.startToken = index
 }
 
 func (p *node) EndToken() uint {
-	//TODO implement me
-	panic("implement me")
+	return p.endToken
 }
 
 func (p *node) SetEndToken(index uint) {
-	//TODO implement me
-	panic("implement me")
+	p.endToken = index
 }
 
 type Tag = uint16
 
 const (
-	TagSelectStmt Tag = iota
+	TagRawStmt Tag = iota
+	TagSelectStmt
 	TagInsertStmt
 	TagExpr
 	TagResultTarget
 	TagColumnRef
 	TagRangeVar
+	TagAStar
 )

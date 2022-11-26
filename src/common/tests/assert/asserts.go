@@ -27,6 +27,13 @@ func EqDeep[T any](v1, v2 T, t *testing.T) {
 	}
 }
 
+func True(value bool, t *testing.T) {
+	if !value {
+		t.Errorf("Given value was expected to be true")
+		debug.PrintStack()
+	}
+}
+
 func NotNil(val interface{}, t *testing.T) {
 	if val == nil {
 		t.Errorf("Value is nil")

@@ -8,3 +8,11 @@
 // by parser. E.g. Table parser should start at table name and finish
 // when internal.TokenSource point either to table name or table alias (if exist)
 package segparser
+
+import (
+	"HomegrownDB/backend/new/internal/parser/internal"
+	"HomegrownDB/backend/new/internal/parser/internal/validator"
+)
+
+type tkSource = internal.TokenSource
+type tkValidator = validator.Validator
