@@ -32,18 +32,21 @@ func (t resultTargets) Parse(src tkSource, v tkValidator, mode resultTargetMode)
 		err := v.CurrentIsAnd(token.OpeningParenthesis).
 			SkipCurrentSB()
 		if err != nil {
+			src.Rollback()
 			return nil, err
 		}
 	}
 
 	target, err := ResultTarget.Parse(src, v, mode)
 	if err != nil {
+		src.Rollback()
 		return nil, err
 	}
 	targets = append(targets, target)
 	for t.hasNext(src, v) {
 		target, err = ResultTarget.Parse(src, v, mode)
 		if err != nil {
+			src.Rollback()
 			return nil, err
 		}
 		targets = append(targets, target)
@@ -124,6 +127,7 @@ func (t resultTargetParser) parseSelect(src tkSource, v tkValidator) (pnode.Resu
 		return resultTarget, nil
 	}
 
+	src.Rollback()
 	return nil, errors.New("could not parse field") //todo better err
 }
 

@@ -66,9 +66,9 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 		node, err := segparser.Insert.Parse(source, v)
 
 		//then
-		assert.Eq(len(source.Checkpoints), 0, t)
 		assert.IsNil(err, t)
 		assert.True(node.Equal(expectedTree), t)
+		assert.Eq(len(source.Checkpoints), 0, t)
 	}
 }
 

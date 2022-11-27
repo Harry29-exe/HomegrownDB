@@ -24,7 +24,7 @@ func (t tableParser) Parse(source internal.TokenSource, validator tkValidator) (
 		return nil, err
 	}
 
-	err = validator.NextSequence(token.SpaceBreak, token.Identifier)
+	err = validator.NextSequence(token.SpaceBreak, token.As)
 	if err != nil {
 		source.Commit()
 		return pnode.NewRangeVar(name.Value(), ""), nil

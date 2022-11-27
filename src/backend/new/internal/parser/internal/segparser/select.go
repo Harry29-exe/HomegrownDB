@@ -5,6 +5,7 @@ import (
 	"HomegrownDB/backend/new/internal/parser/internal/sqlerr"
 	"HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/new/internal/pnode"
+	"fmt"
 )
 
 var Select = _select{}
@@ -21,6 +22,9 @@ func (s _select) Parse(src internal.TokenSource, v tkValidator) (pnode.SelectStm
 		selectNode, err = StdSelect.parseFullSelect(src, v)
 	case token.Values:
 		selectNode, err = ValueStreamSelect.parseValueStream(src, v)
+	default:
+		expected := fmt.Sprintf("%s or %s", token.ToString(token.Select), token.ToString(token.Values))
+		err = sqlerr.NewSyntaxError(expected, token.ToString(currentTk.Code()), src)
 	}
 
 	if err != nil {
