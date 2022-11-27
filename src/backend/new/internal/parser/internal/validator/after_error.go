@@ -18,17 +18,18 @@ type afterErrorValidator struct {
 var _ Validator = afterErrorValidator{}
 
 var _ TokenValidator = afterErrorValidator{}
+
 var _ TextTokenValidator = afterErrorValidator{}
 
 func (v afterErrorValidator) Next() TokenValidator {
 	return v
 }
 
-// Validator impl
-
 func (v afterErrorValidator) Current() TokenValidator {
 	return v
 }
+
+// Validator impl
 
 func (v afterErrorValidator) NextIs(code tk.Code) error {
 	return v.err
@@ -62,6 +63,22 @@ func (v afterErrorValidator) CurrentSequenceAnd(codes ...tk.Code) Validator {
 	return v
 }
 
+func (v afterErrorValidator) SkipNextSB() error {
+	return v.err
+}
+
+func (v afterErrorValidator) SkipNextSBAnd() Validator {
+	return v
+}
+
+func (v afterErrorValidator) SkipCurrentSB() error {
+	return v.err
+}
+
+func (v afterErrorValidator) SkipCurrentSBAnd() Validator {
+	return v
+}
+
 func (v afterErrorValidator) SkipTokens() TokenSkipper {
 	return v
 }
@@ -70,11 +87,11 @@ func (v afterErrorValidator) SkipSpaceFromNext() error {
 	return v.err
 }
 
-// TokenValidator impl
-
 func (v afterErrorValidator) Check() (tk.Token, error) {
 	return v.token, v.err
 }
+
+// TokenValidator impl
 
 func (v afterErrorValidator) CheckAnd() Validator {
 	return v
@@ -88,11 +105,11 @@ func (v afterErrorValidator) IsTextToken() TextTokenValidator {
 	return v
 }
 
-// TextTokenValidator impl
-
 func (v afterErrorValidator) StartsWithDigit() TextTokenValidator {
 	return v
 }
+
+// TextTokenValidator impl
 
 func (v afterErrorValidator) DontStartWithDigit() TextTokenValidator {
 	return v

@@ -1,5 +1,7 @@
 package pnode
 
+import "fmt"
+
 // -------------------------
 //      ResultTarget
 // -------------------------
@@ -47,7 +49,9 @@ type resultTarget struct {
 }
 
 func (r ResultTarget) Equal(node Node) bool {
-	if !basicNodeEqual(r, node) {
+	if nodesEqNil(r, node) {
+		return true
+	} else if !basicNodeEqual(r, node) {
 		return false
 	}
 	raw := node.(ResultTarget)
@@ -78,7 +82,9 @@ type columnRef struct {
 }
 
 func (c ColumnRef) Equal(node Node) bool {
-	if !basicNodeEqual(c, node) {
+	if nodesEqNil(c, node) {
+		return true
+	} else if !basicNodeEqual(c, node) {
 		return false
 	}
 
@@ -106,7 +112,78 @@ type aStar struct {
 }
 
 func (s AStar) Equal(node Node) bool {
+	if nodesEqNil(s, node) {
+		return true
+	}
 	return basicNodeEqual(s, node)
+}
+
+// -------------------------
+//      AConst
+// -------------------------
+
+type AConst = *aConst
+
+type aConstType = uint8
+
+const (
+	AConstFloat aConstType = iota
+	AConstInt
+	AConstStr
+)
+
+func NewAConstFloat(val float64) AConst {
+	return &aConst{
+		node:  node{tag: TagAConst},
+		Type:  AConstFloat,
+		Float: val,
+	}
+}
+
+func NewAConstInt(val int64) AConst {
+	return &aConst{
+		node: node{tag: TagAConst},
+		Type: AConstInt,
+		Int:  val,
+	}
+}
+
+func NewAConstStr(val string) AConst {
+	return &aConst{
+		node: node{tag: TagAConst},
+		Type: AConstStr,
+		Str:  val,
+	}
+}
+
+type aConst struct {
+	node
+	Type  aConstType
+	Str   string
+	Float float64
+	Int   int64
+}
+
+func (c AConst) Equal(node Node) bool {
+	if nodesEqNil(c, node) {
+		return true
+	} else if !basicNodeEqual(c, node) {
+		return false
+	}
+	raw := node.(AConst)
+	if c.Type != raw.Type {
+		return false
+	}
+	switch c.Type {
+	case AConstStr:
+		return c.Str == raw.Str
+	case AConstInt:
+		return c.Int == raw.Int
+	case AConstFloat:
+		return c.Float == raw.Float
+	default:
+		panic(fmt.Sprintf("not supported AConstType: %d", c.Type))
+	}
 }
 
 // -------------------------
@@ -130,6 +207,16 @@ type rangeVar struct {
 	Alias   string
 }
 
+func (r RangeVar) Equal(node Node) bool {
+	if nodesEqNil(r, node) {
+		return true
+	} else if !basicNodeEqual(r, node) {
+		return false
+	}
+	raw := node.(RangeVar)
+	return r.RelName == raw.RelName && r.Alias == raw.Alias
+}
+
 // -------------------------
 //      AExpr
 // -------------------------
@@ -140,8 +227,21 @@ type aExpr struct {
 	node
 	Kind         AExprKind
 	OperatorName string
-	Left         *node
-	Right        *node
+	Left         Node
+	Right        Node
+}
+
+func (a AExpr) Equal(node Node) bool {
+	if nodesEqNil(a, node) {
+		return true
+	} else if !basicNodeEqual(a, node) {
+		return false
+	}
+	raw := node.(AExpr)
+	return a.Kind == raw.Kind &&
+		a.OperatorName == raw.OperatorName &&
+		a.Left.Equal(raw.Left) &&
+		a.Right.Equal(raw.Right)
 }
 
 type AExprKind = uint8

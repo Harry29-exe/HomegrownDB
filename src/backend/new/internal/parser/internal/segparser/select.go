@@ -18,15 +18,102 @@ func (s _select) Parse(src internal.TokenSource, v tkValidator) (pnode.SelectStm
 
 	switch currentTk := src.Current(); currentTk.Code() {
 	case token.Select:
-		selectNode, err = s.parseFullSelect(src, v)
+		selectNode, err = StdSelect.parseFullSelect(src, v)
 	case token.Values:
-		selectNode, err = s.parseValueStream(src, v)
+		selectNode, err = ValueStreamSelect.parseValueStream(src, v)
 	}
 
+	if err != nil {
+		src.Rollback()
+	} else {
+		src.Commit()
+	}
 	return selectNode, err
 }
 
-func (s _select) parseFullSelect(src internal.TokenSource, v tkValidator) (pnode.SelectStmt, error) {
+// -------------------------
+//      ValueStreamSelect
+// -------------------------
+
+var ValueStreamSelect = valueStreamSelect{Select}
+
+type valueStreamSelect struct{ _select }
+
+func (s valueStreamSelect) parseValueStream(src tkSource, v tkValidator) (pnode.SelectStmt, error) {
+	src.Checkpoint()
+	selectNode := pnode.NewSelectStmt()
+	if err := v.NextIs(token.SpaceBreak); err != nil {
+		src.Rollback()
+		return selectNode, err
+	}
+
+	rows, err := s.parseValueStreamRow(src, v)
+	if err != nil {
+		src.Rollback()
+		return nil, err
+	}
+	selectNode.Values = rows
+
+	src.CommitAndInitNode(selectNode)
+	return selectNode, nil
+}
+
+func (s valueStreamSelect) parseValueStreamRow(src tkSource, v tkValidator) ([][]pnode.Node, error) {
+	if err := v.NextIs(token.OpeningParenthesis); err != nil {
+		return nil, err
+	} else if src.Next().Code() == token.SpaceBreak {
+		src.Next()
+	}
+	vals := make([][]pnode.Node, 0, 10)
+
+	val, err := Values.Parse(src, v)
+	if err != nil {
+		return nil, err
+	}
+	vals = append(vals, val)
+	err = v.SkipCurrentSBAnd().CurrentIs(token.ClosingParenthesis)
+	if err != nil {
+		return nil, err
+	}
+
+	for s.hasNextRow(src, v) {
+		val, err = Values.Parse(src, v)
+		if err != nil {
+			return nil, err
+		}
+		vals = append(vals, val)
+
+		err = v.SkipCurrentSBAnd().CurrentIs(token.ClosingParenthesis)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return vals, nil
+}
+
+func (s valueStreamSelect) hasNextRow(src tkSource, v tkValidator) bool {
+	err := v.SkipCurrentSBAnd().
+		CurrentIsAnd(token.Comma).
+		SkipCurrentSBAnd().
+		CurrentIsAnd(token.OpeningParenthesis).
+		SkipCurrentSB()
+
+	return err == nil
+}
+
+// -------------------------
+//      StdSelect
+// -------------------------
+
+var StdSelect = stdSelect{Select}
+
+type stdSelect struct {
+	_select
+}
+
+func (s stdSelect) parseFullSelect(src internal.TokenSource, v tkValidator) (pnode.SelectStmt, error) {
+	src.Checkpoint()
 	// Select
 	selectNode := pnode.NewSelectStmt()
 	err := v.NextIs(token.SpaceBreak)
@@ -61,18 +148,8 @@ func (s _select) parseFullSelect(src internal.TokenSource, v tkValidator) (pnode
 	return selectNode, nil
 }
 
-func (s _select) parseValueStream(src tkSource, v tkValidator) (pnode.SelectStmt, error) {
-	selectNode := pnode.NewSelectStmt()
-	if err := v.NextIs(token.SpaceBreak); err != nil {
-		return selectNode, err
-	}
-
-	//todo implement me
-	panic("Not implemented")
-}
-
 //todo change for ResultTargets
-func (s _select) parseFields(
+func (s stdSelect) parseFields(
 	selectNode pnode.SelectStmt,
 	source tkSource,
 	v tkValidator,
@@ -86,7 +163,7 @@ func (s _select) parseFields(
 			return sqlerr.NewSyntaxError(token.ToString(token.Identifier), parsingToken.Value(), source)
 		}
 
-		field, err := ResultTarget.Parse(source, v, TargetEntrySelect)
+		field, err := ResultTarget.Parse(source, v, ResultTargetSelect)
 		if err != nil {
 			source.Rollback()
 			return err
@@ -106,7 +183,7 @@ func (s _select) parseFields(
 	}
 }
 
-func (s _select) parseTables(
+func (s stdSelect) parseTables(
 	selectNode pnode.SelectStmt,
 	source tkSource,
 	v tkValidator,

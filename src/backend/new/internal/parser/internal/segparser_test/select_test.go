@@ -17,7 +17,7 @@ func TestSelectParser_Parse_ShouldParse(t *testing.T) {
 	from := []pnode.RangeVar{rangeVar}
 
 	col1Ref := pnode.NewColumnRef("col1", "t1")
-	col1 := pnode.NewResultTarget("", &col1Ref)
+	col1 := pnode.NewResultTarget("", col1Ref)
 	targetList := []pnode.ResultTarget{col1}
 
 	for _, sentence := range sentences {

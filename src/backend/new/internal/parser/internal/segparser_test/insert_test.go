@@ -9,6 +9,7 @@ import (
 )
 
 func TestSimpleInsertParse(t *testing.T) {
+	//given
 	queries := []string{
 		"INSERT INTO users (name, age) VALUES ('bob', 15), ('Alice', 24)",
 		"INSERT INTO users  (name , age ) VALUES ( 'bob' , 15), ('Alice', 24) ",
@@ -21,73 +22,53 @@ func TestSimpleInsertParse(t *testing.T) {
 		pnode.NewResultTarget("", pnode.NewColumnRef("name", "")),
 		pnode.NewResultTarget("", pnode.NewColumnRef("age", "")),
 	}
+	expectedTree.SrcNode = pnode.NewSelectStmtWithValues([][]pnode.Node{
+		{pnode.NewAConstStr("bob"), pnode.NewAConstInt(15)},
+		{pnode.NewAConstStr("Alice"), pnode.NewAConstInt(24)},
+	})
+	expectedTree.Relation = pnode.NewRangeVar("users", "")
 
 	for _, query := range queries {
+		//when
 		source := newTestTokenSource(query)
 		v := validator.NewValidator(source)
-
 		node, err := segparser.Insert.Parse(source, v)
+
+		//then
+		assert.IsNil(err, t)
+		assert.True(node.Equal(expectedTree), t)
 		assert.Eq(len(source.Checkpoints), 0, t)
-		if err != nil {
-			t.Error(err.Error())
-		}
-
-		assert.Eq(node.Table.TableName, "users", t)
-		assert.Eq(node.Table.TableAlias, "users", t)
-
-		columns := node.ColNames
-		assert.Eq(len(columns), 2, t)
-		assert.Eq(columns[0], "name", t)
-		assert.Eq(columns[1], "age", t)
-
-		rows := node.Rows
-		assert.Eq(len(rows), 2, t)
-
-		row1 := rows[0].Fields
-		assert.Eq(len(row1), 2, t)
-		assert.Eq(row1[0].Value.V.(string), "bob", t)
-		assert.Eq(row1[1].Value.V.(int64), 15, t)
-		row2 := rows[1].Fields
-		assert.Eq(len(row2), 2, t)
-		assert.Eq(row2[0].Value.V.(string), "Alice", t)
-		assert.Eq(row2[1].Value.V.(int64), 24, t)
 	}
 }
 
 func TestInsertParseWithDefaultColumn(t *testing.T) {
+	//given
 	queries := []string{
 		"INSERT INTO users VALUES ('bob', 15), ('Alice', 24)",
 		"INSERT INTO users  VALUES ( 'bob' , 15), ( 'Alice' , 24)",
 		"INSERT INTO users VALUES ('bob',15),('Alice',24)",
 	}
 
+	expectedTree := pnode.NewInsertStmt()
+	expectedTree.Columns = []pnode.ResultTarget{
+		pnode.NewAStarResultTarget(),
+	}
+	expectedTree.SrcNode = pnode.NewSelectStmtWithValues([][]pnode.Node{
+		{pnode.NewAConstStr("bob"), pnode.NewAConstInt(15)},
+		{pnode.NewAConstStr("Alice"), pnode.NewAConstInt(24)},
+	})
+	expectedTree.Relation = pnode.NewRangeVar("users", "")
+
 	for _, query := range queries {
+		//when
 		source := newTestTokenSource(query)
 		v := validator.NewValidator(source)
-
 		node, err := segparser.Insert.Parse(source, v)
+
+		//then
 		assert.Eq(len(source.Checkpoints), 0, t)
-		if err != nil {
-			t.Error(err.Error())
-		}
-
-		assert.Eq(node.Table.TableName, "users", t)
-		assert.Eq(node.Table.TableAlias, "users", t)
-
-		columns := node.ColNames
-		assert.Eq(len(columns), 0, t)
-
-		values := node.Rows
-		assert.Eq(len(values), 2, t)
-
-		val1 := values[0].Fields
-		assert.Eq(len(val1), 2, t)
-		assert.Eq(val1[0].Value.V.(string), "bob", t)
-		assert.Eq(val1[1].Value.V.(int64), 15, t)
-		val2 := values[1].Fields
-		assert.Eq(len(val2), 2, t)
-		assert.Eq(val2[0].Value.V.(string), "Alice", t)
-		assert.Eq(val2[1].Value.V.(int64), 24, t)
+		assert.IsNil(err, t)
+		assert.True(node.Equal(expectedTree), t)
 	}
 }
 

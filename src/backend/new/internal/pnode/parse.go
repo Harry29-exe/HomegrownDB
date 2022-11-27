@@ -20,7 +20,9 @@ type rawStmt struct {
 }
 
 func (r *rawStmt) Equal(node Node) bool {
-	if !basicNodeEqual(r, node) {
+	if nodesEqNil(r, node) {
+		return true
+	} else if !basicNodeEqual(r, node) {
 		return false
 	}
 	raw := node.(RawStmt)
@@ -41,6 +43,13 @@ func NewSelectStmt() SelectStmt {
 	}
 }
 
+func NewSelectStmtWithValues(values [][]Node) SelectStmt {
+	return &selectStmt{
+		node:   node{tag: TagSelectStmt},
+		Values: values,
+	}
+}
+
 var _ Node = &selectStmt{}
 
 type selectStmt struct {
@@ -53,8 +62,16 @@ type selectStmt struct {
 }
 
 func (s SelectStmt) Equal(node Node) bool {
-	//todo implement me
-	panic("Not implemented")
+	if nodesEqNil(s, node) {
+		return true
+	} else if !basicNodeEqual(s, node) {
+		return false
+	}
+	raw := node.(SelectStmt)
+	return cmpNodeArray(s.Targets, raw.Targets) &&
+		cmpNodeArray(s.From, raw.From) &&
+		s.Where.Equal(raw.Where) &&
+		cmpNodeArray2D(s.Values, raw.Values)
 }
 
 // -------------------------
@@ -77,6 +94,14 @@ type insertStmt struct {
 }
 
 func (s InsertStmt) Equal(node Node) bool {
-	//todo implement me
-	panic("Not implemented")
+	if nodesEqNil(s, node) {
+		return true
+	} else if !basicNodeEqual(s, node) {
+		return false
+	}
+	raw := node.(InsertStmt)
+
+	return cmpNodeArray(s.Columns, raw.Columns) &&
+		s.Relation.Equal(raw.Relation) &&
+		s.SrcNode.Equal(raw.SrcNode)
 }

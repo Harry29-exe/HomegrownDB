@@ -20,6 +20,10 @@ type Validator interface {
 	CurrentSequence(codes ...token.Code) error
 	CurrentSequenceAnd(codes ...token.Code) Validator
 
+	SkipNextSB() error
+	SkipNextSBAnd() Validator
+	SkipCurrentSB() error
+	SkipCurrentSBAnd() Validator
 	SkipTokens() TokenSkipper
 	// SkipSpaceFromNext is the same as
 	// Validator.SkipTokens().TypeMax(token.Space, 1).SkipFromNext)

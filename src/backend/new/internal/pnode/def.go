@@ -20,6 +20,9 @@ type node struct {
 }
 
 func (p *node) Tag() Tag {
+	if p == nil {
+		return TagNil
+	}
 	return p.tag
 }
 
@@ -46,12 +49,14 @@ func (p *node) SetEndToken(index uint) {
 type Tag = uint16
 
 const (
-	TagRawStmt Tag = iota
+	TagNil Tag = iota
+	TagRawStmt
 	TagSelectStmt
 	TagInsertStmt
-	TagExpr
+	TagAExpr
 	TagResultTarget
 	TagColumnRef
 	TagRangeVar
 	TagAStar
+	TagAConst
 )

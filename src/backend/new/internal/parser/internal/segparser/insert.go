@@ -20,36 +20,36 @@ func (i insert) Parse(src tkSource, v tkValidator) (pnode.InsertStmt, error) {
 	src.Next()
 	insertNode := pnode.NewInsertStmt()
 
-	relation, err := Table.Parse(src, v)
+	insertNode.Relation, err = Table.Parse(src, v)
 	if err != nil {
 		src.Rollback()
 		return nil, err
 	}
-	insertNode.Relation = relation
 
-	err = v.NextSequence(token.SpaceBreak, token.OpeningParenthesis)
-	if err == nil {
-		resTargets, err := ResultTargets.Parse(src, v)
-		if err != nil {
-			return insertNode, err
-		}
-		insertNode.Columns = resTargets
-	} else {
-		insertNode.Columns = []pnode.ResultTarget{pnode.NewAStarResultTarget()}
-	}
-
-	err = v.NextIs(token.SpaceBreak)
-	if err != nil {
+	if err = v.NextIs(token.SpaceBreak); err != nil {
 		src.Rollback()
 		return insertNode, err
 	}
 
-	src.Next()
+	if err = v.NextIs(token.OpeningParenthesis); err == nil {
+		insertNode.Columns, err = ResultTargets.Parse(src, v, ResultTargetInsert)
+		if err != nil {
+			src.Rollback()
+			return insertNode, err
+		} else if err = v.CurrentIs(token.SpaceBreak); err != nil {
+			src.Rollback()
+			return insertNode, err
+		}
+	} else {
+		insertNode.Columns = []pnode.ResultTarget{pnode.NewAStarResultTarget()}
+	}
 
 	selectStmt, err := Select.Parse(src, v)
 	if err != nil {
+		src.Rollback()
 		return insertNode, err
 	}
 	insertNode.SrcNode = selectStmt
+	src.CommitAndInitNode(insertNode)
 	return insertNode, nil
 }

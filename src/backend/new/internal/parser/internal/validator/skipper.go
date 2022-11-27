@@ -56,7 +56,6 @@ func (b *tokenSkipper) skip(fromCurrent bool) error {
 	for {
 		skippingToken, ok := b.tokenTypes[currentToken.Code()]
 		if !ok {
-			b.source.Prev()
 			break
 		}
 		skippingToken.maxOccurrences--

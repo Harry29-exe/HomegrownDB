@@ -1,6 +1,7 @@
 package segparser
 
 import (
+	"HomegrownDB/backend/new/internal/parser/internal/sqlerr"
 	"HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/new/internal/pnode"
 )
@@ -30,34 +31,35 @@ func (val values) Parse(src tkSource, v tkValidator) ([]pnode.Node, error) {
 }
 
 func (val values) hasNextVal(v tkValidator) bool {
-	return v.SkipTokens().
-		Type(token.Comma).
-		TypeMax(token.SpaceBreak, 2).
-		SkipFromCurrent() == nil
+	return v.SkipCurrentSBAnd().CurrentIsAnd(token.Comma).SkipCurrentSB() == nil
 }
 
 var Value = value{}
 
 type value struct{}
 
-func (val value) Parse(src tkSource, v tkValidator) (pnode.Node, error) {
+func (val value) Parse(src tkSource, v tkValidator) (node pnode.Node, err error) {
 	src.Checkpoint()
-	var node pnode.Node
-	var err error
 
 	if val.isFunction(v) {
 		src.Rollback()
 		//todo implement me
 		panic("Not implemented")
+
 	} else if val.isColumnRef(v) {
 		src.Rollback()
 		node, err = val.parseColumnRef(src, v)
-	} else {
-		panic("not supported")
-	}
-	//todo add support for expressions
 
-	return node, err
+	} else {
+		node, err = val.parseConst(src, v)
+	}
+
+	if err != nil {
+		src.Rollback()
+	} else {
+		src.Commit()
+	}
+	return
 }
 
 func (val value) isFunction(v tkValidator) bool {
@@ -78,4 +80,37 @@ func (val value) parseColumnRef(src tkSource, v tkValidator) (pnode.ColumnRef, e
 		src.Next()
 		return cRef, nil
 	}
+}
+
+func (val value) parseConst(src tkSource, v tkValidator) (pnode.AConst, error) {
+	src.Checkpoint()
+	tk := src.Current()
+	var aConst pnode.AConst
+	var err error
+
+	switch tk.Code() {
+	case token.SqlTextValue:
+		textTk := tk.(*token.SqlTextValueToken)
+		aConst, err = pnode.NewAConstStr(textTk.InnerStr), nil
+	case token.Float:
+		floatTk := tk.(*token.FloatToken)
+		aConst, err = pnode.NewAConstFloat(floatTk.Float), nil
+	case token.Integer:
+		intTk := tk.(*token.IntegerToken)
+		aConst, err = pnode.NewAConstInt(intTk.Int), nil
+	default:
+		src.Rollback()
+		return nil, sqlerr.NewSyntaxError(
+			"Const value str/int/float",
+			token.ToString(tk.Code()),
+			src,
+		)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	src.Next()
+	src.CommitAndInitNode(aConst)
+	return aConst, nil
 }

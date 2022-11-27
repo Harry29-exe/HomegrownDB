@@ -67,6 +67,7 @@ func (v *validator) CurrentIs(code token.Code) error {
 	} else if tk.Code() != code {
 		return sqlerr.NewSyntaxError(token.ToString(code), tk.Value(), v.source)
 	}
+	v.source.Next()
 	return nil
 }
 
@@ -82,6 +83,7 @@ func (v *validator) CurrentIsAnd(code token.Code) Validator {
 			err:   sqlerr.NewSyntaxError(token.ToString(code), tk.Value(), v.source),
 		}
 	}
+	v.source.Next()
 	return v
 }
 
@@ -162,6 +164,32 @@ func (v *validator) CurrentSequenceAnd(codes ...token.Code) Validator {
 
 	v.source.Commit()
 	return nil
+}
+
+func (v *validator) SkipNextSB() error {
+	if v.source.Next().Code() == token.SpaceBreak {
+		v.source.Next()
+	} else {
+		v.source.Prev()
+	}
+	return nil
+}
+
+func (v *validator) SkipNextSBAnd() Validator {
+	_ = v.SkipNextSB()
+	return v
+}
+
+func (v *validator) SkipCurrentSB() error {
+	if v.source.Current().Code() == token.SpaceBreak {
+		v.source.Next()
+	}
+	return nil
+}
+
+func (v *validator) SkipCurrentSBAnd() Validator {
+	_ = v.SkipCurrentSB()
+	return v
 }
 
 func (v *validator) SkipTokens() TokenSkipper {
