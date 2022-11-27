@@ -13,24 +13,19 @@ func TestSelectParser_Parse_ShouldParse(t *testing.T) {
 		"SELECT t1.col1 FROM ttable1 t1",
 	}
 
-	rangeVar := pnode.NewRangeVar("ttable1", "t1")
-	from := []pnode.RangeVar{rangeVar}
-
-	col1Ref := pnode.NewColumnRef("col1", "t1")
-	col1 := pnode.NewResultTarget("", col1Ref)
-	targetList := []pnode.ResultTarget{col1}
+	expectedStmt := pnode.NewSelectStmt()
+	expectedStmt.From = []pnode.RangeVar{pnode.NewRangeVar("ttable1", "t1")}
+	expectedStmt.Targets = []pnode.ResultTarget{
+		pnode.NewResultTarget("", pnode.NewColumnRef("col1", "t1")),
+	}
 
 	for _, sentence := range sentences {
 		source := newTestTokenSource(sentence)
 		v := validator.NewValidator(source)
 		selectNode, err := segparser.Select.Parse(source, v)
 
-		if err != nil {
-			t.Error(err)
-		}
-
-		assert.EqDeep(selectNode.Targets, targetList, t)
-		assert.EqDeep(selectNode.From, from, t)
+		assert.ErrIsNil(err, t)
+		assert.True(selectNode.Equal(expectedStmt), t)
 	}
 
 }

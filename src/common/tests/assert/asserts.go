@@ -48,6 +48,20 @@ func IsNil(val interface{}, t *testing.T) {
 	}
 }
 
+func ErrNotNil(val error, t *testing.T) {
+	if val == nil {
+		t.Errorf("Assert failed, expected err got nil")
+		debug.PrintStack()
+	}
+}
+
+func ErrIsNil(val error, t *testing.T) {
+	if val != nil {
+		t.Errorf("Assert failed, expected nil got err: %s", val.Error())
+		debug.PrintStack()
+	}
+}
+
 func EqArray[T comparable](v1, v2 []T, t *testing.T) {
 	if len(v1) != len(v2) {
 		t.Errorf("Arrays have different lenghts")

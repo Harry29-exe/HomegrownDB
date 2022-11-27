@@ -135,6 +135,7 @@ func (t resultTargetParser) parseInsert(src tkSource, v tkValidator) (pnode.Resu
 	src.Checkpoint()
 	current := src.Current()
 	if current.Code() != token.Identifier {
+		src.Rollback()
 		return nil, sqlerr.NewTokenSyntaxError(token.Identifier, current.Code(), src)
 	}
 	src.Checkpoint()

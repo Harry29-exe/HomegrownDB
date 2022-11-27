@@ -6,12 +6,12 @@ import (
 	"HomegrownDB/backend/new/internal/pnode"
 )
 
-var Table = tableParser{}
+var RangeVar = rangeVar{}
 
-type tableParser struct {
+type rangeVar struct {
 }
 
-func (t tableParser) Parse(source internal.TokenSource, validator tkValidator) (pnode.RangeVar, error) {
+func (t rangeVar) Parse(source internal.TokenSource, validator tkValidator) (pnode.RangeVar, error) {
 	source.Checkpoint()
 
 	name, err := validator.Current().
@@ -24,7 +24,7 @@ func (t tableParser) Parse(source internal.TokenSource, validator tkValidator) (
 		return nil, err
 	}
 
-	err = validator.NextSequence(token.SpaceBreak, token.As)
+	err = validator.NextSequence(token.SpaceBreak, token.Identifier)
 	if err != nil {
 		source.Commit()
 		return pnode.NewRangeVar(name.Value(), ""), nil

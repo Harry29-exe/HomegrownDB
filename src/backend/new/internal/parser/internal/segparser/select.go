@@ -128,21 +128,23 @@ func (s stdSelect) parseFullSelect(src internal.TokenSource, v tkValidator) (pno
 
 	// Fields
 	src.Next()
-	err = s.parseFields(selectNode, src, v)
+	selectNode.Targets, err = ResultTargets.Parse(src, v, ResultTargetSelect)
 	if err != nil {
 		src.Rollback()
 		return selectNode, err
 	}
 
 	// From
-	err = v.NextSequence(token.SpaceBreak, token.From, token.SpaceBreak, token.Identifier)
+	err = v.CurrentSequence(token.SpaceBreak, token.From, token.SpaceBreak, token.Identifier)
 	if err != nil {
 		src.Rollback()
 		return selectNode, err
 	}
 
 	// tables
-	err = s.parseTables(selectNode, src, v)
+	rangeVar, err := RangeVar.Parse(src, v)
+	selectNode.From = []pnode.RangeVar{rangeVar}
+	//err = s.parseTables(selectNode, src, v)
 	if err != nil {
 		src.Rollback()
 		return selectNode, err
@@ -150,64 +152,4 @@ func (s stdSelect) parseFullSelect(src internal.TokenSource, v tkValidator) (pno
 
 	src.CommitAndInitNode(selectNode)
 	return selectNode, nil
-}
-
-//todo change for ResultTargets
-func (s stdSelect) parseFields(
-	selectNode pnode.SelectStmt,
-	source tkSource,
-	v tkValidator,
-) error {
-	source.Checkpoint()
-
-	parsingToken := source.Current()
-	for {
-		if parsingToken.Code() != token.Identifier {
-			source.Rollback()
-			return sqlerr.NewSyntaxError(token.ToString(token.Identifier), parsingToken.Value(), source)
-		}
-
-		field, err := ResultTarget.Parse(source, v, ResultTargetSelect)
-		if err != nil {
-			source.Rollback()
-			return err
-		}
-		selectNode.Targets = append(selectNode.Targets, field)
-
-		err = v.SkipTokens().
-			Type(token.SpaceBreak).
-			TypeMinMax(token.Comma, 1, 1).
-			SkipFromNext()
-
-		if err != nil {
-			source.Commit()
-			return nil
-		}
-		source.Next()
-	}
-}
-
-func (s stdSelect) parseTables(
-	selectNode pnode.SelectStmt,
-	source tkSource,
-	v tkValidator,
-) error {
-	source.Checkpoint()
-
-	for {
-		table, err := Table.Parse(source, v)
-		if err != nil {
-			return err
-		}
-		selectNode.From = append(selectNode.From, table)
-
-		err = v.SkipTokens().
-			Type(token.SpaceBreak).
-			TypeExactly(token.Comma, 1).
-			SkipFromNext()
-		if err != nil {
-			source.Commit()
-			return nil
-		}
-	}
 }

@@ -20,7 +20,7 @@ func (i insert) Parse(src tkSource, v tkValidator) (pnode.InsertStmt, error) {
 	src.Next()
 	insertNode := pnode.NewInsertStmt()
 
-	insertNode.Relation, err = Table.Parse(src, v)
+	insertNode.Relation, err = RangeVar.Parse(src, v)
 	if err != nil {
 		src.Rollback()
 		return nil, err

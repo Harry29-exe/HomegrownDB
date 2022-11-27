@@ -35,7 +35,7 @@ func TestSimpleInsertParse(t *testing.T) {
 		node, err := segparser.Insert.Parse(source, v)
 
 		//then
-		assert.IsNil(err, t)
+		assert.ErrIsNil(err, t)
 		assert.True(node.Equal(expectedTree), t)
 		assert.Eq(len(source.Checkpoints), 0, t)
 	}
@@ -66,7 +66,7 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 		node, err := segparser.Insert.Parse(source, v)
 
 		//then
-		assert.IsNil(err, t)
+		assert.ErrIsNil(err, t)
 		assert.True(node.Equal(expectedTree), t)
 		assert.Eq(len(source.Checkpoints), 0, t)
 	}
@@ -85,7 +85,7 @@ func TestInsertParseInvalidQuery(t *testing.T) {
 		v := validator.NewValidator(source)
 
 		_, err := segparser.Insert.Parse(source, v)
-		assert.NotNil(err, t)
+		assert.ErrNotNil(err, t)
 		assert.Eq(len(source.Checkpoints), 0, t)
 	}
 }
