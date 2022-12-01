@@ -3,7 +3,7 @@ package node
 type PlanStmt = *planStmt
 
 type planStmt struct {
-	Node
+	node
 	Command CommandType
 	Tables  []RangeTableEntry
 }

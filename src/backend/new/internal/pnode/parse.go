@@ -16,7 +16,7 @@ var _ Node = &rawStmt{}
 
 type rawStmt struct {
 	node
-	stmt Node
+	Stmt Node
 }
 
 func (r *rawStmt) Equal(node Node) bool {
@@ -26,7 +26,7 @@ func (r *rawStmt) Equal(node Node) bool {
 		return false
 	}
 	raw := node.(RawStmt)
-	return r.stmt.Equal(raw.stmt)
+	return r.Stmt.Equal(raw.Stmt)
 }
 
 // -------------------------

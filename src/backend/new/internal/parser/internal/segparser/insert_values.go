@@ -62,7 +62,7 @@ package segparser
 //	}
 //}
 //
-//func (i insertValues) parseRow(source tkSource, v tkValidator) (insertingRow []pnode.Node, err error) {
+//func (i insertValues) parseRow(source tkSource, v tkValidator) (insertingRow []pnode.node, err error) {
 //	if v.CurrentIs(token.OpeningParenthesis) != nil {
 //		return
 //	} else {

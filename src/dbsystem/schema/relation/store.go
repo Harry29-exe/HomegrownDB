@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-//todo load store from disc
+// todo load store from disc
 var DBStore = NewStore()
 
 type Store interface {
@@ -59,5 +59,5 @@ func (s *store) Remove(id ID) {
 }
 
 func (s *store) NewRelationID() ID {
-	return s.idCounter.IncrementAndGet()
+	return s.idCounter.IncrAndGet()
 }

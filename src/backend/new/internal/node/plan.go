@@ -6,7 +6,7 @@ type PlanNodeId = uint16
 type Plan = *plan
 
 type plan struct {
-	Node
+	node
 
 	planNodeId PlanNodeId    // planNodeId unique id of node in given plan
 	query      Query         // query source of this

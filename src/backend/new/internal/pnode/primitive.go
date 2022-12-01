@@ -18,7 +18,7 @@ func NewResultTarget(name string, val Node) ResultTarget {
 			tag: TagResultTarget,
 		},
 		Name: name,
-		val:  val,
+		Val:  val,
 	}
 }
 
@@ -26,7 +26,7 @@ func NewAStarResultTarget() ResultTarget {
 	return &resultTarget{
 		node: node{tag: TagResultTarget},
 		Name: "",
-		val:  NewAStar(),
+		Val:  NewAStar(),
 	}
 }
 
@@ -45,7 +45,7 @@ type resultTarget struct {
 	- insert - not used
 	- update - expression to get field value
 	*/
-	val Node
+	Val Node
 }
 
 func (r ResultTarget) Equal(node Node) bool {
@@ -55,7 +55,7 @@ func (r ResultTarget) Equal(node Node) bool {
 		return false
 	}
 	raw := node.(ResultTarget)
-	return r.Name == raw.Name && r.val.Equal(raw.val)
+	return r.Name == raw.Name && r.Val.Equal(raw.Val)
 }
 
 // -------------------------

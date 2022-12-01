@@ -8,11 +8,11 @@ func NewQuery() Query {
 type Query = *query
 
 type query struct {
-	Node
+	node
 	Command    CommandType
-	targetList []TargetEntry
-	rTables    []RangeTableEntry
-	fromExpr   FromExpr
+	TargetList []TargetEntry
+	RTables    []RangeTableEntry
+	FromExpr   FromExpr
 }
 
 type FromExpr struct {

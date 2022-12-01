@@ -148,7 +148,7 @@ func (t *StdTable) AddColumn(definition column.WDef) error {
 	if ok {
 		return errors.New("table already contains column with name:" + definition.Name())
 	}
-	definition.SetId(t.nextColumnId.GetAndIncrement())
+	definition.SetId(t.nextColumnId.GetAndIncr())
 	definition.SetOrder(t.columnsCount)
 
 	t.columns = append(t.columns, definition)

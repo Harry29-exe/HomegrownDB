@@ -1,9 +1,7 @@
 package table
 
-import "math"
-
 type Store interface {
-	WDefsStore
+	DefsStore
 }
 
 type RDefsStore interface {
@@ -15,16 +13,11 @@ type RDefsStore interface {
 	AccessTable(id Id, lockMode TableLockMode) Definition
 }
 
-type WDefsStore interface {
+type DefsStore interface {
 	RDefsStore
 	AddTable(table Definition) error
 	RemoveTable(id Id) error
 }
-
-var (
-	InvalidTableId Id = math.MaxUint16
-	MaxTableId     Id = math.MaxUint16 - 1
-)
 
 type TableLockMode = uint8
 

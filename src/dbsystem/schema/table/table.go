@@ -48,7 +48,7 @@ type Definition interface {
 }
 
 // Id of table object, 0 if id is invalid
-type Id = uint16
+type Id = relation.ID
 
 func NewDefinition(name string) Definition {
 	table := &StdTable{

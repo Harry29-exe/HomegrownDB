@@ -18,13 +18,65 @@ const (
 	CommandTypeUtils
 )
 
+// -------------------------
+//      RangeTableEntry
+// -------------------------
+
+type rteKind = uint8
+
+const (
+	RteRelation rteKind = iota
+	RteSubQuery
+	RteJoin
+	RteFunc
+	RteTableFunc
+	RteValues
+	RteCte
+	RteNamedTupleStore
+	RteResult
+)
+
+func NewRelationRTE(rteID RteID, ref table.RDefinition) RangeTableEntry {
+	return &rangeTableEntry{
+		node:    node{tag: TagRTE},
+		kind:    RteRelation,
+		Id:      rteID,
+		TableId: ref.RelationID(),
+		Ref:     ref,
+	}
+}
+
+func NewSelectRTE(id RteID, subquery Query) RangeTableEntry {
+	return &rangeTableEntry{
+		node:  node{tag: TagRTE},
+		kind:  RteSubQuery,
+		Id:    id,
+		Query: subquery,
+	}
+}
+
+type RangeTableEntry = *rangeTableEntry
+
+var _ Node = &rangeTableEntry{}
+
 // RangeTableEntry is db table that is used in query or plan
-type RangeTableEntry struct {
-	Node
+type rangeTableEntry struct {
+	node
+	kind rteKind
+
+	// kind = RteRelation
 	Id       RteID
 	LockMode table.TableLockMode
 	TableId  table.Id
-	Ref      table.Definition
+	Ref      table.RDefinition
+
+	// kind = RteSubQuery
+	Query Query
+}
+
+func (r RangeTableEntry) DEqual() bool {
+	//TODO implement me
+	panic("implement me")
 }
 
 // RteID is id of RangeTableEntry unique for given query/plan
@@ -32,15 +84,16 @@ type RteID = uint16
 
 // RangeTableRef is ref to RTE in query/plan
 type RangeTableRef struct {
-	Node
+	node
 	Rte RteID
 }
 
 type TargetEntry struct {
-	Expr                // Expr to treat TargetEntry as Expr node
-	ExprToExec *Expr    // ExprToExec expression to evaluate to
-	AttribNo   uint16   // AttribNo number of entry
-	TableId    table.Id // TableId
-	ColName    string   // ColName nullable column name
-	Temp       bool     // Temp if true then entry should be eliminated before tuple is emitted
+	Expr              // Expr to treat TargetEntry as Expr node
+	ExprToExec *Expr  // ExprToExec expression to evaluate to
+	AttribNo   uint16 // AttribNo number of entry
+	ColName    string // ColName nullable column name
+
+	TableId table.Id // TableId
+	Temp    bool     // Temp if true then entry should be eliminated before tuple is emitted
 }

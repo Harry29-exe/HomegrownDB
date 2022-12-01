@@ -7,8 +7,8 @@ import (
 )
 
 type SyncCounter[T datastructs.Number] interface {
-	GetAndIncrement() T
-	IncrementAndGet() T
+	GetAndIncr() T
+	IncrAndGet() T
 	Get() T
 }
 
@@ -24,7 +24,7 @@ type GenericSyncCounter[T datastructs.Number] struct {
 	lock SpinLock
 }
 
-func (g *GenericSyncCounter[T]) GetAndIncrement() (v T) {
+func (g *GenericSyncCounter[T]) GetAndIncr() (v T) {
 	g.lock.Lock()
 	v = g.val
 	g.val++
@@ -32,7 +32,7 @@ func (g *GenericSyncCounter[T]) GetAndIncrement() (v T) {
 	return
 }
 
-func (g *GenericSyncCounter[T]) IncrementAndGet() (v T) {
+func (g *GenericSyncCounter[T]) IncrAndGet() (v T) {
 	g.lock.Lock()
 	g.val++
 	v = g.val
@@ -71,7 +71,7 @@ type uint64LockCounter struct {
 	value uint64
 }
 
-func (u *uint64LockCounter) GetAndIncrement() uint64 {
+func (u *uint64LockCounter) GetAndIncr() uint64 {
 	value := u.value
 	u.mutex.Lock()
 	u.value++
@@ -79,7 +79,7 @@ func (u *uint64LockCounter) GetAndIncrement() uint64 {
 	return value
 }
 
-func (u *uint64LockCounter) IncrementAndGet() uint64 {
+func (u *uint64LockCounter) IncrAndGet() uint64 {
 	u.mutex.Lock()
 	u.value++
 	u.mutex.Unlock()
@@ -95,7 +95,7 @@ type int32LockCounter struct {
 	value int32
 }
 
-func (u *int32LockCounter) GetAndIncrement() int32 {
+func (u *int32LockCounter) GetAndIncr() int32 {
 	value := u.value
 	u.mutex.Lock()
 	u.value++
@@ -103,7 +103,7 @@ func (u *int32LockCounter) GetAndIncrement() int32 {
 	return value
 }
 
-func (u *int32LockCounter) IncrementAndGet() int32 {
+func (u *int32LockCounter) IncrAndGet() int32 {
 	u.mutex.Lock()
 	u.value++
 	u.mutex.Unlock()
@@ -118,11 +118,11 @@ type uint32AtomicCounter struct {
 	value uint32
 }
 
-func (u *uint32AtomicCounter) GetAndIncrement() uint32 {
+func (u *uint32AtomicCounter) GetAndIncr() uint32 {
 	return atomic.AddUint32(&u.value, 1) - 1
 }
 
-func (u *uint32AtomicCounter) IncrementAndGet() uint32 {
+func (u *uint32AtomicCounter) IncrAndGet() uint32 {
 	return atomic.AddUint32(&u.value, 1)
 }
 
