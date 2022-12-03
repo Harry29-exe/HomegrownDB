@@ -2,8 +2,8 @@ package validator
 
 import (
 	"HomegrownDB/backend/new/internal/parser/internal"
+	"HomegrownDB/backend/new/internal/parser/internal/sqlerr"
 	"HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
-	"HomegrownDB/backend/new/internal/sqlerr"
 )
 
 type tokenValidator struct {

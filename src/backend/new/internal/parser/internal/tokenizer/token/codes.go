@@ -81,6 +81,6 @@ var keywordMap = map[string]Code{
 	"TABLE":  Table,
 	"AND":    And,
 	"OR":     Or,
-	"On":     On,
-	"As":     As,
+	"ON":     On,
+	"AS":     As,
 }

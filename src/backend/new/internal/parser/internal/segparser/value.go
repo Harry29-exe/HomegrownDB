@@ -1,9 +1,9 @@
 package segparser
 
 import (
+	"HomegrownDB/backend/new/internal/parser/internal/sqlerr"
 	"HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/new/internal/pnode"
-	"HomegrownDB/backend/new/internal/sqlerr"
 )
 
 var Values = values{}
@@ -67,18 +67,17 @@ func (val value) isFunction(v tkValidator) bool {
 }
 
 func (val value) isColumnRef(v tkValidator) bool {
-	return v.CurrentSequence(token.Identifier, token.SpaceBreak) == nil ||
-		v.CurrentSequence(token.Identifier, token.Dot, token.Identifier) == nil
+	return v.CurrentSequence(token.Identifier) == nil
 }
 
 func (val value) parseColumnRef(src tkSource, v tkValidator) (pnode.ColumnRef, error) {
 	identifier1 := src.Current()
-	if tk := src.Next(); tk.Code() == token.SpaceBreak {
-		return pnode.NewColumnRef(identifier1.Value(), ""), nil
-	} else {
+	if tk := src.Next(); tk.Code() == token.Dot {
 		cRef := pnode.NewColumnRef(src.Next().Value(), identifier1.Value())
 		src.Next()
 		return cRef, nil
+	} else {
+		return pnode.NewColumnRef(identifier1.Value(), ""), nil
 	}
 }
 

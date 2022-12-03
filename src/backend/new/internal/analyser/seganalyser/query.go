@@ -17,5 +17,8 @@ func (q queryAnlr) Analyse(stmt pnode.Node, ctx query.Ctx) (node.Query, error) {
 		return Select.Analyse(stmt.(pnode.SelectStmt), ctx), nil
 	case pnode.TagInsertStmt:
 		return Insert.Analyse(stmt.(pnode.InsertStmt), ctx)
+	default:
+		//todo implement me
+		panic("Not implemented")
 	}
 }

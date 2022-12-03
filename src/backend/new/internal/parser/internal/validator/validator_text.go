@@ -1,7 +1,7 @@
 package validator
 
 import (
-	"HomegrownDB/backend/new/internal/sqlerr"
+	"HomegrownDB/backend/new/internal/parser/internal/sqlerr"
 )
 
 func (v *validator) StartsWithDigit() TextTokenValidator {

@@ -1,8 +1,8 @@
 package validator
 
 import (
+	"HomegrownDB/backend/new/internal/parser/internal/sqlerr"
 	tk "HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
-	"HomegrownDB/backend/new/internal/sqlerr"
 )
 
 // textTokenChecker is specialization of tokenValidator

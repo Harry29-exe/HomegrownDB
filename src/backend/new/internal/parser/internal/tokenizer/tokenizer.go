@@ -34,7 +34,6 @@ func newBasicTokenizer(str string) *basicTokenizer {
 		futureToken: make([]rune, 0, charsLen/10),
 	}
 
-	bt.skipWhiteSpaces()
 	return bt
 }
 

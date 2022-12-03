@@ -12,6 +12,8 @@ import "fmt"
 // for insert and update it is column on which operations are performed
 type ResultTarget = *resultTarget
 
+var _ Node = &resultTarget{}
+
 func NewResultTarget(name string, val Node) ResultTarget {
 	return &resultTarget{
 		node: node{

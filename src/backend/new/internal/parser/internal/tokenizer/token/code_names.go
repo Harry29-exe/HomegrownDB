@@ -24,6 +24,7 @@ var tokenNamesMap = map[Code]string{
 	And:    "AND",
 	Or:     "OR",
 	On:     "ON",
+	As:     "AS",
 
 	/* -- break characters -- */
 

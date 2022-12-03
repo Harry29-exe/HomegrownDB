@@ -8,11 +8,11 @@ import (
 
 func NewTokenSource(query string) TokenSource {
 	return &tokenSource{
-		tokenCache:  make([]token.Token, 0, 10),
+		tokenCache:  make([]token.Token, 0, 50),
 		currentLen:  0,
 		pointer:     0,
 		tokenizer:   tk.NewTokenizer(query),
-		checkpoints: make([]uint32, 0, 8),
+		checkpoints: make([]uint32, 0, 10),
 	}
 }
 

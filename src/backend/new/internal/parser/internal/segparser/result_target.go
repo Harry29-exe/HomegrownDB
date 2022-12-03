@@ -2,10 +2,9 @@ package segparser
 
 import (
 	"HomegrownDB/backend/new/internal/parser/internal"
+	"HomegrownDB/backend/new/internal/parser/internal/sqlerr"
 	"HomegrownDB/backend/new/internal/parser/internal/tokenizer/token"
 	"HomegrownDB/backend/new/internal/pnode"
-	"HomegrownDB/backend/new/internal/sqlerr"
-	"errors"
 )
 
 type resultTargetMode = uint8
@@ -100,35 +99,15 @@ func (t resultTargetParser) Parse(src tkSource, v tkValidator, mode resultTarget
 func (t resultTargetParser) parseSelect(src tkSource, v tkValidator) (pnode.ResultTarget, error) {
 	src.Checkpoint()
 
-	err := v.CurrentSequence(token.Identifier, token.Dot, token.Identifier)
-	if err == nil {
-		src.Checkpoint()
-		tableAlias, colName := src.GetPtrRelative(-2), src.GetPtrRelative(0)
-		colRef := pnode.NewColumnRef(colName.Value(), tableAlias.Value())
-		src.Next()
-		src.CommitAndInitNode(colRef)
-
-		resultTarget := pnode.NewResultTarget("", colRef)
-		src.CommitAndInitNode(resultTarget)
-		return resultTarget, nil
+	targetValue, err := Value.Parse(src, v)
+	if err != nil {
+		src.Rollback()
+		return nil, err
 	}
+	resTarget := pnode.NewResultTarget("", targetValue)
+	err = t.parseAlias(resTarget, src, v)
 
-	//todo add function support
-
-	if src.Current().Code() == token.Identifier {
-		src.Checkpoint()
-		colName := src.Current().Value()
-		colRef := pnode.NewColumnRef(colName, "")
-		src.Next()
-		src.CommitAndInitNode(colRef)
-
-		resultTarget := pnode.NewResultTarget("", colRef)
-		src.CommitAndInitNode(resultTarget)
-		return resultTarget, nil
-	}
-
-	src.Rollback()
-	return nil, errors.New("could not parse field") //todo better err
+	return resTarget, err
 }
 
 func (t resultTargetParser) parseInsert(src tkSource, v tkValidator) (pnode.ResultTarget, error) {
@@ -149,7 +128,16 @@ func (t resultTargetParser) parseInsert(src tkSource, v tkValidator) (pnode.Resu
 	return rt, nil
 }
 
-func (t resultTargetParser) parseAlias(resultTarget *pnode.ResultTarget, src internal.TokenSource, v tkValidator) error {
-	//err := v.CurrentSequence(token.SpaceBreak, token.As, )
-	return errors.New("column aliases are not supported yet")
+func (t resultTargetParser) parseAlias(resultTarget pnode.ResultTarget, src internal.TokenSource, v tkValidator) error {
+	err := v.CurrentSequence(token.SpaceBreak, token.As, token.SpaceBreak)
+	if err != nil {
+		return nil
+	}
+
+	alias := src.Next()
+	if alias.Code() != token.Identifier {
+		return sqlerr.NewTokenSyntaxError(token.Identifier, alias.Code(), src)
+	}
+	resultTarget.Name = alias.Value()
+	return nil
 }
