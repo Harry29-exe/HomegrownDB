@@ -2,6 +2,10 @@ package node
 
 import "HomegrownDB/dbsystem/schema/table"
 
+// -------------------------
+//      CommandType
+// -------------------------
+
 type CommandType = uint8
 
 const (
@@ -82,10 +86,30 @@ func (r RangeTableEntry) DEqual() bool {
 // RteID is id of RangeTableEntry unique for given query/plan
 type RteID = uint16
 
-// RangeTableRef is ref to RTE in query/plan
-type RangeTableRef struct {
+// -------------------------
+//      RangeTableRef
+// -------------------------
+
+type RangeTableRef = *rangeTableRef
+
+func NewRangeTableRef(rte RangeTableEntry) RangeTableRef {
+	return &rangeTableRef{
+		node: node{tag: TagRteRef},
+		Rte:  rte.Id,
+	}
+}
+
+var _ Node = &rangeTableRef{}
+
+// rangeTableRef is ref to RTE in query/plan
+type rangeTableRef struct {
 	node
 	Rte RteID
+}
+
+func (r RangeTableRef) DEqual() bool {
+	//TODO implement me
+	panic("implement me")
 }
 
 type TargetEntry struct {

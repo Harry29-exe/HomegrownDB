@@ -19,5 +19,7 @@ type Tag = uint16
 
 const (
 	TagRTE Tag = iota
+	TagRteRef
 	TagExpr
+	TagFrom
 )

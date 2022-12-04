@@ -194,6 +194,8 @@ func (c AConst) Equal(node Node) bool {
 
 type RangeVar = *rangeVar
 
+var _ Node = &rangeVar{}
+
 func NewRangeVar(relName string, alias string) RangeVar {
 	return &rangeVar{
 		node:    node{tag: TagRangeVar},

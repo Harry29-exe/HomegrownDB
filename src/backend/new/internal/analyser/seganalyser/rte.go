@@ -36,5 +36,5 @@ func (r rte) analyseSelectStmt(selectStmt pnode.SelectStmt, ctx query.Ctx) (node
 	if err != nil {
 		return nil, err
 	}
-	node.NewSelectRTE(ctx.RteIdCounter.IncrAndGet(), q)
+	return node.NewSelectRTE(ctx.RteIdCounter.IncrAndGet(), q), nil
 }
