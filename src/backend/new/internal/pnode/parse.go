@@ -55,7 +55,7 @@ var _ Node = &selectStmt{}
 type selectStmt struct {
 	node
 	Targets []ResultTarget
-	From    []RangeVar
+	From    []Node // list of targets, it can be list of
 	Where   AExpr
 
 	Values [][]Node // values for value select (A_Const/A_Expr/FuncCall/

@@ -9,7 +9,7 @@ func isStrAppendable(char rune) bool {
 	case breakChars.In(char) || unicode.IsSpace(char):
 		return false
 	case unicode.IsControl(char):
-		panic("Control char in query string")
+		panic("Control char in anlr string")
 	default:
 		return true
 	}

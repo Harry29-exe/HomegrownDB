@@ -11,8 +11,10 @@ type query struct {
 	node
 	Command    CommandType
 	TargetList []TargetEntry
-	RTables    []RangeTableEntry
-	FromExpr   FromExpr
+
+	ResultRel RteID             // Id of result table, for insert, update, delete
+	RTables   []RangeTableEntry // Tables used in query
+	FromExpr  FromExpr
 }
 
 // -------------------------

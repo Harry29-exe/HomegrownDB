@@ -6,35 +6,48 @@ import (
 	"HomegrownDB/backend/new/internal/pnode"
 )
 
-var RTE = rte{}
+// -------------------------
+//      RteResult
+// -------------------------
 
-type rte struct{}
-
-func (r rte) Analyse(rtePNode pnode.Node, ctx query.Ctx) (node.RangeTableEntry, error) {
-	switch rtePNode.Tag() {
-	case pnode.TagRangeVar:
-		return r.analyseRangeVar(rtePNode.(pnode.RangeVar), ctx)
-	case pnode.TagSelectStmt:
-		return r.analyseSelectStmt(rtePNode.(pnode.SelectStmt), ctx)
-
-	default:
-		panic("")
+func NewSingleRteResult(rte node.RangeTableEntry) RteResult {
+	return RteResult{
+		RteList: []node.RangeTableEntry{rte},
+		rteRoot: rte.CreateRef(),
 	}
 }
 
-func (r rte) analyseRangeVar(rangeVar pnode.RangeVar, ctx query.Ctx) (node.RangeTableEntry, error) {
+type RteResult struct {
+	RteList []node.RangeTableEntry
+	rteRoot node.Node
+}
+
+// -------------------------
+//      RTERangeVar
+// -------------------------
+
+var RTERangeVar = rteRangeVar{}
+
+type rteRangeVar struct{}
+
+func (r rteRangeVar) Analyse(rangeVar pnode.RangeVar, ctx query.Ctx) (RteResult, error) {
 	def, err := ctx.GetTable(rangeVar.RelName)
 	if err != nil {
-		return nil, err
+		return RteResult{}, err
 	}
 
-	return node.NewRelationRTE(ctx.RteIdCounter.IncrAndGet(), def), nil
+	rte := node.NewRelationRTE(ctx.RteIdCounter.IncrAndGet(), def)
+	return NewSingleRteResult(rte), nil
 }
 
-func (r rte) analyseSelectStmt(selectStmt pnode.SelectStmt, ctx query.Ctx) (node.RangeTableEntry, error) {
-	q, err := Query.Analyse(selectStmt, ctx)
-	if err != nil {
-		return nil, err
-	}
-	return node.NewSelectRTE(ctx.RteIdCounter.IncrAndGet(), q), nil
+// -------------------------
+//      RTESelect
+// -------------------------
+
+var RTESelect = rteSelect{}
+
+type rteSelect struct{}
+
+func (r rteSelect) Analyse(stmt pnode.SelectStmt, ctx query.Ctx) (RteResult, error) {
+
 }

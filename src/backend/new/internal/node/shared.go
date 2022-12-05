@@ -78,6 +78,13 @@ type rangeTableEntry struct {
 	Query Query
 }
 
+func (r RangeTableEntry) CreateRef() RangeTableRef {
+	return &rangeTableRef{
+		node: node{tag: TagRteRef},
+		Rte:  r.Id,
+	}
+}
+
 func (r RangeTableEntry) DEqual() bool {
 	//TODO implement me
 	panic("implement me")
