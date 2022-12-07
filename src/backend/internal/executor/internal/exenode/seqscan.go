@@ -60,7 +60,7 @@ func (s *SeqScan) Next() query.QRow {
 	//	}
 	//}
 	//
-	//return anlr.NewQRowFromTuple(tuple)
+	//return anlsr.NewQRowFromTuple(tuple)
 }
 
 func (s *SeqScan) NextBatch() []query.QRow {
@@ -73,9 +73,9 @@ func (s *SeqScan) NextBatch() []query.QRow {
 	//
 	//defer buffer.DBSharedBuffer.RPageRelease(rPage.PageTag())
 	//tCount := rPage.TupleCount()
-	//rows := make([]anlr.QRow, tCount)
+	//rows := make([]anlsr.QRow, tCount)
 	//for i := uint16(0); i < tCount; i++ {
-	//	rows[i] = anlr.NewQRowFromTuple(rPage.Tuple(i))
+	//	rows[i] = anlsr.NewQRowFromTuple(rPage.Tuple(i))
 	//}
 	//
 	//s.page += 1
@@ -90,7 +90,7 @@ func (s *SeqScan) All() []query.QRow {
 	//todo implement me
 	panic("Not implemented")
 	//tuplesPerPageEstimate := uint32(page.Size) / (uint32(s.tableDef.ColumnCount()) * 5)
-	//rows := make([]anlr.QRow, s.tableIO.PageCount()*tuplesPerPageEstimate)
+	//rows := make([]anlsr.QRow, s.tableIO.PageCount()*tuplesPerPageEstimate)
 	//for s.page < s.tableIO.PageCount() {
 	//	rows = s.readPageWhileReadingAll(rows)
 	//

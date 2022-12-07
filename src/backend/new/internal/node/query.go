@@ -21,10 +21,10 @@ type query struct {
 //      FromExpr
 // -------------------------
 
-func NewFromExpr() FromExpr {
+func NewFromExpr(fromListSize int) FromExpr {
 	return &fromExpr{
 		node:       node{tag: TagFrom},
-		FromList:   make([]Node, 0, 8),
+		FromList:   make([]Node, fromListSize),
 		Qualifiers: nil,
 	}
 }
