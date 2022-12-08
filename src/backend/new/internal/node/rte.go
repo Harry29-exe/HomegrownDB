@@ -1,6 +1,9 @@
 package node
 
-import "HomegrownDB/dbsystem/schema/table"
+import (
+	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/schema/table"
+)
 
 // -------------------------
 //      RangeTableEntry
@@ -58,7 +61,10 @@ type rangeTableEntry struct {
 	Subquery Query
 
 	//kind = RteJoin
-	JoinType JoinType
+	JoinType     JoinType
+	ResultCols   []Var          // list of columns in result tuples
+	LeftColumns  []column.Order // columns
+	RightColumns []column.Order
 
 	Alias Alias
 }
