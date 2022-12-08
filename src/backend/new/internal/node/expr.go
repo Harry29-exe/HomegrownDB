@@ -41,4 +41,10 @@ type Const = *_const
 
 type _const struct {
 	expr
+	Type ctype.Type
+	Val any
 }
+
+// -------------------------
+//      Func
+// -------------------------

@@ -18,8 +18,18 @@ var ExprAnalyser = exprAnalyser{}
 
 type exprAnalyser struct {}
 
-func (ex exprDelegator) AnalyseColRef(node pnode.ColumnRef, query node.Query, ctx anlsr.Ctx) node. {
+func (ex exprAnalyser) AnalyseColRef(node pnode.ColumnRef, query node.Query, ctx anlsr.Ctx) (node.Var, error) {
+	if alias := node.TableAlias; alias != "" {
 
+	}
+}
+
+func (ex exprAnalyser) findRteWithAlias(alias string, query node.Query) node.RangeTableEntry {
+	for _, table := range query.RTables {
+		if table.Subquery {
+
+		}
+	}
 }
 
 

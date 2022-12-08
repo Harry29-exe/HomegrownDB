@@ -1,5 +1,29 @@
 package node
 
+// -------------------------
+//      CommandType
+// -------------------------
+
+type CommandType = uint8
+
+const (
+	// CommandTypeSelect for select statements
+	CommandTypeSelect CommandType = iota
+	// CommandTypeInsert for insert statements
+	CommandTypeInsert
+	// CommandTypeUpdate for update statements
+	CommandTypeUpdate
+	// CommandTypeDelete for delete statements
+	CommandTypeDelete
+	// CommandTypeUtils for statements that operate
+	// rater on db structure than on db data
+	CommandTypeUtils
+)
+
+// -------------------------
+//      Query
+// -------------------------
+
 func NewQuery() Query {
 	//todo implement me
 	panic("Not implemented")
@@ -15,31 +39,4 @@ type query struct {
 	ResultRel RteID             // Id of result table, for insert, update, delete
 	RTables   []RangeTableEntry // Tables used in query
 	FromExpr  FromExpr
-}
-
-// -------------------------
-//      FromExpr
-// -------------------------
-
-func NewFromExpr(fromListSize int) FromExpr {
-	return &fromExpr{
-		node:       node{tag: TagFrom},
-		FromList:   make([]Node, fromListSize),
-		Qualifiers: nil,
-	}
-}
-
-type FromExpr = *fromExpr
-
-var _ Node = &fromExpr{}
-
-type fromExpr struct {
-	node
-	FromList   []Node
-	Qualifiers Node
-}
-
-func (f fromExpr) DEqual() bool {
-	//TODO implement me
-	panic("implement me")
 }

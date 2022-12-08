@@ -21,6 +21,7 @@ const (
 	TagRTE Tag = iota
 	TagRteRef
 	TagFrom
+	TagAlias
 
 	// TagExprStart expressions nodes start
 	TagExprStart
