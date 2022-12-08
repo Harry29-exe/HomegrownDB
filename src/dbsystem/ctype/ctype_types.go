@@ -4,7 +4,7 @@ type Type = uint8
 
 const (
 	TypeInt8 Type = iota
-	Float8
+	TypeFloat8
 	TypeStr
 )
 
@@ -13,7 +13,7 @@ func CTypeToStr(cType Type) string {
 }
 
 var ctypeNames map[Type]string = map[Type]string{
-	TypeInt8: "TypeInt8",
-	Float8:   "Float8",
-	TypeStr:  "TypeStr",
+	TypeInt8:   "TypeInt8",
+	TypeFloat8: "TypeFloat8",
+	TypeStr:    "TypeStr",
 }

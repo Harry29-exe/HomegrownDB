@@ -20,6 +20,9 @@ type Tag = uint16
 const (
 	TagRTE Tag = iota
 	TagRteRef
-	TagExpr
 	TagFrom
+
+	// TagExprStart expressions nodes start
+	TagExprStart
+	TagVar
 )

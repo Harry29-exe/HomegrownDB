@@ -1,6 +1,8 @@
 package node
 
-import "HomegrownDB/dbsystem/schema/table"
+import (
+	"HomegrownDB/dbsystem/schema/table"
+)
 
 // -------------------------
 //      CommandType

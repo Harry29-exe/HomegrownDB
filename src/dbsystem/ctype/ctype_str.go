@@ -51,7 +51,7 @@ func (f factoryStr) Build(args map[string]any) (*CType, dberr.DBError) {
 		}
 	}
 
-	return newCType(&ctype, &ctype, &ctype, true, ToastStore), nil
+	return newCType(TypeStr, &ctype, &ctype, &ctype, &ctype, true, ToastStore), nil
 }
 
 type str struct {
