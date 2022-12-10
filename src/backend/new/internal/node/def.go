@@ -23,7 +23,8 @@ const (
 	TagFrom
 	TagAlias
 
-	// TagExprStart expressions nodes start
-	TagExprStart
+	// TagExpr expressions nodes start
+	TagExpr
+	TagTargetEntry
 	TagVar
 )

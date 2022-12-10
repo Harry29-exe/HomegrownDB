@@ -14,7 +14,7 @@ type queryAnlr struct {
 func (q queryAnlr) Analyse(stmt pnode.Node, ctx anlsr.Ctx) (node.Query, error) {
 	switch stmt.Tag() {
 	case pnode.TagSelectStmt:
-		return Select.Analyse(stmt.(pnode.SelectStmt), ctx), nil
+		return Select.Analyse(stmt.(pnode.SelectStmt), ctx)
 	case pnode.TagInsertStmt:
 		return Insert.Analyse(stmt.(pnode.InsertStmt), ctx)
 	default:

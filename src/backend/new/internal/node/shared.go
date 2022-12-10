@@ -7,7 +7,7 @@ package node
 func NewAlias(aliasName string) Alias {
 	return &alias{
 		node:      node{tag: TagAlias},
-		aliasName: aliasName,
+		AliasName: aliasName,
 	}
 }
 
@@ -15,5 +15,5 @@ type Alias = *alias
 
 type alias struct {
 	node
-	aliasName string
+	AliasName string
 }

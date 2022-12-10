@@ -2,6 +2,7 @@ package table
 
 import (
 	"HomegrownDB/common/datastructs/appsync"
+	"HomegrownDB/dbsystem/schema/relation"
 	"fmt"
 	"sync"
 )
@@ -73,7 +74,7 @@ type stdStore struct {
 func (t *stdStore) FindTable(name string) Id {
 	id, ok := t.nameTableMap[name]
 	if !ok {
-		return InvalidTableId
+		return relation.InvalidRelId
 	}
 	return id
 }

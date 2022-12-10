@@ -19,4 +19,21 @@ func (s _select) Analyse(stmt pnode.SelectStmt, ctx anlsr.Ctx) (node.Query, erro
 		return nil, err
 	}
 
+	entries, err := TargetEntries.Analyse(stmt.Targets, query, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query.TargetList = entries
+
+	//todo implement me
+	panic("Not implemented")
+}
+
+var SelectValidator = selectVldtr{}
+
+type selectVldtr struct{}
+
+func (s selectVldtr) Validate(query node.Query, ctx anlsr.Ctx) error {
+	return nil
 }

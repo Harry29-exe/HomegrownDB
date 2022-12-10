@@ -7,40 +7,30 @@ import (
 )
 
 // -------------------------
-//      TargetEntryDelegator
+//      TargetEntries
 // -------------------------
 
-var TargetEntryDelegator = targetEntryDelegator{}
+var TargetEntries = targetEntries{}
 
-type targetEntryDelegator struct{}
+type targetEntries struct{}
 
-func (te targetEntryDelegator) Delegate(
+func (te targetEntries) Analyse(
+	resEntries []pnode.ResultTarget,
 	query node.Query,
-	resultTarget []pnode.ResultTarget,
 	ctx anlsr.Ctx,
-) error {
-	switch query.Command {
-	case node.CommandTypeSelect:
-		return TargetEntrySelect.Analyse(query, resultTarget, ctx)
-	case node.CommandTypeInsert:
-		//todo implement me
-		panic("Not implemented")
-	default:
-		//todo implement me
-		panic("Not implemented")
+) ([]node.TargetEntry, error) {
+
+	entries := make([]node.TargetEntry, len(resEntries))
+
+	for i, resTarget := range resEntries {
+		entry, err := TargetEntry.Analyse(resTarget, query, ctx)
+		if err != nil {
+			return nil, err
+		}
+		entries[i] = entry
 	}
-}
 
-// -------------------------
-//      TargetEntrySelect
-// -------------------------
-
-var TargetEntrySelect = targetEntrySelect{}
-
-type targetEntrySelect struct{}
-
-func (t targetEntrySelect) Analyse(query node.Query, rts []pnode.ResultTarget, ctx anlsr.Ctx) error {
-
+	return entries, nil
 }
 
 // -------------------------
@@ -51,19 +41,17 @@ var TargetEntry = targetEntry{}
 
 type targetEntry struct{}
 
-func (e targetEntry) Analyse(target pnode.ResultTarget, ctx anlsr.Ctx) (node.TargetEntry, error) {
-	val := target.Val
-
-	switch val.Tag() {
-	case pnode.TagColumnRef:
-
-	}
-}
-
-func (e targetEntry) analyseColumnRef(
-	target pnode.ResultTarget,
-	colRef pnode.ColumnRef,
+func (te targetEntry) Analyse(
+	resultTarget pnode.ResultTarget,
+	query node.Query,
 	ctx anlsr.Ctx,
 ) (node.TargetEntry, error) {
+	valExpr, err := ExprDelegator.DelegateAnalyse(resultTarget.Val, query, ctx)
+	if err != nil {
+		return nil, err
+	}
 
+	attribNo := uint16(len(query.TargetList))
+	entry := node.NewTargetEntry(valExpr, attribNo, resultTarget.Name)
+	return entry, err
 }

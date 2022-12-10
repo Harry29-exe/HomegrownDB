@@ -1,5 +1,7 @@
 package node
 
+import "HomegrownDB/backend/new/internal/pnode"
+
 // -------------------------
 //      CommandType
 // -------------------------
@@ -33,7 +35,9 @@ type Query = *query
 
 type query struct {
 	node
-	Command    CommandType
+	Command CommandType
+	SrcStmt pnode.Node // stmt that was used to create this query
+
 	TargetList []TargetEntry
 
 	ResultRel RteID             // Id of result table, for insert, update, delete

@@ -26,7 +26,7 @@ const (
 func NewRelationRTE(rteID RteID, ref table.RDefinition) RangeTableEntry {
 	return &rangeTableEntry{
 		node:    node{tag: TagRTE},
-		kind:    RteRelation,
+		Kind:    RteRelation,
 		Id:      rteID,
 		TableId: ref.RelationID(),
 		Ref:     ref,
@@ -36,7 +36,7 @@ func NewRelationRTE(rteID RteID, ref table.RDefinition) RangeTableEntry {
 func NewSelectRTE(id RteID, subquery Query) RangeTableEntry {
 	return &rangeTableEntry{
 		node:     node{tag: TagRTE},
-		kind:     RteSubQuery,
+		Kind:     RteSubQuery,
 		Id:       id,
 		Subquery: subquery,
 	}
@@ -49,18 +49,18 @@ var _ Node = &rangeTableEntry{}
 // RangeTableEntry is db table that is used in query or plan
 type rangeTableEntry struct {
 	node
-	kind rteKind
+	Kind rteKind
 
-	// kind = RteRelation
+	// Kind = RteRelation
 	Id       RteID
 	LockMode table.TableLockMode
 	TableId  table.Id
 	Ref      table.RDefinition
 
-	// kind = RteSubQuery
-	Subquery Query
+	// Kind = RteSubQuery
+	Subquery *query
 
-	//kind = RteJoin
+	//Kind = RteJoin
 	JoinType     JoinType
 	ResultCols   []Var          // list of columns in result tuples
 	LeftColumns  []column.Order // columns
@@ -114,12 +114,29 @@ func (r RangeTableRef) DEqual() bool {
 //      TargetEntry
 // -------------------------
 
-type TargetEntry struct {
-	Expr              // Expr to treat TargetEntry as Expr node
-	ExprToExec *Expr  // ExprToExec expression to evaluate to
-	AttribNo   uint16 // AttribNo number of entry
-	ColName    string // ColName nullable column name
+func NewTargetEntry(execExpr Expr, attribNo uint16, colName string) TargetEntry {
+	return &targetEntry{
+		expr:       newExpr(TagTargetEntry),
+		ExprToExec: execExpr,
+		AttribNo:   attribNo,
+		ColName:    colName,
+	}
+}
 
-	TableId table.Id // TableId
-	Temp    bool     // Temp if true then entry should be eliminated before tuple is emitted
+type TargetEntry = *targetEntry
+
+var _ Node = &targetEntry{}
+
+type targetEntry struct {
+	expr              // Expr to treat TargetEntry as Expr node
+	ExprToExec Expr   // ExprToExec expression to evaluate to
+	AttribNo   uint16 // AttribNo number of entry
+	ColName    string // ColName nullable column alias
+
+	Temp bool // Temp if true then entry should be eliminated before tuple is emitted
+}
+
+func (t targetEntry) DEqual() bool {
+	//TODO implement me
+	panic("implement me")
 }
