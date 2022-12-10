@@ -27,5 +27,31 @@ func TestSelectParser_Parse_ShouldParse(t *testing.T) {
 		assert.ErrIsNil(err, t)
 		assert.True(selectNode.Equal(expectedStmt), t)
 	}
+}
 
+func TestSelectParser_Parse_ShouldParse2(t *testing.T) {
+	sentences := []string{
+		"SELECT u.name, u.surname, u.age FROM users u",
+		"SELECT u.name,u.surname,u.age FROM users u",
+		"SELECT u.name , u.surname , u.age FROM users u",
+		"SELECT u.name, u.surname, u.age\nFROM users u",
+		"SELECT\nu.name,\nu.surname,\nu.age\nFROM\nusers\nu",
+	}
+
+	expectedStmt := pnode.NewSelectStmt()
+	expectedStmt.From = []pnode.Node{pnode.NewRangeVar("users", "u")}
+	expectedStmt.Targets = []pnode.ResultTarget{
+		pnode.NewResultTarget("", pnode.NewColumnRef("name", "u")),
+		pnode.NewResultTarget("", pnode.NewColumnRef("surname", "u")),
+		pnode.NewResultTarget("", pnode.NewColumnRef("age", "u")),
+	}
+
+	for _, sentence := range sentences {
+		source := newTestTokenSource(sentence)
+		v := validator.NewValidator(source)
+		selectNode, err := segparser.Select.Parse(source, v)
+
+		assert.ErrIsNil(err, t)
+		assert.True(selectNode.Equal(expectedStmt), t)
+	}
 }

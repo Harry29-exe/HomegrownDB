@@ -11,12 +11,15 @@ import (
 
 type Ctx = *queryCtx
 
-func NewQCtx(store table.Store) Ctx {
+func NewQCtx(store table.Store, tkSrc tokenizer.TokenSource) Ctx {
 	return &queryCtx{
 		RteIdCounter: appsync.NewSyncCounter[node.RteID](0),
-		TableStore:   store,
-		TableCache:   map[relation.ID]table.Definition{},
-		TableIdMap:   map[string]relation.ID{},
+
+		TableStore: store,
+		TableCache: map[relation.ID]table.Definition{},
+		TableIdMap: map[string]relation.ID{},
+
+		TokenSrc: tkSrc,
 	}
 }
 

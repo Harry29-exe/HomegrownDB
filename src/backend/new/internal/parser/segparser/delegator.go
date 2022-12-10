@@ -5,7 +5,11 @@ import (
 	"HomegrownDB/backend/new/internal/pnode"
 )
 
-func Parse(src tkSource, v tkValidator) (pnode.Node, error) {
+var Delegator = delegator{}
+
+type delegator struct{}
+
+func (delegator) Parse(src tkSource, v tkValidator) (pnode.Node, error) {
 	switch tk := src.Current(); tk.Code() {
 	case token.Select:
 		return Select.Parse(src, v)
