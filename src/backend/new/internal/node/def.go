@@ -55,6 +55,14 @@ const (
 	TagExpr
 	TagTargetEntry
 	TagVar
+
+	// Plan nodes
+	TagPlan
+	TagPlanedStmt
+	TagModifyTable
+	// Scan nodes
+	TagScan
+	TagSeqScan
 )
 
 func (t Tag) ToString() string {

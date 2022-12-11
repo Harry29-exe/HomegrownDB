@@ -152,7 +152,7 @@ func (r RangeTableEntry) dGenericFieldEqual(r2 RangeTableEntry) bool {
 		r.Alias.dEqual(r2.Alias)
 }
 
-// RteID is id of RangeTableEntry unique for given query/plan
+// RteID is id of RangeTableEntry unique for given Query/plan
 type RteID uint16
 
 // -------------------------

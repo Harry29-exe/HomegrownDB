@@ -2,22 +2,42 @@ package node
 
 import "HomegrownDB/dbsystem/schema/relation"
 
-type PlanNodeId = uint16
-type Plan = *plan
+// -------------------------
+//      Plan
+// -------------------------
+
+type Plan interface {
+	PlanId() PlanNodeId
+}
+
+func newPlan(tag Tag, planNodeId PlanNodeId, query Query) plan {
+	return plan{
+		node:       node{tag: tag},
+		PlanNodeId: planNodeId,
+		Query:      query,
+	}
+}
 
 var _ Node = &plan{}
 
+// plan is abstract node that is composed into
+// all nodes that have their executor
 type plan struct {
 	node
 
-	planNodeId PlanNodeId    // planNodeId unique id of node in given plan
-	query      Query         // query source of this
-	targetList []TargetEntry // targetList entries that this plan will produce
-	quality    Expr          // quality is Expr filter on input data
-	left       *plan         // left (inner) plan, most nodes uses this plan as it only input
-	right      *plan         // right (outer) plan, used almost exclusively by joins
-	initNodes  []*plan       // initNodes are plans that needs to be executed separately from this plan, but this plan is dependent on them (e.g. sub-queries)
+	PlanNodeId PlanNodeId // PlanNodeId unique id of node in given plan
+	Query      Query      // Query source of this
 
+	TargetList []TargetEntry // TargetList entries that this plan will produce
+	Quality    Expr          // Quality is Expr filter on input data
+	Left       *plan         // Left (inner) plan, most nodes uses this plan as it only input
+	Right      *plan         // Right (outer) plan, used almost exclusively by joins
+	InitNodes  []*plan       // InitNodes are plans that needs to be executed separately from this plan, but this plan is dependent on them (e.g. sub-queries)
+}
+
+func (p plan) dEqual(node Node) bool {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (p plan) DPrint(nesting int) string {
@@ -25,10 +45,13 @@ func (p plan) DPrint(nesting int) string {
 	panic("implement me")
 }
 
-func (p plan) dEqual(node Node) bool {
-	//TODO implement me
-	panic("implement me")
+func (p plan) PlanId() PlanNodeId {
+	return p.PlanNodeId
 }
+
+// -------------------------
+//      ModifyTable
+// -------------------------
 
 type ModifyTable struct {
 	plan
@@ -41,3 +64,34 @@ type ModifyTableOp = uint8
 const (
 	ModifyTableInsert ModifyTableOp = iota
 )
+
+// -------------------------
+//      Scan
+// -------------------------
+
+type Scan = *scan
+
+type scan struct {
+	plan
+	RteId RteID
+}
+
+func NewSeqScan(planNodeId PlanNodeId, query Query) SeqScan {
+	return &seqScan{
+		scan: scan{
+			plan: newPlan(TagSeqScan, planNodeId, query),
+		},
+	}
+}
+
+// -------------------------
+//      SeqScan
+// -------------------------
+
+type SeqScan = *seqScan
+
+var _ Node = &seqScan{}
+
+type seqScan struct {
+	scan
+}

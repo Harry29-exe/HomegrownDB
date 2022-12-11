@@ -1,21 +1,45 @@
 package node
 
-type PlanStmt = *planStmt
+import "HomegrownDB/common/datastructs/appsync"
 
-var _ Node = &planStmt{}
+type PlanNodeId uint16
 
-type planStmt struct {
+func NewPlanedStmt(command CommandType) PlanedStmt {
+	return &planedStmt{
+		node:            node{tag: TagPlanedStmt},
+		Command:         command,
+		PlanNodeCounter: appsync.NewSyncCounter[PlanNodeId](0),
+
+		Tables: make([]RangeTableEntry, 0, 10),
+	}
+}
+
+type PlanedStmt = *planedStmt
+
+var _ Node = &planedStmt{}
+
+type planedStmt struct {
 	node
-	Command CommandType
-	Tables  []RangeTableEntry
+
+	Command         CommandType
+	PlanNodeCounter PlanNodeCounter
+
+	PlanTree Plan
+	Tables   []RangeTableEntry
 }
 
-func (p planStmt) dEqual(node Node) bool {
+func (p PlanedStmt) NextPlanNodeId() PlanNodeId {
+	return p.PlanNodeCounter.GetAndIncr()
+}
+
+func (p PlanedStmt) dEqual(node Node) bool {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (p planStmt) DPrint(nesting int) string {
+func (p PlanedStmt) DPrint(nesting int) string {
 	//TODO implement me
 	panic("implement me")
 }
+
+type PlanNodeCounter = appsync.SyncCounter[PlanNodeId]

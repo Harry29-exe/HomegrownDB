@@ -53,12 +53,12 @@ type Query = *query
 type query struct {
 	node
 	Command CommandType
-	SrcStmt pnode.Node // stmt that was used to create this query
+	SrcStmt pnode.Node // stmt that was used to create this Query
 
 	TargetList []TargetEntry
 
 	ResultRel RteID             // Id of result table, for insert, update, delete
-	RTables   []RangeTableEntry // Tables used in query
+	RTables   []RangeTableEntry // Tables used in Query
 	FromExpr  FromExpr
 }
 
