@@ -4,13 +4,12 @@ import (
 	"HomegrownDB/backend/new/internal/analyser/anlsr"
 	"HomegrownDB/backend/new/internal/analyser/seganalyser"
 	"HomegrownDB/backend/new/internal/node"
-	"HomegrownDB/backend/new/internal/parser/tokenizer"
 	"HomegrownDB/backend/new/internal/pnode"
 	"HomegrownDB/dbsystem/schema/table"
 )
 
-func Analyse(stmt pnode.RawStmt, store table.Store, tkSrc tokenizer.TokenSource) (node.Query, error) {
-	ctx := anlsr.NewQCtx(store, tkSrc)
+func Analyse(stmt pnode.RawStmt, store table.Store) (node.Query, error) {
+	ctx := anlsr.NewQCtx(store)
 
 	innerStmt := stmt.Stmt
 	switch innerStmt.Tag() {

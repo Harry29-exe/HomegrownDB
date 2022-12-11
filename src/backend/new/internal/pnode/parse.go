@@ -17,6 +17,9 @@ var _ Node = &rawStmt{}
 type rawStmt struct {
 	node
 	Stmt Node
+	//todo implement StmtSource so it can be used to show where error is in
+	// query, it should be based on tokenizer.TokenSource
+	TkSource StmtSource // TkSource for error/debugging purposes
 }
 
 func (r *rawStmt) Equal(node Node) bool {
@@ -27,6 +30,10 @@ func (r *rawStmt) Equal(node Node) bool {
 	}
 	raw := node.(RawStmt)
 	return r.Stmt.Equal(raw.Stmt)
+}
+
+type StmtSource interface {
+	History() []any
 }
 
 // -------------------------

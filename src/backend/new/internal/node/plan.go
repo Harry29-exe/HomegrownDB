@@ -5,6 +5,8 @@ import "HomegrownDB/dbsystem/schema/relation"
 type PlanNodeId = uint16
 type Plan = *plan
 
+var _ Node = &plan{}
+
 type plan struct {
 	node
 
@@ -16,6 +18,11 @@ type plan struct {
 	right      *plan         // right (outer) plan, used almost exclusively by joins
 	initNodes  []*plan       // initNodes are plans that needs to be executed separately from this plan, but this plan is dependent on them (e.g. sub-queries)
 
+}
+
+func (p plan) DEqual(node Node) bool {
+	//TODO implement me
+	panic("implement me")
 }
 
 type ModifyTable struct {

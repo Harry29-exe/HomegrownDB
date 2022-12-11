@@ -22,9 +22,13 @@ type fromExpr struct {
 	Qualifiers Node
 }
 
-func (f fromExpr) DEqual() bool {
-	//TODO implement me
-	panic("implement me")
+func (f FromExpr) DEqual(node Node) bool {
+	if res, ok := nodeEqual(f, node); ok {
+		return res
+	}
+	raw := node.(FromExpr)
+	return cmpNodeArray(f.FromList, raw.FromList) &&
+		f.Qualifiers.DEqual(raw.Qualifiers)
 }
 
 // -------------------------

@@ -26,10 +26,15 @@ const (
 //      Query
 // -------------------------
 
-func NewQuery() Query {
-	//todo implement me
-	panic("Not implemented")
+func NewQuery(commandType CommandType, srcStmt pnode.Node) Query {
+	return &query{
+		node:    node{tag: TagQuery},
+		Command: commandType,
+		SrcStmt: srcStmt,
+	}
 }
+
+var _ Node = &query{}
 
 type Query = *query
 
@@ -43,4 +48,16 @@ type query struct {
 	ResultRel RteID             // Id of result table, for insert, update, delete
 	RTables   []RangeTableEntry // Tables used in query
 	FromExpr  FromExpr
+}
+
+func (q Query) DEqual(node Node) bool {
+	if res, ok := nodeEqual(q, node); ok {
+		return res
+	}
+	raw := node.(Query)
+	return q.Command == raw.Command &&
+		cmpNodeArray(q.TargetList, raw.TargetList) &&
+		q.ResultRel == raw.ResultRel &&
+		cmpNodeArray(q.RTables, raw.RTables) &&
+		q.FromExpr.DEqual(raw.FromExpr)
 }

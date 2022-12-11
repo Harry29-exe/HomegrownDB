@@ -7,6 +7,10 @@ import (
 	"sync"
 )
 
+func NewTestTableStore(tables ...Definition) (Store, error) {
+	return NewTableStore(tables)
+}
+
 func NewTableStore(tables []Definition) (Store, error) { //todo delete this error
 	maxId, missingIds := findMaxAndMissing(tables)
 

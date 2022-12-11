@@ -2,7 +2,6 @@ package anlsr
 
 import (
 	"HomegrownDB/backend/new/internal/node"
-	"HomegrownDB/backend/new/internal/parser/tokenizer"
 	"HomegrownDB/backend/new/internal/sqlerr"
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/schema/relation"
@@ -11,15 +10,13 @@ import (
 
 type Ctx = *queryCtx
 
-func NewQCtx(store table.Store, tkSrc tokenizer.TokenSource) Ctx {
+func NewQCtx(store table.Store) Ctx {
 	return &queryCtx{
 		RteIdCounter: appsync.NewSyncCounter[node.RteID](0),
 
 		TableStore: store,
 		TableCache: map[relation.ID]table.Definition{},
 		TableIdMap: map[string]relation.ID{},
-
-		TokenSrc: tkSrc,
 	}
 }
 
@@ -29,8 +26,6 @@ type queryCtx struct {
 	TableStore table.Store
 	TableCache map[relation.ID]table.Definition
 	TableIdMap map[string]relation.ID // TableIdMap map[tableName] = tableId
-
-	TokenSrc tokenizer.TokenSource
 }
 
 func (c Ctx) GetTableById(id relation.ID) table.RDefinition {

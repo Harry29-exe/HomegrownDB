@@ -11,7 +11,7 @@ var Select = _select{}
 type _select struct{}
 
 func (s _select) Analyse(stmt pnode.SelectStmt, ctx anlsr.Ctx) (node.Query, error) {
-	query := node.NewQuery()
+	query := node.NewQuery(node.CommandTypeSelect, stmt)
 	query.Command = node.CommandTypeSelect
 
 	err := FromDelegator.Analyse(query, stmt.From, ctx)

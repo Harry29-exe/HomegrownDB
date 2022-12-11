@@ -50,9 +50,9 @@ var _ Node = &rangeTableEntry{}
 type rangeTableEntry struct {
 	node
 	Kind rteKind
+	Id   RteID
 
 	// Kind = RteRelation
-	Id       RteID
 	LockMode table.TableLockMode
 	TableId  table.Id
 	Ref      table.RDefinition
@@ -66,6 +66,7 @@ type rangeTableEntry struct {
 	LeftColumns  []column.Order // columns
 	RightColumns []column.Order
 
+	// general
 	Alias Alias
 }
 
@@ -76,9 +77,36 @@ func (r RangeTableEntry) CreateRef() RangeTableRef {
 	}
 }
 
-func (r RangeTableEntry) DEqual() bool {
-	//TODO implement me
-	panic("implement me")
+func (r RangeTableEntry) DEqual(node Node) bool {
+	if res, ok := nodeEqual(r, node); ok {
+		return res
+	}
+	raw := node.(RangeTableEntry)
+
+	if r.Kind != raw.Kind {
+		return false
+	} else if !r.dRelationEqual(raw) {
+		return false
+	}
+
+	switch r.Kind {
+	case RteRelation:
+		return r.dRelationEqual(raw)
+	default:
+		//todo implement me
+		panic("Not implemented")
+	}
+}
+
+func (r RangeTableEntry) dRelationEqual(r2 RangeTableEntry) bool {
+	return r.LockMode == r2.LockMode &&
+		r.TableId == r2.TableId &&
+		r.Ref.TableId() == r2.Ref.TableId()
+}
+
+func (r RangeTableEntry) dGenericFieldEqual(r2 RangeTableEntry) bool {
+	return r.Id == r2.Id &&
+		r.Alias.DEqual(r2.Alias)
 }
 
 // RteID is id of RangeTableEntry unique for given query/plan
@@ -105,9 +133,12 @@ type rangeTableRef struct {
 	Rte RteID
 }
 
-func (r RangeTableRef) DEqual() bool {
-	//TODO implement me
-	panic("implement me")
+func (r RangeTableRef) DEqual(node Node) bool {
+	if res, ok := nodeEqual(r, node); ok {
+		return res
+	}
+	raw := node.(RangeTableRef)
+	return r.Rte == raw.Rte
 }
 
 // -------------------------
@@ -136,7 +167,13 @@ type targetEntry struct {
 	Temp bool // Temp if true then entry should be eliminated before tuple is emitted
 }
 
-func (t targetEntry) DEqual() bool {
-	//TODO implement me
-	panic("implement me")
+func (t TargetEntry) DEqual(node Node) bool {
+	if res, ok := nodeEqual(t, node); ok {
+		return res
+	}
+	raw := node.(TargetEntry)
+	return t.AttribNo == raw.AttribNo &&
+		t.ColName == raw.ColName &&
+		t.Temp == raw.Temp &&
+		t.ExprToExec.DEqual(raw.ExprToExec)
 }

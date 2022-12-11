@@ -12,18 +12,16 @@ type Expr interface {
 
 func newExpr(exprTag Tag) expr {
 	return expr{
-		node:    node{tag: TagExpr},
-		exprTag: exprTag,
+		node: node{tag: exprTag},
 	}
 }
 
 type expr struct {
 	node
-	exprTag Tag
 }
 
 func (e expr) ExprTag() Tag {
-	return e.exprTag
+	return TagExpr
 }
 
 // -------------------------
@@ -33,9 +31,9 @@ func (e expr) ExprTag() Tag {
 func NewVar(id RteID, colOrder column.Order, t ctype.Type) Var {
 	return &_var{
 		expr:     newExpr(TagVar),
-		RteID:    0,
-		ColOrder: 0,
-		Type:     0,
+		RteID:    id,
+		ColOrder: colOrder,
+		Type:     t,
 	}
 }
 
@@ -50,14 +48,21 @@ type _var struct {
 	Type     ctype.Type
 }
 
-func (_ _var) DEqual() bool {
-	//TODO implement me
-	panic("implement me")
+func (v Var) DEqual(node Node) bool {
+	if res, ok := nodeEqual(v, node); ok {
+		return res
+	}
+	raw := node.(Var)
+	return v.RteID == raw.RteID &&
+		v.ColOrder == raw.ColOrder &&
+		v.Type == raw.Type
 }
 
 // -------------------------
 //      Const
 // -------------------------
+
+var _ Expr = &_const{}
 
 type Const = *_const
 
@@ -65,6 +70,15 @@ type _const struct {
 	expr
 	Type ctype.Type
 	Val  any
+}
+
+func (c Const) DEqual(node Node) bool {
+	if res, ok := nodeEqual(c, node); ok {
+		return res
+	}
+	raw := node.(Const)
+	return c.Type == raw.Type &&
+		c.Val == raw.Type
 }
 
 // -------------------------
