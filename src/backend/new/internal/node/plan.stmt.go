@@ -10,7 +10,12 @@ type planStmt struct {
 	Tables  []RangeTableEntry
 }
 
-func (p planStmt) DEqual(node Node) bool {
+func (p planStmt) dEqual(node Node) bool {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p planStmt) DPrint(nesting int) string {
 	//TODO implement me
 	panic("implement me")
 }

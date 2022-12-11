@@ -37,5 +37,9 @@ func (r rteRangeVar) Analyse(rangeVar pnode.RangeVar, ctx anlsr.Ctx) (RteResult,
 	}
 
 	rte := node.NewRelationRTE(ctx.RteIdCounter.IncrAndGet(), def)
+	if rangeVar.Alias != "" {
+		rte.Alias = node.NewAlias(rangeVar.Alias)
+	}
+
 	return NewSingleRteResult(rte), nil
 }

@@ -1,12 +1,15 @@
 package node
 
-import "HomegrownDB/backend/new/internal/pnode"
+import (
+	"HomegrownDB/backend/new/internal/pnode"
+	"fmt"
+)
 
 // -------------------------
 //      CommandType
 // -------------------------
 
-type CommandType = uint8
+type CommandType uint8
 
 const (
 	// CommandTypeSelect for select statements
@@ -21,6 +24,15 @@ const (
 	// rater on db structure than on db data
 	CommandTypeUtils
 )
+
+func (c CommandType) ToString() string {
+	return [...]string{
+		"CommandTypeSelect",
+		"CommandTypeUpdate",
+		"CommandTypeDelete",
+		"CommandTypeUtils",
+	}[c]
+}
 
 // -------------------------
 //      Query
@@ -50,14 +62,30 @@ type query struct {
 	FromExpr  FromExpr
 }
 
-func (q Query) DEqual(node Node) bool {
-	if res, ok := nodeEqual(q, node); ok {
-		return res
-	}
+func (q Query) dEqual(node Node) bool {
+
 	raw := node.(Query)
 	return q.Command == raw.Command &&
 		cmpNodeArray(q.TargetList, raw.TargetList) &&
 		q.ResultRel == raw.ResultRel &&
 		cmpNodeArray(q.RTables, raw.RTables) &&
-		q.FromExpr.DEqual(raw.FromExpr)
+		DEqual(q.FromExpr, raw.FromExpr)
+}
+
+func (q query) DPrint(nesting int) string {
+	n1 := nesting + 1
+	return fmt.Sprintf(
+		`%s{
+Command: 	%s, 
+TargetList: %s,
+ResultRel: 	%d,
+RTables: 	%s
+FromExpr: 	%s`,
+		q.dTag(nesting),
+		q.Command.ToString(),
+		dPrintArr(n1, q.TargetList),
+		q.ResultRel,
+		dPrintArr(n1, q.RTables),
+		q.FromExpr.DPrint(n1),
+	)
 }

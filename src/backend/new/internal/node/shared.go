@@ -1,5 +1,7 @@
 package node
 
+import "fmt"
+
 // -------------------------
 //      Alias
 // -------------------------
@@ -20,10 +22,12 @@ type alias struct {
 	AliasName string
 }
 
-func (a Alias) DEqual(node Node) bool {
-	if res, ok := nodeEqual(a, node); ok {
-		return res
-	}
+func (a Alias) dEqual(node Node) bool {
 	raw := node.(Alias)
 	return a.AliasName == raw.AliasName
+}
+
+func (a Alias) DPrint(nesting int) string {
+	return fmt.Sprintf("%s{AliasName: %s}",
+		a.dTag(nesting), a.AliasName)
 }

@@ -1,23 +1,48 @@
 package node
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
 
 type Node interface {
 	// Tag indicates node type
 	Tag() Tag
-	// DEqual debug equal, used in tests for fast assertions
-	DEqual(node Node) bool
+	dEqual(node Node) bool //todo remove this from node (it exist on DNode)
+	DPrint(nesting int) string
 }
 
 type node struct {
 	tag Tag
 }
 
+func (n *node) DEqual(node Node) bool {
+	if n == nil && (node == nil) {
+		return true
+	}
+	return false
+}
+
 func (n *node) Tag() Tag {
 	return n.tag
 }
 
-type Tag = uint16
+func (n *node) dFormat(innerStr string, nesting int) string {
+	b := strings.Builder{}
+	for i := 0; i < nesting; i++ {
+		b.WriteString("\t")
+	}
+	nestingStr := b.String()
+
+	return strings.ReplaceAll(n.dTag(nesting)+innerStr, "\n", "\n"+nestingStr)
+}
+
+func (n *node) dTag(nesting int) string {
+	return fmt.Sprintf("@%s", n.tag.ToString())
+}
+
+type Tag uint16
 
 const (
 	TagQuery Tag = iota
@@ -32,17 +57,41 @@ const (
 	TagVar
 )
 
+func (t Tag) ToString() string {
+	return [...]string{
+		"TagQuery",
+		"TagRTE",
+		"TagRteRef",
+		"TagFrom",
+		"TagAlias",
+		"TagExpr",
+		"TagTargetEntry",
+		"TagVar",
+	}[t]
+}
+
 // -------------------------
 //      UtilsFunction
 // -------------------------
 
-func nodeEqual(v1, v2 Node) (result bool, conclusive bool) {
-	if nodesEqNil(v1, v2) {
-		return true, true
-	} else if !basicNodeEqual(v1, v2) {
-		return false, true
+func dPrintArr[T Node](nesting int, nodes []T) string {
+	builder := strings.Builder{}
+	builder.WriteString("[\n")
+	for _, dNode := range nodes {
+		nodeStr := dNode.DPrint(nesting) + ",\n"
+		builder.WriteString(nodeStr)
 	}
-	return true, false
+	builder.WriteString("]\n")
+	return builder.String()
+}
+
+func DEqual(v1, v2 Node) bool {
+	if nodesEqNil(v1, v2) {
+		return true
+	} else if !basicNodeEqual(v1, v2) {
+		return false
+	}
+	return v1.dEqual(v2)
 }
 
 func nodesEqNil(v1, v2 Node) bool {
@@ -66,7 +115,7 @@ func cmpNodeArray[T Node](nodes1, nodes2 []T) bool {
 		return false
 	}
 	for i := 0; i < len(nodes1); i++ {
-		if !nodes1[i].DEqual(nodes2[i]) {
+		if !nodes1[i].dEqual(nodes2[i]) {
 			return false
 		}
 	}
@@ -83,7 +132,7 @@ func cmpNodeArray2D[T Node](nodes1, nodes2 [][]T) bool {
 			return false
 		}
 		for j := 0; j < len(nodes1[i]); j++ {
-			if !nodes1[i][j].DEqual(nodes2[i][j]) {
+			if !nodes1[i][j].dEqual(nodes2[i][j]) {
 				return false
 			}
 		}

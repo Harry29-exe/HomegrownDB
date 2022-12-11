@@ -26,8 +26,7 @@ func (s _select) Analyse(stmt pnode.SelectStmt, ctx anlsr.Ctx) (node.Query, erro
 
 	query.TargetList = entries
 
-	//todo implement me
-	panic("Not implemented")
+	return query, nil
 }
 
 var SelectValidator = selectVldtr{}

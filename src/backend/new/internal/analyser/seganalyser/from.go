@@ -10,28 +10,10 @@ import (
 var FromDelegator = fromDelegator{}
 
 type fromDelegator struct{}
+type RteList = *list.List[node.RangeTableEntry]
 
+// todo validate result for different operations e.g. select, insert e.t.c
 func (f fromDelegator) Analyse(query node.Query, fromRoot []pnode.Node, ctx anlsr.Ctx) error {
-	switch query.Command {
-	case node.CommandTypeSelect:
-		return SelectFromExpr.Analyse(query, fromRoot, ctx)
-	case node.CommandTypeInsert:
-		return InsertFromExpr.Analyse(query, fromRoot, ctx)
-	default:
-		//todo implement me
-		panic("Not implemented")
-	}
-}
-
-// -------------------------
-//      SelectFromExpr
-// -------------------------
-
-var SelectFromExpr = selectFromExpr{}
-
-type selectFromExpr struct{}
-
-func (f selectFromExpr) Analyse(query node.Query, fromRoot []pnode.Node, ctx anlsr.Ctx) error {
 	fromExpr := node.NewFromExpr(len(fromRoot))
 	rteList := list.CopySliceAsList(query.RTables)
 
@@ -48,7 +30,7 @@ func (f selectFromExpr) Analyse(query node.Query, fromRoot []pnode.Node, ctx anl
 	return nil
 }
 
-func (f selectFromExpr) analyseSingle(root pnode.Node, rteList list.List[node.RangeTableEntry], ctx anlsr.Ctx) (node.Node, error) {
+func (f fromDelegator) analyseSingle(root pnode.Node, rteList RteList, ctx anlsr.Ctx) (node.Node, error) {
 	var result RteResult
 	var err error
 
@@ -66,17 +48,4 @@ func (f selectFromExpr) analyseSingle(root pnode.Node, rteList list.List[node.Ra
 
 	rteList.Add(result.Rte)
 	return result.RteRefNode, nil
-}
-
-// -------------------------
-//      InsertFromExpr
-// -------------------------
-
-var InsertFromExpr = insertFromExpr{}
-
-type insertFromExpr struct{}
-
-func (f insertFromExpr) Analyse(query node.Query, fromRoot []pnode.Node, ctx anlsr.Ctx) error {
-	//todo implement me
-	panic("Not implemented")
 }

@@ -2,7 +2,7 @@ package relation
 
 import "math"
 
-type ID = uint32
+type ID uint32
 
 var (
 	InvalidRelId ID = math.MaxUint32

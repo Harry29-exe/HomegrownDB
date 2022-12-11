@@ -3,6 +3,7 @@ package node
 import (
 	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
+	"fmt"
 )
 
 type Expr interface {
@@ -48,14 +49,17 @@ type _var struct {
 	Type     ctype.Type
 }
 
-func (v Var) DEqual(node Node) bool {
-	if res, ok := nodeEqual(v, node); ok {
-		return res
-	}
+func (v Var) dEqual(node Node) bool {
 	raw := node.(Var)
 	return v.RteID == raw.RteID &&
 		v.ColOrder == raw.ColOrder &&
 		v.Type == raw.Type
+}
+
+func (v Var) DPrint(nesting int) string {
+	return fmt.Sprintf("%s{RteId: %d, ColOrder: %d, Type: %d}",
+		v.dTag(nesting), v.RteID, v.ColOrder, v.Type,
+	)
 }
 
 // -------------------------
@@ -72,13 +76,15 @@ type _const struct {
 	Val  any
 }
 
-func (c Const) DEqual(node Node) bool {
-	if res, ok := nodeEqual(c, node); ok {
-		return res
-	}
+func (c Const) dEqual(node Node) bool {
 	raw := node.(Const)
 	return c.Type == raw.Type &&
 		c.Val == raw.Type
+}
+
+func (c Const) DPrint(nesting int) string {
+	return fmt.Sprintf("@%s{Type: %d, Val: %+v}",
+		c.dTag(nesting), c.Type, c.Val)
 }
 
 // -------------------------

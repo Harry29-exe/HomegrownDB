@@ -1,5 +1,7 @@
 package node
 
+import "fmt"
+
 // -------------------------
 //      FromExpr
 // -------------------------
@@ -22,20 +24,25 @@ type fromExpr struct {
 	Qualifiers Node
 }
 
-func (f FromExpr) DEqual(node Node) bool {
-	if res, ok := nodeEqual(f, node); ok {
-		return res
-	}
+func (f FromExpr) dEqual(node Node) bool {
 	raw := node.(FromExpr)
 	return cmpNodeArray(f.FromList, raw.FromList) &&
-		f.Qualifiers.DEqual(raw.Qualifiers)
+		DEqual(f.Qualifiers, raw.Qualifiers)
+}
+
+func (f FromExpr) DPrint(nesting int) string {
+	inner := fmt.Sprintf("{\nFromList: %s\nQualifiers: %s\n}",
+		dPrintArr(nesting+1, f.FromList),
+		f.Qualifiers.DPrint(nesting+1),
+	)
+	return f.dFormat(inner, nesting)
 }
 
 // -------------------------
 //      JoinType
 // -------------------------
 
-type JoinType = uint8
+type JoinType uint8
 
 const (
 	JoinInner JoinType = iota
@@ -43,3 +50,12 @@ const (
 	JoinFull
 	JoinRight
 )
+
+func (j JoinType) ToString() string {
+	return [...]string{
+		"JoinInner",
+		"JoinLeft",
+		"JoinFull",
+		"JoinRight",
+	}[j]
+}

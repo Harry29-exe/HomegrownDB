@@ -52,7 +52,7 @@ func (ex exprAnalyser) AnalyseColRef(pnode pnode.ColumnRef, query node.Query, ct
 
 func (ex exprAnalyser) findRteByAlias(alias string, query node.Query) node.RangeTableEntry {
 	for _, rTable := range query.RTables {
-		if rTable.Alias.AliasName == alias {
+		if rTable.Alias != nil && rTable.Alias.AliasName == alias {
 			return rTable
 		}
 	}

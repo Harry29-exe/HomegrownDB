@@ -60,7 +60,7 @@ func (t *StdTable) Name() string {
 func (t *StdTable) Serialize() []byte {
 	serializer := bparse.NewSerializer()
 
-	serializer.Uint32(t.objectId)
+	serializer.Uint32(uint32(t.objectId))
 	serializer.MdString(t.name)
 
 	columnCount := uint16(len(t.columnName_OrderMap))
@@ -74,7 +74,7 @@ func (t *StdTable) Serialize() []byte {
 
 func (t *StdTable) Deserialize(tableDef []byte) {
 	deserializer := bparse.NewDeserializer(tableDef)
-	t.objectId = deserializer.Uint32()
+	t.objectId = relation.ID(deserializer.Uint32())
 	t.name = deserializer.MdString()
 	t.columnsCount = deserializer.Uint16()
 

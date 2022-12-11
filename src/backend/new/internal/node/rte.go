@@ -3,13 +3,14 @@ package node
 import (
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
+	"fmt"
 )
 
 // -------------------------
 //      RangeTableEntry
 // -------------------------
 
-type rteKind = uint8
+type rteKind uint8
 
 const (
 	RteRelation rteKind = iota
@@ -22,6 +23,20 @@ const (
 	RteNamedTupleStore
 	RteResult
 )
+
+func (k rteKind) ToString() string {
+	return [...]string{
+		"RteRelation",
+		"RteSubQuery",
+		"RteJoin",
+		"RteFunc",
+		"RteTableFunc",
+		"RteValues",
+		"RteCte",
+		"RteNamedTupleStore",
+		"RteResult",
+	}[k]
+}
 
 func NewRelationRTE(rteID RteID, ref table.RDefinition) RangeTableEntry {
 	return &rangeTableEntry{
@@ -77,10 +92,7 @@ func (r RangeTableEntry) CreateRef() RangeTableRef {
 	}
 }
 
-func (r RangeTableEntry) DEqual(node Node) bool {
-	if res, ok := nodeEqual(r, node); ok {
-		return res
-	}
+func (r RangeTableEntry) dEqual(node Node) bool {
 	raw := node.(RangeTableEntry)
 
 	if r.Kind != raw.Kind {
@@ -98,6 +110,37 @@ func (r RangeTableEntry) DEqual(node Node) bool {
 	}
 }
 
+func (r rangeTableEntry) DPrint(nesting int) string {
+	n1 := nesting + 1
+	insertStr := fmt.Sprintf(
+		`{
+Kind: %s,
+Id: %d,
+LockMode: %d,
+TableId: %d,
+Ref: %+v,
+Subquery: %s,
+JoinType: %s,
+ResultCols: %s,
+LeftColumns: %+v,
+RightColumns: %+v,
+Alias: %s,
+`,
+		r.Kind.ToString(),
+		r.Id,
+		r.LockMode,
+		r.TableId,
+		r.Ref,
+		r.Subquery.DPrint(n1),
+		r.JoinType.ToString(),
+		dPrintArr(n1, r.ResultCols),
+		r.LeftColumns,
+		r.RightColumns,
+		r.Alias.DPrint(n1),
+	)
+	return r.dFormat(insertStr, nesting)
+}
+
 func (r RangeTableEntry) dRelationEqual(r2 RangeTableEntry) bool {
 	return r.LockMode == r2.LockMode &&
 		r.TableId == r2.TableId &&
@@ -106,11 +149,11 @@ func (r RangeTableEntry) dRelationEqual(r2 RangeTableEntry) bool {
 
 func (r RangeTableEntry) dGenericFieldEqual(r2 RangeTableEntry) bool {
 	return r.Id == r2.Id &&
-		r.Alias.DEqual(r2.Alias)
+		r.Alias.dEqual(r2.Alias)
 }
 
 // RteID is id of RangeTableEntry unique for given query/plan
-type RteID = uint16
+type RteID uint16
 
 // -------------------------
 //      RangeTableRef
@@ -133,12 +176,14 @@ type rangeTableRef struct {
 	Rte RteID
 }
 
-func (r RangeTableRef) DEqual(node Node) bool {
-	if res, ok := nodeEqual(r, node); ok {
-		return res
-	}
+func (r RangeTableRef) dEqual(node Node) bool {
 	raw := node.(RangeTableRef)
 	return r.Rte == raw.Rte
+}
+
+func (r rangeTableRef) DPrint(nesting int) string {
+	//TODO implement me
+	panic("implement me")
 }
 
 // -------------------------
@@ -167,13 +212,26 @@ type targetEntry struct {
 	Temp bool // Temp if true then entry should be eliminated before tuple is emitted
 }
 
-func (t TargetEntry) DEqual(node Node) bool {
-	if res, ok := nodeEqual(t, node); ok {
-		return res
-	}
+func (t TargetEntry) dEqual(node Node) bool {
 	raw := node.(TargetEntry)
 	return t.AttribNo == raw.AttribNo &&
 		t.ColName == raw.ColName &&
 		t.Temp == raw.Temp &&
-		t.ExprToExec.DEqual(raw.ExprToExec)
+		DEqual(t.ExprToExec, raw.ExprToExec)
+}
+
+func (t targetEntry) DPrint(nesting int) string {
+	return fmt.Sprintf(
+		`
+%s{
+ExprToExec: %s,
+AttribNo: 	%d,
+ColName:	%s,
+Temp: 		%t
+}`,
+		t.dTag(nesting),
+		t.ExprToExec.DPrint(nesting+1),
+		t.AttribNo,
+		t.ColName,
+		t.Temp)
 }

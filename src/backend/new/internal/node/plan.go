@@ -20,7 +20,12 @@ type plan struct {
 
 }
 
-func (p plan) DEqual(node Node) bool {
+func (p plan) DPrint(nesting int) string {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p plan) dEqual(node Node) bool {
 	//TODO implement me
 	panic("implement me")
 }
