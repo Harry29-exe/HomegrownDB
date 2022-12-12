@@ -20,7 +20,7 @@ type InsertRowSrc struct {
 }
 
 type InsertFieldSrc struct {
-	// Src test that will provide field's value
+	// Src node that will provide field's value
 	Src Node
 	// Value actual value to insert
 	Value []byte
