@@ -3,10 +3,10 @@ package pnode
 type Node interface {
 	Tag() Tag
 	SetTag(tag Tag)
-	// StartToken index of first token of this node
+	// StartToken index of first token of this test
 	StartToken() uint
 	SetStartToken(index uint)
-	// EndToken index of first token after this node
+	// EndToken index of first token after this test
 	EndToken() uint
 	SetEndToken(index uint)
 

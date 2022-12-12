@@ -7,7 +7,7 @@ import (
 )
 
 type Node interface {
-	// Tag indicates node type
+	// Tag indicates test type
 	Tag() Tag
 	dEqual(node Node) bool //todo remove this from node (it exist on DNode)
 	DPrint(nesting int) string

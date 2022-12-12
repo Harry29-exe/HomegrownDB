@@ -19,7 +19,7 @@ func NewSingleRteResult(rte node.RangeTableEntry) RteResult {
 
 type RteResult struct {
 	Rte        node.RangeTableEntry
-	RteRefNode node.Node // RteRefNode is node like, node.RangeTableRef, Joins etc.
+	RteRefNode node.Node // RteRefNode is test like, node.RangeTableRef, Joins etc.
 }
 
 // -------------------------

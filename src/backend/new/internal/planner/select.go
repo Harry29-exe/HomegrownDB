@@ -18,11 +18,12 @@ func (s _select) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error)
 		//todo implement me
 		panic("Not implemented")
 	}
-	rteRef := fromRoot.(node.RangeTableEntry)
+	rteRef := fromRoot.(node.RangeTableRef)
 
 	seqScan := node.NewSeqScan(plan.NextPlanNodeId(), query)
-	seqScan.RteId = rteRef.Id
+	seqScan.RteId = rteRef.Rte
 	seqScan.TargetList = query.TargetList
+	plan.Tables = append(plan.Tables, query.RTables...)
 
 	return seqScan, nil
 }

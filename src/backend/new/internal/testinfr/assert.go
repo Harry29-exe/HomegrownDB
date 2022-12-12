@@ -1,26 +1,19 @@
-package seganalyser_test
+package testinfr
 
 import (
 	"HomegrownDB/backend/new/internal/node"
-	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/tutils/testtable/tt_user"
-	"HomegrownDB/dbsystem/schema/table"
 	"fmt"
 	"runtime/debug"
 	"strings"
 	"testing"
 )
 
-// -------------------------
-//      Assert
-// -------------------------
+var NodeAssert = nodeAssert{}
 
-var Assert = assertNs{}
+// nodeAssert nodeAssert namespace
+type nodeAssert struct{}
 
-// assertNs assert namespace
-type assertNs struct{}
-
-func (a assertNs) Node(expected node.Node, actual node.Node, t *testing.T) {
+func (a nodeAssert) Eq(expected node.Node, actual node.Node, t *testing.T) {
 	equal := node.DEqual(expected, actual)
 	if equal {
 		return
@@ -62,17 +55,4 @@ func formatNode(err string) string {
 
 func nestingStr(nesting int) string {
 	return strings.Repeat("\t", nesting)
-}
-
-// -------------------------
-//      Utils
-// -------------------------
-
-func StoreWithUsersTable(t *testing.T) (store table.Store, users table.Definition) {
-	users = tt_user.Def(t)
-	store = table.NewEmptyTableStore()
-	err := store.AddTable(users)
-	assert.ErrIsNil(err, t)
-
-	return store, users
 }

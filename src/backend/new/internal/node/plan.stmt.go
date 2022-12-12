@@ -33,8 +33,10 @@ func (p PlanedStmt) NextPlanNodeId() PlanNodeId {
 }
 
 func (p PlanedStmt) dEqual(node Node) bool {
-	//TODO implement me
-	panic("implement me")
+	raw := node.(PlanedStmt)
+	return p.Command == raw.Command &&
+		DEqual(p.PlanTree, raw.PlanTree) &&
+		cmpNodeArray(p.Tables, raw.Tables)
 }
 
 func (p PlanedStmt) DPrint(nesting int) string {

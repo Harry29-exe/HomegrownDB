@@ -20,6 +20,6 @@ type TokenSource interface {
 
 	Checkpoint()                       // Checkpoint creates new checkpoint for segparser to rollback
 	Commit()                           // Commit deletes last checkpoint
-	CommitAndInitNode(node pnode.Node) // CommitAndInitNode invoke commit, and set start and end token of received node
+	CommitAndInitNode(node pnode.Node) // CommitAndInitNode invoke commit, and set start and end token of received test
 	Rollback()                         // Rollback to last checkpoint and removes this checkpoint
 }
