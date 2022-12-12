@@ -28,7 +28,7 @@ type SeqScan struct {
 }
 
 func (s *SeqScan) SetSource(source []ExeNode) {
-	panic("This test can not have source, it's programmers error")
+	panic("This node can not have source, it's programmers error")
 }
 
 func (s *SeqScan) Free() {
