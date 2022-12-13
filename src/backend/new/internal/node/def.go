@@ -75,6 +75,11 @@ func (t Tag) ToString() string {
 		"TagExpr",
 		"TagTargetEntry",
 		"TagVar",
+		"TagPlan",
+		"TagPlanedStmt",
+		"TagModifyTable",
+		"TagScan",
+		"TagSeqScan",
 	}[t]
 }
 
