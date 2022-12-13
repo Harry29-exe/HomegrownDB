@@ -6,10 +6,10 @@ import "fmt"
 //      FromExpr
 // -------------------------
 
-func NewFromExpr(fromListSize int) FromExpr {
+func NewFromExpr(initialFromListSize int) FromExpr {
 	return &fromExpr{
 		node:       node{tag: TagFrom},
-		FromList:   make([]Node, fromListSize),
+		FromList:   make([]Node, initialFromListSize),
 		Qualifiers: nil,
 	}
 }

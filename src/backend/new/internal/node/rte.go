@@ -48,12 +48,21 @@ func NewRelationRTE(rteID RteID, ref table.RDefinition) RangeTableEntry {
 	}
 }
 
-func NewSelectRTE(id RteID, subquery Query) RangeTableEntry {
+func NewSubqueryRTE(id RteID, subquery Query) RangeTableEntry {
 	return &rangeTableEntry{
 		node:     node{tag: TagRTE},
 		Kind:     RteSubQuery,
 		Id:       id,
 		Subquery: subquery,
+	}
+}
+
+func NewValuesRTE(id RteID, values [][]Node) RangeTableEntry {
+	return &rangeTableEntry{
+		node:       node{tag: TagRTE},
+		Kind:       RteValues,
+		Id:         id,
+		ValuesList: values,
 	}
 }
 
@@ -80,6 +89,9 @@ type rangeTableEntry struct {
 	ResultCols   []Var          // list of columns in result tuples
 	LeftColumns  []column.Order // columns
 	RightColumns []column.Order
+
+	//Kind = RteValues
+	ValuesList [][]Node // list of expression node lists
 
 	// general
 	Alias Alias

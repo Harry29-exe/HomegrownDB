@@ -12,7 +12,7 @@ type Ctx = *queryCtx
 
 func NewQCtx(store table.Store) Ctx {
 	return &queryCtx{
-		RteIdCounter: appsync.NewSyncCounter[node.RteID](0),
+		RteIdCounter: appsync.NewSimpleCounter[node.RteID](0),
 
 		TableStore: store,
 		TableCache: map[relation.ID]table.Definition{},
@@ -21,7 +21,7 @@ func NewQCtx(store table.Store) Ctx {
 }
 
 type queryCtx struct {
-	RteIdCounter appsync.SyncCounter[node.RteID]
+	RteIdCounter RteIdCounter
 
 	TableStore table.Store
 	TableCache map[relation.ID]table.Definition
@@ -54,3 +54,5 @@ func (c Ctx) GetTable(name string) (table.RDefinition, error) {
 	c.TableCache[tableId] = tableDef
 	return tableDef, nil
 }
+
+type RteIdCounter = appsync.SimpleSyncCounter[node.RteID]

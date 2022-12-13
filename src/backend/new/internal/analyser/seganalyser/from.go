@@ -13,7 +13,7 @@ type fromDelegator struct{}
 type RteList = *list.List[node.RangeTableEntry]
 
 // todo validate result for different operations e.g. select, insert e.t.c
-func (f fromDelegator) Analyse(query node.Query, fromRoot []pnode.Node, ctx anlsr.Ctx) error {
+func (f fromDelegator) Analyse(fromRoot []pnode.Node, query node.Query, ctx anlsr.Ctx) error {
 	fromExpr := node.NewFromExpr(len(fromRoot))
 	rteList := list.CopySliceAsList(query.RTables)
 
@@ -26,7 +26,7 @@ func (f fromDelegator) Analyse(query node.Query, fromRoot []pnode.Node, ctx anls
 	}
 
 	query.FromExpr = fromExpr
-	query.RTables = rteList.CurrentSlice()
+	query.RTables = append(query.RTables, rteList.CurrentSlice()...)
 	return nil
 }
 
@@ -36,7 +36,10 @@ func (f fromDelegator) analyseSingle(root pnode.Node, rteList RteList, ctx anlsr
 
 	switch root.Tag() {
 	case pnode.TagRangeVar:
-		result, err = RTERangeVar.Analyse(root.(pnode.RangeVar), ctx)
+		result, err = RteRangeVar.Analyse(root.(pnode.RangeVar), ctx)
+	case pnode.TagSelectStmt:
+		result, err = RteSubquery.Analyse(root.(pnode.SelectStmt), ctx)
+
 	default:
 		//todo implement me
 		panic("Not implemented")

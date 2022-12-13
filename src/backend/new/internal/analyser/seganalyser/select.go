@@ -14,19 +14,47 @@ func (s _select) Analyse(stmt pnode.SelectStmt, ctx anlsr.Ctx) (node.Query, erro
 	query := node.NewQuery(node.CommandTypeSelect, stmt)
 	query.Command = node.CommandTypeSelect
 
-	err := FromDelegator.Analyse(query, stmt.From, ctx)
+	var err error
+	if stmt.Values != nil {
+		err = s.analyseValuesSelect(stmt, query, ctx)
+	} else {
+		err = s.analyseStdSelect(stmt, query, ctx)
+	}
 	if err != nil {
 		return nil, err
+	}
+
+	return query, nil
+}
+
+func (s _select) analyseStdSelect(stmt pnode.SelectStmt, query node.Query, ctx anlsr.Ctx) error {
+	err := FromDelegator.Analyse(stmt.From, query, ctx)
+	if err != nil {
+		return err
 	}
 
 	entries, err := TargetEntries.Analyse(stmt.Targets, query, ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	query.TargetList = entries
 
-	return query, nil
+	return nil
+}
+
+func (s _select) analyseValuesSelect(stmt pnode.SelectStmt, query node.Query, ctx anlsr.Ctx) error {
+	valuesRte, err := RteValues.Analyse(stmt.Values, query, ctx)
+	if err != nil {
+		return err
+	}
+
+	fromExpr := node.NewFromExpr(1)
+	fromExpr.FromList[0] = valuesRte.RteRefNode
+	query.FromExpr = fromExpr
+	query.RTables = append(query.RTables, valuesRte.Rte)
+
+	return nil
 }
 
 var SelectValidator = selectVldtr{}

@@ -23,10 +23,10 @@ type RteResult struct {
 }
 
 // -------------------------
-//      RTERangeVar
+//      RteRangeVar
 // -------------------------
 
-var RTERangeVar = rteRangeVar{}
+var RteRangeVar = rteRangeVar{}
 
 type rteRangeVar struct{}
 
@@ -36,10 +36,63 @@ func (r rteRangeVar) Analyse(rangeVar pnode.RangeVar, ctx anlsr.Ctx) (RteResult,
 		return RteResult{}, err
 	}
 
-	rte := node.NewRelationRTE(ctx.RteIdCounter.IncrAndGet(), def)
+	rte := node.NewRelationRTE(ctx.RteIdCounter.Next(), def)
 	if rangeVar.Alias != "" {
 		rte.Alias = node.NewAlias(rangeVar.Alias)
 	}
 
 	return NewSingleRteResult(rte), nil
+}
+
+// -------------------------
+//      RteSubquery
+// -------------------------
+
+var RteSubquery = rteSelect{}
+
+type rteSelect struct{}
+
+func (rteSelect) Analyse(stmt pnode.SelectStmt, ctx anlsr.Ctx) (RteResult, error) {
+	subquery, err := Select.Analyse(stmt, ctx)
+	if err != nil {
+		return RteResult{}, err
+	}
+
+	rte := node.NewSubqueryRTE(ctx.RteIdCounter.Next(), subquery)
+	return NewSingleRteResult(rte), nil
+}
+
+// -------------------------
+//      RteValues
+// -------------------------
+
+var RteValues = rteValues{}
+
+type rteValues struct{}
+
+func (v rteValues) Analyse(pnodeValues [][]pnode.Node, query node.Query, ctx anlsr.Ctx) (RteResult, error) {
+	values := make([][]node.Node, len(pnodeValues))
+	var err error
+
+	for i := 0; i < len(values); i++ {
+		values[i], err = v.analyseRow(pnodeValues[i], query, ctx)
+		if err != nil {
+			return RteResult{}, err
+		}
+	}
+
+	rte := node.NewValuesRTE(ctx.RteIdCounter.Next(), values)
+	return NewSingleRteResult(rte), nil
+}
+
+func (v rteValues) analyseRow(row []pnode.Node, query node.Query, ctx anlsr.Ctx) ([]node.Node, error) {
+	resultRow := make([]node.Node, len(row))
+	var err error
+	for i := 0; i < len(row); i++ {
+		resultRow[i], err = ExprDelegator.DelegateAnalyse(row[i], query, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return resultRow, nil
 }
