@@ -3,14 +3,14 @@ package seganalyser
 import (
 	"HomegrownDB/backend/internal/analyser/anode"
 	"HomegrownDB/backend/internal/parser/pnode"
-	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/backend/internal/shared/qctx"
 )
 
 var Select = _select{}
 
 type _select struct{}
 
-func (s _select) Analyse(node pnode.Select, ctx *tx.Ctx) (anode.Select, error) {
+func (s _select) Analyse(node pnode.Select, ctx qctx.QueryCtx) (anode.Select, error) {
 	selectNode := anode.Select{}
 	tablesNode, err := Tables.Analise(node.Tables, ctx)
 	if err != nil {

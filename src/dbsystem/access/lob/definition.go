@@ -21,5 +21,5 @@ type idCounter struct {
 }
 
 func (c idCounter) NextId() Id {
-	return c.counter.IncrementAndGet()
+	return c.counter.IncrAndGet()
 }

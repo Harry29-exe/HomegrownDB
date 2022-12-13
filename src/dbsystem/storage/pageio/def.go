@@ -30,7 +30,7 @@ func (n noPageError) Error() string {
 	return "No page with given index"
 }
 
-func NewTablePageTag(pageIndex page.Id, tableDef table.Definition) PageTag {
+func NewTablePageTag(pageIndex page.Id, tableDef table.RDefinition) PageTag {
 	return PageTag{
 		PageId:   pageIndex,
 		Relation: tableDef.RelationID(),

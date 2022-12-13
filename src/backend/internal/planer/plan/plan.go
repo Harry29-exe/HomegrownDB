@@ -1,7 +1,6 @@
 package plan
 
 import (
-	"HomegrownDB/backend/internal/analyser/anode"
 	"HomegrownDB/dbsystem/schema/table"
 )
 
@@ -16,14 +15,19 @@ type Plan interface {
 	RootNode() Node
 	SetRootNode(node Node)
 
-	AddTable(analyserTable anode.Table) Table
 	Tables() []Table
+	GetTable(id table.Id) table.Definition
 }
 
 type plan struct {
 	rootNode Node
 
 	tables []Table
+}
+
+func (p *plan) GetTable(id table.Id) table.Definition {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (p *plan) RootNode() Node {
@@ -34,22 +38,11 @@ func (p *plan) SetRootNode(node Node) {
 	p.rootNode = node
 }
 
-func (p *plan) AddTable(analyserTable anode.Table) Table {
-	tab := Table{
-		TableId:     analyserTable.Def.TableId(),
-		PlanTableId: TableId(analyserTable.QTableId),
-	}
-	p.tables = append(p.tables, tab)
-	return tab
-}
-
 func (p *plan) Tables() []Table {
 	return p.tables
 }
 
 type Table struct {
-	TableId     table.Id
-	PlanTableId TableId
+	TableId   table.Id
+	TableHash string
 }
-
-type TableId = uint8

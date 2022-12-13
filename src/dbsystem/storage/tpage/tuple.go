@@ -16,7 +16,7 @@ type RTuple interface {
 	ColValue(id column.Order) []byte
 	DataSize() int
 
-	Table() table.Definition
+	Table() table.RDefinition
 	Data() []byte
 }
 

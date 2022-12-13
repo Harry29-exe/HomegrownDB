@@ -19,7 +19,7 @@ type txManager struct {
 
 func (txm *txManager) New(level IsolationLevel) Tx {
 	return Tx{
-		Id:     Id(txm.txIdCounter.IncrementAndGet()),
+		Id:     Id(txm.txIdCounter.IncrAndGet()),
 		Level:  level,
 		Status: InProgress,
 	}

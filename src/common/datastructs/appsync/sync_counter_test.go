@@ -15,7 +15,7 @@ func TestUint32SyncCounter(t *testing.T) {
 	processes := 8
 	var incrementFunc = func() {
 		for i := 0; i < increments; i++ {
-			counter.IncrementAndGet()
+			counter.IncrAndGet()
 		}
 		waitGroup.Done()
 	}

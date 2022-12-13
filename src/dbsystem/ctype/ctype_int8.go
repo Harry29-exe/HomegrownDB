@@ -14,6 +14,8 @@ type factoryInt8 struct{}
 
 func (i factoryInt8) Build(args map[string]any) (*CType, dberr.DBError) {
 	return newCType(
+		TypeInt8,
+		int8{},
 		int8{},
 		int8{},
 		int8{},
@@ -22,9 +24,9 @@ func (i factoryInt8) Build(args map[string]any) (*CType, dberr.DBError) {
 	), nil
 }
 
-type int8 struct{}
-
 var _ Reader = int8{}
+
+type int8 struct{}
 
 func (i int8) Skip(data []byte) []byte {
 	return data[8:]

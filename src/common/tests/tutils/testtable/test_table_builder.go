@@ -3,11 +3,12 @@ package testtable
 import (
 	"HomegrownDB/dbsystem/ctype"
 	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/schema/table"
 )
 
 type Builder struct {
-	table table.WDefinition
+	table table.Definition
 }
 
 func NewTestTableBuilder(name string) *Builder {
@@ -25,14 +26,14 @@ func (ttb *Builder) AddColumn(name string, nullable bool, cType ctype.Type, args
 	return ttb
 }
 
-func (ttb *Builder) SetIds(tableId table.Id, objectId uint32) *Builder {
+func (ttb *Builder) SetIds(tableId table.Id, objectId relation.ID) *Builder {
 	ttb.table.SetTableId(tableId)
 	ttb.table.SetRelationId(objectId)
 
 	return ttb
 }
 
-func (ttb *Builder) GetTable() table.WDefinition {
+func (ttb *Builder) GetTable() table.Definition {
 	table := ttb.table
 	ttb.table = nil
 

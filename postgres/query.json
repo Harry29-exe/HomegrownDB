@@ -1,0 +1,60 @@
+[
+  {
+    "Plan": {
+      "Node Type": "Hash Join",
+      "Parallel Aware": false,
+      "Join Type": "Inner",
+      "Output": ["b1.specie", "$0"],
+      "Inner Unique": false,
+      "Hash Cond": "(b1.uuid = b2.uuid)",
+      "Plans": [
+        {
+          "Node Type": "Aggregate",
+          "Strategy": "Plain",
+          "Partial Mode": "Simple",
+          "Parent Relationship": "InitPlan",
+          "Subplan Name": "InitPlan 1 (returns $0)",
+          "Parallel Aware": false,
+          "Output": ["count(b2_1.id)"],
+          "Plans": [
+            {
+              "Node Type": "Seq Scan",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Relation Name": "birds",
+              "Schema": "public",
+              "Alias": "b2_1",
+              "Output": ["b2_1.id", "b2_1.specie", "b2_1.uuid"]
+            }
+          ]
+        },
+        {
+          "Node Type": "Seq Scan",
+          "Parent Relationship": "Outer",
+          "Parallel Aware": false,
+          "Relation Name": "birds",
+          "Schema": "public",
+          "Alias": "b1",
+          "Output": ["b1.id", "b1.specie", "b1.uuid"]
+        },
+        {
+          "Node Type": "Hash",
+          "Parent Relationship": "Inner",
+          "Parallel Aware": false,
+          "Output": ["b2.uuid"],
+          "Plans": [
+            {
+              "Node Type": "Seq Scan",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Relation Name": "birds",
+              "Schema": "public",
+              "Alias": "b2",
+              "Output": ["b2.uuid"]
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

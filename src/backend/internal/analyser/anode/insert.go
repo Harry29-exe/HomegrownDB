@@ -1,10 +1,13 @@
 package anode
 
-import "HomegrownDB/dbsystem/schema/column"
+import (
+	"HomegrownDB/backend/internal/shared/qctx"
+)
 
 type Insert struct {
-	Table   Table
-	Columns []column.Def
+	Table   qctx.QTableId
+	Columns []qctx.QColumnId
+
 	// Rows if insert has 'VALUE' or 'VALUES' keyword,
 	// e.g. INSERT INTO uses VALUES (...
 	// then this field contains all information to fill rows

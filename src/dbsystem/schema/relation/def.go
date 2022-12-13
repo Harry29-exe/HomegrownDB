@@ -1,6 +1,13 @@
 package relation
 
-type ID = uint32
+import "math"
+
+type ID uint32
+
+var (
+	InvalidRelId ID = math.MaxUint32
+	MaxRelId     ID = math.MaxUint32 - 1
+)
 
 type Relation interface {
 	RelationID() ID

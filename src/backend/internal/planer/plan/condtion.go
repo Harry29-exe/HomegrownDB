@@ -22,7 +22,7 @@ type ConditionRawValue interface {
 
 type ConditionTupleValue struct {
 	column column.Def
-	table  table.Definition
+	table  table.RDefinition
 }
 
 type conditionType = uint8

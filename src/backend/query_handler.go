@@ -5,21 +5,20 @@ import (
 	"HomegrownDB/backend/internal/executor"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/planer"
+	"HomegrownDB/backend/internal/shared/qctx"
 	"HomegrownDB/backend/internal/shared/query"
-	"HomegrownDB/dbsystem/schema/table"
-	"HomegrownDB/dbsystem/tx"
 )
 
-func HandleQuery(query string, txCtx *tx.Ctx) ([]query.QRow, error) {
-	parseTree, err := parser.Parse(query, txCtx)
+func HandleQuery(query string, ctx qctx.QueryCtx) ([]query.QRow, error) {
+	parseTree, err := parser.Parse(query, ctx)
 	if err != nil {
 		return nil, err
 	}
-	analyserTree, err := analyser.Analyse(parseTree, txCtx, table.DBTableStore)
+	analyserTree, err := analyser.Analyse(parseTree, ctx)
 	if err != nil {
 		return nil, err
 	}
-	plan, err := planer.Plan(analyserTree)
+	plan, err := planer.Plan(analyserTree, ctx)
 	if err != nil {
 		return nil, err
 	}

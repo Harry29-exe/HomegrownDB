@@ -1,18 +1,15 @@
 package anode
 
 import (
+	"HomegrownDB/backend/internal/shared/qctx"
 	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/table"
 )
 
-type SelectFields struct {
-	Fields []SelectField
-}
+type SelectFields = []SelectField
 
 type QFieldId = uint16
 
 type SelectField struct {
-	Table      table.Definition
-	Column     column.Def
-	FieldAlias string
+	Table  qctx.QTableId
+	Column column.Order
 }

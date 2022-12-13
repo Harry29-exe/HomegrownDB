@@ -1,7 +1,7 @@
 package executor
 
 import (
-	"HomegrownDB/backend/internal/executor/exenode"
+	"HomegrownDB/backend/internal/executor/internal/exenode"
 	"HomegrownDB/backend/internal/planer/plan"
 	"HomegrownDB/backend/internal/shared/query"
 )

@@ -7,11 +7,12 @@ import (
 	"HomegrownDB/dbsystem/schema/relation"
 )
 
-type Definition interface {
+type RDefinition interface {
 	relation.Relation
 
 	TableId() Id
 	Name() string
+	Hash() string
 
 	// Serialize table info, so it can be saved to disc and
 	// later deserialize into table object
@@ -35,8 +36,8 @@ type Definition interface {
 	Columns() []column.Def
 }
 
-type WDefinition interface {
-	Definition
+type Definition interface {
+	RDefinition
 
 	SetTableId(id Id)
 	SetRelationId(id relation.ID)
@@ -47,10 +48,10 @@ type WDefinition interface {
 }
 
 // Id of table object, 0 if id is invalid
-type Id = uint16
+type Id = relation.ID
 
-func NewDefinition(name string) WDefinition {
-	table := &StandardTable{
+func NewDefinition(name string) Definition {
+	table := &StdTable{
 		tableId:  0,
 		objectId: 0,
 		columns:  []column.WDef{},
@@ -66,8 +67,8 @@ func NewDefinition(name string) WDefinition {
 	return table
 }
 
-func Deserialize(data []byte) WDefinition {
-	def := &StandardTable{}
+func Deserialize(data []byte) Definition {
+	def := &StdTable{}
 	def.Deserialize(data)
 
 	return def

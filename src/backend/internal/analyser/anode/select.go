@@ -1,6 +1,10 @@
 package anode
 
+import (
+	"HomegrownDB/backend/internal/shared/qctx"
+)
+
 type Select struct {
-	Tables Tables
+	Tables []qctx.QTableId
 	Fields SelectFields
 }

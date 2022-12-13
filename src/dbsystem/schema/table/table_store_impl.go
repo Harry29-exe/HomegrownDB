@@ -2,35 +2,27 @@ package table
 
 import (
 	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/common/errors"
+	"HomegrownDB/dbsystem/schema/relation"
 	"fmt"
 	"sync"
 )
 
-type TableStore struct {
-	storeLock *sync.RWMutex
-
-	// store data
-	nameTableMap map[string]Id
-	definitions  []WDefinition
-
-	// store utils
-	changeListeners []func()
-	tableIdCounter  *appsync.IdResolver[Id]
+func NewTestTableStore(tables ...Definition) (Store, error) {
+	return NewTableStore(tables)
 }
 
-func NewTableStore(tables []WDefinition) (*TableStore, error) {
+func NewTableStore(tables []Definition) (Store, error) { //todo delete this error
 	maxId, missingIds := findMaxAndMissing(tables)
 
 	nameTableMap := map[string]Id{}
-	definitionsArray := make([]WDefinition, maxId)
+	definitionsArray := make([]Definition, maxId)
 	for _, def := range tables {
 		id := def.TableId()
 		nameTableMap[def.Name()] = id
 		definitionsArray[id] = def
 	}
 
-	return &TableStore{
+	return &stdStore{
 		nameTableMap:    nameTableMap,
 		definitions:     definitionsArray,
 		changeListeners: nil,
@@ -38,8 +30,8 @@ func NewTableStore(tables []WDefinition) (*TableStore, error) {
 	}, nil
 }
 
-func NewEmptyTableStore() *TableStore {
-	return &TableStore{
+func NewEmptyTableStore() Store {
+	return &stdStore{
 		storeLock: &sync.RWMutex{},
 
 		nameTableMap: map[string]Id{},
@@ -50,7 +42,7 @@ func NewEmptyTableStore() *TableStore {
 	}
 }
 
-func findMaxAndMissing(tables []WDefinition) (maxId Id, missing []Id) {
+func findMaxAndMissing(tables []Definition) (maxId Id, missing []Id) {
 	maxId = Id(0)
 	existingIds := map[Id]bool{}
 	for _, def := range tables {
@@ -69,37 +61,40 @@ func findMaxAndMissing(tables []WDefinition) (maxId Id, missing []Id) {
 	return
 }
 
-func (t *TableStore) GetTable(name string) (Definition, error) {
-	t.storeLock.RLock()
-	defer t.storeLock.RUnlock()
+var _ Store = &stdStore{}
 
-	id, ok := t.nameTableMap[name]
-	if ok {
-		return t.definitions[id], nil
-	}
-	return nil, errors.TableNotExist{TableName: name}
+type stdStore struct {
+	storeLock *sync.RWMutex
+
+	// store data
+	nameTableMap map[string]Id
+	definitions  []Definition
+
+	// store utils
+	changeListeners []func()
+	tableIdCounter  *appsync.IdResolver[Id]
 }
 
-func (t *TableStore) Table(id Id) Definition {
+func (t *stdStore) FindTable(name string) Id {
+	id, ok := t.nameTableMap[name]
+	if !ok {
+		return relation.InvalidRelId
+	}
+	return id
+}
+
+func (t *stdStore) AccessTable(id Id, lockMode TableLockMode) Definition {
+	//todo add locking here
+	return t.definitions[id]
+}
+
+func (t *stdStore) Table(id Id) RDefinition {
 	t.storeLock.RLock()
 	defer t.storeLock.RUnlock()
 	return t.definitions[id]
 }
 
-func (t *TableStore) AllTables() []Definition {
-	t.storeLock.RLock()
-	defer t.storeLock.RUnlock()
-
-	length := len(t.definitions)
-	allTablesList := make([]Definition, length)
-	for i, def := range t.definitions {
-		allTablesList[i] = def
-	}
-
-	return allTablesList
-}
-
-func (t *TableStore) AddTable(table WDefinition) error {
+func (t *stdStore) AddTable(table Definition) error {
 	t.storeLock.Lock()
 	defer t.storeLock.Unlock()
 
@@ -115,7 +110,7 @@ func (t *TableStore) AddTable(table WDefinition) error {
 	return nil
 }
 
-func (t *TableStore) RemoveTable(id Id) error {
+func (t *stdStore) RemoveTable(id Id) error {
 	t.storeLock.Lock()
 	defer t.storeLock.Unlock()
 

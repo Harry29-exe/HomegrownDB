@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func CreateTableFiles(table table.Definition) error {
+func CreateTableFiles(table table.RDefinition) error {
 	tablePath := dbsystem.DBHomePath() + "/tables/" + table.Name()
 	err := os.Mkdir(tablePath, 755)
 	if err != nil {
@@ -26,7 +26,7 @@ func CreateTableFiles(table table.Definition) error {
 	return nil
 }
 
-func serializeAndSave(table table.Definition, tablePath string) error {
+func serializeAndSave(table table.RDefinition, tablePath string) error {
 	data := table.Serialize()
 
 	file, err := os.Create(tablePath + "/info")
@@ -47,7 +47,7 @@ func serializeAndSave(table table.Definition, tablePath string) error {
 	return nil
 }
 
-func createDataFile(table table.Definition, tablePath string) error {
+func createDataFile(table table.RDefinition, tablePath string) error {
 	dataFile, err := os.Create(tablePath + "/data.hdbd")
 	if err != nil {
 		return err
@@ -69,7 +69,7 @@ func createDataFile(table table.Definition, tablePath string) error {
 	return nil
 }
 
-func createBgDataFile(table table.Definition, tablePath string) error {
+func createBgDataFile(table table.RDefinition, tablePath string) error {
 	dataFile, err := os.Create(tablePath + "/bg_data.hdbd")
 	if err != nil {
 		return err
