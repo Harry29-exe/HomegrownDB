@@ -55,6 +55,7 @@ const (
 	TagExpr
 	TagTargetEntry
 	TagVar
+	TagConst
 
 	// Plan nodes
 	TagPlan

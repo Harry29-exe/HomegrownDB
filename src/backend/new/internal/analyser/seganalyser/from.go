@@ -26,7 +26,7 @@ func (f fromDelegator) Analyse(fromRoot []pnode.Node, query node.Query, ctx anls
 	}
 
 	query.FromExpr = fromExpr
-	query.RTables = append(query.RTables, rteList.CurrentSlice()...)
+	query.RTables = rteList.CurrentSlice()
 	return nil
 }
 

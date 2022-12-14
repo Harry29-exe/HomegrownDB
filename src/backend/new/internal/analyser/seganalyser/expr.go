@@ -5,6 +5,7 @@ import (
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/backend/new/internal/pnode"
 	. "HomegrownDB/backend/new/internal/sqlerr"
+	"HomegrownDB/dbsystem/ctype"
 	"errors"
 )
 
@@ -20,6 +21,8 @@ func (ex exprDelegator) DelegateAnalyse(
 	switch pnodeExpr.Tag() {
 	case pnode.TagColumnRef:
 		return ExprAnalyser.AnalyseColRef(pnodeExpr.(pnode.ColumnRef), query, ctx)
+	case pnode.TagAConst:
+		return ExprAnalyser.AnalyseConst(pnodeExpr.(pnode.AConst), query, ctx)
 	default:
 		return nil, errors.New("") //todo better error
 	}
@@ -33,9 +36,9 @@ func (ex exprAnalyser) AnalyseColRef(pnode pnode.ColumnRef, query node.Query, ct
 	var rTable node.RangeTableEntry
 
 	if alias := pnode.TableAlias; alias != "" {
-		rTable = ex.findRteByAlias(alias, query)
+		rTable = QueryHelper.findRteByAlias(alias, query)
 	} else {
-		rTable = ex.findRteWithField(pnode.Name, query)
+		rTable = QueryHelper.findRteWithField(pnode.Name, query)
 	}
 
 	if rTable == nil {
@@ -50,27 +53,16 @@ func (ex exprAnalyser) AnalyseColRef(pnode pnode.ColumnRef, query node.Query, ct
 	return node.NewVar(rTable.Id, col.Order(), col.Type()), nil
 }
 
-func (ex exprAnalyser) findRteByAlias(alias string, query node.Query) node.RangeTableEntry {
-	for _, rTable := range query.RTables {
-		if rTable.Alias != nil && rTable.Alias.AliasName == alias {
-			return rTable
-		}
+func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx anlsr.Ctx) (node.Const, error) {
+	switch aConst.Type {
+	case pnode.AConstInt:
+		return node.NewConst(ctype.TypeInt8, aConst.Int), nil
+	case pnode.AConstStr:
+		return node.NewConst(ctype.TypeStr, aConst.Str), nil
+	case pnode.AConstFloat:
+		return node.NewConst(ctype.TypeFloat8, aConst.Float), nil
+	default:
+		//todo implement me
+		panic("Not implemented")
 	}
-	return nil
-}
-
-func (ex exprAnalyser) findRteWithField(fieldName string, query node.Query) node.RangeTableEntry {
-	for _, rTable := range query.RTables {
-		if rTable.Kind != node.RteRelation {
-			continue
-		}
-
-		for _, col := range rTable.Ref.Columns() {
-			colName := col.Name()
-			if colName == fieldName {
-				return rTable
-			}
-		}
-	}
-	return nil
 }

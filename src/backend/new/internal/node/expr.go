@@ -68,6 +68,14 @@ func (v Var) DPrint(nesting int) string {
 
 var _ Expr = &_const{}
 
+func NewConst(cType ctype.Type, val any) Const {
+	return &_const{
+		expr: newExpr(TagConst),
+		Type: cType,
+		Val:  val,
+	}
+}
+
 type Const = *_const
 
 type _const struct {
@@ -79,7 +87,7 @@ type _const struct {
 func (c Const) dEqual(node Node) bool {
 	raw := node.(Const)
 	return c.Type == raw.Type &&
-		c.Val == raw.Type
+		c.Val == raw.Val
 }
 
 func (c Const) DPrint(nesting int) string {

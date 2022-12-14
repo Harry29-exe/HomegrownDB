@@ -37,5 +37,6 @@ func (s _select) planSimpleSelect(query node.Query, plan node.PlanedStmt) (node.
 }
 
 func (s _select) planValStream(query node.Query, stmt node.PlanedStmt) (node.Plan, error) {
-
+	//todo implement me
+	panic("Not implemented")
 }

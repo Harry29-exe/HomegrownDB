@@ -109,13 +109,17 @@ func (r RangeTableEntry) dEqual(node Node) bool {
 
 	if r.Kind != raw.Kind {
 		return false
-	} else if !r.dRelationEqual(raw) {
+	} else if !r.dGenericFieldEqual(raw) {
 		return false
 	}
 
 	switch r.Kind {
 	case RteRelation:
 		return r.dRelationEqual(raw)
+	case RteSubQuery:
+		return r.dSubqueryEqual(raw)
+	case RteValues:
+		return r.dValuesEqual(raw)
 	default:
 		//todo implement me
 		panic("Not implemented")
@@ -159,9 +163,17 @@ func (r RangeTableEntry) dRelationEqual(r2 RangeTableEntry) bool {
 		r.Ref.TableId() == r2.Ref.TableId()
 }
 
+func (r RangeTableEntry) dSubqueryEqual(r2 RangeTableEntry) bool {
+	return DEqual(r.Subquery, r2.Subquery)
+}
+
 func (r RangeTableEntry) dGenericFieldEqual(r2 RangeTableEntry) bool {
 	return r.Id == r2.Id &&
-		r.Alias.dEqual(r2.Alias)
+		DEqual(r.Alias, r2.Alias)
+}
+
+func (r RangeTableEntry) dValuesEqual(r2 RangeTableEntry) bool {
+	return cmpNodeArray2D(r.ValuesList, r2.ValuesList)
 }
 
 // RteID is id of RangeTableEntry unique for given Query/plan

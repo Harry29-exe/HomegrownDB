@@ -47,7 +47,7 @@ func (c Ctx) GetTable(name string) (table.RDefinition, error) {
 
 	tableId = c.TableStore.FindTable(name)
 	if tableId == relation.InvalidRelId {
-		return nil, sqlerr.NewNoTableWithName(name)
+		return nil, sqlerr.NewNoTableWithNameErr(name)
 	}
 
 	tableDef := c.TableStore.AccessTable(tableId, table.RLockMode)

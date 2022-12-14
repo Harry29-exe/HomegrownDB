@@ -14,6 +14,14 @@ func NewFromExpr(initialFromListSize int) FromExpr {
 	}
 }
 
+func NewFromExpr2(qualifier Node, rtes ...Node) FromExpr {
+	return &fromExpr{
+		node:       node{tag: TagFrom},
+		FromList:   rtes,
+		Qualifiers: qualifier,
+	}
+}
+
 type FromExpr = *fromExpr
 
 var _ Node = &fromExpr{}

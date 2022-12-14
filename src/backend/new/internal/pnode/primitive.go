@@ -126,10 +126,10 @@ func (s AStar) Equal(node Node) bool {
 
 type AConst = *aConst
 
-type aConstType = uint8
+type AConstType uint8
 
 const (
-	AConstFloat aConstType = iota
+	AConstFloat AConstType = iota
 	AConstInt
 	AConstStr
 )
@@ -160,7 +160,7 @@ func NewAConstStr(val string) AConst {
 
 type aConst struct {
 	node
-	Type  aConstType
+	Type  AConstType
 	Str   string
 	Float float64
 	Int   int64
