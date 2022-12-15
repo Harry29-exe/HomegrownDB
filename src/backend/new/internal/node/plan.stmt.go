@@ -8,7 +8,7 @@ func NewPlanedStmt(command CommandType) PlanedStmt {
 	return &planedStmt{
 		node:            node{tag: TagPlanedStmt},
 		Command:         command,
-		PlanNodeCounter: appsync.NewSyncCounter[PlanNodeId](0),
+		PlanNodeCounter: appsync.NewSimpleCounter[PlanNodeId](0),
 
 		Tables: make([]RangeTableEntry, 0, 10),
 	}
@@ -29,7 +29,7 @@ type planedStmt struct {
 }
 
 func (p PlanedStmt) NextPlanNodeId() PlanNodeId {
-	return p.PlanNodeCounter.GetAndIncr()
+	return p.PlanNodeCounter.Next()
 }
 
 func (p PlanedStmt) dEqual(node Node) bool {
@@ -44,4 +44,16 @@ func (p PlanedStmt) DPrint(nesting int) string {
 	panic("implement me")
 }
 
-type PlanNodeCounter = appsync.SyncCounter[PlanNodeId]
+func (p PlanedStmt) AppendRTE(rte RangeTableEntry) {
+	p.Tables = append(p.Tables, rte)
+}
+
+func (p PlanedStmt) AppendRTEs(rte ...RangeTableEntry) {
+	p.Tables = append(p.Tables, rte...)
+}
+
+func (p PlanedStmt) AppendRteArr(rte []RangeTableEntry) {
+	p.Tables = append(p.Tables, rte...)
+}
+
+type PlanNodeCounter = appsync.SimpleSyncCounter[PlanNodeId]

@@ -36,7 +36,7 @@ func expectedPlan_SimpleSelect(usersTab table.Definition, t *testing.T) node.Pla
 	planedStmt := node.NewPlanedStmt(node.CommandTypeSelect)
 
 	rte := node.NewRelationRTE(1, usersTab)
-	planRoot := node.NewSeqScan(planedStmt.PlanNodeCounter.GetAndIncr(), nil)
+	planRoot := node.NewSeqScan(planedStmt.NextPlanNodeId(), nil)
 	planRoot.RteId = rte.Id
 	planRoot.TargetList = []node.TargetEntry{
 		node.NewTargetEntry(node.NewVar(rte.Id, tt_user.C2NameOrder, tt_user.C2NameType), 0, ""),

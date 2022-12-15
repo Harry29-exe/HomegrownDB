@@ -12,6 +12,24 @@ type insert struct{}
 func (i insert) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error) {
 	insertPlan := node.NewModifyTable(plan.NextPlanNodeId(), node.ModifyTableInsert, query)
 
+	rte, err := i.createSourceRTE(query)
+	if err != nil {
+		return nil, err
+	}
+	plan.AppendRTE(rte)
+
+	srcPlan, err := delegate(rte.Subquery, plan)
+	if err != nil {
+		return nil, err
+	}
+
+	insertPlan.ResultRelations = []node.RteID{query.ResultRel}
+	insertPlan.Left = srcPlan
+
+	return insertPlan, nil
+}
+
+func (i insert) createSourceRTE(query node.Query) (node.RangeTableEntry, error) {
 	srcNode := query.FromExpr.FromList[0]
 	if srcNode.Tag() != node.TagRteRef {
 		return nil, errors.New("expected TagRteRef intead got: " + srcNode.Tag().ToString()) //todo better err
@@ -23,16 +41,7 @@ func (i insert) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error) 
 	} else if rte.Kind != node.RteSubQuery {
 		return nil, errors.New("expected RteSubquery") //todo better err
 	}
-
-	srcPlan, err := delegate(rte.Subquery, plan)
-	if err != nil {
-		return nil, err
-	}
-
-	insertPlan.ResultRelations = []node.RteID{query.ResultRel}
-	insertPlan.Left = srcPlan
-
-	return srcPlan, nil
+	return rte, nil
 }
 
 func findRteWithId(id node.RteID, rtes []node.RangeTableEntry) (node.RangeTableEntry, error) {

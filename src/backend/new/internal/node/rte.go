@@ -57,7 +57,7 @@ func NewSubqueryRTE(id RteID, subquery Query) RangeTableEntry {
 	}
 }
 
-func NewValuesRTE(id RteID, values [][]Node) RangeTableEntry {
+func NewValuesRTE(id RteID, values [][]Expr) RangeTableEntry {
 	return &rangeTableEntry{
 		node:       node{tag: TagRTE},
 		Kind:       RteValues,
@@ -91,7 +91,7 @@ type rangeTableEntry struct {
 	RightColumns []column.Order
 
 	//Kind = RteValues
-	ValuesList [][]Node // list of expression node lists
+	ValuesList [][]Expr // list of expression node lists
 
 	// general
 	Alias Alias

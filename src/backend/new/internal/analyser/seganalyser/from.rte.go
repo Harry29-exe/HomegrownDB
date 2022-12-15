@@ -71,7 +71,7 @@ var RteValues = rteValues{}
 type rteValues struct{}
 
 func (v rteValues) Analyse(pnodeValues [][]pnode.Node, query node.Query, ctx anlsr.Ctx) (RteResult, error) {
-	values := make([][]node.Node, len(pnodeValues))
+	values := make([][]node.Expr, len(pnodeValues))
 	var err error
 
 	for i := 0; i < len(values); i++ {
@@ -85,8 +85,8 @@ func (v rteValues) Analyse(pnodeValues [][]pnode.Node, query node.Query, ctx anl
 	return NewSingleRteResult(rte), nil
 }
 
-func (v rteValues) analyseRow(row []pnode.Node, query node.Query, ctx anlsr.Ctx) ([]node.Node, error) {
-	resultRow := make([]node.Node, len(row))
+func (v rteValues) analyseRow(row []pnode.Node, query node.Query, ctx anlsr.Ctx) ([]node.Expr, error) {
+	resultRow := make([]node.Expr, len(row))
 	var err error
 	for i := 0; i < len(row); i++ {
 		resultRow[i], err = ExprDelegator.DelegateAnalyse(row[i], query, ctx)

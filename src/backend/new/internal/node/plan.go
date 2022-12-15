@@ -73,8 +73,22 @@ type modifyTable struct {
 }
 
 func (m ModifyTable) dEqual(node Node) bool {
-	//TODO implement me
-	panic("implement me")
+	raw := node.(ModifyTable)
+	return dPlanEq(&m.plan, &raw.plan) &&
+		m.Operation == raw.Operation &&
+		m.rteIdArrEq(raw)
+}
+
+func (m ModifyTable) rteIdArrEq(m2 ModifyTable) bool {
+	if len(m.ResultRelations) != len(m2.ResultRelations) {
+		return false
+	}
+	for i := 0; i < len(m.ResultRelations); i++ {
+		if m.ResultRelations[i] != m2.ResultRelations[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func (m ModifyTable) DPrint(nesting int) string {
@@ -141,11 +155,12 @@ func (s SeqScan) dEqual(node Node) bool {
 //      ValuesScan
 // -------------------------
 
-func NewValueScan(planNodeId PlanNodeId, query Query) ValueScan {
+func NewValueScan(planNodeId PlanNodeId, values [][]Expr, query Query) ValueScan {
 	return &valueScan{
 		scan: scan{
 			plan: newPlan(TagValueScan, planNodeId, query),
 		},
+		Values: values,
 	}
 }
 

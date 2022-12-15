@@ -1,66 +1,78 @@
 package planner
 
 import (
-	"HomegrownDB/backend/new/internal/analyser"
 	"HomegrownDB/backend/new/internal/node"
-	"HomegrownDB/backend/new/internal/parser"
 	"HomegrownDB/backend/new/internal/planner"
 	. "HomegrownDB/backend/new/internal/testinfr"
-	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/tutils/testtable/tt_user"
-	"HomegrownDB/dbsystem/ctype"
-	"HomegrownDB/dbsystem/schema/table"
 	"testing"
 )
 
 func TestInsertPlanner_SimpleInsert(t *testing.T) {
 	//given
-	query := "INSERT INTO users (id, name) VALUES (1, 'bob')"
-	store, usersTab := TestTableStore.StoreWithUsersTable(t)
-	expectedPlan := InsertTests.expectedPlan_SimpleInsert(usersTab, t)
+	inputQuery := "INSERT INTO users (id, name) VALUES (1, 'bob')"
+	store, _ := TestTableStore.StoreWithUsersTable(t)
+	query := ParseAndAnalyse(inputQuery, store, t)
+	expectedPlan := SimpleInsert.expectedPlan(query, t)
 
 	//when
-	pTree, err := parser.Parse(query)
-	assert.ErrIsNil(err, t)
-
-	queryNode, err := analyser.Analyse(pTree, store)
-	assert.ErrIsNil(err, t)
-
-	plan, err := planner.Plan(queryNode)
-	assert.ErrIsNil(err, t)
+	actualPlan, err := planner.Plan(query)
 
 	//then
-	NodeAssert.Eq(expectedPlan, plan, t)
+	assert.ErrIsNil(err, t)
+	NodeAssert.Eq(expectedPlan, actualPlan, t)
 }
 
-var InsertTests = insertTests{}
+var SimpleInsert = simpleInsert{}
 
-type insertTests struct{}
+type simpleInsert struct{}
 
-func (insertTests) expectedPlan_SimpleInsert(usersTab table.Definition, t *testing.T) node.PlanedStmt {
-	nodeIdCounter := appsync.NewSimpleCounter[node.PlanNodeId](0)
-	rteIdCounter := appsync.NewSimpleCounter[node.RteID](0)
+func (i simpleInsert) expectedPlan(query node.Query, t *testing.T) node.PlanedStmt {
+	plan := node.NewPlanedStmt(node.CommandTypeInsert)
 
-	plannedStmt := node.NewPlanedStmt(node.CommandTypeInsert)
-	usersRTE := node.NewRelationRTE(rteIdCounter.Next(), usersTab)
-	plannedStmt.Tables = []node.RangeTableEntry{usersRTE}
+	usersRTE, valuesRTE, subqueryRTE := i.unpackRTEs(query.RTables, t)
+	plan.AppendRTEs(usersRTE, valuesRTE, subqueryRTE)
 
-	modifyTablePlan := node.NewModifyTable(nodeIdCounter.Next(), node.ModifyTableInsert, nil)
-	modifyTablePlan.TargetList = []node.TargetEntry{
-		node.NewTargetEntry(nil, tt_user.C0IdOrder, "id"),
-		node.NewTargetEntry(nil, tt_user.C2NameOrder, "name"),
-	}
+	modifyTablePlan := node.NewModifyTable(plan.NextPlanNodeId(), node.ModifyTableInsert, nil)
+	modifyTablePlan.TargetList = query.TargetList
 	modifyTablePlan.ResultRelations = []node.RteID{usersRTE.Id}
 
-	valueScan := node.NewValueScan(nodeIdCounter.Next(), nil)
-	valueScan.Values = [][]node.Expr{
-		{node.NewConst(ctype.TypeInt8, 1)},
-		{node.NewConst(ctype.TypeStr, "bob")},
-	}
-
+	valueScan := node.NewValueScan(plan.NextPlanNodeId(), valuesRTE.ValuesList, nil)
 	modifyTablePlan.Left = valueScan
-	plannedStmt.PlanTree = modifyTablePlan
 
-	return plannedStmt
+	plan.PlanTree = modifyTablePlan
+	return plan
+}
+
+func (i simpleInsert) unpackRTEs(
+	insertQueryRTEs []node.RangeTableEntry,
+	t *testing.T,
+) (
+	users node.RangeTableEntry,
+	values node.RangeTableEntry,
+	subquery node.RangeTableEntry,
+) {
+	assert.Eq(len(insertQueryRTEs), 2, t)
+	for _, rte := range insertQueryRTEs {
+		switch rte.Kind {
+		case node.RteRelation:
+			users = rte
+		case node.RteSubQuery:
+			subquery = rte
+		}
+	}
+	subqueryRtes := subquery.Subquery.RTables
+	assert.Eq(len(subqueryRtes), 1, t)
+	values = subqueryRtes[0]
+	return
+}
+
+func (i simpleInsert) findSubqueryRTE(rtes []node.RangeTableEntry, t *testing.T) node.RangeTableEntry {
+	for _, rte := range rtes {
+		if rte.Kind != node.RteSubQuery {
+			return rte
+		}
+	}
+	t.Error("Expected to find subquery rte")
+	return nil
 }
