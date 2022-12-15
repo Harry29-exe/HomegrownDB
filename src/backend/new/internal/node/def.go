@@ -64,6 +64,7 @@ const (
 	// Scan nodes
 	TagScan
 	TagSeqScan
+	TagValueScan
 )
 
 func (t Tag) ToString() string {

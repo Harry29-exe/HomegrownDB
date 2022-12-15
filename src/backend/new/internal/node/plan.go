@@ -72,6 +72,16 @@ type modifyTable struct {
 	ResultRelations []RteID
 }
 
+func (m ModifyTable) dEqual(node Node) bool {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m ModifyTable) DPrint(nesting int) string {
+	//TODO implement me
+	panic("implement me")
+}
+
 type ModifyTableOp uint8
 
 const (
@@ -81,16 +91,6 @@ const (
 // -------------------------
 //      Scan
 // -------------------------
-
-type Scan = *scan
-
-func NewSeqScan(planNodeId PlanNodeId, query Query) SeqScan {
-	return &seqScan{
-		scan: scan{
-			plan: newPlan(TagSeqScan, planNodeId, query),
-		},
-	}
-}
 
 var _ Plan = &scan{}
 
@@ -110,11 +110,21 @@ func (s scan) DPrint(nesting int) string {
 	panic("implement me")
 }
 
+type SeqScan = *seqScan
+
 // -------------------------
 //      SeqScan
 // -------------------------
 
-type SeqScan = *seqScan
+type Scan = *scan
+
+func NewSeqScan(planNodeId PlanNodeId, query Query) SeqScan {
+	return &seqScan{
+		scan: scan{
+			plan: newPlan(TagSeqScan, planNodeId, query),
+		},
+	}
+}
 
 var _ Plan = &seqScan{}
 
@@ -130,6 +140,14 @@ func (s SeqScan) dEqual(node Node) bool {
 // -------------------------
 //      ValuesScan
 // -------------------------
+
+func NewValueScan(planNodeId PlanNodeId, query Query) ValueScan {
+	return &valueScan{
+		scan: scan{
+			plan: newPlan(TagValueScan, planNodeId, query),
+		},
+	}
+}
 
 type ValueScan = *valueScan
 

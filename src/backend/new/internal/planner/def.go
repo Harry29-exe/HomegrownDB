@@ -1,6 +1,11 @@
 package planner
 
-import "HomegrownDB/backend/new/internal/node"
+import (
+	"HomegrownDB/backend/new/internal/node"
+	"HomegrownDB/common/datastructs/appsync"
+)
+
+type PlanNodeIcCounter = appsync.SimpleSyncCounter[node.PlanNodeId]
 
 func Plan(query node.Query) (node.PlanedStmt, error) {
 	planedStmt := node.NewPlanedStmt(query.Command)
