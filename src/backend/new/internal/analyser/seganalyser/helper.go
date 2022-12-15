@@ -1,8 +1,6 @@
 package seganalyser
 
-import (
-	"HomegrownDB/backend/new/internal/node"
-)
+import "HomegrownDB/backend/new/internal/node"
 
 var QueryHelper = queryHelper{}
 

@@ -2,6 +2,7 @@ package planner
 
 import (
 	"HomegrownDB/backend/new/internal/node"
+	"errors"
 )
 
 var Insert = insert{}
@@ -12,7 +13,18 @@ func (i insert) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error) 
 	insertPlan := node.NewModifyTable(plan.NextPlanNodeId(), node.ModifyTableInsert, query)
 
 	srcNode := query.FromExpr.FromList[0]
-	srcPlan, err := delegate(srcNode.(node.Query), plan)
+	if srcNode.Tag() != node.TagRteRef {
+		return nil, errors.New("expected TagRteRef intead got: " + srcNode.Tag().ToString()) //todo better err
+	}
+	rteRef := srcNode.(node.RangeTableRef)
+	rte, err := findRteWithId(rteRef.Rte, query.RTables)
+	if err != nil {
+		return nil, err
+	} else if rte.Kind != node.RteSubQuery {
+		return nil, errors.New("expected RteSubquery") //todo better err
+	}
+
+	srcPlan, err := delegate(rte.Subquery, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -21,4 +33,13 @@ func (i insert) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error) 
 	insertPlan.Left = srcPlan
 
 	return srcPlan, nil
+}
+
+func findRteWithId(id node.RteID, rtes []node.RangeTableEntry) (node.RangeTableEntry, error) {
+	for _, rte := range rtes {
+		if rte.Id == id {
+			return rte, nil
+		}
+	}
+	return nil, errors.New("no rte with given id") //todo better err
 }

@@ -14,7 +14,7 @@ type SimpleSyncCounter[T datastructs.Number] struct {
 	lock SpinLock
 }
 
-func (s SimpleSyncCounter[T]) Next() T {
+func (s *SimpleSyncCounter[T]) Next() T {
 	s.lock.Lock()
 	next := s.val
 	s.val++
