@@ -35,7 +35,8 @@ func TestSelectPlanner_SimpleSelect(t *testing.T) {
 func expectedPlan_SimpleSelect(usersTab table.Definition, t *testing.T) node.PlanedStmt {
 	planedStmt := node.NewPlanedStmt(node.CommandTypeSelect)
 
-	rte := node.NewRelationRTE(1, usersTab)
+	rte := node.NewRelationRTE(0, usersTab)
+	rte.Alias = node.NewAlias("u")
 	planRoot := node.NewSeqScan(planedStmt.NextPlanNodeId(), nil)
 	planRoot.RteId = rte.Id
 	planRoot.TargetList = []node.TargetEntry{
