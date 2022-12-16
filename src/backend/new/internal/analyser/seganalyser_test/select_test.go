@@ -31,7 +31,8 @@ func TestSelect_u_name_FROM_users(t *testing.T) {
 
 func expectedTree_u_name_FROM_users(users table.Definition) node.Query {
 	expectedQuery := node.NewQuery(node.CommandTypeSelect, nil)
-	rte := node.NewRelationRTE(1, users)
+	rte := node.NewRelationRTE(0, users)
+	rte.Alias = node.NewAlias("u")
 	expectedQuery.RTables = []node.RangeTableEntry{rte}
 	expectedQuery.TargetList = []node.TargetEntry{
 		node.NewTargetEntry(
