@@ -44,7 +44,7 @@ func (insertTest) expectedSimplePositive1(users table.Definition) node.Query {
 	query.ResultRel = resultRel.Id
 
 	subQuery := node.NewQuery(node.CommandTypeSelect, nil)
-	valuesRte := node.NewValuesRTE(rteIdCounter.Next(), [][]node.Node{
+	valuesRte := node.NewValuesRTE(rteIdCounter.Next(), [][]node.Expr{
 		{node.NewConst(ctype.TypeInt8, int64(1)), node.NewConst(ctype.TypeStr, "bob")},
 	})
 	subQuery.RTables = []node.RangeTableEntry{valuesRte}

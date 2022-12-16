@@ -11,14 +11,15 @@ type insert struct{}
 
 func (i insert) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error) {
 	insertPlan := node.NewModifyTable(plan.NextPlanNodeId(), node.ModifyTableInsert, query)
+	insertPlan.TargetList = query.TargetList
 
-	rte, err := i.createSourceRTE(query)
+	sourceRTE, err := i.retrieveSourceRTE(query)
 	if err != nil {
 		return nil, err
 	}
-	plan.AppendRTE(rte)
+	plan.AppendRteArr(query.RTables)
 
-	srcPlan, err := delegate(rte.Subquery, plan)
+	srcPlan, err := delegate(sourceRTE.Subquery, plan)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +30,7 @@ func (i insert) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error) 
 	return insertPlan, nil
 }
 
-func (i insert) createSourceRTE(query node.Query) (node.RangeTableEntry, error) {
+func (i insert) retrieveSourceRTE(query node.Query) (node.RangeTableEntry, error) {
 	srcNode := query.FromExpr.FromList[0]
 	if srcNode.Tag() != node.TagRteRef {
 		return nil, errors.New("expected TagRteRef intead got: " + srcNode.Tag().ToString()) //todo better err

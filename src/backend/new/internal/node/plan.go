@@ -172,8 +172,9 @@ type valueScan struct {
 }
 
 func (v ValueScan) dEqual(node Node) bool {
-	//todo implement me
-	panic("Not implemented")
+	raw := node.(ValueScan)
+	return DEqual(&v.scan, &raw.scan) &&
+		cmpNodeArray2D(v.Values, raw.Values)
 }
 
 func (v ValueScan) DPrint(nesting int) string {

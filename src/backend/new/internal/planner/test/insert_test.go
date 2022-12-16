@@ -31,13 +31,14 @@ func (i simpleInsert) expectedPlan(query node.Query, t *testing.T) node.PlanedSt
 	plan := node.NewPlanedStmt(node.CommandTypeInsert)
 
 	usersRTE, valuesRTE, subqueryRTE := i.unpackRTEs(query.RTables, t)
-	plan.AppendRTEs(usersRTE, valuesRTE, subqueryRTE)
+	plan.AppendRTEs(usersRTE, subqueryRTE, valuesRTE)
 
 	modifyTablePlan := node.NewModifyTable(plan.NextPlanNodeId(), node.ModifyTableInsert, nil)
 	modifyTablePlan.TargetList = query.TargetList
 	modifyTablePlan.ResultRelations = []node.RteID{usersRTE.Id}
 
 	valueScan := node.NewValueScan(plan.NextPlanNodeId(), valuesRTE.ValuesList, nil)
+	valueScan.RteId = valuesRTE.Id
 	modifyTablePlan.Left = valueScan
 
 	plan.PlanTree = modifyTablePlan

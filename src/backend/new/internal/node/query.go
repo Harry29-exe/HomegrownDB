@@ -89,3 +89,12 @@ FromExpr: 	%s`,
 		q.FromExpr.DPrint(n1),
 	)
 }
+
+func (q Query) GetRTE(id RteID) RangeTableEntry {
+	for i := 0; i < len(q.RTables); i++ {
+		if q.RTables[i].Id == id {
+			return q.RTables[i]
+		}
+	}
+	return nil
+}
