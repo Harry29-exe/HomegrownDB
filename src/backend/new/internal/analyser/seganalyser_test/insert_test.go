@@ -8,7 +8,7 @@ import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
-	"HomegrownDB/dbsystem/ctype"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/table"
 	"testing"
 )
@@ -45,7 +45,7 @@ func (insertTest) expectedSimplePositive1(users table.Definition) node.Query {
 
 	subQuery := node.NewQuery(node.CommandTypeSelect, nil)
 	valuesRte := node.NewValuesRTE(rteIdCounter.Next(), [][]node.Expr{
-		{node.NewConst(ctype.TypeInt8, int64(1)), node.NewConst(ctype.TypeStr, "bob")},
+		{node.NewConst(hgtype.TypeInt8, int64(1)), node.NewConst(hgtype.TypeStr, "bob")},
 	})
 	subQuery.RTables = []node.RangeTableEntry{valuesRte}
 	subQuery.FromExpr = node.NewFromExpr2(nil, valuesRte.CreateRef())

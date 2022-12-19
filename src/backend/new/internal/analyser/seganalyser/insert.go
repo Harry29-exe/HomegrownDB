@@ -20,16 +20,22 @@ func (i insert) Analyse(stmt pnode.InsertStmt, ctx anlsr.Ctx) (node.Query, error
 	query.RTables = append(query.RTables, rte.Rte)
 	query.ResultRel = rte.Rte.Id
 
-	err = FromDelegator.Analyse([]pnode.Node{stmt.SrcNode}, query, ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	entries, err := TargetEntries.Analyse(stmt.Columns, query, ctx)
 	if err != nil {
 		return nil, err
 	}
 	query.TargetList = entries
 
+	err = FromDelegator.Analyse([]pnode.Node{stmt.SrcNode}, query, ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	return query, nil
+}
+
+func (i insert) extendTargetEntries(query node.Query, ctx anlsr.Ctx) error {
+	//tabDef :=
+	//todo implement me
+	panic("Not implemented")
 }

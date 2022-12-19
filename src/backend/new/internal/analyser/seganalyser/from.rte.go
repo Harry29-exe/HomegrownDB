@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/backend/new/internal/analyser/anlsr"
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/backend/new/internal/pnode"
+	"HomegrownDB/dbsystem/hgtype"
 )
 
 // -------------------------
@@ -74,7 +75,9 @@ func (v rteValues) Analyse(pnodeValues [][]pnode.Node, query node.Query, ctx anl
 	values := make([][]node.Expr, len(pnodeValues))
 	var err error
 
-	for i := 0; i < len(values); i++ {
+	values[0], err = v.analyseRow(pnodeValues[0], query, ctx)
+
+	for i := 1; i < len(values); i++ {
 		values[i], err = v.analyseRow(pnodeValues[i], query, ctx)
 		if err != nil {
 			return RteResult{}, err
@@ -88,6 +91,27 @@ func (v rteValues) Analyse(pnodeValues [][]pnode.Node, query node.Query, ctx anl
 func (v rteValues) analyseRow(row []pnode.Node, query node.Query, ctx anlsr.Ctx) ([]node.Expr, error) {
 	resultRow := make([]node.Expr, len(row))
 	var err error
+	for i := 0; i < len(row); i++ {
+		resultRow[i], err = ExprDelegator.DelegateAnalyse(row[i], query, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return resultRow, nil
+}
+
+func (v rteValues) analyseFirstRow(
+	row []pnode.Node,
+	query node.Query,
+	ctx anlsr.Ctx,
+) (
+	[]node.Expr,
+	[]hgtype.Type,
+) {
+	resultRow := make([]node.Expr, len(row))
+	types := make([]hgtype.Type)
+	var err error
+
 	for i := 0; i < len(row); i++ {
 		resultRow[i], err = ExprDelegator.DelegateAnalyse(row[i], query, ctx)
 		if err != nil {

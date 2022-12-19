@@ -12,17 +12,17 @@ package tt_user
 
 import (
 	"HomegrownDB/common/tests/tutils/testtable"
-	"HomegrownDB/dbsystem/ctype"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/column"
 	"testing"
 )
 
 func Def(t *testing.T) testtable.TestTable {
 	table := testtable.NewTestTableBuilder(TableName).
-		AddColumn(C0Id, false, ctype.TypeInt8, nil).
-		AddColumn(C1Age, true, ctype.TypeInt8, nil).
-		AddColumn(C2Name, true, ctype.TypeStr, nil).
-		AddColumn(C3Surname, true, ctype.TypeStr, nil).
+		AddColumn(C0Id, false, hgtype.TypeInt8, nil).
+		AddColumn(C1Age, true, hgtype.TypeInt8, nil).
+		AddColumn(C2Name, true, hgtype.TypeStr, nil).
+		AddColumn(C3Surname, true, hgtype.TypeStr, nil).
 		GetTable()
 
 	return testtable.NewTestTable(table, t)
@@ -33,17 +33,17 @@ const (
 
 	C0Id      string       = "id"
 	C0IdOrder column.Order = 0
-	C0IdType  ctype.Type   = ctype.TypeInt8
+	C0IdType  hgtype.Type  = hgtype.TypeInt8
 
 	C1Age      string       = "age"
 	C1AgeOrder column.Order = 1
-	C1AgeType  ctype.Type   = ctype.TypeInt8
+	C1AgeType  hgtype.Type  = hgtype.TypeInt8
 
 	C2Name      string       = "name"
 	C2NameOrder column.Order = 2
-	C2NameType  ctype.Type   = ctype.TypeStr
+	C2NameType  hgtype.Type  = hgtype.TypeStr
 
 	C3Surname      string       = "surname"
 	C3SurnameOrder column.Order = 3
-	C3SurnameType  ctype.Type   = ctype.TypeStr
+	C3SurnameType  hgtype.Type  = hgtype.TypeStr
 )

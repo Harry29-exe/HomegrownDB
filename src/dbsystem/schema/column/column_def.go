@@ -1,6 +1,6 @@
 package column
 
-import "HomegrownDB/dbsystem/ctype"
+import "HomegrownDB/dbsystem/hgtype"
 
 // Def describes column config and provides segparser and serializer
 type Def interface {
@@ -8,9 +8,7 @@ type Def interface {
 	Nullable() bool
 	Id() Id
 	Order() Order
-	InnerOrder() InnerOrder
-	Type() ctype.Type
-	CType() *ctype.CType
+	CType() hgtype.HGType
 
 	// Serialize should save all important Data to byte stream.
 	// It has to start with MdString of column.Type.
@@ -24,7 +22,6 @@ type WDef interface {
 	Def
 	SetId(id Id)
 	SetOrder(order Order)
-	SetInnerOrder(order InnerOrder)
 }
 
 type Id = uint32
@@ -41,19 +38,12 @@ func Serialize(data []byte) (col WDef, subsequent []byte) {
 	return
 }
 
-func NewDefinition(name string, nullable bool, cType ctype.Type, args ctype.Args) (WDef, error) {
-	c := &column{
+func NewDefinition(name string, nullable bool, columnType hgtype.HGType) WDef {
+	return &column{
 		name:     name,
 		nullable: nullable,
 		id:       0,
 		order:    0,
-		typeCode: cType,
-		ctype:    nil,
+		hgType:   columnType,
 	}
-	CType, err := ctype.CreateCType(cType, args)
-	if err != nil {
-		return nil, err
-	}
-	c.ctype = CType
-	return c, nil
 }

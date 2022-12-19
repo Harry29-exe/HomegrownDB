@@ -49,9 +49,7 @@ func (s _select) analyseValuesSelect(stmt pnode.SelectStmt, query node.Query, ct
 		return err
 	}
 
-	fromExpr := node.NewFromExpr(1)
-	fromExpr.FromList[0] = valuesRte.RteRefNode
-	query.FromExpr = fromExpr
+	query.FromExpr = node.NewFromExpr2(nil, valuesRte.RteRefNode)
 	query.RTables = append(query.RTables, valuesRte.Rte)
 
 	return nil

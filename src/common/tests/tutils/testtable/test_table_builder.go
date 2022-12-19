@@ -1,7 +1,7 @@
 package testtable
 
 import (
-	"HomegrownDB/dbsystem/ctype"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/schema/table"
@@ -15,11 +15,14 @@ func NewTestTableBuilder(name string) *Builder {
 	return &Builder{table: table.NewDefinition(name)}
 }
 
-func (ttb *Builder) AddColumn(name string, nullable bool, cType ctype.Type, args ctype.Args) *Builder {
-	col, err := column.NewDefinition(name, nullable, cType, args)
+func (ttb *Builder) AddColumn(name string, nullable bool, t hgtype.Type, typeArgs hgtype.ArgumentMap) *Builder {
+	colType, err := hgtype.Create(t, typeArgs)
 	if err != nil {
 		panic("could not add column to table during tests")
-	} else if err = ttb.table.AddColumn(col); err != nil {
+	}
+
+	col := column.NewDefinition(name, nullable, colType)
+	if err = ttb.table.AddColumn(col); err != nil {
 		panic("could not add column to table during tests")
 	}
 

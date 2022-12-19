@@ -2,7 +2,7 @@ package table
 
 import (
 	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/dbsystem/ctype"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/relation"
 )
@@ -23,13 +23,13 @@ type RDefinition interface {
 	BitmapLen() uint16
 	ColumnCount() uint16
 
-	CTypePattern() []ctype.CType
+	CTypePattern() []hgtype.HGType
 
 	ColumnName(columnId column.Order) string
 	ColumnOrder(name string) (order column.Order, ok bool)
 	ColumnId(order column.Order) column.Id
 
-	ColumnType(id column.Order) *ctype.CType
+	ColumnType(id column.Order) hgtype.HGType
 	ColumnByName(name string) (col column.Def, ok bool)
 	ColumnById(id column.Id) column.Def
 	Column(index column.Order) column.Def

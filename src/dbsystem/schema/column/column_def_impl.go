@@ -1,17 +1,15 @@
 package column
 
-import "HomegrownDB/dbsystem/ctype"
+import "HomegrownDB/dbsystem/hgtype"
 
 var _ WDef = &column{}
 
 type column struct {
-	name       string
-	nullable   bool
-	id         Id
-	order      Order
-	innerOrder InnerOrder
-	typeCode   ctype.Type
-	ctype      *ctype.CType
+	name     string
+	nullable bool
+	id       Id
+	order    Order
+	hgType   hgtype.HGType
 }
 
 func (c *column) Name() string {
@@ -38,20 +36,8 @@ func (c *column) SetOrder(order Order) {
 	c.order = order
 }
 
-func (c *column) InnerOrder() InnerOrder {
-	return c.innerOrder
-}
-
-func (c *column) SetInnerOrder(order InnerOrder) {
-	c.innerOrder = order
-}
-
-func (c *column) Type() ctype.Type {
-	return c.typeCode
-}
-
-func (c *column) CType() *ctype.CType {
-	return c.ctype
+func (c *column) CType() hgtype.HGType {
+	return c.hgType
 }
 
 func (c *column) Serialize() []byte {

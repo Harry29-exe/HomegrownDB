@@ -11,16 +11,16 @@ package ttable2
 
 import (
 	"HomegrownDB/common/tests/tutils/testtable"
-	"HomegrownDB/dbsystem/ctype"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/column"
 	"testing"
 )
 
 func Def(t *testing.T) testtable.TestTable {
 	table := testtable.NewTestTableBuilder(TableName).
-		AddColumn(C0Id, false, ctype.TypeInt8, nil).
-		AddColumn(C1Name, true, ctype.TypeStr, nil).
-		AddColumn(C2Specie, true, ctype.TypeStr, nil).
+		AddColumn(C0Id, false, hgtype.TypeInt8, nil).
+		AddColumn(C1Name, true, hgtype.TypeStr, nil).
+		AddColumn(C2Specie, true, hgtype.TypeStr, nil).
 		GetTable()
 
 	return testtable.NewTestTable(table, t)

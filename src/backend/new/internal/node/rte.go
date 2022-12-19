@@ -1,6 +1,7 @@
 package node
 
 import (
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/schema/table"
 	"fmt"
@@ -92,6 +93,9 @@ type rangeTableEntry struct {
 
 	//Kind = RteValues
 	ValuesList [][]Expr // list of expression node lists
+
+	//Kind = RteValues, RteCte, RteNamedTupleStore, RteTableFunc
+	ColTypes []hgtype.Type
 
 	// general
 	Alias Alias

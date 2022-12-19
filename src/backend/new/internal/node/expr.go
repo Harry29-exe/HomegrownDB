@@ -1,7 +1,7 @@
 package node
 
 import (
-	"HomegrownDB/dbsystem/ctype"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/column"
 	"fmt"
 )
@@ -29,7 +29,7 @@ func (e expr) ExprTag() Tag {
 //      Var
 // -------------------------
 
-func NewVar(id RteID, colOrder column.Order, t ctype.Type) Var {
+func NewVar(id RteID, colOrder column.Order, t hgtype.Type) Var {
 	return &_var{
 		expr:     newExpr(TagVar),
 		RteID:    id,
@@ -46,7 +46,7 @@ type _var struct {
 	expr
 	RteID    RteID
 	ColOrder column.Order
-	Type     ctype.Type
+	Type     hgtype.Type
 }
 
 func (v Var) dEqual(node Node) bool {
@@ -68,7 +68,7 @@ func (v Var) DPrint(nesting int) string {
 
 var _ Expr = &_const{}
 
-func NewConst(cType ctype.Type, val any) Const {
+func NewConst(cType hgtype.Type, val any) Const {
 	return &_const{
 		expr: newExpr(TagConst),
 		Type: cType,
@@ -80,7 +80,7 @@ type Const = *_const
 
 type _const struct {
 	expr
-	Type ctype.Type
+	Type hgtype.Type
 	Val  any
 }
 
