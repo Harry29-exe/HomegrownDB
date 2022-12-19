@@ -8,10 +8,15 @@ import (
 	"strconv"
 )
 
-type int8Args struct{}
+type Int8Args struct{}
 
-func NewInt8(args int8Args) HGType {
+func NewInt8(args Int8Args) HGType {
 	return newHGType(TypeInt8, int8{}, int8{}, int8{}, int8{}, false, toast.PLAIN)
+}
+
+// Int8Serialize serializes input data to normal form
+func Int8Serialize(input int64) []byte {
+	return bparse.Serialize.Int8(input)
 }
 
 var _ Reader = int8{}

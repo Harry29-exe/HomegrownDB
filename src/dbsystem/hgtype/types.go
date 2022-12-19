@@ -8,6 +8,10 @@ const (
 	TypeStr
 )
 
+func (t Type) ToStr() string {
+	return ctypeNames[t]
+}
+
 func CTypeToStr(cType Type) string {
 	return ctypeNames[cType]
 }

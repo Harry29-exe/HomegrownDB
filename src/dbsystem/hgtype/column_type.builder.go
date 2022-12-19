@@ -45,7 +45,7 @@ func createStr(args ArgumentMap) (HGType, error) {
 }
 
 func createInt8(args ArgumentMap) (HGType, error) {
-	return NewInt8(int8Args{}), nil
+	return NewInt8(Int8Args{}), nil
 }
 
 // -------------------------

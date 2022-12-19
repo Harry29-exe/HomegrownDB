@@ -134,6 +134,14 @@ const (
 	AConstStr
 )
 
+func (c AConstType) ToStr() string {
+	return []string{
+		"AConstFloat",
+		"AConstInt",
+		"AConstStr",
+	}[c]
+}
+
 func NewAConstFloat(val float64) AConst {
 	return &aConst{
 		node:  node{tag: TagAConst},

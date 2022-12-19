@@ -68,7 +68,7 @@ func (v Var) DPrint(nesting int) string {
 
 var _ Expr = &_const{}
 
-func NewConst(cType hgtype.Type, val any) Const {
+func NewConst(cType hgtype.HGType, val []byte) Const {
 	return &_const{
 		expr: newExpr(TagConst),
 		Type: cType,
@@ -81,13 +81,22 @@ type Const = *_const
 type _const struct {
 	expr
 	Type hgtype.Type
-	Val  any
+
+	Val []byte // normalized value
 }
 
 func (c Const) dEqual(node Node) bool {
 	raw := node.(Const)
-	return c.Type == raw.Type &&
-		c.Val == raw.Val
+
+	if len(c.Val) != len(raw.Val) {
+		return false
+	}
+	for i := 0; i < len(c.Val); i++ {
+		if c.Val[i] != raw.Val[i] {
+			return false
+		}
+	}
+	return c.Type == raw.Type
 }
 
 func (c Const) DPrint(nesting int) string {

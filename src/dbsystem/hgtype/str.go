@@ -27,6 +27,15 @@ func NewStr(args StrArgs) HGType {
 	return newHGType(TypeStr, &ctype, &ctype, &ctype, &ctype, true, toast.EXTENDED)
 }
 
+// StrSerializeInput serializes input data to normal form
+func StrSerializeInput(input string) []byte {
+	l := int64(len(input))
+	val := make([]byte, l+4)
+	bparse.Serialize.PutInt8(l+4, val)
+	copy(val[4:], input)
+	return val
+}
+
 type str struct {
 	basetype.VarLenType
 	UTF8 bool

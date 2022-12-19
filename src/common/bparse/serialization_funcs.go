@@ -63,6 +63,10 @@ func (s serializer) Uint8(value uint64) []byte {
 	return bytes
 }
 
+func (s serializer) PutInt8(value int64, dest []byte) {
+	binary.BigEndian.PutUint64(dest, uint64(value))
+}
+
 func (s serializer) Float8(value float64) []byte {
 	bytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(bytes, math.Float64bits(value))

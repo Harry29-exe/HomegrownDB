@@ -5,7 +5,6 @@ import (
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/backend/new/internal/pnode"
 	. "HomegrownDB/backend/new/internal/sqlerr"
-	"HomegrownDB/dbsystem/hgtype"
 	"errors"
 )
 
@@ -51,18 +50,4 @@ func (ex exprAnalyser) AnalyseColRef(pnode pnode.ColumnRef, query node.Query, ct
 	}
 
 	return node.NewVar(rTable.Id, col.Order(), col.CType().Type), nil
-}
-
-func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx anlsr.Ctx) (node.Const, error) {
-	switch aConst.Type {
-	case pnode.AConstInt:
-		return node.NewConst(hgtype.TypeInt8, aConst.Int), nil
-	case pnode.AConstStr:
-		return node.NewConst(hgtype.TypeStr, aConst.Str), nil
-	case pnode.AConstFloat:
-		return node.NewConst(hgtype.TypeFloat8, aConst.Float), nil
-	default:
-		//todo implement me
-		panic("Not implemented")
-	}
 }
