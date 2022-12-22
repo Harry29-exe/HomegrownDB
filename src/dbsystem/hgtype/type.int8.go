@@ -50,6 +50,7 @@ func (i Int8) Cmp(args Args, v1, v2 []byte) int {
 func (i Int8) ToStr(args Args, val []byte) string {
 	v, _ := bparse.Deserialize.Int8(val)
 	return strconv.FormatInt(v, 10)
+
 }
 
 func (i Int8) Rand(args Args, r random.Random) []byte {

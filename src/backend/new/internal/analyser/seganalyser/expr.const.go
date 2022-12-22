@@ -10,11 +10,9 @@ import (
 func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx anlsr.Ctx) (node.Const, error) {
 	switch aConst.Type {
 	case pnode.AConstInt:
-		colType := hgtype.NewInt8(hgtype.Int8Args{})
-		return node.NewConst(colType, hgtype.Int8Serialize(aConst.Int)), nil
+		return node.NewConstInt8(aConst.Int, hgtype.Args{}), nil
 	case pnode.AConstStr:
-		colType := hgtype.NewStr(hgtype.StrArgs{Length: uint32(len(aConst.Str))})
-		return node.NewConst(colType, hgtype.StrSerializeInput(aConst.Str)), nil
+		return node.NewConstStr(aConst.Str, hgtype.Args{Length: uint32(len(aConst.Str))})
 	case pnode.AConstFloat:
 		//todo implement me
 		panic("Not implemented")

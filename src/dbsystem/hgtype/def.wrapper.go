@@ -2,6 +2,10 @@ package hgtype
 
 import "HomegrownDB/common/random"
 
+type WrapperOp interface {
+	TypeEqual(wrapper Wrapper) bool
+}
+
 type Operations interface {
 	Equal(v1, v2 []byte) bool
 	Cmp(v1, v2 []byte) int

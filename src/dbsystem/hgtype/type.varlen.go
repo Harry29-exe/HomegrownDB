@@ -3,7 +3,10 @@ package hgtype
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype/toast"
+	"math"
 )
+
+const MaxVarLenSize = int(math.MaxUint32 & toast.FourByteHeaderMask)
 
 var (
 	_ TypeReader = varLen{}

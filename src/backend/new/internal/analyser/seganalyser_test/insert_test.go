@@ -17,7 +17,7 @@ func TestInsertAnalyse_SimplePositive1(t *testing.T) {
 	//given
 	query := "INSERT INTO users (id, name) VALUES (1, 'bob')"
 	store, users := TestTableStore.StoreWithUsersTable(t)
-	expectedNode := InsertTests.expectedSimplePositive1(users)
+	expectedNode := InsertTests.expectedSimplePositive1(users, t)
 
 	//when
 	pTree, err := parser.Parse(query)
@@ -30,7 +30,7 @@ func TestInsertAnalyse_SimplePositive1(t *testing.T) {
 	NodeAssert.Eq(expectedNode, queryNode, t)
 }
 
-func (insertTest) expectedSimplePositive1(users table.Definition) node.Query {
+func (insertTest) expectedSimplePositive1(users table.Definition, t *testing.T) node.Query {
 	rteIdCounter := appsync.NewSimpleCounter[node.RteID](0)
 
 	query := node.NewQuery(node.CommandTypeInsert, nil)
@@ -44,8 +44,10 @@ func (insertTest) expectedSimplePositive1(users table.Definition) node.Query {
 	query.ResultRel = resultRel.Id
 
 	subQuery := node.NewQuery(node.CommandTypeSelect, nil)
+	bobValue, err := node.NewConstStr("bob", hgtype.Args{Length: 3})
+	assert.ErrIsNil(err, t)
 	valuesRte := node.NewValuesRTE(rteIdCounter.Next(), [][]node.Expr{
-		{node.NewConst(hgtype.TypeInt8, int64(1)), node.NewConst(hgtype.TypeStr, "bob")},
+		{node.NewConstInt8(int64(1), hgtype.Args{}), bobValue},
 	})
 	subQuery.RTables = []node.RangeTableEntry{valuesRte}
 	subQuery.FromExpr = node.NewFromExpr2(nil, valuesRte.CreateRef())

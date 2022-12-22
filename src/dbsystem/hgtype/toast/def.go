@@ -21,3 +21,10 @@ const (
 	// EXTERNAL - allows for out of line storage but not for compression
 	EXTERNAL
 )
+
+const (
+	// OneByteHeaderMask = 01111111
+	OneByteHeaderMask = byte(127)
+	// FourByteHeaderMask = 00111111 11111111 11111111 11111111
+	FourByteHeaderMask = uint32(1073741823)
+)

@@ -5,6 +5,7 @@ import (
 )
 
 var (
+	_ WrapperOp  = Wrapper{}
 	_ Operations = Wrapper{}
 	_ Reader     = Wrapper{}
 	_ Writer     = Wrapper{}
@@ -16,6 +17,8 @@ func NewWrapper(tag TypeTag, args Args) Wrapper {
 	switch tag {
 	case TypeStr:
 		t = Str{}
+	case TypeInt8:
+		t = Int8{}
 	default:
 		//todo implement me
 		panic("Not implemented")
@@ -28,10 +31,34 @@ func NewWrapper(tag TypeTag, args Args) Wrapper {
 	}
 }
 
+func NewStr(args Args) Wrapper {
+	return Wrapper{
+		t:    Str{},
+		Tag:  TypeStr,
+		Args: args,
+	}
+}
+
+func NewInt8(args Args) Wrapper {
+	return Wrapper{
+		t:    Int8{},
+		Tag:  TypeInt8,
+		Args: args,
+	}
+}
+
 type Wrapper struct {
 	t    Type
 	Tag  TypeTag
 	Args Args
+}
+
+// -------------------------
+//      WrapperOp
+// -------------------------
+
+func (w Wrapper) TypeEqual(wrapper Wrapper) bool {
+	return w.Tag == wrapper.Tag && w.Args == wrapper.Args
 }
 
 // -------------------------

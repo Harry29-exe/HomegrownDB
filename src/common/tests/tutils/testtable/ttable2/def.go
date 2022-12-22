@@ -18,9 +18,9 @@ import (
 
 func Def(t *testing.T) testtable.TestTable {
 	table := testtable.NewTestTableBuilder(TableName).
-		AddColumn(C0Id, false, hgtype.TypeInt8, nil).
-		AddColumn(C1Name, true, hgtype.TypeStr, nil).
-		AddColumn(C2Specie, true, hgtype.TypeStr, nil).
+		AddColumn(C0Id, false, hgtype.TypeInt8, hgtype.Args{}).
+		AddColumn(C1Name, true, hgtype.TypeStr, hgtype.Args{}).
+		AddColumn(C2Specie, true, hgtype.TypeStr, hgtype.Args{}).
 		GetTable()
 
 	return testtable.NewTestTable(table, t)

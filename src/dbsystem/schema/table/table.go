@@ -23,13 +23,13 @@ type RDefinition interface {
 	BitmapLen() uint16
 	ColumnCount() uint16
 
-	CTypePattern() []hgtype.HGType
+	CTypePattern() []hgtype.Wrapper
 
 	ColumnName(columnId column.Order) string
 	ColumnOrder(name string) (order column.Order, ok bool)
 	ColumnId(order column.Order) column.Id
 
-	ColumnType(id column.Order) hgtype.HGType
+	ColumnType(id column.Order) hgtype.Wrapper
 	ColumnByName(name string) (col column.Def, ok bool)
 	ColumnById(id column.Id) column.Def
 	Column(index column.Order) column.Def

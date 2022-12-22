@@ -19,10 +19,10 @@ import (
 
 func Def(t *testing.T) testtable.TestTable {
 	table := testtable.NewTestTableBuilder(TableName).
-		AddColumn(C0Id, false, hgtype.TypeInt8, nil).
-		AddColumn(C1Age, true, hgtype.TypeInt8, nil).
-		AddColumn(C2Name, true, hgtype.TypeStr, nil).
-		AddColumn(C3Surname, true, hgtype.TypeStr, nil).
+		AddColumn(C0Id, false, hgtype.TypeInt8, hgtype.Args{}).
+		AddColumn(C1Age, true, hgtype.TypeInt8, hgtype.Args{}).
+		AddColumn(C2Name, true, hgtype.TypeStr, hgtype.Args{}).
+		AddColumn(C3Surname, true, hgtype.TypeStr, hgtype.Args{}).
 		GetTable()
 
 	return testtable.NewTestTable(table, t)

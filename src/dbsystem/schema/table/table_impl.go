@@ -93,7 +93,7 @@ func (t *StdTable) ColumnCount() uint16 {
 	return t.columnsCount
 }
 
-func (t *StdTable) CTypePattern() []hgtype.HGType {
+func (t *StdTable) CTypePattern() []hgtype.Wrapper {
 	//todo implement me
 	panic("Not implemented")
 }

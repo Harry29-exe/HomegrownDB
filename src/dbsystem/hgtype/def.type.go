@@ -10,9 +10,7 @@ type Type interface {
 	TypeDebug
 }
 
-type Args = *typeArgs
-
-type typeArgs struct {
+type Args struct {
 	Length uint32
 	VarLen bool
 	UTF8   bool

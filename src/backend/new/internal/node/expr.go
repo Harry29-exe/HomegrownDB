@@ -2,6 +2,7 @@ package node
 
 import (
 	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/inputtype"
 	"HomegrownDB/dbsystem/schema/column"
 	"fmt"
 )
@@ -68,7 +69,7 @@ func (v Var) DPrint(nesting int) string {
 
 var _ Expr = &_const{}
 
-func NewConst(cType hgtype.HGType, val []byte) Const {
+func NewConst(cType hgtype.Wrapper, val []byte) Const {
 	return &_const{
 		expr: newExpr(TagConst),
 		Type: cType,
@@ -76,13 +77,35 @@ func NewConst(cType hgtype.HGType, val []byte) Const {
 	}
 }
 
+func NewConstInt8(val int64, args hgtype.Args) Const {
+	t := hgtype.NewInt8(args)
+	serializedVal := inputtype.ConvInt8(val)
+	return &_const{
+		expr: newExpr(TagConst),
+		Type: t,
+		Val:  serializedVal,
+	}
+}
+
+func NewConstStr(val string, args hgtype.Args) (Const, error) {
+	t := hgtype.NewStr(args)
+	serializedVal, err := inputtype.ConvStr(val)
+	if err != nil {
+		return nil, err
+	}
+	return &_const{
+		expr: newExpr(TagConst),
+		Type: t,
+		Val:  serializedVal,
+	}, nil
+}
+
 type Const = *_const
 
 type _const struct {
 	expr
-	Type hgtype.TypeTag
-
-	Val []byte // normalized value
+	Type hgtype.Wrapper
+	Val  []byte // normalized value
 }
 
 func (c Const) dEqual(node Node) bool {
@@ -96,12 +119,12 @@ func (c Const) dEqual(node Node) bool {
 			return false
 		}
 	}
-	return c.Type == raw.Type
+	return c.Type.TypeEqual(raw.Type)
 }
 
 func (c Const) DPrint(nesting int) string {
-	return fmt.Sprintf("@%s{TypeTag: %d, Val: %+v}",
-		c.dTag(nesting), c.Type, c.Val)
+	return fmt.Sprintf("@%s{TypeTag: %s, Val: %+v}",
+		c.dTag(nesting), c.Type.Tag.ToStr(), c.Val)
 }
 
 // -------------------------
