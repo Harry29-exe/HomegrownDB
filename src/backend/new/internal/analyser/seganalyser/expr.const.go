@@ -75,7 +75,7 @@ func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx a
 //			return Consts{}, err
 //		}
 //		consts.Values[0][col] = constNode
-//		consts.Pattern[col] = constNode.Type
+//		consts.Pattern[col] = constNode.TypeTag
 //	}
 //	return consts, nil
 //}
@@ -89,7 +89,7 @@ func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx a
 //}
 //
 //func (c constsAnalyser) analyseRowColumn(aConst pnode.AConst, hgType hgtype.HGType) (node.Const, error) {
-//	switch aConst.Type {
+//	switch aConst.TypeTag {
 //	case pnode.AConstInt:
 //		return c.convertInt(aConst, hgType)
 //	case pnode.AConstStr:
@@ -98,7 +98,7 @@ func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx a
 //}
 //
 //func (c constsAnalyser) analyseConst(aConst pnode.AConst) (node.Const, error) {
-//	switch aConst.Type {
+//	switch aConst.TypeTag {
 //	case pnode.AConstInt:
 //		colType := hgtype.NewInt8(hgtype.Int8Args{})
 //		return node.NewConst(colType, hgtype.Int8Serialize(aConst.Int)), nil
@@ -116,14 +116,14 @@ func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx a
 //}
 //
 //func (c constsAnalyser) convertInt(aConst pnode.AConst, constType hgtype.HGType) (node.Const, error) {
-//	if constType.Type == hgtype.TypeInt8 {
+//	if constType.TypeTag == hgtype.TypeInt8 {
 //		node.NewConst(constType, hgtype.Int8Serialize(aConst.Int))
 //	}
-//	return nil, fmt.Errorf("can not convert int into %s", constType.Type.ToStr()) //todo better err
+//	return nil, fmt.Errorf("can not convert int into %s", constType.TypeTag.ToStr()) //todo better err
 //}
 //
 //func (c constsAnalyser) convertStr(aConst pnode.AConst, constType hgtype.HGType) (node.Const, error) {
-//	switch constType.Type {
+//	switch constType.TypeTag {
 //	case hgtype.TypeStr:
 //		if constType. {
 //
@@ -136,7 +136,7 @@ func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx a
 //func (c constsAnalyser) canNotConvertErr(fromNode pnode.AConst, constType hgtype.HGType) error {
 //	return fmt.Errorf("can not convert %+v (type: %s) into %s",
 //		fromNode,
-//		fromNode.Type.ToStr(),
-//		constType.Type.ToStr(),
+//		fromNode.TypeTag.ToStr(),
+//		constType.TypeTag.ToStr(),
 //	) //todo better err
 //}

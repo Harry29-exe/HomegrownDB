@@ -29,7 +29,7 @@ func (e expr) ExprTag() Tag {
 //      Var
 // -------------------------
 
-func NewVar(id RteID, colOrder column.Order, t hgtype.Type) Var {
+func NewVar(id RteID, colOrder column.Order, t hgtype.TypeTag) Var {
 	return &_var{
 		expr:     newExpr(TagVar),
 		RteID:    id,
@@ -46,7 +46,7 @@ type _var struct {
 	expr
 	RteID    RteID
 	ColOrder column.Order
-	Type     hgtype.Type
+	Type     hgtype.TypeTag
 }
 
 func (v Var) dEqual(node Node) bool {
@@ -57,7 +57,7 @@ func (v Var) dEqual(node Node) bool {
 }
 
 func (v Var) DPrint(nesting int) string {
-	return fmt.Sprintf("%s{RteId: %d, ColOrder: %d, Type: %d}",
+	return fmt.Sprintf("%s{RteId: %d, ColOrder: %d, TypeTag: %d}",
 		v.dTag(nesting), v.RteID, v.ColOrder, v.Type,
 	)
 }
@@ -80,7 +80,7 @@ type Const = *_const
 
 type _const struct {
 	expr
-	Type hgtype.Type
+	Type hgtype.TypeTag
 
 	Val []byte // normalized value
 }
@@ -100,7 +100,7 @@ func (c Const) dEqual(node Node) bool {
 }
 
 func (c Const) DPrint(nesting int) string {
-	return fmt.Sprintf("@%s{Type: %d, Val: %+v}",
+	return fmt.Sprintf("@%s{TypeTag: %d, Val: %+v}",
 		c.dTag(nesting), c.Type, c.Val)
 }
 

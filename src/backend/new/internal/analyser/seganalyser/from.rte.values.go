@@ -12,7 +12,7 @@ import (
 // -------------------------
 
 type FutureType struct {
-	Type hgtype.Type
+	Type hgtype.TypeTag
 	Args any
 }
 

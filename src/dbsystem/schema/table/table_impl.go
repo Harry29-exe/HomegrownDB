@@ -112,7 +112,7 @@ func (t *StdTable) ColumnOrder(name string) (order column.Order, ok bool) {
 }
 
 // todo array of ctypes?
-func (t *StdTable) ColumnType(id column.Order) hgtype.HGType {
+func (t *StdTable) ColumnType(id column.Order) hgtype.Wrapper {
 	return t.columns[id].CType()
 }
 
