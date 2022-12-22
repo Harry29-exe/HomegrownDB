@@ -9,7 +9,7 @@ type column struct {
 	nullable bool
 	id       Id
 	order    Order
-	hgType   hgtype.Wrapper
+	hgType   hgtype.TypeData
 }
 
 func (c *column) Name() string {
@@ -36,7 +36,7 @@ func (c *column) SetOrder(order Order) {
 	c.order = order
 }
 
-func (c *column) CType() hgtype.Wrapper {
+func (c *column) CType() hgtype.TypeData {
 	return c.hgType
 }
 

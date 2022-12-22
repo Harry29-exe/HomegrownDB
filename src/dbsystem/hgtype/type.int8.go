@@ -11,7 +11,7 @@ var _ Type = Int8{}
 
 type Int8 struct{}
 
-func (i Int8) Tag() TypeTag {
+func (i Int8) Tag() Tag {
 	return TypeInt8
 }
 

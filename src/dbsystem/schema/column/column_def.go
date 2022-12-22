@@ -8,10 +8,10 @@ type Def interface {
 	Nullable() bool
 	Id() Id
 	Order() Order
-	CType() hgtype.Wrapper
+	CType() hgtype.TypeData
 
 	// Serialize should save all important Data to byte stream.
-	// It has to start with MdString of column.TypeTag.
+	// It has to start with MdString of column.Tag.
 	Serialize() []byte
 	// Deserialize takes the same Data that Serialize returned
 	// and set this column definitions to match given Data
@@ -38,7 +38,7 @@ func Serialize(data []byte) (col WDef, subsequent []byte) {
 	return
 }
 
-func NewDefinition(name string, nullable bool, columnType hgtype.Wrapper) WDef {
+func NewDefinition(name string, nullable bool, columnType hgtype.TypeData) WDef {
 	return &column{
 		name:     name,
 		nullable: nullable,

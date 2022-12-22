@@ -49,5 +49,5 @@ func (ex exprAnalyser) AnalyseColRef(pnode pnode.ColumnRef, query node.Query, ct
 		return nil, AnlsrErr.NewColumnNotExist(query, pnode.Name, pnode.TableAlias)
 	}
 
-	return node.NewVar(rTable.Id, col.Order(), col.CType().Tag), nil
+	return node.NewVar(rTable.Id, col.Order(), col.CType()), nil
 }

@@ -10,6 +10,7 @@ import (
 type Expr interface {
 	Node
 	ExprTag() Tag
+	Type() hgtype.Tag
 }
 
 func newExpr(exprTag Tag) expr {
@@ -30,12 +31,12 @@ func (e expr) ExprTag() Tag {
 //      Var
 // -------------------------
 
-func NewVar(id RteID, colOrder column.Order, t hgtype.TypeTag) Var {
+func NewVar(id RteID, colOrder column.Order, typeData hgtype.TypeData) Var {
 	return &_var{
 		expr:     newExpr(TagVar),
 		RteID:    id,
 		ColOrder: colOrder,
-		Type:     t,
+		TypeData: typeData,
 	}
 }
 
@@ -47,19 +48,23 @@ type _var struct {
 	expr
 	RteID    RteID
 	ColOrder column.Order
-	Type     hgtype.TypeTag
+	TypeData hgtype.TypeData
+}
+
+func (v Var) Type() hgtype.Tag {
+	return v.TypeData.Tag
 }
 
 func (v Var) dEqual(node Node) bool {
 	raw := node.(Var)
 	return v.RteID == raw.RteID &&
 		v.ColOrder == raw.ColOrder &&
-		v.Type == raw.Type
+		v.TypeData == raw.TypeData
 }
 
 func (v Var) DPrint(nesting int) string {
-	return fmt.Sprintf("%s{RteId: %d, ColOrder: %d, TypeTag: %d}",
-		v.dTag(nesting), v.RteID, v.ColOrder, v.Type,
+	return fmt.Sprintf("%s{RteId: %d, ColOrder: %d, TypeData: %+v}",
+		v.dTag(nesting), v.RteID, v.ColOrder, v.TypeData,
 	)
 }
 
@@ -69,34 +74,32 @@ func (v Var) DPrint(nesting int) string {
 
 var _ Expr = &_const{}
 
-func NewConst(cType hgtype.Wrapper, val []byte) Const {
+func NewConst(cType hgtype.Tag, val []byte) Const {
 	return &_const{
-		expr: newExpr(TagConst),
-		Type: cType,
-		Val:  val,
+		expr:    newExpr(TagConst),
+		TypeTag: cType,
+		Val:     val,
 	}
 }
 
-func NewConstInt8(val int64, args hgtype.Args) Const {
-	t := hgtype.NewInt8(args)
+func NewConstInt8(val int64) Const {
 	serializedVal := inputtype.ConvInt8(val)
 	return &_const{
-		expr: newExpr(TagConst),
-		Type: t,
-		Val:  serializedVal,
+		expr:    newExpr(TagConst),
+		TypeTag: hgtype.TypeInt8,
+		Val:     serializedVal,
 	}
 }
 
-func NewConstStr(val string, args hgtype.Args) (Const, error) {
-	t := hgtype.NewStr(args)
+func NewConstStr(val string) (Const, error) {
 	serializedVal, err := inputtype.ConvStr(val)
 	if err != nil {
 		return nil, err
 	}
 	return &_const{
-		expr: newExpr(TagConst),
-		Type: t,
-		Val:  serializedVal,
+		expr:    newExpr(TagConst),
+		TypeTag: hgtype.TypeStr,
+		Val:     serializedVal,
 	}, nil
 }
 
@@ -104,8 +107,12 @@ type Const = *_const
 
 type _const struct {
 	expr
-	Type hgtype.Wrapper
-	Val  []byte // normalized value
+	TypeTag hgtype.Tag
+	Val     []byte // normalized value
+}
+
+func (c Const) Type() hgtype.Tag {
+	return c.TypeTag
 }
 
 func (c Const) dEqual(node Node) bool {
@@ -119,12 +126,12 @@ func (c Const) dEqual(node Node) bool {
 			return false
 		}
 	}
-	return c.Type.TypeEqual(raw.Type)
+	return c.TypeTag == c.TypeTag
 }
 
 func (c Const) DPrint(nesting int) string {
-	return fmt.Sprintf("@%s{TypeTag: %s, Val: %+v}",
-		c.dTag(nesting), c.Type.Tag.ToStr(), c.Val)
+	return fmt.Sprintf("@%s{Tag: %s, Val: %+v}",
+		c.dTag(nesting), c.TypeTag.ToStr(), c.Val)
 }
 
 // -------------------------

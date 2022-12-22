@@ -3,7 +3,7 @@ package hgtype
 import "HomegrownDB/common/random"
 
 type Type interface {
-	Tag() TypeTag
+	Tag() Tag
 	TypeReader
 	TypeWriter
 	TypeOperations

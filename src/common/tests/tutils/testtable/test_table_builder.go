@@ -15,8 +15,8 @@ func NewTestTableBuilder(name string) *Builder {
 	return &Builder{table: table.NewDefinition(name)}
 }
 
-func (ttb *Builder) AddColumn(name string, nullable bool, typeTag hgtype.TypeTag, typeArgs hgtype.Args) *Builder {
-	colType := hgtype.NewWrapper(typeTag, typeArgs)
+func (ttb *Builder) AddColumn(name string, nullable bool, typeTag hgtype.Tag, typeArgs hgtype.Args) *Builder {
+	colType := hgtype.NewTypeData(typeTag, typeArgs)
 
 	col := column.NewDefinition(name, nullable, colType)
 	if err := ttb.table.AddColumn(col); err != nil {

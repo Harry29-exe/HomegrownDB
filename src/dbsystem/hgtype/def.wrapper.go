@@ -3,7 +3,7 @@ package hgtype
 import "HomegrownDB/common/random"
 
 type WrapperOp interface {
-	TypeEqual(wrapper Wrapper) bool
+	TypeEqual(wrapper TypeData) bool
 }
 
 type Operations interface {

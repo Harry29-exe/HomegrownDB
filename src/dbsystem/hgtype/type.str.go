@@ -1,8 +1,10 @@
 package hgtype
 
 import (
+	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/random"
 	"bytes"
+	"unicode"
 )
 
 var _ Type = Str{}
@@ -11,7 +13,7 @@ type Str struct {
 	varLen
 }
 
-func (s Str) Tag() TypeTag {
+func (s Str) Tag() Tag {
 	return TypeStr
 }
 
@@ -43,4 +45,33 @@ func (s Str) Rand(args Args, r random.Random) []byte {
 	}
 
 	return buff.Bytes()
+}
+
+var StrUtils = strUtils{}
+
+type strUtils struct{}
+
+func (u strUtils) IsASCII(val []byte) bool {
+	var data []byte
+	if VarLenUtils.IsHeaderOneByte(val[0]) {
+		data = val[1:val[0]]
+	} else {
+		l := bparse.Parse.UInt4(val)
+		data = val[4:l]
+	}
+
+	for i := 0; i < len(data); i++ {
+		if data[i] > unicode.MaxASCII {
+			return false
+		}
+	}
+	return true
+}
+
+func (u strUtils) StrLen(val []byte) uint32 {
+	if VarLenUtils.IsHeaderOneByte(val[0]) {
+		return uint32(val[0])
+	} else {
+		return bparse.Parse.UInt4(val)
+	}
 }

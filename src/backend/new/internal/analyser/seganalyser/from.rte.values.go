@@ -2,9 +2,11 @@ package seganalyser
 
 import (
 	"HomegrownDB/backend/new/internal/analyser/anlsr"
+	"HomegrownDB/backend/new/internal/analyser/seganalyser/typa"
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/backend/new/internal/pnode"
 	"HomegrownDB/dbsystem/hgtype"
+	"fmt"
 )
 
 // -------------------------
@@ -12,7 +14,7 @@ import (
 // -------------------------
 
 type FutureType struct {
-	Type hgtype.TypeTag
+	Type hgtype.Tag
 	Args any
 }
 
@@ -24,20 +26,21 @@ func (v rteValues) Analyse(pnodeValues [][]pnode.Node, query node.Query, ctx anl
 	values := make([][]node.Expr, len(pnodeValues))
 	var err error
 
-	values[0], err = v.analyseRow(pnodeValues[0], query, ctx)
-
-	for i := 1; i < len(values); i++ {
-		values[i], err = v.analyseRow(pnodeValues[i], query, ctx)
+	firstRow, err := v.analyseFirstRow(pnodeValues[0], query, ctx)
+	values[0] = firstRow
+	for row := 1; row < len(values); row++ {
+		values[row], err = v.analyseRow(pnodeValues[row], firstRow, query, ctx)
 		if err != nil {
 			return RteResult{}, err
 		}
 	}
 
 	rte := node.NewValuesRTE(ctx.RteIdCounter.Next(), values)
-	return NewSingleRteResult(rte), nil
+	err = v.analyseTypes(rte)
+	return NewSingleRteResult(rte), err
 }
 
-func (v rteValues) analyseRow(row []pnode.Node, query node.Query, ctx anlsr.Ctx) ([]node.Expr, error) {
+func (v rteValues) analyseFirstRow(row []pnode.Node, query node.Query, ctx anlsr.Ctx) ([]node.Expr, error) {
 	resultRow := make([]node.Expr, len(row))
 	var err error
 	for i := 0; i < len(row); i++ {
@@ -47,4 +50,34 @@ func (v rteValues) analyseRow(row []pnode.Node, query node.Query, ctx anlsr.Ctx)
 		}
 	}
 	return resultRow, nil
+}
+
+func (v rteValues) analyseRow(row []pnode.Node, firstRow []node.Expr, query node.Query, ctx anlsr.Ctx) ([]node.Expr, error) {
+	resultRow := make([]node.Expr, len(row))
+	for col := 0; col < len(row); col++ {
+		aConst, err := ExprDelegator.DelegateAnalyse(row[col], query, ctx)
+		if err != nil {
+			return nil, err
+		} else if aConst.Type() != firstRow[col].Type() {
+			return nil, fmt.Errorf("incompatible types %s != %s", aConst.Type().ToStr(), firstRow[col].Type().ToStr())
+		}
+
+		resultRow[col] = aConst
+	}
+	return resultRow, nil
+}
+
+func (v rteValues) analyseTypes(rte node.RangeTableEntry) error {
+	values := rte.ValuesList
+	futureTypes := typa.CreateFutureTypes(values[0])
+	for row := 1; row < len(values); row++ {
+		err := futureTypes.UpdateTypes(values[row])
+		if err != nil {
+			return err
+		}
+	}
+
+	colTypes := futureTypes.CreateTypes()
+	rte.ColTypes = colTypes
+	return nil
 }

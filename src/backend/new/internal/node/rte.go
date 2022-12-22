@@ -95,7 +95,7 @@ type rangeTableEntry struct {
 	ValuesList [][]Expr // list of expression node lists
 
 	//Kind = RteValues, RteCte, RteNamedTupleStore, RteTableFunc
-	ColTypes []hgtype.TypeTag
+	ColTypes []hgtype.TypeData
 
 	// general
 	Alias Alias

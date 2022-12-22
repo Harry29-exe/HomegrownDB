@@ -2,6 +2,8 @@ package sqlerr
 
 import (
 	"HomegrownDB/backend/new/internal/node"
+	"HomegrownDB/dbsystem/dberr"
+	"HomegrownDB/dbsystem/hgtype"
 	"fmt"
 )
 
@@ -39,5 +41,34 @@ func (c ColumnNotExist) Error() string {
 	}
 }
 
+// -------------------------
+//      IllegalNode
+// -------------------------
+
 type IllegalNode struct {
+}
+
+// -------------------------
+//      TypeMismatch
+// -------------------------
+
+var _ dberr.DBError = TypeMismatch{}
+
+type TypeMismatch struct {
+	ExpectedType hgtype.Tag
+	ActualType   hgtype.Tag
+	Value        any
+}
+
+func (t TypeMismatch) Error() string {
+	return fmt.Sprintf("expected type %s but value %+v is of type %s",
+		t.ExpectedType.ToStr(), t.Value, t.ActualType.ToStr())
+}
+
+func (t TypeMismatch) Area() dberr.Area {
+	return dberr.DBSystem
+}
+
+func (t TypeMismatch) MsgCanBeReturnedToClient() bool {
+	return true
 }

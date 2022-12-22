@@ -1,18 +1,18 @@
 package hgtype
 
-type TypeTag uint8
+type Tag uint8
 
 const (
-	TypeInt8 TypeTag = iota
+	TypeInt8 Tag = iota
 	TypeFloat8
 	TypeStr
 )
 
-func (t TypeTag) ToStr() string {
+func (t Tag) ToStr() string {
 	return ctypeNames[t]
 }
 
-var ctypeNames = map[TypeTag]string{
+var ctypeNames = map[Tag]string{
 	TypeInt8:   "TypeInt8",
 	TypeFloat8: "TypeFloat8",
 	TypeStr:    "TypeStr",

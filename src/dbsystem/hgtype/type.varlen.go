@@ -6,7 +6,10 @@ import (
 	"math"
 )
 
-const MaxVarLenSize = int(math.MaxUint32 & toast.FourByteHeaderMask)
+const (
+	UnknownVarLenSize = int(math.MaxUint32 & toast.FourByteHeaderMask)
+	MaxVarLenSize     = int(math.MaxUint32&toast.FourByteHeaderMask) - 1
+)
 
 var (
 	_ TypeReader = varLen{}
@@ -115,3 +118,11 @@ var oneByteHeaderMask = byte(127)
 
 // 00111111 11111111 11111111 11111111
 var fourByteHeaderMask = uint32(1073741823)
+
+var VarLenUtils = varLenUtils{}
+
+type varLenUtils struct{}
+
+func (v varLenUtils) IsHeaderOneByte(firstByte byte) bool {
+	return firstByte > 127
+}

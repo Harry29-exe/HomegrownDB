@@ -31,19 +31,22 @@ func Def(t *testing.T) testtable.TestTable {
 const (
 	TableName = "users"
 
-	C0Id      string         = "id"
-	C0IdOrder column.Order   = 0
-	C0IdType  hgtype.TypeTag = hgtype.TypeInt8
+	C0Id      string       = "id"
+	C0IdOrder column.Order = 0
 
-	C1Age      string         = "age"
-	C1AgeOrder column.Order   = 1
-	C1AgeType  hgtype.TypeTag = hgtype.TypeInt8
+	C1Age      string       = "age"
+	C1AgeOrder column.Order = 1
 
-	C2Name      string         = "name"
-	C2NameOrder column.Order   = 2
-	C2NameType  hgtype.TypeTag = hgtype.TypeStr
+	C2Name      string       = "name"
+	C2NameOrder column.Order = 2
 
-	C3Surname      string         = "surname"
-	C3SurnameOrder column.Order   = 3
-	C3SurnameType  hgtype.TypeTag = hgtype.TypeStr
+	C3Surname      string       = "surname"
+	C3SurnameOrder column.Order = 3
+)
+
+var (
+	C0IdType      = hgtype.NewInt8(hgtype.Args{})
+	C1AgeType     = hgtype.NewInt8(hgtype.Args{})
+	C2NameType    = hgtype.NewStr(hgtype.Args{Length: 255, VarLen: true, UTF8: true})
+	C3SurnameType = hgtype.NewStr(hgtype.Args{Length: 255, VarLen: true, UTF8: true})
 )

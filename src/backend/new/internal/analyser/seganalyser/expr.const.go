@@ -4,15 +4,14 @@ import (
 	"HomegrownDB/backend/new/internal/analyser/anlsr"
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/backend/new/internal/pnode"
-	"HomegrownDB/dbsystem/hgtype"
 )
 
 func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx anlsr.Ctx) (node.Const, error) {
 	switch aConst.Type {
 	case pnode.AConstInt:
-		return node.NewConstInt8(aConst.Int, hgtype.Args{}), nil
+		return node.NewConstInt8(aConst.Int), nil
 	case pnode.AConstStr:
-		return node.NewConstStr(aConst.Str, hgtype.Args{Length: uint32(len(aConst.Str))})
+		return node.NewConstStr(aConst.Str)
 	case pnode.AConstFloat:
 		//todo implement me
 		panic("Not implemented")
@@ -73,7 +72,7 @@ func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx a
 //			return Consts{}, err
 //		}
 //		consts.Values[0][col] = constNode
-//		consts.Pattern[col] = constNode.TypeTag
+//		consts.Pattern[col] = constNode.TypeData
 //	}
 //	return consts, nil
 //}
@@ -87,7 +86,7 @@ func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx a
 //}
 //
 //func (c constsAnalyser) analyseRowColumn(aConst pnode.AConst, hgType hgtype.HGType) (node.Const, error) {
-//	switch aConst.TypeTag {
+//	switch aConst.TypeData {
 //	case pnode.AConstInt:
 //		return c.convertInt(aConst, hgType)
 //	case pnode.AConstStr:
@@ -96,7 +95,7 @@ func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx a
 //}
 //
 //func (c constsAnalyser) analyseConst(aConst pnode.AConst) (node.Const, error) {
-//	switch aConst.TypeTag {
+//	switch aConst.TypeData {
 //	case pnode.AConstInt:
 //		colType := hgtype.NewInt8(hgtype.Int8Args{})
 //		return node.NewConst(colType, hgtype.Int8Serialize(aConst.Int)), nil
@@ -114,14 +113,14 @@ func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx a
 //}
 //
 //func (c constsAnalyser) convertInt(aConst pnode.AConst, constType hgtype.HGType) (node.Const, error) {
-//	if constType.TypeTag == hgtype.TypeInt8 {
+//	if constType.TypeData == hgtype.TypeInt8 {
 //		node.NewConst(constType, hgtype.Int8Serialize(aConst.Int))
 //	}
-//	return nil, fmt.Errorf("can not convert int into %s", constType.TypeTag.ToStr()) //todo better err
+//	return nil, fmt.Errorf("can not convert int into %s", constType.TypeData.ToStr()) //todo better err
 //}
 //
 //func (c constsAnalyser) convertStr(aConst pnode.AConst, constType hgtype.HGType) (node.Const, error) {
-//	switch constType.TypeTag {
+//	switch constType.TypeData {
 //	case hgtype.TypeStr:
 //		if constType. {
 //
@@ -134,7 +133,7 @@ func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, query node.Query, ctx a
 //func (c constsAnalyser) canNotConvertErr(fromNode pnode.AConst, constType hgtype.HGType) error {
 //	return fmt.Errorf("can not convert %+v (type: %s) into %s",
 //		fromNode,
-//		fromNode.TypeTag.ToStr(),
-//		constType.TypeTag.ToStr(),
+//		fromNode.TypeData.ToStr(),
+//		constType.TypeData.ToStr(),
 //	) //todo better err
 //}
