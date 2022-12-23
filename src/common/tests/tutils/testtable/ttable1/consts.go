@@ -1,6 +1,9 @@
 package ttable1
 
-import "HomegrownDB/dbsystem/schema/column"
+import (
+	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/schema/column"
+)
 
 const (
 	TableName = "awesome_table1"
@@ -13,4 +16,10 @@ const (
 
 	C2NonNullColl      string       = "non_null_coll"
 	C2NonNullCollOrder column.Order = 2
+)
+
+var (
+	C0AwesomeKeyType  = hgtype.NewInt8(hgtype.Args{})
+	C1NullableColType = hgtype.NewInt8(hgtype.Args{})
+	C2NonNullCollType = hgtype.NewInt8(hgtype.Args{})
 )

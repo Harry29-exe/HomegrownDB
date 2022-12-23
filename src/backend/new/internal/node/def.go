@@ -106,7 +106,11 @@ func DEqual(v1, v2 Node) bool {
 	} else if !basicNodeEqual(v1, v2) {
 		return false
 	}
-	return v1.dEqual(v2)
+	if v1.dEqual(v2) {
+		return true
+	}
+	fmt.Printf("nodes are not equal\nexpected:\n%+v\nactual:\n%+v\n", v1, v2)
+	return false
 }
 
 func nodesEqNil(v1, v2 Node) bool {

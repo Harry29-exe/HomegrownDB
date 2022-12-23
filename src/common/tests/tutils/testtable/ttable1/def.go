@@ -13,7 +13,6 @@ package ttable1
 
 import (
 	"HomegrownDB/common/tests/tutils/testtable"
-	"HomegrownDB/dbsystem/hgtype"
 	"testing"
 )
 
@@ -28,9 +27,9 @@ Def creates following table definition
 */
 func Def(t *testing.T) testtable.TestTable {
 	table := testtable.NewTestTableBuilder(TableName).
-		AddColumn(C0AwesomeKey, false, hgtype.TypeInt8, hgtype.Args{}).
-		AddColumn(C1NullableCol, true, hgtype.TypeInt8, hgtype.Args{}).
-		AddColumn(C2NonNullColl, false, hgtype.TypeInt8, hgtype.Args{}).
+		AddColumn(C0AwesomeKey, false, C2NonNullCollType).
+		AddColumn(C1NullableCol, true, C2NonNullCollType).
+		AddColumn(C2NonNullColl, false, C2NonNullCollType).
 		GetTable()
 
 	return testtable.NewTestTable(table, t)

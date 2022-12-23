@@ -18,9 +18,9 @@ import (
 
 func Def(t *testing.T) testtable.TestTable {
 	table := testtable.NewTestTableBuilder(TableName).
-		AddColumn(C0Id, false, hgtype.TypeInt8, hgtype.Args{}).
-		AddColumn(C1Name, true, hgtype.TypeStr, hgtype.Args{}).
-		AddColumn(C2Specie, true, hgtype.TypeStr, hgtype.Args{}).
+		AddColumn(C0Id, false, C0IdType).
+		AddColumn(C1Name, true, C1NameType).
+		AddColumn(C2Specie, true, C2SpecieType).
 		GetTable()
 
 	return testtable.NewTestTable(table, t)
@@ -34,4 +34,10 @@ const (
 	C1NameOrder   column.Order = 1
 	C2Specie      string       = "specie"
 	C2SpecieOrder column.Order = 2
+)
+
+var (
+	C0IdType     = hgtype.NewInt8(hgtype.Args{})
+	C1NameType   = hgtype.NewStr(hgtype.Args{Length: 255, VarLen: true, UTF8: true})
+	C2SpecieType = hgtype.NewStr(hgtype.Args{Length: 255, VarLen: true, UTF8: true})
 )
