@@ -10,6 +10,7 @@ type Def interface {
 	Order() Order
 	CType() hgtype.TypeData
 
+	DefaultValue() []byte
 	// Serialize should save all important Data to byte stream.
 	// It has to start with MdString of column.Tag.
 	Serialize() []byte

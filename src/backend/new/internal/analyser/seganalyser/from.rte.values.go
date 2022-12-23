@@ -2,7 +2,7 @@ package seganalyser
 
 import (
 	"HomegrownDB/backend/new/internal/analyser/anlsr"
-	"HomegrownDB/backend/new/internal/analyser/seganalyser/typa"
+	"HomegrownDB/backend/new/internal/analyser/seganalyser/typanlr"
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/backend/new/internal/pnode"
 	"HomegrownDB/dbsystem/hgtype"
@@ -69,7 +69,7 @@ func (v rteValues) analyseRow(row []pnode.Node, firstRow []node.Expr, query node
 
 func (v rteValues) analyseTypes(rte node.RangeTableEntry) error {
 	values := rte.ValuesList
-	futureTypes := typa.CreateFutureTypes(values[0])
+	futureTypes := typanlr.CreateFutureTypes(values[0])
 	for row := 1; row < len(values); row++ {
 		err := futureTypes.UpdateTypes(values[row])
 		if err != nil {

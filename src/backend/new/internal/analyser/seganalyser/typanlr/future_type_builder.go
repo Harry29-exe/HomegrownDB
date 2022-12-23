@@ -1,4 +1,4 @@
-package typa
+package typanlr
 
 import (
 	"HomegrownDB/backend/new/internal/node"
@@ -23,14 +23,15 @@ func createFTFromConst(expr node.Const) FutureType {
 			TypeArgs: hgtype.Args{},
 		}
 	case hgtype.TypeStr:
-		args := hgtype.Args{}
-		args.Length = uint32(len(expr.Val))
-		args.UTF8 = !hgtype.StrUtils.IsASCII(expr.Val)
-		args.VarLen = true
+		args := hgtype.Args{
+			Length: uint32(len(expr.Val)),
+			UTF8:   !hgtype.StrUtils.IsASCII(expr.Val),
+			VarLen: true,
+		}
 
 		return FutureType{
 			TypeTag:  hgtype.TypeStr,
-			TypeArgs: hgtype.Args{},
+			TypeArgs: args,
 		}
 	default:
 		//todo implement me

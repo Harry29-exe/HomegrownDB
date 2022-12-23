@@ -40,6 +40,10 @@ func (c *column) CType() hgtype.TypeData {
 	return c.hgType
 }
 
+func (c *column) DefaultValue() []byte {
+	return nil
+}
+
 func (c *column) Serialize() []byte {
 	//TODO implement me
 	panic("implement me")

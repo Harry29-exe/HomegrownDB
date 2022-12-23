@@ -1,4 +1,4 @@
-package typa
+package typanlr
 
 import (
 	"HomegrownDB/backend/new/internal/node"
@@ -11,7 +11,7 @@ type FutureType struct {
 	TypeArgs hgtype.Args
 }
 
-func (f FutureType) UpdateType(expr node.Expr) error {
+func (f *FutureType) UpdateType(expr node.Expr) error {
 	if f.TypeTag != expr.Type() {
 		return sqlerr.TypeMismatch{
 			ExpectedType: f.TypeTag,
@@ -28,7 +28,7 @@ func (f FutureType) UpdateType(expr node.Expr) error {
 	}
 }
 
-func (f FutureType) updateByConst(expr node.Const) error {
+func (f *FutureType) updateByConst(expr node.Const) error {
 	switch f.TypeTag {
 	case hgtype.TypeInt8:
 		return nil
@@ -40,10 +40,10 @@ func (f FutureType) updateByConst(expr node.Const) error {
 	}
 }
 
-func (f FutureType) updateStr(str []byte) error {
+func (f *FutureType) updateStr(str []byte) error {
 	strLen := hgtype.StrUtils.StrLen(str)
 	if f.TypeArgs.Length < strLen {
-		f.TypeArgs.Length = strLen
+		f.TypeArgs.Length = strLen - 4 //string len - 4 bytes of header
 	}
 	if !f.TypeArgs.UTF8 && !hgtype.StrUtils.IsASCII(str) {
 		f.TypeArgs.UTF8 = true

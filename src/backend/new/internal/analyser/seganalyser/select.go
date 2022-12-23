@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/backend/new/internal/analyser/anlsr"
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/backend/new/internal/pnode"
+	"HomegrownDB/dbsystem/schema/column"
 )
 
 var Select = _select{}
@@ -44,13 +45,19 @@ func (s _select) analyseStdSelect(stmt pnode.SelectStmt, query node.Query, ctx a
 }
 
 func (s _select) analyseValuesSelect(stmt pnode.SelectStmt, query node.Query, ctx anlsr.Ctx) error {
-	valuesRte, err := RteValues.Analyse(stmt.Values, query, ctx)
+	valuesRteResult, err := RteValues.Analyse(stmt.Values, query, ctx)
+	rte, rteRef := valuesRteResult.Rte, valuesRteResult.RteRefNode
 	if err != nil {
 		return err
 	}
 
-	query.FromExpr = node.NewFromExpr2(nil, valuesRte.RteRefNode)
-	query.RTables = append(query.RTables, valuesRte.Rte)
+	query.FromExpr = node.NewFromExpr2(nil, rteRef)
+	query.RTables = append(query.RTables, rte)
+	query.TargetList = make([]node.TargetEntry, len(rte.ColTypes))
+	for col := 0; col < len(rte.ColTypes); col++ {
+		colRef := node.NewVar(rte.Id, column.Order(col), rte.ColTypes[col])
+		query.TargetList[col] = node.NewTargetEntry(colRef, uint16(col), "")
+	}
 
 	return nil
 }

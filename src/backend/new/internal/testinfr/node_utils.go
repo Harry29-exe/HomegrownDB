@@ -21,3 +21,9 @@ func ParseAndAnalyse(query string, store table.Store, t *testing.T) node.Query {
 
 	return queryNode
 }
+
+func NewConstStr(val string, t *testing.T) node.Const {
+	aConst, err := node.NewConstStr(val)
+	assert.ErrIsNil(err, t)
+	return aConst
+}

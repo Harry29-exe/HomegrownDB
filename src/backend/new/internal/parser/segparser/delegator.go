@@ -15,6 +15,8 @@ func (delegator) Parse(src tkSource, v tkValidator) (pnode.Node, error) {
 		return Select.Parse(src, v)
 	case token.Insert:
 		return Insert.Parse(src, v)
+	case token.Values:
+		return ValueStreamSelect.Parse(src, v)
 	default:
 		panic("unsupported type: " + token.ToString(tk.Code()))
 	}

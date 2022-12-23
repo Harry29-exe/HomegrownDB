@@ -27,8 +27,8 @@ Def creates following table definition
 */
 func Def(t *testing.T) testtable.TestTable {
 	table := testtable.NewTestTableBuilder(TableName).
-		AddColumn(C0AwesomeKey, false, C2NonNullCollType).
-		AddColumn(C1NullableCol, true, C2NonNullCollType).
+		AddColumn(C0AwesomeKey, false, C0AwesomeKeyType).
+		AddColumn(C1NullableCol, true, C1NullableColType).
 		AddColumn(C2NonNullColl, false, C2NonNullCollType).
 		GetTable()
 

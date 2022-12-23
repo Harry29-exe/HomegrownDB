@@ -229,7 +229,7 @@ func NewTargetEntry(execExpr Expr, attribNo uint16, colName string) TargetEntry 
 
 type TargetEntry = *targetEntry
 
-var _ Node = &targetEntry{}
+var _ Expr = &targetEntry{}
 
 type targetEntry struct {
 	expr              // Expr to treat TargetEntry as Expr node
@@ -238,6 +238,10 @@ type targetEntry struct {
 	ColName    string // ColName nullable column alias
 
 	Temp bool // Temp if true then entry should be eliminated before tuple is emitted
+}
+
+func (t TargetEntry) Type() hgtype.Tag {
+	return t.ExprToExec.Type()
 }
 
 func (t TargetEntry) dEqual(node Node) bool {

@@ -1,4 +1,4 @@
-package typa
+package typanlr
 
 import (
 	"HomegrownDB/backend/new/internal/node"
