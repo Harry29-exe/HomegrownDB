@@ -98,3 +98,7 @@ func (q Query) GetRTE(id RteID) RangeTableEntry {
 	}
 	return nil
 }
+
+func (q Query) AppendRTE(rte RangeTableEntry) {
+	q.RTables = append(q.RTables, rte)
+}

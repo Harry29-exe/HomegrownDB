@@ -14,14 +14,13 @@ type exprDelegator struct{}
 
 func (ex exprDelegator) DelegateAnalyse(
 	pnodeExpr pnode.Node,
-	query node.Query,
-	ctx anlsr.Ctx,
+	currentCtx anlsr.QueryCtx,
 ) (node.Expr, error) {
 	switch pnodeExpr.Tag() {
 	case pnode.TagColumnRef:
-		return ExprAnalyser.AnalyseColRef(pnodeExpr.(pnode.ColumnRef), query, ctx)
+		return ExprAnalyser.AnalyseColRef(pnodeExpr.(pnode.ColumnRef), currentCtx)
 	case pnode.TagAConst:
-		return ExprAnalyser.AnalyseConst(pnodeExpr.(pnode.AConst), query, ctx)
+		return ExprAnalyser.AnalyseConst(pnodeExpr.(pnode.AConst), currentCtx)
 	default:
 		return nil, errors.New("") //todo better error
 	}
@@ -31,8 +30,9 @@ var ExprAnalyser = exprAnalyser{}
 
 type exprAnalyser struct{}
 
-func (ex exprAnalyser) AnalyseColRef(pnode pnode.ColumnRef, query node.Query, ctx anlsr.Ctx) (node.Var, error) {
+func (ex exprAnalyser) AnalyseColRef(pnode pnode.ColumnRef, currentCtx anlsr.QueryCtx) (node.Var, error) {
 	var rTable node.RangeTableEntry
+	var query = currentCtx.Query
 
 	if alias := pnode.TableAlias; alias != "" {
 		rTable = QueryHelper.findRteByAlias(alias, query)
@@ -50,4 +50,20 @@ func (ex exprAnalyser) AnalyseColRef(pnode pnode.ColumnRef, query node.Query, ct
 	}
 
 	return node.NewVar(rTable.Id, col.Order(), col.CType()), nil
+}
+
+func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, currentCtx anlsr.QueryCtx) (node.Const, error) {
+	switch aConst.Type {
+	case pnode.AConstInt:
+		return node.NewConstInt8(aConst.Int), nil
+	case pnode.AConstStr:
+		return node.NewConstStr(aConst.Str)
+	case pnode.AConstFloat:
+		//todo implement me
+		panic("Not implemented")
+		//return node.NewConst(hgtype.TypeFloat8, aConst.Float), nil
+	default:
+		//todo implement me
+		panic("Not implemented")
+	}
 }

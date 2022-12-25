@@ -108,6 +108,10 @@ func (r RangeTableEntry) CreateRef() RangeTableRef {
 	}
 }
 
+func (r RangeTableEntry) CreateVarTargetEntry(col column.Order, attribNo AttribNo, colName string) TargetEntry {
+	return NewTargetEntry(NewVar(r.Id, col, r.ColTypes[col]), attribNo, colName)
+}
+
 func (r RangeTableEntry) dEqual(node Node) bool {
 	raw := node.(RangeTableEntry)
 
@@ -218,7 +222,9 @@ func (r rangeTableRef) DPrint(nesting int) string {
 //      TargetEntry
 // -------------------------
 
-func NewTargetEntry(execExpr Expr, attribNo uint16, colName string) TargetEntry {
+type AttribNo = uint16
+
+func NewTargetEntry(execExpr Expr, attribNo AttribNo, colName string) TargetEntry {
 	return &targetEntry{
 		expr:       newExpr(TagTargetEntry),
 		ExprToExec: execExpr,
@@ -232,10 +238,10 @@ type TargetEntry = *targetEntry
 var _ Expr = &targetEntry{}
 
 type targetEntry struct {
-	expr              // Expr to treat TargetEntry as Expr node
-	ExprToExec Expr   // ExprToExec expression to evaluate to
-	AttribNo   uint16 // AttribNo number of entry
-	ColName    string // ColName nullable column alias
+	expr                // Expr to treat TargetEntry as Expr node
+	ExprToExec Expr     // ExprToExec expression to evaluate to
+	AttribNo   AttribNo // AttribNo number of entry
+	ColName    string   // ColName nullable column alias
 
 	Temp bool // Temp if true then entry should be eliminated before tuple is emitted
 }

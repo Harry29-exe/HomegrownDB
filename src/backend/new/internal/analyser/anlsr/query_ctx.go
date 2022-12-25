@@ -1,58 +1,31 @@
 package anlsr
 
-import (
-	"HomegrownDB/backend/new/internal/node"
-	"HomegrownDB/backend/new/internal/sqlerr"
-	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/dbsystem/schema/relation"
-	"HomegrownDB/dbsystem/schema/table"
-)
+import "HomegrownDB/backend/new/internal/node"
 
-type Ctx = *queryCtx
+type QueryCtx = *queryCtx
 
-func NewQCtx(store table.Store) Ctx {
+func NewQueryCtx(query node.Query, ctx Ctx) QueryCtx {
 	return &queryCtx{
-		RteIdCounter: appsync.NewSimpleCounter[node.RteID](0),
-
-		TableStore: store,
-		TableCache: map[relation.ID]table.Definition{},
-		TableIdMap: map[string]relation.ID{},
+		Ctx:       ctx,
+		Query:     query,
+		ParentCtx: nil,
 	}
 }
 
 type queryCtx struct {
-	RteIdCounter RteIdCounter
-
-	TableStore table.Store
-	TableCache map[relation.ID]table.Definition
-	TableIdMap map[string]relation.ID // TableIdMap map[tableName] = tableId
+	Ctx
+	Query     node.Query
+	ParentCtx *queryCtx
 }
 
-func (c Ctx) GetTableById(id relation.ID) table.RDefinition {
-	cachedTable, ok := c.TableCache[id]
-	if ok {
-		return cachedTable
-	}
-
-	tab := c.TableStore.AccessTable(id, table.RLockMode)
-	c.TableCache[id] = tab
-	return tab
+func (q QueryCtx) IsRoot() bool {
+	return q.ParentCtx == nil
 }
 
-func (c Ctx) GetTable(name string) (table.RDefinition, error) {
-	tableId, ok := c.TableIdMap[name]
-	if ok {
-		return c.TableCache[tableId], nil
+func (q QueryCtx) CreateChildCtx(query node.Query) QueryCtx {
+	return &queryCtx{
+		Ctx:       q.Ctx,
+		Query:     query,
+		ParentCtx: q,
 	}
-
-	tableId = c.TableStore.FindTable(name)
-	if tableId == relation.InvalidRelId {
-		return nil, sqlerr.NewNoTableWithNameErr(name)
-	}
-
-	tableDef := c.TableStore.AccessTable(tableId, table.RLockMode)
-	c.TableCache[tableId] = tableDef
-	return tableDef, nil
 }
-
-type RteIdCounter = appsync.SimpleSyncCounter[node.RteID]

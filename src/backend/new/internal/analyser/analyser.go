@@ -9,7 +9,7 @@ import (
 )
 
 func Analyse(stmt pnode.RawStmt, store table.Store) (node.Query, error) {
-	ctx := anlsr.NewQCtx(store)
+	ctx := anlsr.NewCtx(store)
 
 	innerStmt := stmt.Stmt
 	switch innerStmt.Tag() {

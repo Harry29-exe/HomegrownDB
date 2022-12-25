@@ -52,6 +52,14 @@ type IllegalNode struct {
 //      TypeMismatch
 // -------------------------
 
+func NewTypeMismatch(expectedType hgtype.Tag, actualType hgtype.Tag, value any) TypeMismatch {
+	return TypeMismatch{
+		ExpectedType: expectedType,
+		ActualType:   actualType,
+		Value:        value,
+	}
+}
+
 var _ dberr.DBError = TypeMismatch{}
 
 type TypeMismatch struct {

@@ -8,6 +8,7 @@ import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/table"
 	"testing"
 )
@@ -34,8 +35,9 @@ func (insertTest) expectedSimplePositive1(users table.Definition, t *testing.T) 
 
 	query := node.NewQuery(node.CommandTypeInsert, nil)
 	query.TargetList = []node.TargetEntry{
-		node.NewTargetEntry(nil, tt_user.C0IdOrder, "id"),
-		node.NewTargetEntry(nil, tt_user.C2NameOrder, "name"),
+		node.NewTargetEntry(nil, tt_user.C0IdOrder, tt_user.C0Id),
+		node.NewTargetEntry(nil, tt_user.C1AgeOrder, tt_user.C1Age),
+		node.NewTargetEntry(nil, tt_user.C2NameOrder, tt_user.C2Name),
 	}
 
 	resultRel := node.NewRelationRTE(rteIdCounter.Next(), users)
@@ -43,12 +45,15 @@ func (insertTest) expectedSimplePositive1(users table.Definition, t *testing.T) 
 	query.ResultRel = resultRel.Id
 
 	subQuery := node.NewQuery(node.CommandTypeSelect, nil)
-	bobValue, err := node.NewConstStr("bob")
-	assert.ErrIsNil(err, t)
 	valuesRte := node.NewValuesRTE(rteIdCounter.Next(), [][]node.Expr{
-		{node.NewConstInt8(int64(1)), bobValue},
+		{node.NewConstInt8(1), NewConstStr("bob", t)},
 	})
 	subQuery.RTables = []node.RangeTableEntry{valuesRte}
+	subQuery.TargetList = []node.TargetEntry{
+		node.NewTargetEntry(node.NewVar(valuesRte.Id, 0, hgtype.NewInt8(hgtype.Args{})), 0, ""),
+		node.NewTargetEntry(node.NewConst(hgtype.TypeInt8, nil), 1, ""),
+		node.NewTargetEntry(node.NewVar(valuesRte.Id, 1, hgtype.NewStr(hgtype.Args{})), 0, ""),
+	}
 	subQuery.FromExpr = node.NewFromExpr2(nil, valuesRte.CreateRef())
 
 	subQueryRte := node.NewSubqueryRTE(rteIdCounter.Next(), subQuery)

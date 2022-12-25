@@ -8,33 +8,6 @@ import (
 )
 
 // -------------------------
-//      TargetEntries
-// -------------------------
-
-var TargetEntries = targetEntries{}
-
-type targetEntries struct{}
-
-func (te targetEntries) Analyse(
-	resEntries []pnode.ResultTarget,
-	query node.Query,
-	ctx anlsr.Ctx,
-) ([]node.TargetEntry, error) {
-
-	entries := make([]node.TargetEntry, len(resEntries))
-
-	for i, resTarget := range resEntries {
-		entry, err := TargetEntry.Analyse(resTarget, query, ctx)
-		if err != nil {
-			return nil, err
-		}
-		entries[i] = entry
-	}
-
-	return entries, nil
-}
-
-// -------------------------
 //      TargetEntry
 // -------------------------
 
@@ -42,41 +15,23 @@ var TargetEntry = targetEntry{}
 
 type targetEntry struct{}
 
-func (te targetEntry) Analyse(
-	resultTarget pnode.ResultTarget,
-	query node.Query,
-	ctx anlsr.Ctx,
-) (node.TargetEntry, error) {
-	switch query.Command {
-	case node.CommandTypeSelect:
-		return te.analyseForSelect(resultTarget, query, ctx)
-	case node.CommandTypeInsert:
-		return te.analyseForInsert(resultTarget, query, ctx)
-	default:
-		//todo implement me
-		panic("Not implemented")
-	}
-}
-
-func (te targetEntry) analyseForSelect(
+func (te targetEntry) AnalyseForSelect(
 	resTarget pnode.ResultTarget,
-	query node.Query,
-	ctx anlsr.Ctx,
+	currentCtx anlsr.QueryCtx,
 ) (node.TargetEntry, error) {
-	valExpr, err := ExprDelegator.DelegateAnalyse(resTarget.Val, query, ctx)
+	valExpr, err := ExprDelegator.DelegateAnalyse(resTarget.Val, currentCtx)
 	if err != nil {
 		return nil, err
 	}
 
-	attribNo := uint16(len(query.TargetList))
+	attribNo := node.AttribNo(len(currentCtx.Query.TargetList))
 	entry := node.NewTargetEntry(valExpr, attribNo, resTarget.Name)
 	return entry, err
 }
 
-func (te targetEntry) analyseForInsert(
+func (te targetEntry) AnalyseForInsert(
 	resTarget pnode.ResultTarget,
-	query node.Query,
-	ctx anlsr.Ctx,
+	currentCtx anlsr.QueryCtx,
 ) (node.TargetEntry, error) {
 	val := resTarget.Val
 	if val.Tag() != pnode.TagColumnRef {
@@ -84,13 +39,14 @@ func (te targetEntry) analyseForInsert(
 	}
 
 	colRef := val.(pnode.ColumnRef)
+	query := currentCtx.Query
 
 	// rte must be of kind Relation
-	rte := QueryHelper.findRteWithId(query.ResultRel, query)
+	rte := query.GetRTE(query.ResultRel)
 	colDef, ok := rte.Ref.ColumnByName(colRef.Name)
 	if !ok {
 		return nil, sqlerr.AnlsrErr.NewColumnNotExist(query, colRef.Name, "")
 	}
 
-	return node.NewTargetEntry(nil, colDef.Order(), colDef.Name()), nil
+	return node.NewTargetEntry(nil, node.AttribNo(colDef.Order()), colDef.Name()), nil
 }
