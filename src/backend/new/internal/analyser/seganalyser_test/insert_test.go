@@ -34,31 +34,31 @@ func (insertTest) expectedSimplePositive1(users table.Definition, t *testing.T) 
 	rteIdCounter := appsync.NewSimpleCounter[node.RteID](0)
 
 	query := node.NewQuery(node.CommandTypeInsert, nil)
-	query.TargetList = []node.TargetEntry{
-		node.NewTargetEntry(nil, tt_user.C0IdOrder, tt_user.C0Id),
-		node.NewTargetEntry(nil, tt_user.C1AgeOrder, tt_user.C1Age),
-		node.NewTargetEntry(nil, tt_user.C2NameOrder, tt_user.C2Name),
-	}
 
 	resultRel := node.NewRelationRTE(rteIdCounter.Next(), users)
 	query.RTables = []node.RangeTableEntry{resultRel}
 	query.ResultRel = resultRel.Id
 
-	subQuery := node.NewQuery(node.CommandTypeSelect, nil)
 	valuesRte := node.NewValuesRTE(rteIdCounter.Next(), [][]node.Expr{
 		{node.NewConstInt8(1), NewConstStr("bob", t)},
 	})
-	subQuery.RTables = []node.RangeTableEntry{valuesRte}
-	subQuery.TargetList = []node.TargetEntry{
-		node.NewTargetEntry(node.NewVar(valuesRte.Id, 0, hgtype.NewInt8(hgtype.Args{})), 0, ""),
-		node.NewTargetEntry(node.NewConst(hgtype.TypeInt8, nil), 1, ""),
-		node.NewTargetEntry(node.NewVar(valuesRte.Id, 1, hgtype.NewStr(hgtype.Args{})), 0, ""),
+	valuesRte.ColTypes = []hgtype.TypeData{
+		hgtype.NewInt8(hgtype.Args{}),
+		hgtype.NewStr(hgtype.Args{
+			Length: uint32(len("bob")),
+			VarLen: true,
+			UTF8:   false,
+		}),
 	}
-	subQuery.FromExpr = node.NewFromExpr2(nil, valuesRte.CreateRef())
+	query.TargetList = []node.TargetEntry{
+		node.NewTargetEntry(node.NewVar(valuesRte.Id, 0, users.Column(0).CType()), tt_user.C0IdOrder, tt_user.C0Id),
+		node.NewTargetEntry(node.NewConst(tt_user.C1AgeType.Tag, nil), tt_user.C1AgeOrder, tt_user.C1Age),
+		node.NewTargetEntry(node.NewVar(valuesRte.Id, 1, users.Column(2).CType()), tt_user.C2NameOrder, tt_user.C2Name),
+		node.NewTargetEntry(node.NewConst(tt_user.C3SurnameType.Tag, nil), tt_user.C3SurnameOrder, tt_user.C3Surname),
+	}
 
-	subQueryRte := node.NewSubqueryRTE(rteIdCounter.Next(), subQuery)
-	query.RTables = append(query.RTables, subQueryRte)
-	query.FromExpr = node.NewFromExpr2(nil, subQueryRte.CreateRef())
+	query.AppendRTE(valuesRte)
+	query.FromExpr = node.NewFromExpr2(nil, valuesRte.CreateRef())
 
 	return query
 }

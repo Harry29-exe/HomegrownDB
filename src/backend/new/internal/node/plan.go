@@ -155,12 +155,13 @@ func (s SeqScan) dEqual(node Node) bool {
 //      ValuesScan
 // -------------------------
 
-func NewValueScan(planNodeId PlanNodeId, values [][]Expr, query Query) ValueScan {
+func NewValueScan(planNodeId PlanNodeId, valuesRTE RangeTableEntry, query Query) ValueScan {
 	return &valueScan{
 		scan: scan{
-			plan: newPlan(TagValueScan, planNodeId, query),
+			plan:  newPlan(TagValueScan, planNodeId, query),
+			RteId: valuesRTE.Id,
 		},
-		Values: values,
+		Values: valuesRTE.ValuesList,
 	}
 }
 

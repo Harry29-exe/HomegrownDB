@@ -13,9 +13,9 @@ var Insert = insert{}
 
 type insert struct{}
 
-func (i insert) Analyse(stmt pnode.InsertStmt, ctx anlsr.Ctx) (node.Query, error) {
+func (i insert) Analyse(stmt pnode.InsertStmt, parentCtx anlsr.QueryCtx) (node.Query, error) {
 	query := node.NewQuery(node.CommandTypeInsert, stmt)
-	currentCtx := anlsr.NewQueryCtx(query, ctx)
+	currentCtx := parentCtx.CreateChildCtx(query)
 
 	rte, err := RteRangeVar.Analyse(stmt.Relation, currentCtx)
 	if err != nil {
@@ -29,6 +29,14 @@ func (i insert) Analyse(stmt pnode.InsertStmt, ctx anlsr.Ctx) (node.Query, error
 		return nil, err
 	}
 
+	err = i.analyseInputTargetList(stmt.Columns, currentCtx)
+	if err != nil {
+		return nil, err
+	}
+	err = i.extendWithDefaultEntries(currentCtx)
+	if err != nil {
+		return nil, err
+	}
 	return query, err
 }
 
@@ -83,6 +91,7 @@ func (i insert) analyseInputTargetList(targets []pnode.ResultTarget, currentCtx 
 		entry.ExprToExec = node.NewVar(sourceRTE.Id, column.Order(sourceColId), destType)
 		targetList[entry.AttribNo] = entry
 	}
+	query.TargetList = targetList
 
 	return nil
 }
@@ -93,7 +102,7 @@ func (i insert) extendWithDefaultEntries(currentCtx anlsr.QueryCtx) error {
 	columns := relation.Columns()
 
 	for colOrder, colDef := range columns {
-		if query.TargetList[colOrder] == nil {
+		if query.TargetList[colOrder] != nil {
 			continue
 		}
 		query.TargetList[colOrder] = node.NewTargetEntry(

@@ -34,10 +34,11 @@ func TestSelectPlanner_SimpleSelect(t *testing.T) {
 
 func expectedPlan_SimpleSelect(usersTab table.Definition, t *testing.T) node.PlanedStmt {
 	planedStmt := node.NewPlanedStmt(node.CommandTypeSelect)
+	rootState := planner.NewRootState(planedStmt)
 
 	rte := node.NewRelationRTE(0, usersTab)
 	rte.Alias = node.NewAlias("u")
-	planRoot := node.NewSeqScan(planedStmt.NextPlanNodeId(), nil)
+	planRoot := node.NewSeqScan(rootState.NextPlanNodeId(), nil)
 	planRoot.RteId = rte.Id
 	planRoot.TargetList = []node.TargetEntry{
 		node.NewTargetEntry(node.NewVar(rte.Id, tt_user.C2NameOrder, tt_user.C2NameType), 0, ""),

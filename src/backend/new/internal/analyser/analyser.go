@@ -10,15 +10,7 @@ import (
 
 func Analyse(stmt pnode.RawStmt, store table.Store) (node.Query, error) {
 	ctx := anlsr.NewCtx(store)
-
 	innerStmt := stmt.Stmt
-	switch innerStmt.Tag() {
-	case pnode.TagSelectStmt:
-		return seganalyser.Select.Analyse(innerStmt.(pnode.SelectStmt), ctx)
-	case pnode.TagInsertStmt:
-		return seganalyser.Insert.Analyse(innerStmt.(pnode.InsertStmt), ctx)
-	default:
-		//todo implement me
-		panic("Not implemented")
-	}
+
+	return seganalyser.Query.Analyse(innerStmt, ctx)
 }

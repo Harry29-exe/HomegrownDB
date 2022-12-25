@@ -10,7 +10,7 @@ var Select = _select{}
 
 type _select struct{}
 
-func (s _select) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error) {
+func (s _select) Plan(query node.Query, parentState State) (node.Plan, error) {
 	fromExpr := query.FromExpr
 	if len(fromExpr.FromList) < 1 {
 		return nil, errors.New("can not parse select query with empty from expr") // todo better err
@@ -29,9 +29,9 @@ func (s _select) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error)
 		}
 		switch rte.Kind {
 		case node.RteRelation:
-			return s.planSimpleSelect(query, plan)
+			return s.planSimpleSelect(query, parentState)
 		case node.RteValues:
-			return s.planValStream(query, plan)
+			return s.planValStream(query, parentState)
 		default:
 			//todo implement me
 			panic("Not implemented")
@@ -42,7 +42,7 @@ func (s _select) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error)
 	}
 }
 
-func (s _select) planSimpleSelect(query node.Query, plan node.PlanedStmt) (node.Plan, error) {
+func (s _select) planSimpleSelect(query node.Query, parentState State) (node.Plan, error) {
 	fromExpr := query.FromExpr
 	fromRoot := fromExpr.FromList[0]
 	if fromRoot.Tag() != node.TagRteRef {
@@ -51,20 +51,20 @@ func (s _select) planSimpleSelect(query node.Query, plan node.PlanedStmt) (node.
 	}
 	rteRef := fromRoot.(node.RangeTableRef)
 
-	seqScan := node.NewSeqScan(plan.NextPlanNodeId(), query)
+	seqScan := node.NewSeqScan(parentState.NextPlanNodeId(), query)
 	seqScan.RteId = rteRef.Rte
 	seqScan.TargetList = query.TargetList
-	plan.Tables = append(plan.Tables, query.RTables...)
 
+	parentState.AppendRTE(query.RTables...)
 	return seqScan, nil
 }
 
-func (s _select) planValStream(query node.Query, stmt node.PlanedStmt) (node.Plan, error) {
+func (s _select) planValStream(query node.Query, parentState State) (node.Plan, error) {
 	valuesRTE := query.RTables[0]
-	valScan := node.NewValueScan(stmt.NextPlanNodeId(), valuesRTE.ValuesList, query)
+	valScan := node.NewValueScan(parentState.NextPlanNodeId(), valuesRTE, query)
 	valScan.RteId = valuesRTE.Id
 
-	stmt.AppendRTE(valuesRTE)
+	parentState.AppendRTE(valuesRTE)
 
 	return valScan, nil
 }

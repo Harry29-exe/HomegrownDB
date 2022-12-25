@@ -9,25 +9,47 @@ var Insert = insert{}
 
 type insert struct{}
 
-func (i insert) Plan(query node.Query, plan node.PlanedStmt) (node.Plan, error) {
-	insertPlan := node.NewModifyTable(plan.NextPlanNodeId(), node.ModifyTableInsert, query)
+func (i insert) Plan(query node.Query, parentState State) (node.Plan, error) {
+	insertPlan := node.NewModifyTable(parentState.NextPlanNodeId(), node.ModifyTableInsert, query)
 	insertPlan.TargetList = query.TargetList
-
-	sourceRTE, err := i.retrieveSourceRTE(query)
-	if err != nil {
-		return nil, err
-	}
-	plan.AppendRteArr(query.RTables)
-
-	srcPlan, err := delegate(sourceRTE.Subquery, plan)
-	if err != nil {
-		return nil, err
-	}
-
 	insertPlan.ResultRelations = []node.RteID{query.ResultRel}
-	insertPlan.Left = srcPlan
+	parentState.AppendRTE(query.RTables...)
+
+	currentState := parentState.CreateChildState(query, insertPlan)
+	err := i.handleInsertSource(currentState)
+	if err != nil {
+		return nil, err
+	}
 
 	return insertPlan, nil
+}
+
+func (i insert) handleInsertSource(currentState State) error {
+	sourceRTE, err := i.retrieveSourceRTE(currentState.Query)
+	if err != nil {
+		return err
+	}
+
+	switch sourceRTE.Kind {
+	case node.RteValues:
+		return i.handleRteValues(sourceRTE, currentState)
+	case node.RteSubQuery:
+		panic("not implemented")
+	default:
+		panic("not supported")
+	}
+}
+
+func (i insert) handleRteValues(sourceRTE node.RangeTableEntry, currentState State) error {
+	valueScan := node.NewValueScan(
+		currentState.NextPlanNodeId(),
+		sourceRTE,
+		currentState.Query,
+	)
+
+	parentPlan := currentState.Plan.(node.ModifyTable)
+	parentPlan.Left = valueScan
+	return nil
 }
 
 func (i insert) retrieveSourceRTE(query node.Query) (node.RangeTableEntry, error) {
@@ -36,20 +58,11 @@ func (i insert) retrieveSourceRTE(query node.Query) (node.RangeTableEntry, error
 		return nil, errors.New("expected TagRteRef intead got: " + srcNode.Tag().ToString()) //todo better err
 	}
 	rteRef := srcNode.(node.RangeTableRef)
-	rte, err := findRteWithId(rteRef.Rte, query.RTables)
-	if err != nil {
-		return nil, err
-	} else if rte.Kind != node.RteSubQuery {
-		return nil, errors.New("expected RteSubquery") //todo better err
+	rte := query.GetRTE(rteRef.Rte)
+	if rte == nil {
+		return nil, errors.New("insert has to have source rte")
+	} else if rte.Kind != node.RteSubQuery && rte.Kind != node.RteValues {
+		return nil, errors.New("expected RteSubquery or RteValues") //todo better err
 	}
 	return rte, nil
-}
-
-func findRteWithId(id node.RteID, rtes []node.RangeTableEntry) (node.RangeTableEntry, error) {
-	for _, rte := range rtes {
-		if rte.Id == id {
-			return rte, nil
-		}
-	}
-	return nil, errors.New("no rte with given id") //todo better err
 }

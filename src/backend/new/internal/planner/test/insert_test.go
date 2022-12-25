@@ -29,51 +29,19 @@ type simpleInsert struct{}
 
 func (i simpleInsert) expectedPlan(query node.Query, t *testing.T) node.PlanedStmt {
 	plan := node.NewPlanedStmt(node.CommandTypeInsert)
+	rootState := planner.NewRootState(plan)
 
-	usersRTE, valuesRTE, subqueryRTE := i.unpackRTEs(query.RTables, t)
-	plan.AppendRTEs(usersRTE, subqueryRTE, valuesRTE)
+	usersRTE, valuesRTE := query.RTables[0], query.RTables[1]
+	rootState.AppendRTE(usersRTE, valuesRTE)
 
-	modifyTablePlan := node.NewModifyTable(plan.NextPlanNodeId(), node.ModifyTableInsert, nil)
+	modifyTablePlan := node.NewModifyTable(rootState.NextPlanNodeId(), node.ModifyTableInsert, nil)
 	modifyTablePlan.TargetList = query.TargetList
 	modifyTablePlan.ResultRelations = []node.RteID{usersRTE.Id}
 
-	valueScan := node.NewValueScan(plan.NextPlanNodeId(), valuesRTE.ValuesList, nil)
+	valueScan := node.NewValueScan(rootState.NextPlanNodeId(), valuesRTE, nil)
 	valueScan.RteId = valuesRTE.Id
 	modifyTablePlan.Left = valueScan
 
 	plan.PlanTree = modifyTablePlan
 	return plan
-}
-
-func (i simpleInsert) unpackRTEs(
-	insertQueryRTEs []node.RangeTableEntry,
-	t *testing.T,
-) (
-	users node.RangeTableEntry,
-	values node.RangeTableEntry,
-	subquery node.RangeTableEntry,
-) {
-	assert.Eq(len(insertQueryRTEs), 2, t)
-	for _, rte := range insertQueryRTEs {
-		switch rte.Kind {
-		case node.RteRelation:
-			users = rte
-		case node.RteSubQuery:
-			subquery = rte
-		}
-	}
-	subqueryRtes := subquery.Subquery.RTables
-	assert.Eq(len(subqueryRtes), 1, t)
-	values = subqueryRtes[0]
-	return
-}
-
-func (i simpleInsert) findSubqueryRTE(rtes []node.RangeTableEntry, t *testing.T) node.RangeTableEntry {
-	for _, rte := range rtes {
-		if rte.Kind != node.RteSubQuery {
-			return rte
-		}
-	}
-	t.Error("Expected to find subquery rte")
-	return nil
 }
