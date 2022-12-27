@@ -31,6 +31,32 @@ func NewTypeData(tag Tag, args Args) TypeData {
 	}
 }
 
+func NewTypeDataWithDefaultArgs(tag Tag) TypeData {
+	var t Type
+	args := Args{
+		Nullable: true,
+	}
+
+	switch tag {
+	case TypeStr:
+		t = Str{}
+		args.UTF8 = true
+		args.Length = uint32(UnknownVarLenSize)
+		args.VarLen = true
+	case TypeInt8:
+		t = Int8{}
+	default:
+		//todo implement me
+		panic("Not implemented")
+	}
+
+	return TypeData{
+		t:    t,
+		Tag:  tag,
+		Args: args,
+	}
+}
+
 func NewStr(args Args) TypeData {
 	return TypeData{
 		t:    Str{},

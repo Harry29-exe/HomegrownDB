@@ -35,10 +35,11 @@ func (i simpleInsert) expectedPlan(query node.Query, t *testing.T) node.PlanedSt
 	rootState.AppendRTE(usersRTE, valuesRTE)
 
 	modifyTablePlan := node.NewModifyTable(rootState.NextPlanNodeId(), node.ModifyTableInsert, nil)
-	modifyTablePlan.TargetList = query.TargetList
+	modifyTablePlan.TargetList = nil
 	modifyTablePlan.ResultRelations = []node.RteID{usersRTE.Id}
 
 	valueScan := node.NewValueScan(rootState.NextPlanNodeId(), valuesRTE, nil)
+	valueScan.TargetList = query.TargetList
 	valueScan.RteId = valuesRTE.Id
 	modifyTablePlan.Left = valueScan
 

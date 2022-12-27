@@ -11,9 +11,10 @@ type Type interface {
 }
 
 type Args struct {
-	Length uint32
-	VarLen bool
-	UTF8   bool
+	Length   uint32
+	Nullable bool
+	VarLen   bool
+	UTF8     bool
 }
 
 type TypeOperations interface {

@@ -1,6 +1,6 @@
-SET debug_print_parse = TRUE;
+SET debug_print_parse = FALSE;
 SET debug_print_rewritten = FALSE;
-SET debug_print_plan = FALSE;
+SET debug_print_plan = TRUE;
 
 INSERT INTO users (id, age, name)
 VALUES (1, 20, 'Bob'),

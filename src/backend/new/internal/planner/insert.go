@@ -11,7 +11,6 @@ type insert struct{}
 
 func (i insert) Plan(query node.Query, parentState State) (node.Plan, error) {
 	insertPlan := node.NewModifyTable(parentState.NextPlanNodeId(), node.ModifyTableInsert, query)
-	insertPlan.TargetList = query.TargetList
 	insertPlan.ResultRelations = []node.RteID{query.ResultRel}
 	parentState.AppendRTE(query.RTables...)
 
@@ -46,6 +45,7 @@ func (i insert) handleRteValues(sourceRTE node.RangeTableEntry, currentState Sta
 		sourceRTE,
 		currentState.Query,
 	)
+	valueScan.TargetList = currentState.Query.TargetList
 
 	parentPlan := currentState.Plan.(node.ModifyTable)
 	parentPlan.Left = valueScan

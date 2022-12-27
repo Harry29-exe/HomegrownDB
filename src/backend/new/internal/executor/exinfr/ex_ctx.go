@@ -4,15 +4,23 @@ import (
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/tx"
 )
 
 type ExCtx = *executionCtx
 
-func NewExCtx(buff buffer.SharedBuffer, store table.Store, rteList []node.RangeTableEntry) ExCtx {
-	cache := createCache(rteList, store)
+func NewExCtx(
+	stmt node.PlanedStmt,
+	buff buffer.SharedBuffer,
+	store table.Store,
+	txCtx *tx.Ctx,
+) ExCtx {
+	cache := createCache(stmt.Tables, store)
 	return &executionCtx{
+		Stmt:   stmt,
 		Buff:   buff,
 		Tables: cache,
+		TxCtx:  txCtx,
 	}
 }
 
@@ -28,6 +36,14 @@ func createCache(rteList []node.RangeTableEntry, store table.Store) map[table.Id
 }
 
 type executionCtx struct {
+	Stmt   node.PlanedStmt
 	Buff   buffer.SharedBuffer
 	Tables table.Cache
+	TxCtx  *tx.Ctx
+
+	rteMap map[node.RteID]node.RangeTableEntry
+}
+
+func (e ExCtx) GetRTE(id node.RteID) node.RangeTableEntry {
+	return e.rteMap[id]
 }

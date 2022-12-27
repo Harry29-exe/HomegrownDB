@@ -7,6 +7,7 @@ package node
 type Plan interface {
 	Node
 	PlanId() PlanNodeId
+	Plan() AbstractPlan
 }
 
 // -------------------------
@@ -20,6 +21,8 @@ func newPlan(tag Tag, planNodeId PlanNodeId, query Query) plan {
 		Query:      query,
 	}
 }
+
+type AbstractPlan = *plan
 
 // plan is abstract node that is composed into
 // all nodes that have their executor
@@ -47,6 +50,10 @@ func dPlanEq(p1, p2 *plan) bool {
 
 func (p *plan) PlanId() PlanNodeId {
 	return p.PlanNodeId
+}
+
+func (p *plan) Plan() AbstractPlan {
+	return p
 }
 
 // -------------------------
