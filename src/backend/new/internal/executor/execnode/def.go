@@ -8,6 +8,7 @@ import (
 
 type ExecNode interface {
 	Next() dpage.Tuple
+	HasNext() bool
 	Init(plan node.Plan) error
 }
 

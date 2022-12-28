@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -13,14 +14,16 @@ func NewExCtx(
 	stmt node.PlanedStmt,
 	buff buffer.SharedBuffer,
 	store table.Store,
+	fsmStore fsm.Store,
 	txCtx *tx.Ctx,
 ) ExCtx {
 	cache := createCache(stmt.Tables, store)
 	return &executionCtx{
-		Stmt:   stmt,
-		Buff:   buff,
-		Tables: cache,
-		TxCtx:  txCtx,
+		Stmt:     stmt,
+		Buff:     buff,
+		FsmStore: fsmStore,
+		Tables:   cache,
+		TxCtx:    txCtx,
 	}
 }
 
@@ -36,10 +39,11 @@ func createCache(rteList []node.RangeTableEntry, store table.Store) map[table.Id
 }
 
 type executionCtx struct {
-	Stmt   node.PlanedStmt
-	Buff   buffer.SharedBuffer
-	Tables table.Cache
-	TxCtx  *tx.Ctx
+	Stmt     node.PlanedStmt
+	Buff     buffer.SharedBuffer
+	FsmStore fsm.Store
+	Tables   table.Cache
+	TxCtx    *tx.Ctx
 
 	rteMap map[node.RteID]node.RangeTableEntry
 }

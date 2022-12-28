@@ -19,4 +19,7 @@ func CreateFromPlan(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 	return builder.Create(plan, ctx)
 }
 
-var buildersMap map[node.Tag]Builder = map[node.Tag]Builder{}
+var buildersMap map[node.Tag]Builder = map[node.Tag]Builder{
+	node.TagValueScan:   valuesScanBuilder{},
+	node.TagModifyTable: modifyTableBuilder{},
+}

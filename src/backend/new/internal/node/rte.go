@@ -98,7 +98,8 @@ type rangeTableEntry struct {
 	ColTypes []hgtype.TypeData
 
 	// general
-	Alias Alias
+	Alias    Alias
+	ColAlias []Alias
 }
 
 func (r RangeTableEntry) CreateRef() RangeTableRef {
@@ -148,7 +149,7 @@ JoinType: %s,
 ResultCols: %s,
 LeftColumns: %+v,
 RightColumns: %+v,
-Alias: %s,
+Name: %s,
 `,
 		r.Kind.ToString(),
 		r.Id,

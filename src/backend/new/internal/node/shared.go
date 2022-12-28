@@ -5,7 +5,7 @@ import (
 )
 
 // -------------------------
-//      Alias
+//      Name
 // -------------------------
 
 func NewAlias(aliasName string) Alias {

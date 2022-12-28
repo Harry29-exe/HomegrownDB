@@ -37,7 +37,7 @@ type ValuesScan struct {
 	InnerPattern  *dpage.TuplePattern
 	Plan          node.ValueScan
 	Values        [][]node.Expr
-	rowCounter    uint
+	rowCounter    int
 }
 
 func (v *ValuesScan) Next() dpage.Tuple {
@@ -53,6 +53,10 @@ func (v *ValuesScan) Next() dpage.Tuple {
 	}
 
 	return dpage.NewTuple(outputTupleValues, v.OutputPattern, v.TxCTX)
+}
+
+func (v *ValuesScan) HasNext() bool {
+	return v.rowCounter >= len(v.Values)
 }
 
 func (v *ValuesScan) Init(plan node.Plan) error {

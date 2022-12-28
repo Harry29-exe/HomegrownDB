@@ -85,11 +85,11 @@ func (t Tuple) ColValue(id column.Order) []byte {
 		if t.IsNull(id) {
 			continue
 		}
-		subsequent = t.pattern.Columns[i].
+		subsequent = t.pattern.Columns[i].CType.
 			Skip(subsequent)
 	}
 
-	return t.pattern.Columns[id].Value(subsequent)
+	return t.pattern.Columns[id].CType.Value(subsequent)
 }
 
 func (t Tuple) Data() []byte {
@@ -102,6 +102,10 @@ func (t Tuple) DataSize() int {
 
 func (t Tuple) HeaderSize() int {
 	return int(t.pattern.BitmapLen + toNullBitmap)
+}
+
+func (t Tuple) TupleSize() int {
+	return len(t.bytes)
 }
 
 func (t Tuple) SetCreatedByTx(txId tx.Id) {
@@ -194,7 +198,7 @@ func (t tupleDebugger) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) 
 
 	for i := 0; i < len(tuple.pattern.Columns); i++ {
 		col := tuple.pattern.Columns[i]
-		if !col.Args.Nullable {
+		if !col.CType.Args.Nullable {
 			builder.WriteString(fmt.Sprintf("| %d: %d ", i, -1))
 			continue
 		}
@@ -222,12 +226,12 @@ func (t tupleDebugger) stringifyColumnValues(tuple Tuple, arr *strutils.StrArray
 	for i := 0; i < len(pattern.Columns); i++ {
 		col := pattern.Columns[i]
 		if tuple.IsNull(column.Order(i)) {
-			arr.FormatAndAdd("%d: null", i)
+			arr.FormatAndAdd("%s: null", col.Name)
 			continue
 		}
 
-		value, nextData = col.ValueAndSkip(nextData)
+		value, nextData = col.CType.ValueAndSkip(nextData)
 
-		arr.FormatAndAdd("%d: %s", i, col.ToStr(value))
+		arr.FormatAndAdd("%s: %s", col.Name, col.CType.ToStr(value))
 	}
 }

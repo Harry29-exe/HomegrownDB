@@ -1,7 +1,6 @@
 package dpage
 
 import (
-	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/column"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
@@ -25,11 +24,6 @@ type WTuple interface {
 	SetModifiedByTx(tx tx.Id)
 	SetTxCommandCounter(counter uint16)
 	SetTID(tid TID)
-}
-
-type TuplePattern struct {
-	Columns   []hgtype.TypeData
-	BitmapLen uint16
 }
 
 type TupleOffset = uint16

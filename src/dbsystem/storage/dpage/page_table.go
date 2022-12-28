@@ -6,8 +6,7 @@ package dpage
 
 import (
 	"HomegrownDB/dbsystem/schema/relation"
-	"HomegrownDB/dbsystem/schema/table"
-	page "HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"encoding/binary"
 	"errors"
@@ -16,7 +15,7 @@ import (
 )
 
 // todo add handling for inserting into empty page
-func EmptyTablePage(tableDef table.RDefinition, t *testing.T) Page {
+func EmptyTablePage(pattern *TuplePattern, relationId relation.ID, t *testing.T) Page {
 	rawPage := make([]byte, page.Size)
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
@@ -25,39 +24,57 @@ func EmptyTablePage(tableDef table.RDefinition, t *testing.T) Page {
 	copy(rawPage[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
 
 	page := Page{
-		table: tableDef,
-		bytes: rawPage,
+		pattern:    pattern,
+		relationId: relationId,
+		id:         page.InvalidId,
+		bytes:      rawPage,
 	}
 	page.updateHash()
 
 	return page
 }
 
-func InitNewPage(def table.RDefinition, pageId page.Id, pageSlot []byte) Page {
+func InitNewTablePage(pattern *TuplePattern, tableId relation.ID, pageId page.Id, pageSlot []byte) Page {
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
 
 	copy(pageSlot[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
 	copy(pageSlot[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
 
-	page := AsPage(pageSlot, pageId, def)
+	page := AsPage(pageSlot, pageId, pattern)
+	page.relationId = tableId
 	page.updateHash()
 
 	return page
 }
 
-func AsPage(data []byte, pageId page.Id, def table.RDefinition) Page {
+func InitNewPage(pattern *TuplePattern, pageId page.Id, pageSlot []byte) Page {
+	uint16Zero := make([]byte, 2)
+	binary.BigEndian.PutUint16(uint16Zero, 0)
+
+	copy(pageSlot[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
+	copy(pageSlot[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
+
+	page := AsPage(pageSlot, pageId, pattern)
+	page.updateHash()
+
+	return page
+}
+
+func AsPage(data []byte, pageId page.Id, pattern *TuplePattern) Page {
 	return Page{
-		table: def,
-		bytes: data,
-		id:    pageId,
+		pattern:    pattern,
+		bytes:      data,
+		id:         pageId,
+		relationId: relation.InvalidRelId,
 	}
 }
 
 type Page struct {
-	table table.RDefinition
-	id    page.Id
-	bytes []byte
+	pattern    *TuplePattern
+	id         page.Id
+	relationId relation.ID
+	bytes      []byte
 }
 
 func (p Page) Header() []byte {
@@ -66,10 +83,6 @@ func (p Page) Header() []byte {
 
 func (p Page) Data() []byte {
 	return p.bytes[poFirstTuplePtr:]
-}
-
-func (p Page) RelationID() relation.ID {
-	return p.table.RelationID()
 }
 
 func (p Page) Tuple(tIndex TupleIndex) Tuple {
@@ -81,8 +94,8 @@ func (p Page) Tuple(tIndex TupleIndex) Tuple {
 	tupleEndPtr := p.getTupleEnd(tIndex)
 
 	return Tuple{
-		bytes: p.bytes[tuplePtr:tupleEndPtr],
-		table: p.table,
+		bytes:   p.bytes[tuplePtr:tupleEndPtr],
+		pattern: p.pattern,
 	}
 }
 
@@ -93,7 +106,7 @@ func (p Page) Bytes() []byte {
 func (p Page) PageTag() pageio.PageTag {
 	return pageio.PageTag{
 		PageId:   p.id,
-		Relation: p.RelationID(),
+		Relation: p.relationId,
 	}
 }
 

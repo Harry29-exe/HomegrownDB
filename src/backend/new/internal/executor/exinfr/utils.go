@@ -9,7 +9,7 @@ import (
 
 func PatternFromTargetList(targetList []node.TargetEntry) *dpage.TuplePattern {
 	pattern := &dpage.TuplePattern{
-		Columns:   make([]hgtype.TypeData, len(targetList)),
+		Columns:   make([]dpage.ColumnInfo, len(targetList)),
 		BitmapLen: uint16(math.Ceil(float64(len(targetList)) / 8)),
 	}
 
@@ -20,40 +20,39 @@ func PatternFromTargetList(targetList []node.TargetEntry) *dpage.TuplePattern {
 	return pattern
 }
 
-func typeFromTargetEntry(entry node.TargetEntry) hgtype.TypeData {
+func typeFromTargetEntry(entry node.TargetEntry) dpage.ColumnInfo {
+	var entryType hgtype.TypeData
 	switch entry.ExprToExec.Tag() {
 	case node.TagConst:
-		return hgtype.NewTypeDataWithDefaultArgs(entry.Type())
+		entryType = hgtype.NewTypeDataWithDefaultArgs(entry.Type())
 	case node.TagVar:
-		return entry.ExprToExec.(node.Var).TypeData
+		entryType = entry.ExprToExec.(node.Var).TypeData
 	default:
 		//todo implement me
 		panic("Not implemented")
+	}
+
+	return dpage.ColumnInfo{
+		CType: entryType,
+		Name:  entry.ColName,
 	}
 }
 
 func PattenFromRTE(rte node.RangeTableEntry) *dpage.TuplePattern {
 	switch rte.Kind {
 	case node.RteValues:
-		colTypes := make([]hgtype.TypeData, len(rte.ColTypes))
-		copy(colTypes, rte.ColTypes)
-		return newPattern(colTypes)
-	case node.RteRelation:
-		relationCols := rte.Ref.Columns()
-		colTypes := make([]hgtype.TypeData, len(relationCols))
-		for i := 0; i < len(colTypes); i++ {
-			colTypes[i] = relationCols[i].CType()
+		colTypes := make([]dpage.ColumnInfo, len(rte.ColTypes))
+		for i := 0; i < len(rte.ColTypes); i++ {
+			colTypes[i] = dpage.ColumnInfo{
+				CType: rte.ColTypes[i],
+				Name:  rte.ColAlias[i].AliasName,
+			}
 		}
-		return newPattern(colTypes)
+		return dpage.NewPattern(colTypes)
+	case node.RteRelation:
+		return dpage.NewPatternFromTable(rte.Ref)
 	default:
 		//todo implement me
 		panic("Not implemented")
-	}
-}
-
-func newPattern(types []hgtype.TypeData) *dpage.TuplePattern {
-	return &dpage.TuplePattern{
-		Columns:   types,
-		BitmapLen: uint16(math.Ceil(float64(len(types)) / 8)),
 	}
 }
