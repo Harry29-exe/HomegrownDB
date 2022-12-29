@@ -15,7 +15,7 @@ func NewTableStore(tables []Definition) (Store, error) { //todo delete this erro
 	maxId, missingIds := findMaxAndMissing(tables)
 
 	nameTableMap := map[string]Id{}
-	definitionsArray := make([]Definition, maxId)
+	definitionsArray := map[relation.ID]Definition{}
 	for _, def := range tables {
 		id := def.TableId()
 		nameTableMap[def.Name()] = id
@@ -68,7 +68,7 @@ type stdStore struct {
 
 	// store data
 	nameTableMap map[string]Id
-	definitions  []Definition
+	definitions  map[relation.ID]Definition
 
 	// store utils
 	changeListeners []func()
@@ -94,17 +94,25 @@ func (t *stdStore) Table(id Id) RDefinition {
 	return t.definitions[id]
 }
 
-func (t *stdStore) AddTable(table Definition) error {
+func (t *stdStore) AddNewTable(table Definition) error {
 	t.storeLock.Lock()
 	defer t.storeLock.Unlock()
 
 	id := t.tableIdCounter.NextId()
 	table.SetTableId(id)
-	if int(id) < len(t.definitions) {
-		t.definitions[id] = table
-	} else {
-		t.definitions = append(t.definitions, table)
-	}
+
+	t.definitions[id] = table
+	t.nameTableMap[table.Name()] = id
+
+	return nil
+}
+
+func (t *stdStore) LoadTable(table Definition) error {
+	t.storeLock.Lock()
+	defer t.storeLock.Unlock()
+
+	id := table.TableId()
+	t.definitions[id] = table
 	t.nameTableMap[table.Name()] = id
 
 	return nil

@@ -8,12 +8,12 @@ import (
 
 var TestTableStore = tblStore{}
 
-type tblStore struct {}
+type tblStore struct{}
 
 func (tblStore) TableStore(t *testing.T, tables ...table.Definition) table.Store {
 	store := table.NewEmptyTableStore()
 	for _, tab := range tables {
-		err := store.AddTable(tab)
+		err := store.AddNewTable(tab)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -24,7 +24,7 @@ func (tblStore) TableStore(t *testing.T, tables ...table.Definition) table.Store
 func (tblStore) StoreWithUsersTable(t *testing.T) (store table.Store, users table.Definition) {
 	store = table.NewEmptyTableStore()
 	users = tt_user.Def(t)
-	err := store.AddTable(users)
+	err := store.AddNewTable(users)
 	if err != nil {
 		t.Error(err.Error())
 	}

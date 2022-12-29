@@ -30,7 +30,7 @@ func (m modifyTableBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 		txCtx:       ctx.TxCtx,
 		buff:        ctx.Buff,
 		resultTable: resultRTE.Ref,
-		fsm:         ctx.FsmStore.GetFSM(resultRTE.TableId),
+		fsm:         ctx.FsmStore.GetFsmFor(resultRTE.TableId),
 		done:        false,
 	}
 }
@@ -45,7 +45,7 @@ type ModifyTable struct {
 	txCtx       *tx.Ctx
 	buff        buffer.SharedBuffer
 	resultTable table.RDefinition
-	fsm         fsm.FreeSpaceMap
+	fsm         *fsm.FreeSpaceMap
 	done        bool
 }
 

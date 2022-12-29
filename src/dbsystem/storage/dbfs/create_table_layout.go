@@ -1,13 +1,13 @@
 package dbfs
 
 import (
-	"HomegrownDB/dbsystem"
+	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/schema/table"
 	"os"
 )
 
 func CreateTableFiles(table table.RDefinition) error {
-	tablePath := dbsystem.DBHomePath() + "/tables/" + table.Name()
+	tablePath := config.DBHomePath + "/tables/" + table.Name()
 	err := os.Mkdir(tablePath, 755)
 	if err != nil {
 		return err

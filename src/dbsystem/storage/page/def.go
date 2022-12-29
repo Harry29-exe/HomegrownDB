@@ -1,7 +1,7 @@
 package page
 
 import (
-	"HomegrownDB/dbsystem"
+	"HomegrownDB/dbsystem/config"
 	"math"
 )
 
@@ -14,4 +14,4 @@ const (
 	InvalidId = math.MaxUint32
 )
 
-const Size uint16 = dbsystem.PageSize
+const Size uint16 = config.PageSize

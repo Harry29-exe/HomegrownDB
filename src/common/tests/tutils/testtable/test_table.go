@@ -2,7 +2,7 @@ package testtable
 
 import (
 	"HomegrownDB/common/random"
-	"HomegrownDB/dbsystem"
+	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
@@ -29,7 +29,7 @@ type TestTable struct {
 	T      *testing.T
 }
 
-var pageSize = dbsystem.PageSize
+var pageSize = config.PageSize
 
 type TUtils struct {
 	rand  random.Random

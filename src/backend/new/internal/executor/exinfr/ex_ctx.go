@@ -2,6 +2,7 @@ package exinfr
 
 import (
 	"HomegrownDB/backend/new/internal/node"
+	"HomegrownDB/dbsystem"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/schema/table"
 	"HomegrownDB/dbsystem/storage/fsm"
@@ -12,16 +13,14 @@ type ExCtx = *executionCtx
 
 func NewExCtx(
 	stmt node.PlanedStmt,
-	buff buffer.SharedBuffer,
-	store table.Store,
-	fsmStore fsm.Store,
 	txCtx *tx.Ctx,
+	store dbsystem.DBSystem,
 ) ExCtx {
-	cache := createCache(stmt.Tables, store)
+	cache := createCache(stmt.Tables, store.TableStore())
 	return &executionCtx{
 		Stmt:     stmt,
-		Buff:     buff,
-		FsmStore: fsmStore,
+		Buff:     store.Buffer(),
+		FsmStore: store.FsmStore(),
 		Tables:   cache,
 		TxCtx:    txCtx,
 	}

@@ -11,7 +11,7 @@ import (
 )
 
 type StdTable struct {
-	objectId relation.ID
+	relation.Relation
 	tableId  Id
 	columns  []column.WDef
 	rColumns []column.Def
@@ -21,10 +21,6 @@ type StdTable struct {
 	columnName_OrderMap map[string]column.Order
 	columnsNames        []string
 	columnsCount        uint16
-}
-
-func (t *StdTable) RelationID() relation.ID {
-	return t.objectId
 }
 
 func (t *StdTable) Data() relation.Data {
@@ -46,7 +42,7 @@ func (t *StdTable) Hash() string {
 }
 
 func (t *StdTable) SetRelationId(id relation.ID) {
-	t.objectId = id
+	t.Relation. = id
 }
 
 func (t *StdTable) SetName(name string) {

@@ -15,7 +15,8 @@ type RDefsStore interface {
 
 type DefsStore interface {
 	RDefsStore
-	AddTable(table Definition) error
+	AddNewTable(table Definition) error
+	LoadTable(table Definition) error
 	RemoveTable(id Id) error
 }
 

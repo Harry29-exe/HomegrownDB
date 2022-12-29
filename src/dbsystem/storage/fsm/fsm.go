@@ -10,8 +10,8 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-func CreateFreeSpaceMap(rel relation.Relation, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
-	fsm := &FreeSpaceMap{Relation: rel, buff: buff}
+func CreateFreeSpaceMap(fsmRelation, parentRelation relation.Relation, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
+	fsm := &FreeSpaceMap{Relation: fsmRelation, parentRelation: parentRelation, buff: buff}
 	if err := initNewFsmIO(fsm); err != nil {
 		return fsm, err
 	}
@@ -19,8 +19,8 @@ func CreateFreeSpaceMap(rel relation.Relation, buff buffer.SharedBuffer) (*FreeS
 	return fsm, nil
 }
 
-func LoadFreeSpaceMap(rel relation.Relation, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
-	return &FreeSpaceMap{Relation: rel, buff: buff}, nil
+func LoadFreeSpaceMap(fsmRelation, parentRelation relation.Relation, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
+	return &FreeSpaceMap{Relation: fsmRelation, parentRelation: parentRelation, buff: buff}, nil
 }
 
 func initNewFsmIO(fsm *FreeSpaceMap) error {
@@ -41,7 +41,8 @@ func initNewFsmIO(fsm *FreeSpaceMap) error {
 // space to fit inserting tuple
 type FreeSpaceMap struct {
 	relation.Relation
-	buff buffer.SharedBuffer
+	parentRelation relation.Relation
+	buff           buffer.SharedBuffer
 }
 
 // FindPage returns number of page with at least the amount of requested space,

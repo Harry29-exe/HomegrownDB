@@ -4,8 +4,8 @@ import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable"
 	"HomegrownDB/common/tests/tutils/testtable/ttable1"
-	"HomegrownDB/dbsystem"
 	"HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/storage/tpage"
@@ -46,7 +46,7 @@ func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 testtable.Te
 	assert.IsNil(err, t)
 	assert.EqArray(expectedPage, wPage.Bytes(), t)
 
-	wPage0FromIO := make([]byte, dbsystem.PageSize)
+	wPage0FromIO := make([]byte, config.PageSize)
 	err = io.ReadPage(pageId, wPage0FromIO)
 	assert.IsNil(err, t)
 	assert.EqArray(wPage.Bytes(), wPage0FromIO, t)
@@ -63,7 +63,7 @@ func insertTPageWithSingleTuple(pageId page.Id, table1 testtable.TestTable, buff
 }
 
 func copyTPage(tPage tpage.RPage) (pageCopy []byte) {
-	pageCopy = make([]byte, dbsystem.PageSize)
+	pageCopy = make([]byte, config.PageSize)
 	switch tablePage := tPage.(type) {
 	case tpage.Page:
 		copy(pageCopy, tablePage.Bytes())

@@ -12,12 +12,13 @@ var (
 type Relation interface {
 	RelationID() ID
 	Data() Data
+	Kind() Kind
 }
 
-type Type = uint8
+type Kind uint8
 
 const (
-	TypeTable Type = iota
+	TypeTable Kind = iota
 	TypeFsm
 	TypeVm
 	TypeIndex

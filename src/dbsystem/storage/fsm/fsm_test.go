@@ -2,6 +2,7 @@ package fsm_test
 
 import (
 	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/schema/relation"
 	"HomegrownDB/dbsystem/storage/fsm"
@@ -51,7 +52,8 @@ func TestFreeSpaceMap_UpdatePage2(t *testing.T) {
 }
 
 func newFsmTestHelper(t *testing.T) *fsmTestHelper {
-	fsmRelation := relation.NewStdRelation(0, "/", 0)
+	usersTable := tt_user.Def(t)
+	fsmRelation := relation.NewStdRelation(0, relation.TypeFsm, "/", 0)
 	fs := afero.NewMemMapFs()
 	file, err := fs.Create("fsm_pageio")
 	assert.IsNil(err, t)
@@ -62,7 +64,7 @@ func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 	store.Register(fsmRelation.RelationID(), io)
 	buff := buffer.NewSharedBuffer(10_000, store)
 
-	fsMap, err := fsm.CreateFreeSpaceMap(fsmRelation, buff)
+	fsMap, err := fsm.CreateFreeSpaceMap(usersTable, fsmRelation, buff)
 	assert.IsNil(err, t)
 
 	return &fsmTestHelper{
