@@ -46,11 +46,11 @@ type Id = relation.ID
 
 func NewDefinition(name string) Definition {
 	table := &StdTable{
-		AbstractRelation: relation.AbstractRelation{},
-		tableId:          0,
-		columns:          []column.WDef{},
-		rColumns:         []column.Def{},
-		name:             name,
+		BaseRelation: relation.BaseRelation{},
+		tableId:      0,
+		columns:      []column.WDef{},
+		rColumns:     []column.Def{},
+		name:         name,
 
 		columnName_OrderMap: map[string]column.Order{},
 		columnsNames:        nil,

@@ -16,7 +16,7 @@ var (
 )
 
 type StdTable struct {
-	relation.AbstractRelation
+	relation.BaseRelation
 	oid      dbobj.OID
 	tableId  Id
 	columns  []column.WDef
@@ -46,7 +46,7 @@ func (t *StdTable) Name() string {
 }
 
 func (t *StdTable) Serialize(serializer *bparse.Serializer) {
-	t.AbstractRelation.Serialize(serializer)
+	t.BaseRelation.Serialize(serializer)
 	serializer.MdString(t.name)
 	serializer.Uint16(t.columnsCount)
 
@@ -56,7 +56,7 @@ func (t *StdTable) Serialize(serializer *bparse.Serializer) {
 }
 
 func (t *StdTable) Deserialize(deserializer *bparse.Deserializer) {
-	t.AbstractRelation.Deserialize(deserializer)
+	t.BaseRelation.Deserialize(deserializer)
 	t.name = deserializer.MdString()
 	t.columnsCount = deserializer.Uint16()
 

@@ -9,14 +9,6 @@ import (
 	"HomegrownDB/dbsystem/storage/tpage"
 )
 
-var DBSharedBuffer SharedBuffer
-
-func init() {
-	DBSharedBuffer = &bufferProxy{
-		buffer: newBuffer(10_000, pageio.DBStore),
-	}
-}
-
 type SharedBuffer interface {
 	TableBuffer
 	FsmBuffer

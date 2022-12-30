@@ -1,5 +1,7 @@
 package dbfs
 
 const (
-	TablesDirPath = "/tables"
+	RelationsDirname   = "relations"
+	DataFilename       = "data.hdb"
+	DefinitionFilename = "def.hdb"
 )

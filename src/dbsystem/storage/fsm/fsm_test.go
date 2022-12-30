@@ -53,7 +53,7 @@ func TestFreeSpaceMap_UpdatePage2(t *testing.T) {
 
 func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 	usersTable := tt_user.Def(t)
-	fsmRelation := relation.NewStdRelation(0, relation.TypeFsm, "/", 0)
+	fsmRelation := relation.NewBaseRelation(0, relation.TypeFsm, "/", 0)
 	fs := afero.NewMemMapFs()
 	file, err := fs.Create("fsm_pageio")
 	assert.IsNil(err, t)

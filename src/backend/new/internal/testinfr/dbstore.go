@@ -20,7 +20,7 @@ func NewDBStore(t *testing.T, properties config.Properties, tables ...table.Defi
 
 	ioStore := pageio.NewStore()
 	buff := buffer.NewSharedBuffer(properties.SharedBufferSize, ioStore)
-	fsmStore := fsm.NewStore(buff)
+	fsmStore := fsm.NewStore()
 	_ = fsmStore
 	//for {
 	//

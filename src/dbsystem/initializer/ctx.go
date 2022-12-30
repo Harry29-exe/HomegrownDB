@@ -1,8 +1,11 @@
 package initializer
 
 import (
+	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/storage/dbfs"
+	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
 )
 
@@ -19,6 +22,9 @@ type ctx struct {
 	Props     *config.Properties
 	InitProps initProperties
 
-	PageIOStore *pageio.Store
-	TableStore  table.Store
+	FS           dbfs.FS
+	PageIOStore  *pageio.Store
+	SharedBuffer buffer.SharedBuffer
+	TableStore   table.Store
+	FsmStore     fsm.Store
 }

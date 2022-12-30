@@ -5,8 +5,6 @@ import (
 	"HomegrownDB/dbsystem/storage/dbfs"
 )
 
-var DBStore = NewStore()
-
 func LoadStore(file dbfs.FileLike) (*Store, error) {
 	//todo implement me
 	panic("Not implemented")
