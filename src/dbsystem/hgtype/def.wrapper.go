@@ -1,6 +1,8 @@
 package hgtype
 
-import "HomegrownDB/common/random"
+import (
+	"HomegrownDB/common/random"
+)
 
 type WrapperOp interface {
 	TypeEqual(wrapper TypeData) bool

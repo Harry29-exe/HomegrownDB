@@ -1,6 +1,7 @@
 package dbfs
 
 import (
+	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/schema/table"
 	"os"
@@ -27,7 +28,9 @@ func CreateTableFiles(table table.RDefinition) error {
 }
 
 func serializeAndSave(table table.RDefinition, tablePath string) error {
-	data := table.Serialize()
+	serialzier := bparse.NewSerializer()
+	table.Serialize(serialzier)
+	data := serialzier.GetBytes()
 
 	file, err := os.Create(tablePath + "/info")
 	if err != nil {

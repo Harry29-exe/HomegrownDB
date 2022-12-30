@@ -2,47 +2,39 @@ package table
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/schema/dbobj"
 	"HomegrownDB/dbsystem/schema/relation"
 	"errors"
 	"math"
 )
 
+var (
+	_ Definition        = &StdTable{}
+	_ relation.Relation = &StdTable{}
+)
+
 type StdTable struct {
-	relation.Relation
+	relation.AbstractRelation
+	oid      dbobj.OID
 	tableId  Id
 	columns  []column.WDef
 	rColumns []column.Def
 	name     string
 
-	nextColumnId        appsync.SyncCounter[column.Id]
 	columnName_OrderMap map[string]column.Order
 	columnsNames        []string
 	columnsCount        uint16
-}
-
-func (t *StdTable) Data() relation.Data {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (t *StdTable) SetTableId(id Id) {
 	t.tableId = id
 }
 
-func (t *StdTable) TableId() Id {
-	return t.tableId
-}
-
 func (t *StdTable) Hash() string {
 	//TODO implement me
 	panic("implement me")
-}
-
-func (t *StdTable) SetRelationId(id relation.ID) {
-	t.Relation. = id
 }
 
 func (t *StdTable) SetName(name string) {
@@ -53,30 +45,31 @@ func (t *StdTable) Name() string {
 	return t.name
 }
 
-func (t *StdTable) Serialize() []byte {
-	serializer := bparse.NewSerializer()
-
-	serializer.Uint32(uint32(t.objectId))
+func (t *StdTable) Serialize(serializer *bparse.Serializer) {
+	t.AbstractRelation.Serialize(serializer)
 	serializer.MdString(t.name)
+	serializer.Uint16(t.columnsCount)
 
-	columnCount := uint16(len(t.columnName_OrderMap))
-	serializer.Uint16(columnCount)
 	for _, col := range t.columns {
-		serializer.Append(col.Serialize())
+		col.Serialize(serializer)
 	}
-
-	return serializer.GetBytes()
 }
 
-func (t *StdTable) Deserialize(tableDef []byte) {
-	deserializer := bparse.NewDeserializer(tableDef)
-	t.objectId = relation.ID(deserializer.Uint32())
+func (t *StdTable) Deserialize(deserializer *bparse.Deserializer) {
+	t.AbstractRelation.Deserialize(deserializer)
 	t.name = deserializer.MdString()
 	t.columnsCount = deserializer.Uint16()
 
-	data := deserializer.RemainedData()
-	for i := column.Order(0); i < t.columnsCount; i++ {
-		t.columns[i], data = column.Serialize(data)
+	t.columns = make([]column.WDef, t.columnsCount)
+	t.rColumns = make([]column.Def, t.columnsCount)
+	t.columnName_OrderMap = map[string]column.Order{}
+	t.columnsNames = make([]string, t.columnsCount)
+	for i := 0; i < int(t.columnsCount); i++ {
+		col := column.Deserialize(deserializer)
+		t.columns[col.Order()] = col
+		t.rColumns[col.Order()] = col
+		t.columnName_OrderMap[col.Name()] = col.Order()
+		t.columnsNames[col.Order()] = col.Name()
 	}
 }
 
@@ -98,7 +91,7 @@ func (t *StdTable) ColumnName(columnId column.Order) string {
 	return t.columnsNames[columnId]
 }
 
-func (t *StdTable) ColumnId(order column.Order) column.Id {
+func (t *StdTable) ColumnId(order column.Order) dbobj.OID {
 	return t.columns[order].Id()
 }
 
@@ -122,7 +115,7 @@ func (t *StdTable) ColumnByName(name string) (col column.Def, ok bool) {
 }
 
 // ColumnById todo rewrite this: create columnId_Ordermap initialize it and use it
-func (t *StdTable) ColumnById(id column.Id) column.Def {
+func (t *StdTable) ColumnById(id dbobj.OID) column.Def {
 	for _, def := range t.columns {
 		if def.Id() == id {
 			return def
@@ -144,7 +137,6 @@ func (t *StdTable) AddColumn(definition column.WDef) error {
 	if ok {
 		return errors.New("table already contains column with name:" + definition.Name())
 	}
-	definition.SetId(t.nextColumnId.GetAndIncr())
 	definition.SetOrder(t.columnsCount)
 
 	t.columns = append(t.columns, definition)

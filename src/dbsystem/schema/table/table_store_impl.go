@@ -17,7 +17,7 @@ func NewTableStore(tables []Definition) (Store, error) { //todo delete this erro
 	nameTableMap := map[string]Id{}
 	definitionsArray := map[relation.ID]Definition{}
 	for _, def := range tables {
-		id := def.TableId()
+		id := def.RelationID()
 		nameTableMap[def.Name()] = id
 		definitionsArray[id] = def
 	}
@@ -35,7 +35,7 @@ func NewEmptyTableStore() Store {
 		storeLock: &sync.RWMutex{},
 
 		nameTableMap: map[string]Id{},
-		definitions:  nil,
+		definitions:  map[relation.ID]Definition{},
 
 		changeListeners: nil,
 		tableIdCounter:  appsync.NewIdResolver(Id(0), nil),
@@ -46,10 +46,10 @@ func findMaxAndMissing(tables []Definition) (maxId Id, missing []Id) {
 	maxId = Id(0)
 	existingIds := map[Id]bool{}
 	for _, def := range tables {
-		if def.TableId() > maxId {
-			maxId = def.TableId()
+		if def.RelationID() > maxId {
+			maxId = def.RelationID()
 		}
-		existingIds[def.TableId()] = true
+		existingIds[def.RelationID()] = true
 	}
 
 	for i := Id(0); i < maxId; i++ {
@@ -99,7 +99,7 @@ func (t *stdStore) AddNewTable(table Definition) error {
 	defer t.storeLock.Unlock()
 
 	id := t.tableIdCounter.NextId()
-	table.SetTableId(id)
+	table.SetRelationID(id)
 
 	t.definitions[id] = table
 	t.nameTableMap[table.Name()] = id
@@ -111,7 +111,7 @@ func (t *stdStore) LoadTable(table Definition) error {
 	t.storeLock.Lock()
 	defer t.storeLock.Unlock()
 
-	id := table.TableId()
+	id := table.RelationID()
 	t.definitions[id] = table
 	t.nameTableMap[table.Name()] = id
 

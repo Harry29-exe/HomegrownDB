@@ -11,6 +11,7 @@ var (
 
 type Relation interface {
 	RelationID() ID
+	SetRelationID(id ID)
 	Data() Data
 	Kind() Kind
 }

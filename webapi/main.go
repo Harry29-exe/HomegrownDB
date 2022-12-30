@@ -31,8 +31,8 @@ func main() {
 
 func testTuplePrint() {
 	tableDef := table.NewDefinition("ttable1")
-	tableDef.SetTableId(231)
-	tableDef.SetRelationId(4352)
+	tableDef.SetRelationID(231)
+	tableDef.SetRelationID(4352)
 
 	tableDef.AddColumn(factory.CreateDefinition(column.ArgsBuilder("col1", ctypes.Int2).Build()))
 	tableDef.AddColumn(factory.CreateDefinition(column.ArgsBuilder("col2", ctypes.Int2).Build()))

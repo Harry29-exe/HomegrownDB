@@ -169,7 +169,7 @@ Name: %s,
 func (r RangeTableEntry) dRelationEqual(r2 RangeTableEntry) bool {
 	return r.LockMode == r2.LockMode &&
 		r.TableId == r2.TableId &&
-		r.Ref.TableId() == r2.Ref.TableId()
+		r.Ref.RelationID() == r2.Ref.RelationID()
 }
 
 func (r RangeTableEntry) dSubqueryEqual(r2 RangeTableEntry) bool {

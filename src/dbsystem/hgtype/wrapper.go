@@ -1,6 +1,7 @@
 package hgtype
 
 import (
+	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/random"
 )
 
@@ -77,6 +78,17 @@ type TypeData struct {
 	t    Type
 	Tag  Tag
 	Args Args
+}
+
+func SerializeTypeData(typeData TypeData, s *bparse.Serializer) {
+	s.Uint8(uint8(typeData.Tag))
+	SerializeArgs(typeData.Args, s)
+}
+
+func DeserializeTypeData(d *bparse.Deserializer) TypeData {
+	tag := Tag(d.Uint8())
+	args := DeserializeArgs(d)
+	return NewTypeData(tag, args)
 }
 
 // -------------------------

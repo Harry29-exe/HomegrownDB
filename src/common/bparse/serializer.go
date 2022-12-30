@@ -72,3 +72,10 @@ func (s *Serializer) Uint64(integer uint64) {
 
 	s.buffer = append(s.buffer, data...)
 }
+
+func (s *Serializer) Int64(integer int64) {
+	data := make([]byte, 8)
+	binary.BigEndian.PutUint64(data, uint64(integer))
+
+	s.buffer = append(s.buffer, data...)
+}

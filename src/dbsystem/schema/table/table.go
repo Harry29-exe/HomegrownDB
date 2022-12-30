@@ -1,25 +1,21 @@
 package table
 
 import (
-	"HomegrownDB/common/datastructs/appsync"
+	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/schema/dbobj"
 	"HomegrownDB/dbsystem/schema/relation"
 )
 
 type RDefinition interface {
 	relation.Relation
+	bparse.Serializable
 
-	TableId() Id
+	RelationID() Id
 	Name() string
 	Hash() string
 
-	// Serialize table info, so it can be saved to disc and
-	// later deserialize into table object
-	Serialize() []byte
-	// Deserialize overrides all table info with deserialized data
-	// from provided byte slice
-	Deserialize(tableDef []byte)
 	BitmapLen() uint16
 	ColumnCount() uint16
 
@@ -27,11 +23,11 @@ type RDefinition interface {
 
 	ColumnName(columnId column.Order) string
 	ColumnOrder(name string) (order column.Order, ok bool)
-	ColumnId(order column.Order) column.Id
+	ColumnId(order column.Order) dbobj.OID
 
 	ColumnType(id column.Order) hgtype.TypeData
 	ColumnByName(name string) (col column.Def, ok bool)
-	ColumnById(id column.Id) column.Def
+	ColumnById(id dbobj.OID) column.Def
 	Column(index column.Order) column.Def
 	Columns() []column.Def
 }
@@ -39,8 +35,6 @@ type RDefinition interface {
 type Definition interface {
 	RDefinition
 
-	SetTableId(id Id)
-	SetRelationId(id relation.ID)
 	SetName(name string)
 
 	AddColumn(definition column.WDef) error
@@ -52,13 +46,12 @@ type Id = relation.ID
 
 func NewDefinition(name string) Definition {
 	table := &StdTable{
-		tableId:  0,
-		objectId: 0,
-		columns:  []column.WDef{},
-		rColumns: []column.Def{},
-		name:     name,
+		AbstractRelation: relation.AbstractRelation{},
+		tableId:          0,
+		columns:          []column.WDef{},
+		rColumns:         []column.Def{},
+		name:             name,
 
-		nextColumnId:        appsync.NewSyncCounter[column.Id](0),
 		columnName_OrderMap: map[string]column.Order{},
 		columnsNames:        nil,
 		columnsCount:        0,
@@ -69,7 +62,8 @@ func NewDefinition(name string) Definition {
 
 func Deserialize(data []byte) Definition {
 	def := &StdTable{}
-	def.Deserialize(data)
+	deserializer := bparse.NewDeserializer(data)
+	def.Deserialize(deserializer)
 
 	return def
 }

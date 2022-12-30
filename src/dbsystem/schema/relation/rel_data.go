@@ -1,5 +1,7 @@
 package relation
 
+import "HomegrownDB/common/bparse"
+
 type Data = *data
 
 func NewData(dirFilePath string, dataSize int64) Data {
@@ -23,4 +25,19 @@ func (d Data) IncrDataSize(sizeDelta int64) {
 
 func (d Data) Size() int64 {
 	return d.dataSize
+}
+
+func (d Data) serialize() []byte {
+	serializer := bparse.NewSerializer()
+	serializer.Int64(d.dataSize)
+	serializer.MdString(d.dirFilepath)
+
+	return serializer.GetBytes()
+}
+
+func deserializeData(deserializer *bparse.Deserializer) data {
+	return data{
+		dataSize:    deserializer.Int64(),
+		dirFilepath: deserializer.MdString(),
+	}
 }
