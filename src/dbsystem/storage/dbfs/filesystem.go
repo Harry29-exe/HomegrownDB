@@ -1,7 +1,7 @@
 package dbfs
 
 import (
-	"HomegrownDB/dbsystem/schema/relation"
+	"HomegrownDB/dbsystem/relation"
 	"fmt"
 	"os"
 )

@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/inputtype"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dpage"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"

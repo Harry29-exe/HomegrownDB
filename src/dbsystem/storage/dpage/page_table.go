@@ -5,7 +5,7 @@ package dpage
 // which shows how page's binary representations looks like
 
 import (
-	"HomegrownDB/dbsystem/schema/relation"
+	"HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"encoding/binary"

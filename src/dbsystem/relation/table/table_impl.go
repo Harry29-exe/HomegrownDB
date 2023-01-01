@@ -3,9 +3,9 @@ package table
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/dbobj"
-	"HomegrownDB/dbsystem/schema/relation"
+	relation "HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
+	"HomegrownDB/dbsystem/relation/table/column"
 	"errors"
 	"math"
 )
@@ -46,7 +46,7 @@ func (t *StdTable) Name() string {
 }
 
 func (t *StdTable) Serialize(serializer *bparse.Serializer) {
-	t.BaseRelation.Serialize(serializer)
+	relation.SerializeBaseRelation(&t.BaseRelation, serializer)
 	serializer.MdString(t.name)
 	serializer.Uint16(t.columnsCount)
 
@@ -56,7 +56,7 @@ func (t *StdTable) Serialize(serializer *bparse.Serializer) {
 }
 
 func (t *StdTable) Deserialize(deserializer *bparse.Deserializer) {
-	t.BaseRelation.Deserialize(deserializer)
+	t.BaseRelation = relation.DeserializeBaseRelation(deserializer)
 	t.name = deserializer.MdString()
 	t.columnsCount = deserializer.Uint16()
 

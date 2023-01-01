@@ -3,7 +3,7 @@ package dbfs
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation/table"
 	"os"
 )
 

@@ -9,7 +9,7 @@ import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation/table"
 	"testing"
 )
 

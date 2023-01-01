@@ -193,7 +193,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 	<-ch1
 }
 
-func _createAndRegisterTestPageIO(table1 testtable.TestTable, ioStore *pageio.Store, t *testing.T) pageio.IO {
+func _createAndRegisterTestPageIO(table1 testtable.TestTable, ioStore *pageio.StdStore, t *testing.T) pageio.IO {
 	//fs := afero.NewMemMapFs()
 	//file, err := fs.Create("table1IO")
 	file, err := os.Create("/tmp/643215874.test.go")

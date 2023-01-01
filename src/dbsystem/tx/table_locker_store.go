@@ -1,7 +1,7 @@
 package tx
 
 import (
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation/table"
 	"sync"
 )
 

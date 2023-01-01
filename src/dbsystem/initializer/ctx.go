@@ -3,7 +3,7 @@ package initializer
 import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/schema/table"
+	table2 "HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
@@ -14,7 +14,7 @@ func createCtx(props *config.Properties, initProps initProperties) *ctx {
 		Props:       props,
 		InitProps:   initProps,
 		PageIOStore: pageio.NewStore(),
-		TableStore:  table.NewEmptyTableStore(),
+		TableStore:  table2.NewEmptyTableStore(),
 	}
 }
 
@@ -23,8 +23,8 @@ type ctx struct {
 	InitProps initProperties
 
 	FS           dbfs.FS
-	PageIOStore  *pageio.Store
+	PageIOStore  *pageio.StdStore
 	SharedBuffer buffer.SharedBuffer
-	TableStore   table.Store
+	TableStore   table2.Store
 	FsmStore     fsm.Store
 }

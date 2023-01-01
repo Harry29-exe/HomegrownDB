@@ -3,7 +3,7 @@ package node
 import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/inputtype"
-	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/relation/table/column"
 	"fmt"
 )
 

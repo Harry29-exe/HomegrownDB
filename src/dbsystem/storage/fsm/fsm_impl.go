@@ -14,8 +14,8 @@ func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
 	newLeafNodeVal, leafNodeVal := uint8(0), uint8(0)
 
 	for {
-		pageTag := pageio.NewPageTag(pageIndex, f.Relation)
-		rPage, err := f.buff.RFsmPage(f.Relation, pageIndex)
+		pageTag := pageio.NewPageTag(pageIndex, f)
+		rPage, err := f.buff.RFsmPage(f, pageIndex)
 		if err != nil {
 			return 0, err
 		}

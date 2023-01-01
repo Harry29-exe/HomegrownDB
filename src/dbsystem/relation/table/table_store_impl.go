@@ -2,7 +2,7 @@ package table
 
 import (
 	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/dbsystem/schema/relation"
+	"HomegrownDB/dbsystem/relation"
 	"fmt"
 	"sync"
 )

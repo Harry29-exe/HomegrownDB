@@ -1,8 +1,8 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/schema/relation"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"

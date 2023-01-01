@@ -86,6 +86,14 @@ func (p *pageIO) PageCount() uint32 {
 	return p.pageCount
 }
 
+func (p *pageIO) PrepareNewPage() page.Id {
+	p.pageCountLock.Lock()
+	defer p.pageCountLock.Unlock()
+	newPageId := p.pageCount
+	p.pageCount++
+	return newPageId
+}
+
 func (p *pageIO) Close() error {
 	return p.src.Close()
 }

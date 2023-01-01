@@ -1,37 +1,46 @@
 package pageio
 
 import (
-	"HomegrownDB/dbsystem/schema/relation"
+	"HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/storage/dbfs"
 )
 
-func LoadStore(file dbfs.FileLike) (*Store, error) {
-	//todo implement me
-	panic("Not implemented")
+type Store interface {
+	Get(id relation.ID) IO
+	Load(rel relation.Relation) error
 }
 
-func NewStore() *Store {
-	return &Store{ioMap: map[relation.ID]IO{}}
+func NewStore() *StdStore {
+	return &StdStore{ioMap: map[relation.ID]IO{}}
 }
 
-type Store struct {
+type StdStore struct {
+	FS    dbfs.FS
 	ioMap map[relation.ID]IO
 }
 
-func (s *Store) Get(id relation.ID) IO {
+func (s *StdStore) Get(id relation.ID) IO {
 	return s.ioMap[id]
 }
 
-func (s *Store) Exist(id relation.ID) bool {
-	_, ok := s.ioMap[id]
-	return ok
-}
-
-func (s *Store) Register(id relation.ID, io IO) {
+func (s *StdStore) Register(id relation.ID, io IO) {
 	_, ok := s.ioMap[id]
 	if ok {
 		panic("Can't register io when io with same relation id is already registerd")
 	}
 
 	s.ioMap[id] = io
+}
+
+func (s *StdStore) Load(rel relation.Relation) error {
+	file, err := s.FS.OpenRelationDataFile(rel)
+	if err != nil {
+		return err
+	}
+	io, err := NewPageIO(file)
+	if err != nil {
+		return err
+	}
+	s.ioMap[rel.RelationID()] = io
+	return nil
 }

@@ -3,8 +3,8 @@ package tpage
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/strutils"
-	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/relation/table/column"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"encoding/binary"

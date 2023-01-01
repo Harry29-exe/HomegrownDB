@@ -1,8 +1,8 @@
 package fsm
 
 import (
-	"HomegrownDB/dbsystem/schema/relation"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/table"
 )
 
 type Store interface {
@@ -17,6 +17,19 @@ func NewStore() Store {
 		fsmMap:       map[relation.ID]*FreeSpaceMap{},
 		parentFsmMap: map[relation.ID]*FreeSpaceMap{},
 	}
+}
+
+func NewStoreWith(fsm []*FreeSpaceMap) Store {
+	store := &StdStore{
+		fsmMap:       map[relation.ID]*FreeSpaceMap{},
+		parentFsmMap: map[relation.ID]*FreeSpaceMap{},
+	}
+
+	for _, spaceMap := range fsm {
+		store.fsmMap[spaceMap.ID] = spaceMap
+		store.parentFsmMap[spaceMap.parentRelationId] = spaceMap
+	}
+	return store
 }
 
 var _ Store = &StdStore{}

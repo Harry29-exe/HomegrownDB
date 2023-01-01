@@ -4,8 +4,8 @@ import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/relation/table/column"
 	"reflect"
 	"testing"
 )

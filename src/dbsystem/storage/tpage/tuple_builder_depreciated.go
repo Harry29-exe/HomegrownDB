@@ -2,7 +2,7 @@ package tpage
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/tx"
 	"bytes"
 	"fmt"

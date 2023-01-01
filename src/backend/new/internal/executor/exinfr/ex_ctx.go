@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/dbsystem"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/schema/table"
+	table2 "HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -26,8 +26,8 @@ func NewExCtx(
 	}
 }
 
-func createCache(rteList []node.RangeTableEntry, store table.Store) map[table.Id]table.RDefinition {
-	cache := map[table.Id]table.RDefinition{}
+func createCache(rteList []node.RangeTableEntry, store table2.Store) map[table2.Id]table2.RDefinition {
+	cache := map[table2.Id]table2.RDefinition{}
 	for _, rte := range rteList {
 		if rte.Kind == node.RteRelation {
 			tab := store.AccessTable(rte.TableId, rte.LockMode)
@@ -41,7 +41,7 @@ type executionCtx struct {
 	Stmt     node.PlanedStmt
 	Buff     buffer.SharedBuffer
 	FsmStore fsm.Store
-	Tables   table.Cache
+	Tables   table2.Cache
 	TxCtx    *tx.Ctx
 
 	rteMap map[node.RteID]node.RangeTableEntry

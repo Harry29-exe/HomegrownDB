@@ -1,7 +1,7 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/schema/relation"
+	"HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"errors"
@@ -12,7 +12,7 @@ import (
 // is saved in DBSharedBuffer, in this way bufferMapLock will be lock for shorter time
 // see buffer.loadPage
 
-func newBuffer(bufferSize uint, pageIOStore *pageio.Store) internalBuffer {
+func newBuffer(bufferSize uint, pageIOStore pageio.Store) internalBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 	for i := uint(0); i < bufferSize; i++ {
 		descriptorArray[i] = pageDescriptor{
@@ -49,7 +49,7 @@ type buffer struct {
 
 	pageBufferArray []byte
 
-	ioStore *pageio.Store
+	ioStore pageio.Store
 }
 
 func (b *buffer) ReadRPage(relation relation.Relation, pageId page.Id, strategy rbm) (buffPage, error) {
@@ -191,9 +191,9 @@ func (b *buffer) loadPage(relation relation.Relation, pageId page.Id) (*pageDesc
 		}
 
 		delete(b.bufferMap, descriptor.pageTag)
+		relationIO := b.ioStore.Get(relation.RelationID())
 		if pageId == NewPage {
-			pageTag.PageId = uint32(relation.Data().Size() / pageSize)
-			relation.Data().IncrDataSize(pageSize)
+			pageTag.PageId = relationIO.PrepareNewPage()
 		}
 		b.bufferMap[pageTag] = descriptor.slotIndex
 		descriptor.Refresh(pageTag)
@@ -205,7 +205,7 @@ func (b *buffer) loadPage(relation relation.Relation, pageId page.Id) (*pageDesc
 		if pageId == NewPage {
 			b.clearSlot(descriptor.slotIndex)
 		} else {
-			err = b.ioStore.Get(relation.RelationID()).ReadPage(pageId, b.getArraySlot(descriptor.slotIndex))
+			err = relationIO.ReadPage(pageId, b.getArraySlot(descriptor.slotIndex))
 		}
 		descriptor.contentLock.Unlock()
 

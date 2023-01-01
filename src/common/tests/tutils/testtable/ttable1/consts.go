@@ -2,7 +2,7 @@ package ttable1
 
 import (
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/relation/table/column"
 )
 
 const (

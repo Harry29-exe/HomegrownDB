@@ -2,9 +2,9 @@ package testtable
 
 import (
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/relation"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/relation/table/column"
 )
 
 type Builder struct {

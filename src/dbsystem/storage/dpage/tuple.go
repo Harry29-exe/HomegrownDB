@@ -1,7 +1,7 @@
 package dpage
 
 import (
-	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/relation/table/column"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 )

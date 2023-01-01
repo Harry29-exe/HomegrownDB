@@ -3,7 +3,7 @@ package testtable
 import (
 	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/storage/tpage"

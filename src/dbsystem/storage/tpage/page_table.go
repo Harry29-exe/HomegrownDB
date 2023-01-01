@@ -5,8 +5,8 @@ package tpage
 // which shows how page's binary representations looks like
 
 import (
-	"HomegrownDB/dbsystem/schema/relation"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/table"
 	page "HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"encoding/binary"
@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-//todo add handling for inserting into empty page
+// todo add handling for inserting into empty page
 func EmptyTablePage(tableDef table.RDefinition, t *testing.T) Page {
 	rawPage := make([]byte, page.Size)
 	uint16Zero := make([]byte, 2)

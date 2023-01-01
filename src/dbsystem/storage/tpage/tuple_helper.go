@@ -1,8 +1,8 @@
 package tpage
 
 import (
-	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/relation/table/column"
 	"fmt"
 )
 

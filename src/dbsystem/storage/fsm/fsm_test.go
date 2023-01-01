@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/schema/relation"
+	relation "HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
@@ -64,7 +64,7 @@ func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 	store.Register(fsmRelation.RelationID(), io)
 	buff := buffer.NewSharedBuffer(10_000, store)
 
-	fsMap, err := fsm.CreateFreeSpaceMap(usersTable, fsmRelation, buff)
+	fsMap, err := fsm.CreateFreeSpaceMap(fsmRelation, usersTable.RelationID(), buff)
 	assert.IsNil(err, t)
 
 	return &fsmTestHelper{

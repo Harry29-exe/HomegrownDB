@@ -3,16 +3,15 @@ package table
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/schema/column"
-	"HomegrownDB/dbsystem/schema/dbobj"
-	"HomegrownDB/dbsystem/schema/relation"
+	relation "HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
+	"HomegrownDB/dbsystem/relation/table/column"
 )
 
 type RDefinition interface {
 	relation.Relation
 	bparse.Serializable
 
-	RelationID() Id
 	Name() string
 	Hash() string
 

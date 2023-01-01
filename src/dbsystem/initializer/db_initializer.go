@@ -5,8 +5,8 @@ import (
 	"HomegrownDB/dbsystem"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/schema/relation"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
@@ -15,7 +15,7 @@ import (
 
 type initFunc func(initCtx *ctx) error
 
-var initSteps []initFunc = []initFunc{
+var initSteps = []initFunc{
 	initDBFS,
 	initPageIOStore,
 	initBuffer,
@@ -45,8 +45,11 @@ func InitializeDB(props *config.Properties) (dbsystem.DBSystem, error) {
 		DBBuffer: ctx.SharedBuffer,
 	}
 
-	system.Init(ctx.InitProps.NextRID, ctx.InitProps.NextOID)
-	return system, nil
+	err = system.SetState(dbsystem.State{
+		NextRID: ctx.InitProps.NextRID,
+		NextOID: ctx.InitProps.NextOID,
+	})
+	return system, err
 }
 
 func initDBFS(ctx *ctx) error {

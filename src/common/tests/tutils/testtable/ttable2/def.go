@@ -12,7 +12,7 @@ package ttable2
 import (
 	"HomegrownDB/common/tests/tutils/testtable"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/relation/table/column"
 	"testing"
 )
 

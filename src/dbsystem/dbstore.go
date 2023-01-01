@@ -3,9 +3,9 @@ package dbsystem
 import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/schema/dbobj"
-	"HomegrownDB/dbsystem/schema/relation"
-	"HomegrownDB/dbsystem/schema/table"
+	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
+	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
 )
@@ -13,7 +13,7 @@ import (
 type DBSystem interface {
 	TableStore() table.Store
 	FsmStore() fsm.Store
-	PageIOStore() *pageio.Store
+	PageIOStore() pageio.Store
 	Buffer() buffer.SharedBuffer
 
 	NextRelId() relation.ID
@@ -22,15 +22,15 @@ type DBSystem interface {
 
 var _ DBSystem = &StdSystem{}
 
-func (s *StdSystem) Init(nextRID relation.ID, nextOID dbobj.OID) {
-	s.ridCounter = appsync.NewSyncCounter(nextRID)
-	s.oidCounter = appsync.NewSyncCounter(nextOID)
+type State struct {
+	NextRID relation.ID
+	NextOID dbobj.OID
 }
 
 type StdSystem struct {
 	Tables   table.Store
 	FSMs     fsm.Store
-	PageIO   *pageio.Store
+	PageIO   pageio.Store
 	DBBuffer buffer.SharedBuffer
 
 	ridCounter appsync.SyncCounter[relation.ID]
@@ -45,7 +45,7 @@ func (s *StdSystem) FsmStore() fsm.Store {
 	return s.FSMs
 }
 
-func (s *StdSystem) PageIOStore() *pageio.Store {
+func (s *StdSystem) PageIOStore() pageio.Store {
 	return s.PageIO
 }
 
@@ -59,4 +59,17 @@ func (s *StdSystem) NextRelId() relation.ID {
 
 func (s *StdSystem) NextOID() dbobj.OID {
 	return s.oidCounter.GetAndIncr()
+}
+
+func (s *StdSystem) SetState(state State) error {
+	s.ridCounter = appsync.NewSyncCounter(state.NextRID)
+	s.oidCounter = appsync.NewSyncCounter(state.NextOID)
+	return nil
+}
+
+func (s *StdSystem) GetCurrentState() State {
+	return State{
+		NextRID: s.ridCounter.Get(),
+		NextOID: s.oidCounter.Get(),
+	}
 }

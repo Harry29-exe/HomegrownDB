@@ -3,7 +3,7 @@ package column
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype"
-	. "HomegrownDB/dbsystem/schema/dbobj"
+	. "HomegrownDB/dbsystem/relation/dbobj"
 )
 
 // Def describes column config and provides segparser and serializer

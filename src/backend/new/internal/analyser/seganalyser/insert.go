@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/backend/new/internal/pnode"
 	"HomegrownDB/backend/new/internal/sqlerr"
-	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/relation/table/column"
 )
 
 var Insert = insert{}

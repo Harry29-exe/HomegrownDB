@@ -2,8 +2,8 @@ package initializer
 
 import (
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/schema/dbobj"
-	"HomegrownDB/dbsystem/schema/relation"
+	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"encoding/json"
 	"os"
 )

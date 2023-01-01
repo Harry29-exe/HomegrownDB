@@ -2,7 +2,7 @@ package dpage
 
 import (
 	"HomegrownDB/dbsystem/access/lob"
-	"HomegrownDB/dbsystem/schema/column"
+	"HomegrownDB/dbsystem/relation/table/column"
 )
 
 type TupleToSave struct {
