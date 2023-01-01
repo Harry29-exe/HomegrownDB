@@ -53,12 +53,12 @@ func InitializeDB(props *config.Properties) (dbsystem.DBSystem, error) {
 }
 
 func initDBFS(ctx *ctx) error {
-	ctx.FS = &dbfs.StdFS{Root: ctx.Props.DBHomePath}
+	ctx.FS = &dbfs.StdFS{Rootpath: ctx.Props.DBHomePath}
 	return nil
 }
 
 func initPageIOStore(ctx *ctx) error {
-	ctx.PageIOStore = pageio.NewStore()
+	ctx.PageIOStore = pageio.NewStore(ctx.FS)
 	return nil
 }
 
@@ -78,20 +78,20 @@ func initTableStore(initCtx *ctx) error {
 	return nil
 }
 
-func initRelations(initCtx *ctx) error {
+func initRelations(ctx *ctx) error {
 	var err error
-	for _, rel := range initCtx.InitProps.Relations {
+	for _, rel := range ctx.InitProps.Relations {
 		var fileData []byte
-		fileData, err = readFile(initCtx.Props.DBHomePath + rel.RelativePath)
+		fileData, err = readRelationFile(rel.RelationID, ctx)
 		if err != nil {
 			return err
 		}
 
 		switch rel.RelKind {
 		case relation.TypeTable:
-			err = initTable(fileData, initCtx)
+			err = initTable(fileData, ctx)
 		case relation.TypeFsm:
-			err = initFSM(fileData, initCtx)
+			err = initFSM(fileData, ctx)
 		default:
 			//todo implement me
 			panic("Not implemented")
@@ -132,6 +132,20 @@ func openFileAndRegisterRelationIO(relation relation.Relation, ctx *ctx) error {
 	}
 	ctx.PageIOStore.Register(relation.RelationID(), pageIO)
 	return nil
+}
+
+func readRelationFile(id relation.ID, ctx *ctx) ([]byte, error) {
+	file, err := ctx.FS.OpenRelationDef(id)
+	if err != nil {
+		return nil, err
+	}
+	stat, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	buff := make([]byte, stat.Size())
+	_, err = file.Read(buff)
+	return buff, err
 }
 
 func readFile(path string) ([]byte, error) {

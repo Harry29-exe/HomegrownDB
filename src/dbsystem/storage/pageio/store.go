@@ -10,8 +10,11 @@ type Store interface {
 	Load(rel relation.Relation) error
 }
 
-func NewStore() *StdStore {
-	return &StdStore{ioMap: map[relation.ID]IO{}}
+func NewStore(fs dbfs.FS) *StdStore {
+	return &StdStore{
+		FS:    fs,
+		ioMap: map[relation.ID]IO{},
+	}
 }
 
 type StdStore struct {

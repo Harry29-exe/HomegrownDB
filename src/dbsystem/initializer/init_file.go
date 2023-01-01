@@ -15,9 +15,8 @@ type initProperties struct {
 }
 
 type relPTR struct {
-	RelKind relation.Kind
-	// RelativePath is path to serialized definition relative to DBHomePath
-	RelativePath string
+	RelKind    relation.Kind
+	RelationID relation.ID
 }
 
 func readInitProperties() (initProperties, error) {
