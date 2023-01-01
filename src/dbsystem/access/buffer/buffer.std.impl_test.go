@@ -1,10 +1,11 @@
-package buffer
+package buffer_test
 
 import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/common/tests/tutils/testtable/ttable1"
+	. "HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/hg/di"
 	"HomegrownDB/dbsystem/relation/table"
@@ -18,26 +19,29 @@ import (
 
 func TestSharedBuffer_Overflow(t *testing.T) {
 	// given
-	var internalBuff internalBuffer
-	ctx := bootstrap(func(args di.SimpleArgs, store pageio.Store) (SharedBuffer, error) {
-		internalBuff = newBuffer(100, store)
-		return &bufferProxy{buffer: internalBuff}, nil
+	var stdBuffer StdBuffer
+	buffSize, pageToRead := uint(100), 1_000
+
+	ctx := bootstrapUsersTCtx(func(args di.SimpleArgs, store pageio.Store) (SharedBuffer, error) {
+		stdBuffer = NewStdBuffer(buffSize, store)
+		return AsSharedBuffer(stdBuffer), nil
 	}, t)
-	ctx.db.RandFillPages(1_000, ctx.usersTable.Name())
 
+	ctx.TestFillTablePages(pageToRead, tt_user.TableName)
+
+	rawPage := make([]byte, page.Size)
 	// when
-	tmpPage := make([]byte, page.Size)
 	for i := page.Id(0); i < 1_000; i++ {
-		tag := pageio.NewTablePageTag(i, ctx.usersTable)
-		pageData, err := internalBuff.ReadWPage(ctx.usersTable, i, rbmReadOrCreate)
+		tag := pageio.NewTablePageTag(i, ctx.table)
+		pageData, err := stdBuffer.ReadWPage(ctx.table, i, RbmReadOrCreate)
 		assert.ErrIsNil(err, t)
 
-		err = ctx.usersIO.ReadPage(i, tmpPage)
+		err = ctx.tableIO.ReadPage(i, rawPage)
 		assert.ErrIsNil(err, t)
-		internalBuff.ReleaseWPage(tag)
+		stdBuffer.ReleaseWPage(tag)
 
 		// then
-		assert.EqArray(pageData.bytes, tmpPage, t)
+		assert.EqArray(pageData.Bytes, rawPage, t)
 	}
 }
 
@@ -49,7 +53,7 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	tCount := 16
 	table.TUtils.FillPages(10, tableIO)
 
-	testBuffer := newBuffer(2, ioStore)
+	testBuffer := NewStdBuffer(2, ioStore)
 
 	//when
 	waitGroup1 := sync.WaitGroup{}
@@ -60,7 +64,7 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	tag := pageio.PageTag{PageId: 0, Relation: table.RelationID()}
 	for i := 0; i < tCount; i++ {
 		go func() {
-			_, _ = testBuffer.ReadRPage(table, 0, rbmReadOrCreate)
+			_, _ = testBuffer.ReadRPage(table, 0, RbmReadOrCreate)
 			waitGroup1.Done()
 			waitGroup1.Wait()
 			testBuffer.ReleaseRPage(tag)
@@ -79,7 +83,7 @@ func TestSharedBuffer_ParallelDifferentRowRead(t *testing.T) {
 	tCount := 16
 	table1.TUtils.FillPages(tCount, table1IO)
 
-	testBuffer := newBuffer(uint(tCount), ioStore)
+	testBuffer := NewStdBuffer(uint(tCount), ioStore)
 
 	waitGroup1 := sync.WaitGroup{}
 	waitGroup1.Add(tCount)
@@ -90,7 +94,7 @@ func TestSharedBuffer_ParallelDifferentRowRead(t *testing.T) {
 	for i := 0; i < tCount; i++ {
 		pageId := page.Id(i)
 		go func() {
-			_, _ = testBuffer.ReadRPage(table1, pageId, rbmReadOrCreate)
+			_, _ = testBuffer.ReadRPage(table1, pageId, RbmReadOrCreate)
 			waitGroup1.Done()
 			waitGroup1.Wait()
 			lock.RLock()
@@ -113,10 +117,10 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 
 	table1.TUtils.FillPages(10, table1IO)
 
-	testBuffer := newBuffer(10, ioStore)
+	testBuffer := NewStdBuffer(10, ioStore)
 
 	tag := pageio.NewTablePageTag(0, table1)
-	_, err := testBuffer.ReadWPage(table1, 0, rbmReadOrCreate)
+	_, err := testBuffer.ReadWPage(table1, 0, RbmReadOrCreate)
 
 	if err != nil {
 		t.Fail()
@@ -125,7 +129,7 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 
 	ch1 := make(chan bool)
 	go func() {
-		_, err = testBuffer.ReadRPage(table1, 0, rbmReadOrCreate)
+		_, err = testBuffer.ReadRPage(table1, 0, RbmReadOrCreate)
 		ch1 <- true
 		if err != nil {
 			t.Errorf("testBuffer.RTablePage returned error: %e", err)
@@ -158,10 +162,10 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 
 	table1.TUtils.FillPages(10, table1IO)
 
-	testBuffer := newBuffer(10, ioStore)
+	testBuffer := NewStdBuffer(10, ioStore)
 
 	tag := pageio.NewTablePageTag(0, table1)
-	_, err := testBuffer.ReadWPage(table1, 0, rbmReadOrCreate)
+	_, err := testBuffer.ReadWPage(table1, 0, RbmReadOrCreate)
 
 	if err != nil {
 		t.Fail()
@@ -170,7 +174,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 
 	ch1 := make(chan bool)
 	go func() {
-		_, err = testBuffer.ReadWPage(table1, 0, rbmReadOrCreate)
+		_, err = testBuffer.ReadWPage(table1, 0, RbmReadOrCreate)
 		ch1 <- true
 		if err != nil {
 			t.Errorf("testBuffer.RTablePage returned error: %e", err)
@@ -197,34 +201,37 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 }
 
 // -------------------------
-//      Bootstrap new
+//      Bootstrap
 // -------------------------
 
-type ctx struct {
-	t  *testing.T
-	db hgtest.TestDB
+type usersTCtx struct {
+	hgtest.TestDBUtils
 
-	usersTable table.Definition
-	usersIO    pageio.IO
+	table table.Definition
+
+	tableIO pageio.IO
 }
 
-func bootstrap(bufferProvider di.SharedBufferProvider, t *testing.T) ctx {
-	err := hg.Create(hg.CreateArgs{Mode: hg.Test, RootPath: hgtest.TestRootPath(t)})
+func bootstrapUsersTCtx(provider di.SharedBufferProvider, t *testing.T) *usersTCtx {
+	rootPath := hgtest.TestRootPath(t)
+	err := hg.Create(hg.CreateArgs{Mode: hg.Test, RootPath: rootPath})
 	assert.ErrIsNil(err, t)
 
-	fc := hg.DefaultFutureContainer()
-	fc.SharedBufferProvider = bufferProvider
-	db, err := hg.Load(&fc)
-	tdb := hgtest.TestDB{DB: db, T: t}
+	container := hg.DefaultFutureContainer()
+	container.RootProvider = func() (string, error) { return rootPath, nil }
+	container.SharedBufferProvider = provider
+	db, err := hg.Load(&container)
+	assert.ErrIsNil(err, t)
+	testDB := hgtest.NewTestDB(db, t)
+
+	usersTable := tt_user.Def(t)
+	err = db.CreateRel(usersTable)
 	assert.ErrIsNil(err, t)
 
-	assert.ErrIsNil(db.CreateRel(tt_user.Def(t)), t)
-
-	return ctx{
-		t:          t,
-		db:         tdb,
-		usersTable: tdb.TableByName(tt_user.TableName),
-		usersIO:    tdb.PageIOByTableName(tt_user.TableName),
+	return &usersTCtx{
+		TestDBUtils: testDB,
+		table:       usersTable,
+		tableIO:     testDB.PageIOByTableName(tt_user.TableName),
 	}
 }
 

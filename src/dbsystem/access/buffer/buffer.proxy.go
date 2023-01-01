@@ -10,51 +10,55 @@ import (
 )
 
 func NewSharedBuffer(buffSize uint, store pageio.Store) SharedBuffer {
-	return &bufferProxy{newBuffer(buffSize, store)}
+	return &bufferProxy{NewStdBuffer(buffSize, store)}
+}
+
+func AsSharedBuffer(buff StdBuffer) SharedBuffer {
+	return &bufferProxy{buff}
 }
 
 type bufferProxy struct {
-	buffer internalBuffer
+	buffer StdBuffer
 }
 
 var _ SharedBuffer = &bufferProxy{}
 
 func (b *bufferProxy) RTablePage(table table.RDefinition, pageId page.Id) (tpage.RPage, error) {
-	rPage, err := b.buffer.ReadRPage(table, pageId, rbmRead)
+	rPage, err := b.buffer.ReadRPage(table, pageId, RbmRead)
 	if err != nil {
 		return nil, err
 	}
 
-	return tpage.AsPage(rPage.bytes, pageId, table), nil
+	return tpage.AsPage(rPage.Bytes, pageId, table), nil
 }
 
 func (b *bufferProxy) WTablePage(table table.RDefinition, pageId page.Id) (tpage.WPage, error) {
-	wPage, err := b.buffer.ReadWPage(table, pageId, rbmReadOrCreate)
+	wPage, err := b.buffer.ReadWPage(table, pageId, RbmReadOrCreate)
 	if err != nil {
 		return nil, err
 	}
 
-	if wPage.isNew {
-		return tpage.InitNewPage(table, pageId, wPage.bytes), nil
+	if wPage.IsNew {
+		return tpage.InitNewPage(table, pageId, wPage.Bytes), nil
 	} else {
-		return tpage.AsPage(wPage.bytes, pageId, table), nil
+		return tpage.AsPage(wPage.Bytes, pageId, table), nil
 	}
 }
 
 func (b *bufferProxy) RFsmPage(rel relation.Relation, pageId page.Id) (fsmpage.Page, error) {
-	rPage, err := b.buffer.ReadRPage(rel, pageId, rbmRead)
+	rPage, err := b.buffer.ReadRPage(rel, pageId, RbmRead)
 	if err != nil {
 		return fsmpage.Page{}, err
 	}
-	return fsmpage.Page{Bytes: rPage.bytes}, nil
+	return fsmpage.Page{Bytes: rPage.Bytes}, nil
 }
 
 func (b *bufferProxy) WFsmPage(rel relation.Relation, pageId page.Id) (fsmpage.Page, error) {
-	wPage, err := b.buffer.ReadWPage(rel, pageId, rbmReadOrCreate)
+	wPage, err := b.buffer.ReadWPage(rel, pageId, RbmReadOrCreate)
 	if err != nil {
 		return fsmpage.Page{}, err
 	}
-	return fsmpage.Page{Bytes: wPage.bytes}, nil
+	return fsmpage.Page{Bytes: wPage.Bytes}, nil
 }
 
 func (b *bufferProxy) WPageRelease(tag pageio.PageTag) {

@@ -17,11 +17,14 @@ type FS interface {
 
 type PropertiesFS interface {
 	ReadConfigFile() ([]byte, error)
+	SaveConfigFile(config []byte) error
 	ReadPropertiesFile() ([]byte, error)
+	SavePropertiesFile(properties []byte) error
 }
 
 type DBInitializerFS interface {
-	InitDBSystem() error
+	InitDBSystemDirs() error
+	InitDBSystemConfigAndProps(configData []byte, propertiesData []byte) error
 }
 
 type RelationFS interface {
@@ -55,16 +58,16 @@ type StdFS struct {
 
 const permission = 0777 //todo check this permissions
 
-// -------------------------
-//      FS
-// -------------------------
-
 func (fs *StdFS) Truncate(path string, newSize int64) error {
 	return os.Truncate(path, newSize)
 }
 
+// -------------------------
+//      FS
+// -------------------------
+
 func (fs *StdFS) Open(path string) (FileLike, error) {
-	return os.Open(path)
+	return os.OpenFile(path, os.O_RDWR, os.ModeType)
 }
 
 // -------------------------
@@ -76,16 +79,22 @@ func (fs *StdFS) ReadConfigFile() ([]byte, error) {
 	return fs.readFile(path)
 }
 
+func (fs *StdFS) SaveConfigFile(config []byte) error {
+	configPath := Path(fs.RootPath, ConfigFilename)
+	return fs.overrideFileData(configPath, config)
+}
+
 func (fs *StdFS) ReadPropertiesFile() ([]byte, error) {
-	path := fs.RootPath + "/" + PropertiesFilename
+	path := Path(fs.RootPath, PropertiesFilename)
 	return fs.readFile(path)
 }
 
-// -------------------------
-//      DBInitializerFS
-// -------------------------
+func (fs *StdFS) SavePropertiesFile(propertiesData []byte) error {
+	propsPath := Path(fs.RootPath, PropertiesFilename)
+	return fs.overrideFileData(propsPath, propertiesData)
+}
 
-func (fs *StdFS) InitDBSystem() error {
+func (fs *StdFS) InitDBSystemDirs() error {
 	dirPaths := []string{
 		fs.RootPath + "/" + RelationsDirname,
 	}
@@ -99,12 +108,12 @@ func (fs *StdFS) InitDBSystem() error {
 }
 
 // -------------------------
-//      RelationFS
+//      DBInitializerFS
 // -------------------------
 
 func (fs *StdFS) OpenRelationDataFile(relation relation.Relation) (FileLike, error) {
 	filepath := fmt.Sprintf("%s/%s/%d/%s", fs.RootPath, RelationsDirname, relation.RelationID(), DataFilename)
-	file, err := os.Open(filepath)
+	file, err := os.OpenFile(filepath, os.O_RDWR, os.ModeType)
 	if err != nil {
 		return nil, err
 	}
@@ -112,9 +121,25 @@ func (fs *StdFS) OpenRelationDataFile(relation relation.Relation) (FileLike, err
 	return file, nil
 }
 
+func (fs *StdFS) InitDBSystemConfigAndProps(configData []byte, propertiesData []byte) error {
+	err := fs.createFile(Path(fs.RootPath, ConfigFilename), configData)
+	if err != nil {
+		return err
+	}
+	err = fs.createFile(Path(fs.RootPath, PropertiesFilename), propertiesData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// -------------------------
+//      RelationFS
+// -------------------------
+
 func (fs *StdFS) OpenRelationDef(relationId relation.ID) (FileLike, error) {
 	filepath := fmt.Sprintf("%s/%s/%d/%s", fs.RootPath, RelationsDirname, relationId, DefinitionFilename)
-	file, err := os.Open(filepath)
+	file, err := os.OpenFile(filepath, os.O_RDWR, os.ModeType)
 	if err != nil {
 		return nil, err
 	}
@@ -151,16 +176,66 @@ func (fs *StdFS) InitNewRelationDir(relationId relation.ID) error {
 //      internal
 // -------------------------
 
-func (fs *StdFS) readFile(path string) ([]byte, error) {
+func (fs *StdFS) overrideFileData(configPath string, config []byte) error {
+	file, err := fs.Open(configPath)
+	if err != nil {
+		return err
+	}
+	if stat, err := file.Stat(); err != nil {
+		return err
+	} else if stat.Size() > int64(len(config)) {
+		err = fs.Truncate(configPath, int64(len(config)))
+		if err != nil {
+			return err
+		}
+	}
+
+	if _, err = file.Write(config); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (fs *StdFS) readFile(path string) (data []byte, err error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		err2 := file.Close()
+		if err == nil {
+			err = err2
+		}
+	}()
+
 	stat, err := file.Stat()
 	if err != nil {
 		return nil, err
 	}
-	data := make([]byte, stat.Size())
+	data = make([]byte, stat.Size())
 	_, err = file.Read(data)
+	if err != nil {
+		return nil, err
+	}
+
 	return data, err
+}
+
+func (fs *StdFS) createFile(path string, data []byte) (err error) {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err2 := file.Close(); err == nil {
+			err = err2
+		}
+	}()
+
+	_, err = file.Write(data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

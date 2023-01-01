@@ -101,5 +101,5 @@ func (c *FutureContainer) validate() *FutureContainer {
 		c.SharedBufferProvider == nil {
 		c.err = fmt.Errorf("future container has missing dependency.\n%+v", c)
 	}
-	return nil
+	return c
 }

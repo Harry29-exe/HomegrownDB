@@ -18,7 +18,11 @@ func FS(rootPath string) (dbfs.FS, error) {
 }
 
 func Configuration(fs dbfs.FS) (*config.Configuration, error) {
-	return config.ReadConfig(fs)
+	data, err := fs.ReadConfigFile()
+	if err != nil {
+		return nil, err
+	}
+	return config.DeserializeConfig(data)
 }
 
 func Properties(fs dbfs.FS) (config.DBProperties, error) {

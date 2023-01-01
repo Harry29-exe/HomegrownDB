@@ -12,7 +12,7 @@ import (
 // is saved in DBSharedBuffer, in this way bufferMapLock will be lock for shorter time
 // see buffer.loadPage
 
-func newBuffer(bufferSize uint, pageIOStore pageio.Store) internalBuffer {
+func NewStdBuffer(bufferSize uint, pageIOStore pageio.Store) StdBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 	for i := uint(0); i < bufferSize; i++ {
 		descriptorArray[i] = pageDescriptor{
@@ -52,7 +52,7 @@ type buffer struct {
 	ioStore pageio.Store
 }
 
-func (b *buffer) ReadRPage(relation relation.Relation, pageId page.Id, strategy rbm) (buffPage, error) {
+func (b *buffer) ReadRPage(relation relation.Relation, pageId page.Id, strategy rbm) (stdPage, error) {
 	tag := pageio.PageTag{PageId: pageId, Relation: relation.RelationID()}
 	b.bufferMapLock.RLock()
 
@@ -64,9 +64,9 @@ func (b *buffer) ReadRPage(relation relation.Relation, pageId page.Id, strategy 
 
 		descriptor.contentLock.RLock()
 		pageStart := uintptr(pageArrIndex) * uintptr(page.Size)
-		return buffPage{
-			bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
-			isNew: false,
+		return stdPage{
+			Bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+			IsNew: false,
 		}, nil
 
 	} else {
@@ -75,7 +75,7 @@ func (b *buffer) ReadRPage(relation relation.Relation, pageId page.Id, strategy 
 	}
 }
 
-func (b *buffer) ReadWPage(relation relation.Relation, pageId page.Id, strategy rbm) (buffPage, error) {
+func (b *buffer) ReadWPage(relation relation.Relation, pageId page.Id, strategy rbm) (stdPage, error) {
 	tag := pageio.PageTag{PageId: pageId, Relation: relation.RelationID()}
 	b.bufferMapLock.RLock()
 
@@ -88,9 +88,9 @@ func (b *buffer) ReadWPage(relation relation.Relation, pageId page.Id, strategy 
 
 		descriptor.contentLock.Lock()
 		pageStart := uintptr(pageArrIndex) * uintptr(page.Size)
-		return buffPage{
-			bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
-			isNew: false,
+		return stdPage{
+			Bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+			IsNew: false,
 		}, nil
 
 	} else {
@@ -124,37 +124,37 @@ func (b *buffer) ReleaseRPage(tag pageio.PageTag) {
 	descriptor.unpin()
 }
 
-func (b *buffer) loadWPage(rel relation.Relation, pageId page.Id, strategy rbm) (buffPage, error) {
+func (b *buffer) loadWPage(rel relation.Relation, pageId page.Id, strategy rbm) (stdPage, error) {
 	descriptor, err := b.loadPage(rel, pageId)
 	pageIsNew := false
 	if err != nil {
 		if errors.Is(err, pageio.NoPageErrorType) {
 			pageIsNew = true
 		} else {
-			return buffPage{}, err
+			return stdPage{}, err
 		}
 	}
 	descriptor.contentLock.Lock()
 
 	pageStart := uintptr(descriptor.slotIndex) * uintptr(page.Size)
-	return buffPage{
-		bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
-		isNew: pageIsNew,
+	return stdPage{
+		Bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+		IsNew: pageIsNew,
 	}, nil
 }
 
-func (b *buffer) loadRPage(rel relation.Relation, pageId page.Id, strategy rbm) (buffPage, error) {
+func (b *buffer) loadRPage(rel relation.Relation, pageId page.Id, strategy rbm) (stdPage, error) {
 	descriptor, err := b.loadPage(rel, pageId)
 	descriptor.contentLock.RLock()
 	if err != nil {
 		println("pageId: ", pageId, ", ", err.Error())
-		return buffPage{}, err
+		return stdPage{}, err
 	}
 
 	pageStart := uintptr(descriptor.slotIndex) * uintptr(page.Size)
-	return buffPage{
-		bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
-		isNew: false,
+	return stdPage{
+		Bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+		IsNew: false,
 	}, nil
 }
 

@@ -34,7 +34,7 @@ func CreateAndInitTestFS(t *testing.T) TestFS {
 		FS:       innerFS,
 		Filepath: rootPath,
 	}
-	err = fs.InitDBSystem()
+	err = fs.InitDBSystemDirs()
 	assert.ErrIsNil(err, t)
 
 	return fs

@@ -91,11 +91,18 @@ func (c *creatorCtx) initDBFilesystem() *creatorCtx {
 	if err != nil {
 		return c.error(err)
 	}
-	err = fs.InitDBSystem()
+	err = fs.InitDBSystemDirs()
 	if err != nil {
 		return c.error(err)
 	}
-	c.FS = fs
+
+	err = fs.InitDBSystemConfigAndProps(
+		config.SerializeConfig(c.Config),
+		config.SerializeProperties(c.DBProps))
+	if err != nil {
+		return c.error(err)
+	}
+
 	return c
 }
 

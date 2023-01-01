@@ -7,6 +7,20 @@ import (
 	"encoding/json"
 )
 
+func DeserializeProperties(propsData []byte) (DBProperties, error) {
+	props := DBProperties{}
+	err := json.Unmarshal(propsData, &props)
+	return props, err
+}
+
+func SerializeProperties(properties DBProperties) []byte {
+	data, err := json.Marshal(properties)
+	if err != nil {
+		panic(err.Error())
+	}
+	return data
+}
+
 type DBProperties struct {
 	Relations []RelPTR
 	NextRID   relation.ID

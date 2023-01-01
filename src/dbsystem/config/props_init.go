@@ -2,23 +2,10 @@ package config
 
 import (
 	"HomegrownDB/dbsystem/config/envvar"
-	"HomegrownDB/dbsystem/storage/dbfs"
-	"encoding/json"
 	"errors"
 	"log"
 	"os"
 )
-
-func ReadConfig(fs dbfs.PropertiesFS) (*Configuration, error) {
-	fileData, err := fs.ReadConfigFile()
-	if err != nil {
-		return nil, err
-	}
-	conf := &Configuration{}
-	err = json.Unmarshal(fileData, conf)
-
-	return conf, err
-}
 
 func ReadRootPathEnv() (string, error) {
 	home := os.Getenv(dbHomeVarName)
