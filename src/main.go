@@ -7,7 +7,7 @@ type WE struct {
 var testFilePath = "/home/kamil/Downloads/test.hdbd"
 
 func main() {
-	//dbsystem.Props.DBHomePath()
+	//dbsystem.Config.DBHomePath()
 	//dbsystem.DBHomePath()
 	array := make([]WE, 2)
 	value := &array[1]

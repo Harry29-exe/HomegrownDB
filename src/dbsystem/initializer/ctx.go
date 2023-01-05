@@ -9,20 +9,20 @@ import (
 	"HomegrownDB/dbsystem/storage/pageio"
 )
 
-func createCtx(props *config.Properties, initProps initProperties) *ctx {
-	return &ctx{
-		Props:       props,
-		InitProps:   initProps,
-		PageIOStore: pageio.NewStore(),
-		TableStore:  table2.NewEmptyTableStore(),
+func createCtx(props *config.Properties, initProps initProperties) *LoaderCtx {
+	return &LoaderCtx{
+		Config:    props,
+		InitProps: initProps,
 	}
 }
 
-type ctx struct {
-	Props     *config.Properties
+type LoaderCtx struct {
+	RootPath string
+	FS       dbfs.FS
+
+	Config    *config.Properties
 	InitProps initProperties
 
-	FS           dbfs.FS
 	PageIOStore  *pageio.StdStore
 	SharedBuffer buffer.SharedBuffer
 	TableStore   table2.Store

@@ -1,36 +1,25 @@
 package config
 
 import (
+	"HomegrownDB/dbsystem/storage/dbfs"
 	"encoding/json"
 	"errors"
 	"log"
 	"os"
 )
 
-// todo init
-// DBHomePath returns path to root directory of database without '/' postfix
-var DBHomePath string
-var Props *Properties
-
-func init() {
-	DBHomePath, _ = readDBHome()
-	var err error
-	Props, err = ReadConfig()
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
-func ReadConfig() (*Properties, error) {
-	dbHomePath, err := readDBHome()
+func ReadConfig(fs dbfs.PropertiesFS) (*Properties, error) {
+	fileData, err := fs.ReadConfigFile()
 	if err != nil {
 		return nil, err
 	}
+	conf := &Properties{}
+	err = json.Unmarshal(fileData, conf)
 
-	return readConfigFile(dbHomePath)
+	return conf, err
 }
 
-func readDBHome() (string, error) {
+func ReadRootPath() (string, error) {
 	home := os.Getenv(dbHomeVarName)
 	if home == "" {
 		return home, errors.New("env variable: " + dbHomeVarName + " is empty")
@@ -39,26 +28,4 @@ func readDBHome() (string, error) {
 	}
 
 	return home, nil
-}
-
-func readConfigFile(dbHomePath string) (*Properties, error) {
-	conf := &Properties{}
-
-	file, err := os.Open(dbHomePath + "/config.hdb")
-	if err != nil {
-		return conf, err
-	}
-	fileStats, err := file.Stat()
-	if err != nil {
-		return conf, err
-	}
-
-	fileData := make([]byte, fileStats.Size())
-	_, err = file.Read(fileData)
-	if err != nil {
-		return conf, err
-	}
-
-	err = json.Unmarshal(fileData, conf)
-	return conf, err
 }

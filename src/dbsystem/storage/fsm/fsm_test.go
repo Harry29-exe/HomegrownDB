@@ -9,6 +9,7 @@ import (
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/hgtest"
 	"github.com/spf13/afero"
 	"testing"
 )
@@ -58,7 +59,7 @@ func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 	file, err := fs.Create("fsm_pageio")
 	assert.IsNil(err, t)
 
-	store := pageio.NewStore()
+	store := pageio.NewStore(hgtest.CreateAndInitTestFS(t))
 	io, err := pageio.NewPageIO(file)
 	assert.IsNil(err, t)
 	store.Register(fsmRelation.RelationID(), io)

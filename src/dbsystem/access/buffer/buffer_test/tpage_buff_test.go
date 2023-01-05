@@ -9,7 +9,7 @@ import (
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/storage/tpage"
-	"github.com/spf13/afero"
+	"HomegrownDB/hgtest"
 	"testing"
 )
 
@@ -75,16 +75,11 @@ func copyTPage(tPage tpage.RPage) (pageCopy []byte) {
 }
 
 func createTestSharedBuffer(t *testing.T) (testtable.TestTable, pageio.IO, buffer.SharedBuffer) {
-	pageioStore := pageio.NewStore()
-	fs := afero.NewMemMapFs()
-
 	table1 := ttable1.Def(t)
-	file, err := fs.Create("table1_io")
-	assert.IsNil(err, t)
-	io, err := pageio.NewPageIO(file)
-	assert.IsNil(err, t)
-	pageioStore.Register(table1.RelationID(), io)
+
+	fs := hgtest.CreateAndInitTestFS(t)
+	pageioStore := hgtest.PageIOUtils.With(t, fs, table1)
 
 	buff := buffer.NewSharedBuffer(2, pageioStore)
-	return table1, io, buff
+	return table1, pageioStore.Get(table1.RelationID()), buff
 }

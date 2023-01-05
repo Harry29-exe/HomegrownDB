@@ -1,6 +1,7 @@
 package hgtest
 
 import (
+	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"os"
 	"testing"
@@ -11,16 +12,22 @@ type TestFS interface {
 	Destroy()
 }
 
-func CreateNewTestFS(t *testing.T) dbfs.FS {
-	rootPath, err := os.MkdirTemp("", "HomegrownDB_TEST-*")
+func CreateAndInitTestFS(t *testing.T) TestFS {
+	rootPath := "/tmp/HomegrownDB_TEST-*"
+	err := os.Mkdir(rootPath, 0777)
+	//rootPath, err := os.MkdirTemp("", "HomegrownDB_TEST-*")
 	if err != nil {
 		t.Error(err.Error())
 	}
 
-	return &testFS{
-		FS:       dbfs.NewFS(rootPath),
+	fs := &testFS{
+		FS:       dbfs.LoadFS(rootPath),
 		Filepath: rootPath,
 	}
+	err = fs.InitDBSystem()
+	assert.ErrIsNil(err, t)
+
+	return fs
 }
 
 type testFS struct {
@@ -34,3 +41,11 @@ func (t *testFS) Destroy() {
 		panic("could not remove file: " + t.Filepath)
 	}
 }
+
+// -------------------------
+//      FSUtils
+// -------------------------
+
+var FSUtils = fsUtils{}
+
+type fsUtils struct{}

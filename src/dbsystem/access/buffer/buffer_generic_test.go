@@ -6,29 +6,27 @@ import (
 	"HomegrownDB/common/tests/tutils/testtable/ttable1"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
-	"os"
+	"HomegrownDB/hgtest"
 	"sync"
 	"testing"
 	"time"
 )
 
 func TestSharedBuffer_Overflow(t *testing.T) {
-	table1 := ttable1.Def(t)
-	ioStore := pageio.NewStore()
-	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
+	tb := table1Bootstrap(t)
 
-	table1.TUtils.FillPages(1_000, table1IO)
+	tb.table.TUtils.FillPages(1_000, tb.tableIO)
 
 	buf := make([]byte, page.Size)
-	testBuffer := newBuffer(100, ioStore)
+	testBuffer := newBuffer(100, tb.ioStore)
 	for i := page.Id(0); i < 1_000; i++ {
-		tag := pageio.NewTablePageTag(i, table1)
-		pageData, err := testBuffer.ReadWPage(table1, i, rbmReadOrCreate)
+		tag := pageio.NewTablePageTag(i, tb.table)
+		pageData, err := testBuffer.ReadWPage(tb.table, i, rbmReadOrCreate)
 		if err != nil {
 			t.Errorf("During reading page %d got error: %e", i, err)
 		}
 
-		err = table1IO.ReadPage(i, buf)
+		err = tb.tableIO.ReadPage(i, buf)
 		if err != nil {
 			t.Errorf("TableIO returned non nil error: %e", err)
 		}
@@ -38,24 +36,25 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 }
 
 func TestSharedBuffer_ParallelRead(t *testing.T) {
-	table1 := ttable1.Def(t)
-	ioStore := pageio.NewStore()
-	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
+	//given
+	tb := table1Bootstrap(t)
+	table, tableIO, ioStore := tb.table, tb.tableIO, tb.ioStore
 
 	tCount := 16
-	table1.TUtils.FillPages(10, table1IO)
+	table.TUtils.FillPages(10, tableIO)
 
 	testBuffer := newBuffer(2, ioStore)
 
+	//when
 	waitGroup1 := sync.WaitGroup{}
 	waitGroup1.Add(tCount)
 	waitGroup2 := sync.WaitGroup{}
 	waitGroup2.Add(tCount)
 
-	tag := pageio.PageTag{PageId: 0, Relation: table1.RelationID()}
+	tag := pageio.PageTag{PageId: 0, Relation: table.RelationID()}
 	for i := 0; i < tCount; i++ {
 		go func() {
-			_, _ = testBuffer.ReadRPage(table1, 0, rbmReadOrCreate)
+			_, _ = testBuffer.ReadRPage(table, 0, rbmReadOrCreate)
 			waitGroup1.Done()
 			waitGroup1.Wait()
 			testBuffer.ReleaseRPage(tag)
@@ -63,13 +62,13 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 		}()
 	}
 
+	//then
 	waitGroup2.Wait()
 }
 
 func TestSharedBuffer_ParallelDifferentRowRead(t *testing.T) {
-	table1 := ttable1.Def(t)
-	ioStore := pageio.NewStore()
-	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
+	tb := table1Bootstrap(t)
+	table1, table1IO, ioStore := tb.table, tb.tableIO, tb.ioStore
 
 	tCount := 16
 	table1.TUtils.FillPages(tCount, table1IO)
@@ -103,9 +102,8 @@ func TestSharedBuffer_ParallelDifferentRowRead(t *testing.T) {
 
 // todo consult chaber if this test can be done better (not using timer)
 func TestSharedBuffer_RWLock(t *testing.T) {
-	table1 := ttable1.Def(t)
-	ioStore := pageio.NewStore()
-	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
+	tb := table1Bootstrap(t)
+	table1, table1IO, ioStore := tb.table, tb.tableIO, tb.ioStore
 
 	table1.TUtils.FillPages(10, table1IO)
 
@@ -149,9 +147,8 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 
 // todo consult chaber if this test can be done better (not using timer)
 func TestSharedBuffer_2xWLock(t *testing.T) {
-	table1 := ttable1.Def(t)
-	ioStore := pageio.NewStore()
-	table1IO := _createAndRegisterTestPageIO(table1, ioStore, t)
+	tb := table1Bootstrap(t)
+	table1, table1IO, ioStore := tb.table, tb.tableIO, tb.ioStore
 
 	table1.TUtils.FillPages(10, table1IO)
 
@@ -193,14 +190,36 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 	<-ch1
 }
 
-func _createAndRegisterTestPageIO(table1 testtable.TestTable, ioStore *pageio.StdStore, t *testing.T) pageio.IO {
-	//fs := afero.NewMemMapFs()
-	//file, err := fs.Create("table1IO")
-	file, err := os.Create("/tmp/643215874.test.go")
-	file.ReadAt([]byte{}, 53)
-	assert.IsNil(err, t)
-	table1IO, err := pageio.NewPageIO(file)
-	assert.IsNil(err, t)
-	ioStore.Register(table1.RelationID(), table1IO)
-	return table1IO
+// -------------------------
+//      Bootstrap
+// -------------------------
+
+// genericBuffTB bootstrap for generic buffer tests
+type genericBuffTB struct {
+	t *testing.T
+
+	table   testtable.TestTable
+	tableIO pageio.IO
+
+	fs      hgtest.TestFS
+	ioStore pageio.Store
+}
+
+func (b genericBuffTB) CleanUp() {
+	b.fs.Destroy()
+}
+
+func table1Bootstrap(t *testing.T) genericBuffTB {
+	table1 := ttable1.Def(t)
+	fs := hgtest.CreateAndInitTestFS(t)
+	ioStore := hgtest.PageIOUtils.With(t, fs, table1)
+	table1IO := ioStore.Get(table1.RelationID())
+
+	return genericBuffTB{
+		t:       t,
+		table:   table1,
+		tableIO: table1IO,
+		fs:      fs,
+		ioStore: ioStore,
+	}
 }

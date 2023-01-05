@@ -3,11 +3,8 @@ package testinfr
 import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem"
-	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
 	table2 "HomegrownDB/dbsystem/relation/table"
-	"HomegrownDB/dbsystem/storage/fsm"
-	"HomegrownDB/dbsystem/storage/pageio"
 	"testing"
 )
 
@@ -18,10 +15,10 @@ func NewDBStore(t *testing.T, properties config.Properties, tables ...table2.Def
 		assert.ErrIsNil(err, t)
 	}
 
-	ioStore := pageio.NewStore()
-	buff := buffer.NewSharedBuffer(properties.SharedBufferSize, ioStore)
-	fsmStore := fsm.NewStore()
-	_, _ = fsmStore, buff
+	//ioStore := pageio.NewStore()
+	//buff := buffer.NewSharedBuffer(properties.SharedBufferSize, ioStore)
+	//fsmStore := fsm.NewStore()
+	//_, _ = fsmStore, buff
 	//for {
 	//
 	//}
