@@ -8,8 +8,16 @@ import (
 	"os"
 )
 
+type CreatorMode uint8
+
+const (
+	DBInstaller CreatorMode = iota
+	Test
+)
+
 type CreatorProps struct {
-	RootPath string // RootPath path where db will be initialized (nullable)
+	Mode              CreatorMode
+	RootPath          string              // RootPath path where db will be initialized (nullable)
 	RelationsToCreate []relation.Relation // Relations that DBCreator will create
 }
 
@@ -29,7 +37,7 @@ func (c *CreatorProps) initEmptyWithDefault() error {
 }
 
 func InitializeDB(props CreatorProps) (dbsystem.DBSystem, error) {
-	
+
 }
 
 func initializeRootPath(rootPath string) error {
@@ -41,7 +49,7 @@ func initDB(rootPath string, ctx *CreatorCtx) (dbsystem.DBSystem, error) {
 	if ctx.RootPath != "" {
 		ctx.RootPath = rootPath
 	} else {
-		return dbsystem.
+		dbfs.
 	}
 
 	if ctx.FS != nil {

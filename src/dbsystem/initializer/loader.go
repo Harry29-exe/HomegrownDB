@@ -53,7 +53,7 @@ func LoadDB() (dbsystem.DBSystem, error) {
 
 func loadRootPath(ctx *LoaderCtx) error {
 	var err error
-	ctx.RootPath, err = config.ReadRootPath()
+	ctx.RootPath, err = config.ReadRootPathEnv()
 	return err
 }
 

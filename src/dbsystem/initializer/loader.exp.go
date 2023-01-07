@@ -17,7 +17,7 @@ func ExpLoadDB() (dbsystem.DBSystem, error) {
 	ctx := &LoaderCtx{}
 
 	ctx.thenAll(func() {
-		ctx.RootPath, ctx.err = config.ReadRootPath()
+		ctx.RootPath, ctx.err = config.ReadRootPathEnv()
 	}, func() {
 		ctx.FS = &dbfs.StdFS{RootPath: ctx.RootPath}
 	}, func() {

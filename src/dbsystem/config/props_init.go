@@ -1,6 +1,7 @@
 package config
 
 import (
+	"HomegrownDB/dbsystem/config/envvar"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"encoding/json"
 	"errors"
@@ -19,7 +20,7 @@ func ReadConfig(fs dbfs.PropertiesFS) (*Properties, error) {
 	return conf, err
 }
 
-func ReadRootPath() (string, error) {
+func ReadRootPathEnv() (string, error) {
 	home := os.Getenv(dbHomeVarName)
 	if home == "" {
 		return home, errors.New("env variable: " + dbHomeVarName + " is empty")
@@ -28,4 +29,8 @@ func ReadRootPath() (string, error) {
 	}
 
 	return home, nil
+}
+
+func SetRootPathEnv(rootPath string) error {
+	return envvar.SetOsEnv(dbHomeVarName, rootPath)
 }
