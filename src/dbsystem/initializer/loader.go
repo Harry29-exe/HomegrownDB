@@ -12,7 +12,7 @@ import (
 	"HomegrownDB/dbsystem/storage/pageio"
 )
 
-type loadFunc func(loadCtx *LoaderCtx) error
+type loadFunc func(loadCtx *LoaderCtx) (err error)
 
 var loadSteps = []loadFunc{
 	loadRootPath,
