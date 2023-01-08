@@ -7,10 +7,18 @@ import (
 	"encoding/json"
 )
 
-type initProperties struct {
+type DBProperties struct {
 	Relations []relPTR
 	NextRID   relation.ID
 	NextOID   dbobj.OID
+}
+
+func DefaultDBProperties() DBProperties {
+	return DBProperties{
+		Relations: make([]relPTR, 0),
+		NextRID:   0,
+		NextOID:   0,
+	}
 }
 
 type relPTR struct {
@@ -18,8 +26,8 @@ type relPTR struct {
 	RelationID relation.ID
 }
 
-func readInitProperties(fs dbfs.PropertiesFS) (initProperties, error) {
-	props := initProperties{}
+func readInitProperties(fs dbfs.PropertiesFS) (DBProperties, error) {
+	props := DBProperties{}
 
 	fileData, err := fs.ReadPropertiesFile()
 

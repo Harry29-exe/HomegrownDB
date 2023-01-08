@@ -60,9 +60,9 @@ func exprLoadRelations(ctx *LoaderCtx) error {
 
 		switch rel.RelKind {
 		case relation.TypeTable:
-			err = loadTable(fileData, ctx)
+			err = exprLoadTable(fileData, ctx)
 		case relation.TypeFsm:
-			err = loadFSM(fileData, ctx)
+			err = exprLoadFSM(fileData, ctx)
 		default:
 			//todo implement me
 			panic("Not implemented")

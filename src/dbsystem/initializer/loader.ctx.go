@@ -11,7 +11,7 @@ import (
 	"errors"
 )
 
-func createCtx(props *config.Properties, initProps initProperties) *LoaderCtx {
+func createCtx(props *config.Configuration, initProps DBProperties) *LoaderCtx {
 	return &LoaderCtx{
 		Config:    props,
 		InitProps: initProps,
@@ -22,8 +22,8 @@ type LoaderCtx struct {
 	RootPath string
 	FS       dbfs.FS
 
-	Config    *config.Properties
-	InitProps initProperties
+	Config    *config.Configuration
+	InitProps DBProperties
 
 	PageIOStore  *pageio.StdStore
 	SharedBuffer buffer.SharedBuffer

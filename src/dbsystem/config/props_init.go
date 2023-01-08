@@ -9,12 +9,12 @@ import (
 	"os"
 )
 
-func ReadConfig(fs dbfs.PropertiesFS) (*Properties, error) {
+func ReadConfig(fs dbfs.PropertiesFS) (*Configuration, error) {
 	fileData, err := fs.ReadConfigFile()
 	if err != nil {
 		return nil, err
 	}
-	conf := &Properties{}
+	conf := &Configuration{}
 	err = json.Unmarshal(fileData, conf)
 
 	return conf, err

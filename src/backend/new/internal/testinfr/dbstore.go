@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func NewDBStore(t *testing.T, properties config.Properties, tables ...table2.Definition) dbsystem.DBSystem {
+func NewDBStore(t *testing.T, properties config.Configuration, tables ...table2.Definition) dbsystem.DBSystem {
 	tableStore := table2.NewEmptyTableStore()
 	for _, tableDef := range tables {
 		err := tableStore.AddNewTable(tableDef)

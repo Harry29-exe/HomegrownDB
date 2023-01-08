@@ -5,13 +5,13 @@ package fsm
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/access/buffer"
-	relation2 "HomegrownDB/dbsystem/relation"
+	relation "HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
 )
 
-func CreateFreeSpaceMap(fsmRelation relation2.BaseRelation, parentRelationId relation2.ID, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
+func CreateFreeSpaceMap(fsmRelation relation.BaseRelation, parentRelationId relation.ID, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
 	fsm := &FreeSpaceMap{
 		BaseRelation:     fsmRelation,
 		parentRelationId: parentRelationId,
@@ -24,7 +24,7 @@ func CreateFreeSpaceMap(fsmRelation relation2.BaseRelation, parentRelationId rel
 	return fsm, nil
 }
 
-func LoadFreeSpaceMap(fsmRelation relation2.BaseRelation, parentRelationId relation2.ID, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
+func LoadFreeSpaceMap(fsmRelation relation.BaseRelation, parentRelationId relation.ID, buff buffer.SharedBuffer) (*FreeSpaceMap, error) {
 	return &FreeSpaceMap{
 		BaseRelation:     fsmRelation,
 		parentRelationId: parentRelationId,
@@ -45,14 +45,14 @@ func initNewFsmIO(fsm *FreeSpaceMap) error {
 }
 
 func SerializeFSM(fsm *FreeSpaceMap, serializer *bparse.Serializer) {
-	relation2.SerializeBaseRelation(&fsm.BaseRelation, serializer)
+	relation.SerializeBaseRelation(&fsm.BaseRelation, serializer)
 	serializer.Uint32(uint32(fsm.parentRelationId))
 }
 
 func DeserializeFSM(buff buffer.SharedBuffer, deserializer *bparse.Deserializer) *FreeSpaceMap {
 	return &FreeSpaceMap{
-		BaseRelation:     relation2.DeserializeBaseRelation(deserializer),
-		parentRelationId: relation2.ID(deserializer.Uint32()),
+		BaseRelation:     relation.DeserializeBaseRelation(deserializer),
+		parentRelationId: relation.ID(deserializer.Uint32()),
 		buff:             buff,
 	}
 }
@@ -62,8 +62,8 @@ func DeserializeFSM(buff buffer.SharedBuffer, deserializer *bparse.Deserializer)
 // page has and helps find one with enough
 // space to fit inserting tuple
 type FreeSpaceMap struct {
-	relation2.BaseRelation
-	parentRelationId relation2.ID
+	relation.BaseRelation
+	parentRelationId relation.ID
 	buff             buffer.SharedBuffer
 }
 
@@ -86,4 +86,4 @@ func (f *FreeSpaceMap) UpdatePage(availableSpace uint16, pageId page.Id) error {
 	return f.updatePages(uint8(availableSpace/availableSpaceDivider), pageIndex, uint16(nodeIndex))
 }
 
-var _ relation2.Relation = &FreeSpaceMap{}
+var _ relation.Relation = &FreeSpaceMap{}
