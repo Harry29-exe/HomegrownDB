@@ -25,7 +25,8 @@ type DBInitializerFS interface {
 type RelationFS interface {
 	OpenRelationDataFile(relation relation.Relation) (FileLike, error)
 	OpenRelationDef(relation relation.ID) (FileLike, error)
-	CreateRelationDir(relation relation.Relation) error
+	// InitNewRelationDir create directory and all files(empty) for given relation ID
+	InitNewRelationDir(relationID relation.ID) error
 }
 
 func LoadFS(rootPath string) (FS, error) {
@@ -107,8 +108,8 @@ func (fs *StdFS) OpenRelationDef(relationId relation.ID) (FileLike, error) {
 	return file, nil
 }
 
-func (fs *StdFS) CreateRelationDir(relation relation.Relation) error {
-	path := fmt.Sprintf("%s/%s/%d", fs.RootPath, RelationsDirname, relation.RelationID())
+func (fs *StdFS) InitNewRelationDir(relationId relation.ID) error {
+	path := fmt.Sprintf("%s/%s/%d", fs.RootPath, RelationsDirname, relationId)
 	_, err := os.Stat(path)
 	if !os.IsNotExist(err) {
 		return os.ErrExist

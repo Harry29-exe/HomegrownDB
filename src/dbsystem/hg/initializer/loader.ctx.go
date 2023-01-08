@@ -1,9 +1,9 @@
 package initializer
 
 import (
-	"HomegrownDB/dbsystem"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
+	"HomegrownDB/dbsystem/hg"
 	table2 "HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
@@ -33,14 +33,14 @@ type LoaderCtx struct {
 	err error
 }
 
-func (c *LoaderCtx) BuildDB() (dbsystem.DBSystem, error) {
-	system := &dbsystem.StdSystem{
+func (c *LoaderCtx) BuildDB() (hg.DBStore, error) {
+	system := &hg.DBSystem{
 		Tables:   c.TableStore,
 		FSMs:     c.FsmStore,
 		PageIO:   c.PageIOStore,
 		DBBuffer: c.SharedBuffer,
 	}
-	err := system.SetState(dbsystem.State{
+	err := system.SetState(hg.State{
 		NextRID: c.InitProps.NextRID,
 		NextOID: c.InitProps.NextOID,
 	})

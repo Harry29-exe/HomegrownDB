@@ -60,7 +60,7 @@ func (c *CreatorCtx) createRelations() *CreatorCtx {
 	}
 	relations := c.Props.RelationsToCreate
 	for _, relation := range relations {
-		err := c.FS.CreateRelationDir(relation)
+		err := c.FS.InitNewRelationDir(relation.RelationID())
 		if err != nil {
 			return c.error(err)
 		}

@@ -2,13 +2,13 @@ package testinfr
 
 import (
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/dbsystem"
 	"HomegrownDB/dbsystem/config"
+	"HomegrownDB/dbsystem/hg"
 	table2 "HomegrownDB/dbsystem/relation/table"
 	"testing"
 )
 
-func NewDBStore(t *testing.T, properties config.Configuration, tables ...table2.Definition) dbsystem.DBSystem {
+func NewDBStore(t *testing.T, properties config.Configuration, tables ...table2.Definition) hg.DBStore {
 	tableStore := table2.NewEmptyTableStore()
 	for _, tableDef := range tables {
 		err := tableStore.AddNewTable(tableDef)

@@ -32,12 +32,3 @@ func (c *CreatorProps) initEmptyWithDefault() error {
 
 	return nil
 }
-
-func InitializeDB(props CreatorProps) error {
-	ctx := CreatorCtx{Props: props}
-	ctx.initRootPath().
-		initConfigurationAndProperties().
-		initDBFilesystem().
-		createRelations()
-	return ctx.err
-}

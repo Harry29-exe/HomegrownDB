@@ -2,9 +2,9 @@ package initializer
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
+	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dbfs"
@@ -12,7 +12,7 @@ import (
 	"HomegrownDB/dbsystem/storage/pageio"
 )
 
-func ExpLoadDB() (dbsystem.DBSystem, error) {
+func ExpLoadDB() (hg.DBStore, error) {
 	var err error
 	ctx := &LoaderCtx{}
 
@@ -35,14 +35,14 @@ func ExpLoadDB() (dbsystem.DBSystem, error) {
 	}).thenValidate().
 		after(exprLoadRelations)
 
-	system := &dbsystem.StdSystem{
+	system := &hg.DBSystem{
 		PageIO:   ctx.PageIOStore,
 		Tables:   ctx.TableStore,
 		FSMs:     ctx.FsmStore,
 		DBBuffer: ctx.SharedBuffer,
 	}
 
-	err = system.SetState(dbsystem.State{
+	err = system.SetState(hg.State{
 		NextRID: ctx.InitProps.NextRID,
 		NextOID: ctx.InitProps.NextOID,
 	})
