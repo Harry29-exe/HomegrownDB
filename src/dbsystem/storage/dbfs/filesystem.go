@@ -11,6 +11,8 @@ type FS interface {
 	RelationFS
 	PropertiesFS
 	DBInitializerFS
+	Truncate(path string, newSize int64) error
+	Open(path string) (FileLike, error)
 }
 
 type PropertiesFS interface {
@@ -52,6 +54,18 @@ type StdFS struct {
 }
 
 const permission = 0777 //todo check this permissions
+
+// -------------------------
+//      FS
+// -------------------------
+
+func (fs *StdFS) Truncate(path string, newSize int64) error {
+	return os.Truncate(path, newSize)
+}
+
+func (fs *StdFS) Open(path string) (FileLike, error) {
+	return os.Open(path)
+}
 
 // -------------------------
 //      PropertiesFS

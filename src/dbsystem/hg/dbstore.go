@@ -20,5 +20,13 @@ type DBStore interface {
 }
 
 type DB interface {
+	DBStore
+	RelationsOperations
+	//io.Closer
+}
+
+type RelationsOperations interface {
 	CreateRel(rel relation.Relation) error
+	LoadRel(rid relation.ID) error
+	DeleteRel(rel relation.Relation) error
 }

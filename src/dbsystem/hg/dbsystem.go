@@ -29,39 +29,39 @@ type DBSystem struct {
 	oidCounter appsync.SyncCounter[dbobj.OID]
 }
 
-func (s *DBSystem) TableStore() table.Store {
-	return s.Tables
+func (db *DBSystem) TableStore() table.Store {
+	return db.Tables
 }
 
-func (s *DBSystem) FsmStore() fsm.Store {
-	return s.FSMs
+func (db *DBSystem) FsmStore() fsm.Store {
+	return db.FSMs
 }
 
-func (s *DBSystem) PageIOStore() pageio.Store {
-	return s.PageIO
+func (db *DBSystem) PageIOStore() pageio.Store {
+	return db.PageIO
 }
 
-func (s *DBSystem) Buffer() buffer.SharedBuffer {
-	return s.DBBuffer
+func (db *DBSystem) Buffer() buffer.SharedBuffer {
+	return db.DBBuffer
 }
 
-func (s *DBSystem) NextRelId() relation.ID {
-	return s.ridCounter.GetAndIncr()
+func (db *DBSystem) NextRelId() relation.ID {
+	return db.ridCounter.GetAndIncr()
 }
 
-func (s *DBSystem) NextOID() dbobj.OID {
-	return s.oidCounter.GetAndIncr()
+func (db *DBSystem) NextOID() dbobj.OID {
+	return db.oidCounter.GetAndIncr()
 }
 
-func (s *DBSystem) SetState(state State) error {
-	s.ridCounter = appsync.NewSyncCounter(state.NextRID)
-	s.oidCounter = appsync.NewSyncCounter(state.NextOID)
+func (db *DBSystem) SetState(state State) error {
+	db.ridCounter = appsync.NewSyncCounter(state.NextRID)
+	db.oidCounter = appsync.NewSyncCounter(state.NextOID)
 	return nil
 }
 
-func (s *DBSystem) GetCurrentState() State {
+func (db *DBSystem) GetCurrentState() State {
 	return State{
-		NextRID: s.ridCounter.Get(),
-		NextOID: s.oidCounter.Get(),
+		NextRID: db.ridCounter.Get(),
+		NextOID: db.oidCounter.Get(),
 	}
 }

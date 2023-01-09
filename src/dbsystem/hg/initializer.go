@@ -1,22 +1,22 @@
 package hg
 
-import "HomegrownDB/dbsystem/hg/initializer"
-
-type CreateArgs = initializer.CreatorProps
+type CreateArgs = CreatorProps
 
 const (
-	CreatorModeDBInitializer initializer.CreatorMode = initializer.DBInstaller
-	CreatorModeTest          initializer.CreatorMode = initializer.Test
+	CreatorModeDBInitializer CreatorMode = DBInstaller
+	CreatorModeTest          CreatorMode = Test
 )
 
 func Create(args CreateArgs) error {
-	return initializer.InitializeDB(args)
+	return CreateDB(args)
 }
 
 func LoadFromPath(rootPath string) (DB, error) {
-
+	//todo implement me
+	panic("Not implemented")
 }
 
 func Load() (DB, error) {
-	
+	//todo implement me
+	panic("Not implemented")
 }
