@@ -3,8 +3,11 @@ package hgtest
 import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/storage/dbfs"
+	"fmt"
 	"os"
+	"strings"
 	"testing"
+	"time"
 )
 
 type TestFS interface {
@@ -12,16 +15,23 @@ type TestFS interface {
 	Destroy()
 }
 
+func TestRootPath(t *testing.T) string {
+	now := time.Now().String()
+	index := strings.Index(now, ".")
+	return fmt.Sprintf("/tmp/HomegrownDB_TEST-%s-%s", t.Name(), now[:index])
+}
+
 func CreateAndInitTestFS(t *testing.T) TestFS {
-	rootPath := "/tmp/HomegrownDB_TEST-*"
-	err := os.Mkdir(rootPath, 0777)
-	//rootPath, err := os.MkdirTemp("", "HomegrownDB_TEST-*")
+	now := time.Now().String()
+	index := strings.Index(now, ".")
+	rootPath := fmt.Sprintf("/tmp/HomegrownDB_TEST-%s-%s", t.Name(), now[:index])
+
+	innerFS, err := dbfs.CreateFS(rootPath)
 	if err != nil {
 		t.Error(err.Error())
 	}
-
 	fs := &testFS{
-		FS:       dbfs.LoadFS(rootPath),
+		FS:       innerFS,
 		Filepath: rootPath,
 	}
 	err = fs.InitDBSystem()

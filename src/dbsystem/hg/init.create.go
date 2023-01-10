@@ -31,6 +31,8 @@ type CreatorProps struct {
 	Mode              CreatorMode
 	RootPath          string              // RootPath path where db will be initialized (nullable)
 	RelationsToCreate []relation.Relation // Relations that DBCreator will create
+	Config            config.Configuration
+	Props             config.DBProperties
 }
 
 func (c *CreatorProps) initEmptyWithDefault() error {
