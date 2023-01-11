@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/storage/pageio"
 	"testing"
 )
 
@@ -26,4 +27,12 @@ func (db TestDB) TableByName(tableName string) table.Definition {
 		db.T.Errorf("not table: " + tableName)
 	}
 	return db.TableStore().AccessTable(id, table.WLockMode)
+}
+
+func (db TestDB) PageIOByTableName(tableName string) pageio.IO {
+	id := db.TableStore().FindTable(tableName)
+	if id == relation.InvalidRelId {
+		db.T.Errorf("not table: " + tableName)
+	}
+	return db.PageIOStore().Get(id)
 }

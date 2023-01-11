@@ -13,7 +13,7 @@ type DBStore interface {
 	TableStore() table.Store
 	FsmStore() fsm.Store
 	PageIOStore() pageio.Store
-	Buffer() buffer.SharedBuffer
+	SharedBuffer() buffer.SharedBuffer
 
 	NextRelId() relation.ID
 	NextOID() dbobj.OID

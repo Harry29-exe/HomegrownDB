@@ -28,7 +28,7 @@ func (db *DBSystem) CreateRel(rel relation.Relation) error {
 }
 
 func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
-	if err = db.FS.InitNewRelationDir(tableDef.RelationID()); err != nil {
+	if err = db.FS().InitNewRelationDir(tableDef.RelationID()); err != nil {
 		return err
 	}
 
@@ -39,12 +39,12 @@ func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
 		return err
 	}
 
-	if err = db.PageIO.Load(tableDef); err != nil {
+	if err = db.PageIOStore().Load(tableDef); err != nil {
 		// todo db.FS.DeleteRelationDir(...)
 		return err
 	}
 
-	if err = db.Tables.LoadTable(tableDef); err != nil {
+	if err = db.TableStore().LoadTable(tableDef); err != nil {
 		// todo Page.Remove(tableDef)
 		// todo db.FS.DeleteRelationDir(...)
 		return err
@@ -53,7 +53,7 @@ func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
 }
 
 func (db *DBSystem) createFSM(fsmDef *fsm.FreeSpaceMap) (err error) {
-	if err = db.FS.InitNewRelationDir(fsmDef.RelationID()); err != nil {
+	if err = db.FS().InitNewRelationDir(fsmDef.RelationID()); err != nil {
 		return err
 	}
 
@@ -64,17 +64,17 @@ func (db *DBSystem) createFSM(fsmDef *fsm.FreeSpaceMap) (err error) {
 		return err
 	}
 
-	if err = db.PageIO.Load(fsmDef); err != nil {
+	if err = db.PageIOStore().Load(fsmDef); err != nil {
 		// todo db.FS.DeleteRelationDir(...)
 		return err
 	}
 
-	db.FSMs.RegisterFSM(fsmDef)
+	db.FsmStore().RegisterFSM(fsmDef)
 	return nil
 }
 
 func (db *DBSystem) saveRelDefinition(id relation.ID, definition []byte) (err error) {
-	file, err := db.FS.OpenRelationDef(id)
+	file, err := db.FS().OpenRelationDef(id)
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (db *DBSystem) saveRelDefinition(id relation.ID, definition []byte) (err er
 	if err != nil {
 		return err
 	}
-	err = db.FS.Truncate(file.Name(), int64(len(definition)))
+	err = db.FS().Truncate(file.Name(), int64(len(definition)))
 	if err != nil {
 		return err
 	}
@@ -125,10 +125,10 @@ func (db *DBSystem) LoadRel(rid relation.ID) error {
 func (db *DBSystem) loadTable(serializedTable []byte) error {
 	tableDef := table.Deserialize(serializedTable)
 
-	if err := db.PageIO.Load(tableDef); err != nil {
+	if err := db.PageIOStore().Load(tableDef); err != nil {
 		return err
 	}
-	if err := db.Tables.LoadTable(tableDef); err != nil {
+	if err := db.TableStore().LoadTable(tableDef); err != nil {
 		//todo delete table from pageio
 		return err
 	}
@@ -136,17 +136,17 @@ func (db *DBSystem) loadTable(serializedTable []byte) error {
 }
 
 func (db *DBSystem) loadFSM(serializedFSM []byte) error {
-	fsmDef := fsm.DeserializeFSM(db.DBBuffer, bparse.NewDeserializer(serializedFSM))
+	fsmDef := fsm.DeserializeFSM(db.SharedBuffer(), bparse.NewDeserializer(serializedFSM))
 
-	db.FSMs.RegisterFSM(fsmDef)
-	if err := db.PageIO.Load(fsmDef); err != nil {
+	db.FsmStore().RegisterFSM(fsmDef)
+	if err := db.PageIOStore().Load(fsmDef); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (db *DBSystem) readRelationDefFile(rid relation.ID) (data []byte, err error) {
-	file, err := db.FS.OpenRelationDef(rid)
+	file, err := db.FS().OpenRelationDef(rid)
 	defer func() {
 		if err != nil {
 			_ = file.Close()

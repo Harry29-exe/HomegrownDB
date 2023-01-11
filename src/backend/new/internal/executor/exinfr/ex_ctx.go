@@ -19,7 +19,7 @@ func NewExCtx(
 	cache := createCache(stmt.Tables, store.TableStore())
 	return &executionCtx{
 		Stmt:     stmt,
-		Buff:     store.Buffer(),
+		Buff:     store.SharedBuffer(),
 		FsmStore: store.FsmStore(),
 		Tables:   cache,
 		TxCtx:    txCtx,

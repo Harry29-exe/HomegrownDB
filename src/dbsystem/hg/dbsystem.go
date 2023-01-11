@@ -3,6 +3,7 @@ package hg
 import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/hg/di"
 	"HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table"
@@ -13,36 +14,44 @@ import (
 
 var _ DBStore = &DBSystem{}
 
+func NewDB(container *di.Container) DB {
+	return &DBSystem{
+		DIC:        container,
+		ridCounter: appsync.NewSyncCounter(container.DBProps.NextRID),
+		oidCounter: appsync.NewSyncCounter(container.DBProps.NextOID),
+	}
+}
+
 type State struct {
 	NextRID relation.ID
 	NextOID dbobj.OID
 }
 
 type DBSystem struct {
-	Tables   table.Store
-	FSMs     fsm.Store
-	PageIO   pageio.Store
-	DBBuffer buffer.SharedBuffer
-	FS       dbfs.FS
+	DIC *di.Container
 
 	ridCounter appsync.SyncCounter[relation.ID]
 	oidCounter appsync.SyncCounter[dbobj.OID]
 }
 
 func (db *DBSystem) TableStore() table.Store {
-	return db.Tables
+	return db.DIC.TableStore
 }
 
 func (db *DBSystem) FsmStore() fsm.Store {
-	return db.FSMs
+	return db.DIC.FsmStore
 }
 
 func (db *DBSystem) PageIOStore() pageio.Store {
-	return db.PageIO
+	return db.DIC.PageIOStore
 }
 
-func (db *DBSystem) Buffer() buffer.SharedBuffer {
-	return db.DBBuffer
+func (db *DBSystem) SharedBuffer() buffer.SharedBuffer {
+	return db.DIC.SharedBuffer
+}
+
+func (db *DBSystem) FS() dbfs.FS {
+	return db.DIC.FS
 }
 
 func (db *DBSystem) NextRelId() relation.ID {

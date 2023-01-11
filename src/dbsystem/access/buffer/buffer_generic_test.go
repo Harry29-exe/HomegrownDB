@@ -3,7 +3,11 @@ package buffer
 import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable"
+	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/common/tests/tutils/testtable/ttable1"
+	"HomegrownDB/dbsystem/hg"
+	"HomegrownDB/dbsystem/hg/di"
+	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/hgtest"
@@ -13,25 +17,27 @@ import (
 )
 
 func TestSharedBuffer_Overflow(t *testing.T) {
-	tb := table1Bootstrap(t)
+	// given
+	var internalBuff internalBuffer
+	ctx := bootstrap(func(args di.SimpleArgs, store pageio.Store) (SharedBuffer, error) {
+		internalBuff = newBuffer(100, store)
+		return &bufferProxy{buffer: internalBuff}, nil
+	}, t)
+	ctx.db.RandFillPages(1_000, ctx.usersTable.Name())
 
-	tb.table.TUtils.FillPages(1_000, tb.tableIO)
-
-	buf := make([]byte, page.Size)
-	testBuffer := newBuffer(100, tb.ioStore)
+	// when
+	tmpPage := make([]byte, page.Size)
 	for i := page.Id(0); i < 1_000; i++ {
-		tag := pageio.NewTablePageTag(i, tb.table)
-		pageData, err := testBuffer.ReadWPage(tb.table, i, rbmReadOrCreate)
-		if err != nil {
-			t.Errorf("During reading page %d got error: %e", i, err)
-		}
+		tag := pageio.NewTablePageTag(i, ctx.usersTable)
+		pageData, err := internalBuff.ReadWPage(ctx.usersTable, i, rbmReadOrCreate)
+		assert.ErrIsNil(err, t)
 
-		err = tb.tableIO.ReadPage(i, buf)
-		if err != nil {
-			t.Errorf("TableIO returned non nil error: %e", err)
-		}
-		testBuffer.ReleaseWPage(tag)
-		assert.EqArray(pageData.bytes, buf, t)
+		err = ctx.usersIO.ReadPage(i, tmpPage)
+		assert.ErrIsNil(err, t)
+		internalBuff.ReleaseWPage(tag)
+
+		// then
+		assert.EqArray(pageData.bytes, tmpPage, t)
 	}
 }
 
@@ -188,6 +194,38 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 	}
 
 	<-ch1
+}
+
+// -------------------------
+//      Bootstrap new
+// -------------------------
+
+type ctx struct {
+	t  *testing.T
+	db hgtest.TestDB
+
+	usersTable table.Definition
+	usersIO    pageio.IO
+}
+
+func bootstrap(bufferProvider di.SharedBufferProvider, t *testing.T) ctx {
+	err := hg.Create(hg.CreateArgs{Mode: hg.Test, RootPath: hgtest.TestRootPath(t)})
+	assert.ErrIsNil(err, t)
+
+	fc := hg.DefaultFutureContainer()
+	fc.SharedBufferProvider = bufferProvider
+	db, err := hg.Load(&fc)
+	tdb := hgtest.TestDB{DB: db, T: t}
+	assert.ErrIsNil(err, t)
+
+	assert.ErrIsNil(db.CreateRel(tt_user.Def(t)), t)
+
+	return ctx{
+		t:          t,
+		db:         tdb,
+		usersTable: tdb.TableByName(tt_user.TableName),
+		usersIO:    tdb.PageIOByTableName(tt_user.TableName),
+	}
 }
 
 // -------------------------
