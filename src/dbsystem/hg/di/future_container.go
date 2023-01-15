@@ -17,7 +17,7 @@ type SimpleArgs struct {
 }
 
 type (
-	RootProvider         = func() (string, error)
+	RootPathProvider     = func() (string, error)
 	FsProvider           = func(rootPath string) (dbfs.FS, error)
 	ConfigProvider       = func(fs dbfs.FS) (*config.Configuration, error)
 	PropertiesProvider   = func(fs dbfs.FS) (config.DBProperties, error)
@@ -28,7 +28,7 @@ type (
 )
 
 type FutureContainer struct {
-	RootProvider         RootProvider
+	RootProvider         RootPathProvider
 	FsProvider           FsProvider
 	ConfigProvider       ConfigProvider
 	PropertiesProvider   PropertiesProvider

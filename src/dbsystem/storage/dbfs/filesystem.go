@@ -25,6 +25,8 @@ type PropertiesFS interface {
 type DBInitializerFS interface {
 	InitDBSystemDirs() error
 	InitDBSystemConfigAndProps(configData []byte, propertiesData []byte) error
+
+	DestroyDB() error
 }
 
 type RelationFS interface {
@@ -62,22 +64,22 @@ func (fs *StdFS) Truncate(path string, newSize int64) error {
 	return os.Truncate(path, newSize)
 }
 
-// -------------------------
-//      FS
-// -------------------------
-
 func (fs *StdFS) Open(path string) (FileLike, error) {
 	return os.OpenFile(path, os.O_RDWR, os.ModeType)
 }
 
 // -------------------------
-//      PropertiesFS
+//      FS
 // -------------------------
 
 func (fs *StdFS) ReadConfigFile() ([]byte, error) {
 	path := fs.RootPath + "/" + ConfigFilename
 	return fs.readFile(path)
 }
+
+// -------------------------
+//      PropertiesFS
+// -------------------------
 
 func (fs *StdFS) SaveConfigFile(config []byte) error {
 	configPath := Path(fs.RootPath, ConfigFilename)
@@ -107,10 +109,6 @@ func (fs *StdFS) InitDBSystemDirs() error {
 	return nil
 }
 
-// -------------------------
-//      DBInitializerFS
-// -------------------------
-
 func (fs *StdFS) OpenRelationDataFile(relation relation.Relation) (FileLike, error) {
 	filepath := fmt.Sprintf("%s/%s/%d/%s", fs.RootPath, RelationsDirname, relation.RelationID(), DataFilename)
 	file, err := os.OpenFile(filepath, os.O_RDWR, os.ModeType)
@@ -120,6 +118,10 @@ func (fs *StdFS) OpenRelationDataFile(relation relation.Relation) (FileLike, err
 
 	return file, nil
 }
+
+// -------------------------
+//      DBInitializerFS
+// -------------------------
 
 func (fs *StdFS) InitDBSystemConfigAndProps(configData []byte, propertiesData []byte) error {
 	err := fs.createFile(Path(fs.RootPath, ConfigFilename), configData)
@@ -133,10 +135,6 @@ func (fs *StdFS) InitDBSystemConfigAndProps(configData []byte, propertiesData []
 	return nil
 }
 
-// -------------------------
-//      RelationFS
-// -------------------------
-
 func (fs *StdFS) OpenRelationDef(relationId relation.ID) (FileLike, error) {
 	filepath := fmt.Sprintf("%s/%s/%d/%s", fs.RootPath, RelationsDirname, relationId, DefinitionFilename)
 	file, err := os.OpenFile(filepath, os.O_RDWR, os.ModeType)
@@ -146,6 +144,14 @@ func (fs *StdFS) OpenRelationDef(relationId relation.ID) (FileLike, error) {
 
 	return file, nil
 }
+
+func (fs *StdFS) DestroyDB() error {
+	return os.RemoveAll(fs.RootPath)
+}
+
+// -------------------------
+//      RelationFS
+// -------------------------
 
 func (fs *StdFS) InitNewRelationDir(relationId relation.ID) error {
 	path := fmt.Sprintf("%s/%s/%d", fs.RootPath, RelationsDirname, relationId)

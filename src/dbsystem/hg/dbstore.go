@@ -5,12 +5,14 @@ import (
 	"HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
 )
 
 type DBStore interface {
 	TableStore() table.Store
+	FS() dbfs.FS
 	FsmStore() fsm.Store
 	PageIOStore() pageio.Store
 	SharedBuffer() buffer.SharedBuffer
