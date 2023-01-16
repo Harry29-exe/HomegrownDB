@@ -59,11 +59,15 @@ func NewSubqueryRTE(id RteID, subquery Query) RangeTableEntry {
 }
 
 func NewValuesRTE(id RteID, values [][]Expr) RangeTableEntry {
+	if len(values) == 0 {
+		panic("values argument is empty")
+	}
 	return &rangeTableEntry{
 		node:       node{tag: TagRTE},
 		Kind:       RteValues,
 		Id:         id,
 		ValuesList: values,
+		ColAlias:   createGenericAliases(len(values[0])),
 	}
 }
 
@@ -273,4 +277,16 @@ Temp: 		%t
 		t.AttribNo,
 		t.ColName,
 		t.Temp)
+}
+
+// -------------------------
+//      internal
+// -------------------------
+
+func createGenericAliases(colCount int) []Alias {
+	aliases := make([]Alias, colCount)
+	for i := 0; i < colCount; i++ {
+		aliases[i] = NewAlias(fmt.Sprintf("C%d", i))
+	}
+	return aliases
 }

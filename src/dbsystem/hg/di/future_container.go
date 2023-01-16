@@ -7,6 +7,7 @@ import (
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/dbsystem/tx"
 	"fmt"
 )
 
@@ -25,6 +26,7 @@ type (
 	TableStoreProvider   = func(args SimpleArgs) (table.Store, error)
 	FsmStoreProvider     = func(args SimpleArgs) (fsm.Store, error)
 	SharedBufferProvider = func(args SimpleArgs, store pageio.Store) (buffer.SharedBuffer, error)
+	TxManagerProvider    = func(args SimpleArgs) (tx.Manager, error)
 )
 
 type FutureContainer struct {
@@ -36,6 +38,7 @@ type FutureContainer struct {
 	TableStoreProvider   TableStoreProvider
 	FsmStoreProvider     FsmStoreProvider
 	SharedBufferProvider SharedBufferProvider
+	TxManagerProvider    TxManagerProvider
 
 	container *Container
 	err       error
@@ -60,6 +63,8 @@ func (c *FutureContainer) Build() (*Container, error) {
 		container.FsmStore, c.err = c.FsmStoreProvider(c.args())
 	}, func() {
 		container.SharedBuffer, c.err = c.SharedBufferProvider(c.args(), container.PageIOStore)
+	}, func() {
+		container.TxManager, c.err = c.TxManagerProvider(c.args())
 	})
 
 	return container, c.err

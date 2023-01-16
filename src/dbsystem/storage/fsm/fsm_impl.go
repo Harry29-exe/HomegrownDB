@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (f *FreeSpaceMap) findPage(space uint8, ctx *tx.Ctx) (page.Id, error) {
+func (f *FreeSpaceMap) findPage(space uint8, ctx tx.Tx) (page.Id, error) {
 	var internalErr internalError
 	pageIndex, nodeIndex := uint32(0), uint16(0)
 	lastPageIndex, lastNodeIndex := uint32(0), uint16(0)

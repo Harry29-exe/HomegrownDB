@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-func NewTuple(values [][]byte, table table.RDefinition, tx *tx.Ctx) Tuple {
+func NewTuple(values [][]byte, table table.RDefinition, tx tx.Tx) Tuple {
 	headerLen := int(toNullBitmap + table.BitmapLen())
 	tupleLen := headerLen
 	for _, value := range values {
@@ -17,7 +17,7 @@ func NewTuple(values [][]byte, table table.RDefinition, tx *tx.Ctx) Tuple {
 		table: table,
 	}
 
-	txId := tx.Info.TxId()
+	txId := tx.TxID()
 	tuple.SetModifiedByTx(txId)
 	tuple.SetCreatedByTx(txId)
 

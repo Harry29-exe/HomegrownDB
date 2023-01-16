@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/storage/dbfs"
+	"HomegrownDB/dbsystem/tx"
 	"encoding/json"
 )
 
@@ -23,6 +24,7 @@ func SerializeProperties(properties DBProperties) []byte {
 
 type DBProperties struct {
 	Relations []RelPTR
+	NextTxID  tx.Id
 	NextRID   relation.ID
 	NextOID   dbobj.OID
 }

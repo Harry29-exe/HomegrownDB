@@ -7,6 +7,7 @@ import (
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/dbsystem/tx"
 )
 
 type Container struct {
@@ -20,4 +21,5 @@ type Container struct {
 	FsmStore    fsm.Store
 
 	SharedBuffer buffer.SharedBuffer
+	TxManager    tx.Manager
 }

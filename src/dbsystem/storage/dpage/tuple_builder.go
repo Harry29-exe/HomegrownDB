@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-func NewTuple(values [][]byte, pattern *TuplePattern, tx *tx.Ctx) Tuple {
+func NewTuple(values [][]byte, pattern *TuplePattern, tx tx.Tx) Tuple {
 	headerLen := int(toNullBitmap + pattern.BitmapLen)
 	tupleLen := headerLen
 	for _, value := range values {
@@ -16,7 +16,7 @@ func NewTuple(values [][]byte, pattern *TuplePattern, tx *tx.Ctx) Tuple {
 		pattern: pattern,
 	}
 
-	txId := tx.Info.TxId()
+	txId := tx.TxID()
 	tuple.SetModifiedByTx(txId)
 	tuple.SetCreatedByTx(txId)
 

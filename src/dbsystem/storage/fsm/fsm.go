@@ -69,13 +69,13 @@ type FreeSpaceMap struct {
 
 // FindPage returns number of page with at least the amount of requested space,
 // if no page fulfill the requirements returns page.InvalidId
-func (f *FreeSpaceMap) FindPage(availableSpace uint16, ctx *tx.Ctx) (page.Id, error) {
+func (f *FreeSpaceMap) FindPage(availableSpace uint16, tx tx.Tx) (page.Id, error) {
 	percentageSpace := uint8(availableSpace / availableSpaceDivider)
 	if availableSpace%availableSpaceDivider > 0 {
 		percentageSpace++
 	}
 
-	return f.findPage(percentageSpace, ctx)
+	return f.findPage(percentageSpace, tx)
 }
 
 // UpdatePage updates page free space which is set to availableSpace parameter value

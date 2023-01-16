@@ -11,7 +11,7 @@ import (
 // NewTestTuple creates new TupleToSave from given columnValues and transaction context,
 // Tuple inside is not initialized i.e. it does not have TID (tuple identifier) and ids of
 // objects stored outside tuple should be saved to Tuple
-func NewTestTuple(tableDef table.RDefinition, columnValues map[string][]byte, txInfo *tx.InfoCtx) (TupleToSave, error) {
+func NewTestTuple(tableDef table.RDefinition, columnValues map[string][]byte, txInfo tx.Tx) (TupleToSave, error) {
 	builder := tupleBuilder{table: tableDef}
 	tuple, err := builder.Create(columnValues, txInfo)
 	if err != nil {
@@ -30,7 +30,7 @@ type tupleBuilder struct {
 	buffer bytes.Buffer
 }
 
-func (tb *tupleBuilder) Create(columnValues map[string][]byte, txInfo *tx.InfoCtx) (Tuple, error) {
+func (tb *tupleBuilder) Create(columnValues map[string][]byte, txInfo tx.Tx) (Tuple, error) {
 	tb.sortMapValues(columnValues)
 	tb.initTupleBuffer()
 	tb.createNullBitmap()
@@ -109,7 +109,7 @@ func (tb *tupleBuilder) serializeColumnValues() error {
 	return nil
 }
 
-func (tb *tupleBuilder) initTupleWithTxContext(tuple Tuple, txInfo *tx.InfoCtx) {
-	tuple.SetCreatedByTx(txInfo.TxId())
+func (tb *tupleBuilder) initTupleWithTxContext(tuple Tuple, txInfo tx.Tx) {
+	tuple.SetCreatedByTx(txInfo.TxID())
 	tuple.SetTxCommandCounter(txInfo.CommandExecuted())
 }

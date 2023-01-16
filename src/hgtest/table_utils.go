@@ -18,7 +18,7 @@ func (t tableUtils) RandTuple(table table.Definition, rand random.Random) tpage.
 		values[col.Name()] = col.CType().Rand(rand)
 	}
 
-	tuple, err := tpage.NewTestTuple(table, values, tx.NewInfoCtx(rand.Int31()))
+	tuple, err := tpage.NewTestTuple(table, values, &tx.StdTx{Id: tx.Id(rand.Int31())})
 	if err != nil {
 		panic(err.Error())
 	}

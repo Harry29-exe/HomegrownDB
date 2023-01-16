@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/backend/new/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/hg"
-	table2 "HomegrownDB/dbsystem/relation/table"
+	table "HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -13,36 +13,40 @@ type ExCtx = *executionCtx
 
 func NewExCtx(
 	stmt node.PlanedStmt,
-	txCtx *tx.Ctx,
+	txCtx tx.Tx,
 	store hg.DBStore,
 ) ExCtx {
-	cache := createCache(stmt.Tables, store.TableStore())
+	cache, rteMap := createCache(stmt.Tables, store.TableStore())
 	return &executionCtx{
 		Stmt:     stmt,
 		Buff:     store.SharedBuffer(),
 		FsmStore: store.FsmStore(),
 		Tables:   cache,
-		TxCtx:    txCtx,
+		Tx:       txCtx,
+		rteMap:   rteMap,
 	}
 }
 
-func createCache(rteList []node.RangeTableEntry, store table2.Store) map[table2.Id]table2.RDefinition {
-	cache := map[table2.Id]table2.RDefinition{}
+func createCache(rteList []node.RangeTableEntry, store table.Store) (table.Cache, map[node.RteID]node.RangeTableEntry) {
+	cache := map[table.Id]table.RDefinition{}
+	rteMap := map[node.RteID]node.RangeTableEntry{}
 	for _, rte := range rteList {
 		if rte.Kind == node.RteRelation {
 			tab := store.AccessTable(rte.TableId, rte.LockMode)
 			cache[rte.TableId] = tab
+			rte.Ref = tab
 		}
+		rteMap[rte.Id] = rte
 	}
-	return cache
+	return cache, rteMap
 }
 
 type executionCtx struct {
 	Stmt     node.PlanedStmt
 	Buff     buffer.SharedBuffer
 	FsmStore fsm.Store
-	Tables   table2.Cache
-	TxCtx    *tx.Ctx
+	Tables   table.Cache
+	Tx       tx.Tx
 
 	rteMap map[node.RteID]node.RangeTableEntry
 }

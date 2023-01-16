@@ -8,6 +8,7 @@ import (
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/dbsystem/tx"
 )
 
 type DBStore interface {
@@ -16,6 +17,7 @@ type DBStore interface {
 	FsmStore() fsm.Store
 	PageIOStore() pageio.Store
 	SharedBuffer() buffer.SharedBuffer
+	TxManager() tx.Manager
 
 	NextRelId() relation.ID
 	NextOID() dbobj.OID

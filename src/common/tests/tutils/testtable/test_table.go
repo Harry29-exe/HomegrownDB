@@ -80,7 +80,7 @@ func (t *TUtils) RandTuple() tpage.TupleToSave {
 		values[col.Name()] = col.CType().Rand(t.rand)
 	}
 
-	tuple, err := tpage.NewTestTuple(t.table, values, tx.NewInfoCtx(t.rand.Int31()))
+	tuple, err := tpage.NewTestTuple(t.table, values, &tx.StdTx{Id: tx.Id(t.rand.Int31())})
 	if err != nil {
 		panic(err.Error())
 	}

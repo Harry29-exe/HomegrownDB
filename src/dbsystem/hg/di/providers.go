@@ -7,6 +7,7 @@ import (
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/dbsystem/tx"
 )
 
 func RootPathFromEnv() (string, error) {
@@ -43,4 +44,8 @@ func FsmStore(args SimpleArgs) (fsm.Store, error) {
 
 func SharedBuffer(args SimpleArgs, store pageio.Store) (buffer.SharedBuffer, error) {
 	return buffer.NewSharedBuffer(args.C.SharedBufferSize, store), nil
+}
+
+func TxManager(args SimpleArgs) (tx.Manager, error) {
+	return tx.NewManager(args.P.NextTxID), nil
 }

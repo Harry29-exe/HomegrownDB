@@ -27,7 +27,7 @@ func (m modifyTableBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 			Columns:   []dpage.ColumnInfo{{CType: hgtype.NewInt8(hgtype.Args{})}},
 			BitmapLen: 1,
 		},
-		txCtx:       ctx.TxCtx,
+		txCtx:       ctx.Tx,
 		buff:        ctx.Buff,
 		resultTable: resultRTE.Ref,
 		fsm:         ctx.FsmStore.GetFsmFor(resultRTE.TableId),
@@ -42,7 +42,7 @@ type ModifyTable struct {
 	Left          ExecNode
 	OutputPattern *dpage.TuplePattern
 
-	txCtx       *tx.Ctx
+	txCtx       tx.Tx
 	buff        buffer.SharedBuffer
 	resultTable table.RDefinition
 	fsm         *fsm.FreeSpaceMap
@@ -71,6 +71,7 @@ func (m *ModifyTable) Next() dpage.Tuple {
 		tuplesInserted++
 	}
 
+	m.done = true
 	outputValues := [][]byte{inputtype.ConvInt8(tuplesInserted)}
 	return dpage.NewTuple(outputValues, m.OutputPattern, m.txCtx)
 }

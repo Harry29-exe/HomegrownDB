@@ -71,7 +71,7 @@ func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 	return &fsmTestHelper{
 		fsMap:   fsMap,
 		t:       t,
-		ctx:     nil,
+		tx:      nil,
 		pageIds: make([]page.Id, 0, 10),
 	}
 }
@@ -79,7 +79,7 @@ func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 type fsmTestHelper struct {
 	fsMap *fsm.FreeSpaceMap
 	t     *testing.T
-	ctx   *tx.Ctx
+	tx    tx.Tx
 
 	pageIds []page.Id
 }
@@ -91,7 +91,7 @@ func (pt *fsmTestHelper) testFsmUpdate(pageId page.Id, newSize uint8) {
 
 	err := pt.fsMap.UpdatePage(size, pageId)
 	assert.IsNil(err, pt.t)
-	foundPageId, err := pt.fsMap.FindPage(size, pt.ctx)
+	foundPageId, err := pt.fsMap.FindPage(size, pt.tx)
 	if err != nil {
 		pt.t.Error(err.Error())
 	}
@@ -101,13 +101,13 @@ func (pt *fsmTestHelper) testFsmUpdate(pageId page.Id, newSize uint8) {
 
 func (pt *fsmTestHelper) assertFind(id page.Id, size uint8) {
 	absSize := pt.toAbsSize(size)
-	page, err := pt.fsMap.FindPage(absSize, pt.ctx)
+	page, err := pt.fsMap.FindPage(absSize, pt.tx)
 	assert.IsNil(err, pt.t)
 	assert.Eq(page, id, pt.t)
 }
 
 func (pt *fsmTestHelper) assertNoFound(size uint8) {
-	pageId, err := pt.fsMap.FindPage(pt.toAbsSize(size), pt.ctx)
+	pageId, err := pt.fsMap.FindPage(pt.toAbsSize(size), pt.tx)
 	assert.Eq(page.InvalidId, pageId, pt.t)
 	assert.IsNil(err, pt.t)
 }

@@ -19,7 +19,7 @@ func (v valuesScanBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 	innerPattern := exinfr.PattenFromRTE(valuesRTE)
 
 	return &ValuesScan{
-		TxCTX:         ctx.TxCtx,
+		Tx:            ctx.Tx,
 		OutputPattern: outputPattern,
 		InnerPattern:  innerPattern,
 		Plan:          vsPlan,
@@ -31,7 +31,7 @@ func (v valuesScanBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 var _ ExecNode = &ValuesScan{}
 
 type ValuesScan struct {
-	TxCTX *tx.Ctx
+	Tx tx.Tx
 
 	OutputPattern *dpage.TuplePattern
 	InnerPattern  *dpage.TuplePattern
@@ -52,11 +52,11 @@ func (v *ValuesScan) Next() dpage.Tuple {
 		outputTupleValues[i] = exexpr.Execute(entry.ExprToExec, nodeInput)
 	}
 
-	return dpage.NewTuple(outputTupleValues, v.OutputPattern, v.TxCTX)
+	return dpage.NewTuple(outputTupleValues, v.OutputPattern, v.Tx)
 }
 
 func (v *ValuesScan) HasNext() bool {
-	return v.rowCounter >= len(v.Values)
+	return v.rowCounter < len(v.Values)
 }
 
 func (v *ValuesScan) Init(plan node.Plan) error {
@@ -71,5 +71,5 @@ func (v *ValuesScan) tupleFromValues() dpage.Tuple {
 		tupleValues[col] = exexpr.Execute(expr, exexpr.ExNodeInput{})
 	}
 	v.rowCounter++
-	return dpage.NewTuple(tupleValues, v.InnerPattern, v.TxCTX)
+	return dpage.NewTuple(tupleValues, v.InnerPattern, v.Tx)
 }

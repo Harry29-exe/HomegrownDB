@@ -9,7 +9,7 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-func Execute(plan node.PlanedStmt, txCtx *tx.Ctx, dbStore hg.DBStore) []dpage.Tuple {
+func Execute(plan node.PlanedStmt, txCtx tx.Tx, dbStore hg.DBStore) []dpage.Tuple {
 	ctx := exinfr.NewExCtx(plan, txCtx, dbStore)
 	rootNode := execnode.CreateFromPlan(plan.PlanTree, ctx)
 

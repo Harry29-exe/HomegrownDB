@@ -10,6 +10,7 @@ import (
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/dbsystem/tx"
 )
 
 var _ DBStore = &DBSystem{}
@@ -52,6 +53,10 @@ func (db *DBSystem) SharedBuffer() buffer.SharedBuffer {
 
 func (db *DBSystem) FS() dbfs.FS {
 	return db.DIC.FS
+}
+
+func (db *DBSystem) TxManager() tx.Manager {
+	return db.DIC.TxManager
 }
 
 func (db *DBSystem) NextRelId() relation.ID {

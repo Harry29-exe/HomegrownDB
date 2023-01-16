@@ -43,5 +43,6 @@ func DefaultFutureContainer() di.FutureContainer {
 		TableStoreProvider:   di.TableStore,
 		FsmStoreProvider:     di.FsmStore,
 		SharedBufferProvider: di.SharedBuffer,
+		TxManagerProvider:    di.TxManager,
 	}
 }

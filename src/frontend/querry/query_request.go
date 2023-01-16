@@ -30,13 +30,13 @@ func (r *DBRequest) Handle() *DBResponse {
 	//if err != nil {
 	//	return &DBResponse{
 	//		Body:   strings.NewReader(err.Error()),
-	//		Status: InvalidQuery,
+	//		TxStatus: InvalidQuery,
 	//	}
 	//}
 	//
 	//return &DBResponse{
 	//	Body:   buff.Reader(),
-	//	Status: OK,
+	//	TxStatus: OK,
 	//}
 }
 
