@@ -35,6 +35,10 @@ type DBSystem struct {
 	oidCounter appsync.SyncCounter[dbobj.OID]
 }
 
+func (db *DBSystem) Destroy() error {
+	return db.FS().DestroyDB()
+}
+
 func (db *DBSystem) TableStore() table.Store {
 	return db.DIC.TableStore
 }

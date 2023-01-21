@@ -34,7 +34,7 @@ func CreateAndLoadDBWith(fc *di.FutureContainer, t *testing.T) *TestDBBuilder {
 		}
 	})
 
-	return &TestDBBuilder{db: db}
+	return &TestDBBuilder{db: db, t: t}
 }
 
 func (b *TestDBBuilder) WithUsersTable() *TestDBBuilder {
@@ -52,6 +52,12 @@ func (b *TestDBBuilder) Build() TestDBUtils {
 	for _, fn := range b.funcToExec {
 		fn()
 	}
+
+	b.t.Cleanup(func() {
+		if err := b.db.Destroy(); err != nil {
+			b.t.Error(err)
+		}
+	})
 	return NewTestDBUtils(b.db, b.t)
 }
 

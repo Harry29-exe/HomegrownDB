@@ -27,6 +27,7 @@ type DB interface {
 	DBStore
 	RelationsOperations
 	//io.Closer
+	Destroy() error
 }
 
 type RelationsOperations interface {
