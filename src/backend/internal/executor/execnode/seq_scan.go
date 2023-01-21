@@ -7,6 +7,7 @@ import (
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dpage"
 	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/dbsystem/storage/tpage"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -24,6 +25,8 @@ func (s seqScanBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 		buff:          ctx.Buff,
 		table:         scanTable,
 		nextPageId:    0,
+		nextTupleId:   0,
+		done:          false,
 	}
 }
 
@@ -37,12 +40,18 @@ type SeqScan struct {
 	buff  buffer.SharedBuffer
 	table table.RDefinition
 
-	nextPageId page.Id
+	nextPageId  page.Id
+	nextTupleId tpage.TupleIndex
+	done        bool
+
 }
 
 func (s SeqScan) Next() dpage.Tuple {
-	//TODO implement me
-	panic("implement me")
+	rPage, err := s.buff.RTablePage(s.table, s.nextPageId)
+	if err != nil {
+		s.done = true
+	}
+
 }
 
 func (s SeqScan) HasNext() bool {
