@@ -2,12 +2,14 @@ package pageio
 
 import (
 	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/storage/dbfs"
 )
 
 type Store interface {
 	Get(id relation.ID) IO
 	Load(rel relation.Relation) error
+	Register(id dbobj.OID, io IO)
 }
 
 func NewStore(fs dbfs.FS) *StdStore {
@@ -26,7 +28,7 @@ func (s *StdStore) Get(id relation.ID) IO {
 	return s.ioMap[id]
 }
 
-func (s *StdStore) Register(id relation.ID, io IO) {
+func (s *StdStore) Register(id dbobj.OID, io IO) {
 	_, ok := s.ioMap[id]
 	if ok {
 		panic("Can't register io when io with same relation id is already registerd")
@@ -36,7 +38,7 @@ func (s *StdStore) Register(id relation.ID, io IO) {
 }
 
 func (s *StdStore) Load(rel relation.Relation) error {
-	file, err := s.FS.OpenRelationDataFile(rel)
+	file, err := s.FS.OpenRelationDataFile(rel.OID())
 	if err != nil {
 		return err
 	}
@@ -44,6 +46,6 @@ func (s *StdStore) Load(rel relation.Relation) error {
 	if err != nil {
 		return err
 	}
-	s.ioMap[rel.RelationID()] = io
+	s.ioMap[rel.OID()] = io
 	return nil
 }

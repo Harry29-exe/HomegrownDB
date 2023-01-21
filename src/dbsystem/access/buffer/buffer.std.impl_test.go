@@ -27,7 +27,7 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 	// when
 	for i := page.Id(0); i < 1_000; i++ {
 		tag := pageio.NewTablePageTag(i, tableRel)
-		pageData, err := testBuffer.ReadWPage(tableRel, i, RbmReadOrCreate)
+		pageData, err := testBuffer.ReadWPage(tableRel.OID(), i, RbmReadOrCreate)
 		assert.ErrIsNil(err, t)
 
 		err = ctx.tableIO.ReadPage(i, rawPage)
@@ -54,10 +54,10 @@ func TestSharedBuffer_ParallelRead(t *testing.T) {
 	waitGroup2 := sync.WaitGroup{}
 	waitGroup2.Add(tCount)
 
-	tag := pageio.PageTag{PageId: 0, Relation: tableRel.RelationID()}
+	tag := pageio.PageTag{PageId: 0, OwnerID: tableRel.OID()}
 	for i := 0; i < tCount; i++ {
 		go func() {
-			_, _ = testBuffer.ReadRPage(tableRel, 0, RbmReadOrCreate)
+			_, _ = testBuffer.ReadRPage(tableRel.OID(), 0, RbmReadOrCreate)
 			waitGroup1.Done()
 			waitGroup1.Wait()
 			testBuffer.ReleaseRPage(tag)
@@ -88,11 +88,11 @@ func TestSharedBuffer_ParallelDifferentRowRead(t *testing.T) {
 	for i := 0; i < tCount; i++ {
 		pageId := page.Id(i)
 		go func() {
-			_, _ = testBuffer.ReadRPage(tableRel, pageId, RbmReadOrCreate)
+			_, _ = testBuffer.ReadRPage(tableRel.OID(), pageId, RbmReadOrCreate)
 			waitGroup1.Done()
 			waitGroup1.Wait()
 			lock.RLock()
-			tag := pageio.PageTag{PageId: pageId, Relation: tableRel.RelationID()}
+			tag := pageio.PageTag{PageId: pageId, OwnerID: tableRel.OID()}
 			testBuffer.ReleaseRPage(tag)
 			waitGroup2.Done()
 		}()
@@ -112,12 +112,12 @@ func TestSharedBuffer_RWLock(t *testing.T) {
 	ctx.FillTablePages(10, tableRel.Name())
 
 	tag := pageio.NewTablePageTag(0, tableRel)
-	_, err := testBuffer.ReadWPage(tableRel, 0, RbmReadOrCreate)
+	_, err := testBuffer.ReadWPage(tableRel.OID(), 0, RbmReadOrCreate)
 	assert.ErrIsNil(err, t)
 
 	ch1 := make(chan bool)
 	go func() {
-		_, err = testBuffer.ReadRPage(tableRel, 0, RbmReadOrCreate)
+		_, err = testBuffer.ReadRPage(tableRel.OID(), 0, RbmReadOrCreate)
 		ch1 <- true
 		if err != nil {
 			t.Errorf("testBuffer.RTablePage returned error: %e", err)
@@ -151,7 +151,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 	ctx.FillTablePages(10, tt_user.TableName)
 
 	tag := pageio.NewTablePageTag(0, usersTable)
-	_, err := testBuffer.ReadWPage(usersTable, 0, RbmReadOrCreate)
+	_, err := testBuffer.ReadWPage(usersTable.OID(), 0, RbmReadOrCreate)
 
 	if err != nil {
 		t.Fail()
@@ -160,7 +160,7 @@ func TestSharedBuffer_2xWLock(t *testing.T) {
 
 	ch1 := make(chan bool)
 	go func() {
-		_, err = testBuffer.ReadWPage(usersTable, 0, RbmReadOrCreate)
+		_, err = testBuffer.ReadWPage(usersTable.OID(), 0, RbmReadOrCreate)
 		ch1 <- true
 		if err != nil {
 			t.Errorf("testBuffer.RTablePage returned error: %e", err)

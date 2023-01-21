@@ -1,15 +1,15 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 )
 
 // todo change methods to operate on ArrayIndexes
 type StdBuffer interface {
-	ReadRPage(relation relation.Relation, pageId page.Id, strategy rbm) (stdPage, error)
-	ReadWPage(relation relation.Relation, pageId page.Id, strategy rbm) (stdPage, error)
+	ReadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error)
+	ReadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error)
 
 	ReleaseWPage(tag pageio.PageTag)
 	ReleaseRPage(tag pageio.PageTag)

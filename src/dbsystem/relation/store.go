@@ -5,9 +5,6 @@ import (
 	"sync"
 )
 
-// todo load store from disc
-var DBStore = NewStore()
-
 type Store interface {
 	Get(id ID) Relation
 	Register(relation Relation)
@@ -39,7 +36,7 @@ func (s *store) Get(id ID) Relation {
 func (s *store) Register(relation Relation) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
-	id := relation.RelationID()
+	id := relation.OID()
 	_, ok := s.relations[id]
 	if ok {
 		panic("relation with given id already exist this is programmers mistake")

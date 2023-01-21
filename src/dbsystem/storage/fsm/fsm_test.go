@@ -3,14 +3,10 @@ package fsm_test
 import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
-	"HomegrownDB/dbsystem/access/buffer"
-	relation "HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
-	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/hgtest"
-	"github.com/spf13/afero"
 	"testing"
 )
 
@@ -53,23 +49,15 @@ func TestFreeSpaceMap_UpdatePage2(t *testing.T) {
 }
 
 func newFsmTestHelper(t *testing.T) *fsmTestHelper {
-	usersTable := tt_user.Def(t)
-	fsmRelation := relation.NewBaseRelation(0, relation.TypeFsm, "/", 0)
-	fs := afero.NewMemMapFs()
-	file, err := fs.Create("fsm_pageio")
-	assert.IsNil(err, t)
+	dbUtils := hgtest.CreateAndLoadDBWith(nil, t).
+		WithUsersTable().
+		Build()
 
-	store := pageio.NewStore(hgtest.CreateAndInitTestFS(t))
-	io, err := pageio.NewPageIO(file)
-	assert.IsNil(err, t)
-	store.Register(fsmRelation.RelationID(), io)
-	buff := buffer.NewSharedBuffer(10_000, store)
-
-	fsMap, err := fsm.CreateFreeSpaceMap(fsmRelation, usersTable.RelationID(), buff)
-	assert.IsNil(err, t)
+	table := dbUtils.TableByName(tt_user.TableName)
+	fsm := dbUtils.DB.FsmStore().GetFSM(table.FsmOID())
 
 	return &fsmTestHelper{
-		fsMap:   fsMap,
+		fsMap:   fsm,
 		t:       t,
 		tx:      nil,
 		pageIds: make([]page.Id, 0, 10),
@@ -77,7 +65,7 @@ func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 }
 
 type fsmTestHelper struct {
-	fsMap *fsm.FreeSpaceMap
+	fsMap *fsm.FSM
 	t     *testing.T
 	tx    tx.Tx
 

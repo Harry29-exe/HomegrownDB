@@ -1,8 +1,11 @@
 package relation
 
-import "math"
+import (
+	"HomegrownDB/dbsystem/relation/dbobj"
+	"math"
+)
 
-type ID uint32
+type ID = dbobj.OID
 
 var (
 	InvalidRelId ID = math.MaxUint32
@@ -10,16 +13,17 @@ var (
 )
 
 type Relation interface {
-	RelationID() ID
-	SetRelationID(id ID)
+	dbobj.Obj
+	SetOID(id ID)
 	Kind() Kind
+
+	FsmOID() dbobj.OID
+	VmOID() dbobj.OID
 }
 
 type Kind uint8
 
 const (
 	TypeTable Kind = iota
-	TypeFsm
-	TypeVm
 	TypeIndex
 )

@@ -6,7 +6,7 @@ import (
 )
 
 func TestFreeSpaceMap_getPageIndex(t *testing.T) {
-	fsm := &FreeSpaceMap{}
+	fsm := &FSM{}
 
 	firstLeafNodeIndex := nonLeafNodeCount
 	secondLeafNodeIndex := nonLeafNodeCount + 1

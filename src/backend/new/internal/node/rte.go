@@ -44,7 +44,7 @@ func NewRelationRTE(rteID RteID, ref table2.RDefinition) RangeTableEntry {
 		node:    node{tag: TagRTE},
 		Kind:    RteRelation,
 		Id:      rteID,
-		TableId: ref.RelationID(),
+		TableId: ref.OID(),
 		Ref:     ref,
 	}
 }
@@ -173,7 +173,7 @@ Name: %s,
 func (r RangeTableEntry) dRelationEqual(r2 RangeTableEntry) bool {
 	return r.LockMode == r2.LockMode &&
 		r.TableId == r2.TableId &&
-		r.Ref.RelationID() == r2.Ref.RelationID()
+		r.Ref.OID() == r2.Ref.OID()
 }
 
 func (r RangeTableEntry) dSubqueryEqual(r2 RangeTableEntry) bool {

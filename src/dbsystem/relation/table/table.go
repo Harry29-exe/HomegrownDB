@@ -35,6 +35,7 @@ type Definition interface {
 	RDefinition
 
 	SetName(name string)
+	SetFsmOID(oid dbobj.OID)
 
 	AddColumn(definition column.WDef) error
 	RemoveColumn(name string) error

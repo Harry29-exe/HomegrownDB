@@ -14,8 +14,8 @@ import (
 func TestCreateEmptyPage(t *testing.T) {
 	tableDef := table.NewDefinition(
 		"test_table")
-	tableDef.SetRelationID(32)
-	tableDef.SetRelationID(12)
+	tableDef.SetOID(32)
+	tableDef.SetOID(12)
 
 	newPage := tpage.EmptyTablePage(tableDef, t)
 

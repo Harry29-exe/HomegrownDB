@@ -3,8 +3,10 @@ package hg
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm"
+	"HomegrownDB/dbsystem/storage/pageio"
 	"fmt"
 )
 
@@ -14,11 +16,6 @@ func (db *DBSystem) CreateRel(rel relation.Relation) error {
 	switch rel.Kind() {
 	case relation.TypeTable:
 		return db.createTable(rel.(table.Definition))
-	case relation.TypeFsm:
-		return db.createFSM(rel.(*fsm.FreeSpaceMap))
-	case relation.TypeVm:
-		//todo implement me
-		panic("Not implemented")
 	case relation.TypeIndex:
 		//todo implement me
 		panic("Not implemented")
@@ -28,13 +25,16 @@ func (db *DBSystem) CreateRel(rel relation.Relation) error {
 }
 
 func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
-	if err = db.FS().InitNewRelationDir(tableDef.RelationID()); err != nil {
+	tableDef.SetOID(db.NextOID())
+	tableDef.SetFsmOID(db.NextOID())
+
+	if err = db.FS().InitNewRelationDir(tableDef.OID()); err != nil {
 		return err
 	}
 
 	s := bparse.NewSerializer()
 	tableDef.Serialize(s)
-	if err = db.saveRelDefinition(tableDef.RelationID(), s.GetBytes()); err != nil {
+	if err = db.saveRelDefinition(tableDef.OID(), s.GetBytes()); err != nil {
 		// todo db.FS.DeleteRelationDir(...)
 		return err
 	}
@@ -49,27 +49,36 @@ func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
 		// todo db.FS.DeleteRelationDir(...)
 		return err
 	}
+
+	if err = db.createFSM(tableDef.FsmOID()); err != nil {
+		// todo Page.Remove(tableDef)
+		// todo db.FS.DeleteRelationDir(...)
+		// todo remove table from table store
+		return err
+	}
 	return nil
 }
 
-func (db *DBSystem) createFSM(fsmDef *fsm.FreeSpaceMap) (err error) {
-	if err = db.FS().InitNewRelationDir(fsmDef.RelationID()); err != nil {
+func (db *DBSystem) createFSM(fsmOID dbobj.OID) (err error) {
+	fs := db.FS()
+	if err = fsm.CreateFreeSpaceMap(fsmOID, fs); err != nil {
 		return err
 	}
 
-	s := bparse.NewSerializer()
-	fsm.SerializeFSM(fsmDef, s)
-	if err = db.saveRelDefinition(fsmDef.RelationID(), s.GetBytes()); err != nil {
-		// todo db.FS.DeleteRelationDir(...)
+	file, err := fs.OpenRelationDataFile(fsmOID)
+	if err != nil {
+		//todo remove fsm
 		return err
 	}
 
-	if err = db.PageIOStore().Load(fsmDef); err != nil {
-		// todo db.FS.DeleteRelationDir(...)
+	io, err := pageio.NewPageIO(file)
+	if err != nil {
+		//todo remove fsm & close file
 		return err
 	}
+	db.PageIOStore().Register(fsmOID, io)
+	db.FsmStore().Register(fsm.NewFSM(fsmOID, db.SharedBuffer()))
 
-	db.FsmStore().RegisterFSM(fsmDef)
 	return nil
 }
 
@@ -109,12 +118,7 @@ func (db *DBSystem) LoadRel(rid relation.ID) error {
 	switch baseRel.RelKind {
 	case relation.TypeTable:
 		return db.loadTable(data)
-	case relation.TypeFsm:
-		return db.loadFSM(data)
 	case relation.TypeIndex:
-		//todo implement me
-		panic("Not implemented")
-	case relation.TypeVm:
 		//todo implement me
 		panic("Not implemented")
 	default:
@@ -130,16 +134,6 @@ func (db *DBSystem) loadTable(serializedTable []byte) error {
 	}
 	if err := db.TableStore().LoadTable(tableDef); err != nil {
 		//todo delete table from pageio
-		return err
-	}
-	return nil
-}
-
-func (db *DBSystem) loadFSM(serializedFSM []byte) error {
-	fsmDef := fsm.DeserializeFSM(db.SharedBuffer(), bparse.NewDeserializer(serializedFSM))
-
-	db.FsmStore().RegisterFSM(fsmDef)
-	if err := db.PageIOStore().Load(fsmDef); err != nil {
 		return err
 	}
 	return nil

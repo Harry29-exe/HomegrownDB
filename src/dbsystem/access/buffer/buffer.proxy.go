@@ -1,7 +1,7 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
 	"HomegrownDB/dbsystem/storage/page"
@@ -24,7 +24,7 @@ type bufferProxy struct {
 var _ SharedBuffer = &bufferProxy{}
 
 func (b *bufferProxy) RTablePage(table table.RDefinition, pageId page.Id) (tpage.RPage, error) {
-	rPage, err := b.buffer.ReadRPage(table, pageId, RbmRead)
+	rPage, err := b.buffer.ReadRPage(table.OID(), pageId, RbmRead)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (b *bufferProxy) RTablePage(table table.RDefinition, pageId page.Id) (tpage
 }
 
 func (b *bufferProxy) WTablePage(table table.RDefinition, pageId page.Id) (tpage.WPage, error) {
-	wPage, err := b.buffer.ReadWPage(table, pageId, RbmReadOrCreate)
+	wPage, err := b.buffer.ReadWPage(table.OID(), pageId, RbmReadOrCreate)
 	if err != nil {
 		return nil, err
 	}
@@ -45,16 +45,16 @@ func (b *bufferProxy) WTablePage(table table.RDefinition, pageId page.Id) (tpage
 	}
 }
 
-func (b *bufferProxy) RFsmPage(rel relation.Relation, pageId page.Id) (fsmpage.Page, error) {
-	rPage, err := b.buffer.ReadRPage(rel, pageId, RbmRead)
+func (b *bufferProxy) RFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page, error) {
+	rPage, err := b.buffer.ReadRPage(ownerID, pageId, RbmRead)
 	if err != nil {
 		return fsmpage.Page{}, err
 	}
 	return fsmpage.Page{Bytes: rPage.Bytes}, nil
 }
 
-func (b *bufferProxy) WFsmPage(rel relation.Relation, pageId page.Id) (fsmpage.Page, error) {
-	wPage, err := b.buffer.ReadWPage(rel, pageId, RbmReadOrCreate)
+func (b *bufferProxy) WFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page, error) {
+	wPage, err := b.buffer.ReadWPage(ownerID, pageId, RbmReadOrCreate)
 	if err != nil {
 		return fsmpage.Page{}, err
 	}

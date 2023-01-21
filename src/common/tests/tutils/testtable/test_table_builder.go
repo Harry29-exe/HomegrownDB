@@ -25,8 +25,8 @@ func (ttb *Builder) AddColumn(name string, nullable bool, typeData hgtype.TypeDa
 }
 
 func (ttb *Builder) SetIds(tableId table.Id, objectId relation.ID) *Builder {
-	ttb.table.SetRelationID(tableId)
-	ttb.table.SetRelationID(objectId)
+	ttb.table.SetOID(tableId)
+	ttb.table.SetOID(objectId)
 
 	return ttb
 }

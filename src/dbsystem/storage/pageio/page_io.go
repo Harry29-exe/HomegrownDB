@@ -4,25 +4,9 @@ import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
-	"errors"
 )
 
 func NewPageIO(file dbfs.FileLike) (IO, error) {
-	if stat, err := file.Stat(); err != nil {
-		return nil, err
-	} else if stat.Size() != 0 {
-		return nil, errors.New("to create new PageIO file must be empty")
-	}
-
-	return &pageIO{
-		src:           file,
-		lockMap:       appsync.NewResLockMap[page.Id](),
-		pageCount:     0,
-		pageCountLock: appsync.SpinLock(0),
-	}, nil
-}
-
-func LoadPageIO(file dbfs.FileLike) (IO, error) {
 	fileInfo, err := file.Stat()
 	if err != nil {
 		return nil, err

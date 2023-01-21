@@ -23,7 +23,7 @@ func TestPageIO_Reopen(t *testing.T) {
 	assert.IsNil(inMemFile.Reopen(), t)
 
 	buff := buffer()
-	loadedPageIO, err := pageio.LoadPageIO(inMemFile)
+	loadedPageIO, err := pageio.NewPageIO(inMemFile)
 	assert.IsNil(err, t)
 	err = loadedPageIO.ReadPage(0, buff)
 	assert.IsNil(err, t)

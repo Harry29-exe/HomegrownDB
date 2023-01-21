@@ -1,7 +1,7 @@
 package pageio
 
 import (
-	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"io"
@@ -34,19 +34,19 @@ func (n noPageError) Error() string {
 
 func NewTablePageTag(pageIndex page.Id, tableDef table.RDefinition) PageTag {
 	return PageTag{
-		PageId:   pageIndex,
-		Relation: tableDef.RelationID(),
+		PageId:  pageIndex,
+		OwnerID: tableDef.OID(),
 	}
 }
 
-func NewPageTag(pageIndex page.Id, rel relation.Relation) PageTag {
+func NewPageTag(pageIndex page.Id, objID dbobj.OID) PageTag {
 	return PageTag{
-		PageId:   pageIndex,
-		Relation: rel.RelationID(),
+		PageId:  pageIndex,
+		OwnerID: objID,
 	}
 }
 
 type PageTag struct {
-	PageId   page.Id
-	Relation relation.ID
+	PageId  page.Id
+	OwnerID dbobj.OID
 }

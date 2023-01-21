@@ -1,7 +1,7 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
 	"HomegrownDB/dbsystem/storage/page"
@@ -23,8 +23,8 @@ type TableBuffer interface {
 }
 
 type FsmBuffer interface {
-	RFsmPage(rel relation.Relation, pageId page.Id) (fsmpage.Page, error)
-	WFsmPage(rel relation.Relation, pageId page.Id) (fsmpage.Page, error)
+	RFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page, error)
+	WFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page, error)
 }
 
 const NewPage page.Id = page.InvalidId

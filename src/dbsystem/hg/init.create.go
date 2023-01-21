@@ -116,11 +116,11 @@ func (c *creatorCtx) createRelations() *creatorCtx {
 	}
 	relations := c.Props.RelationsToCreate
 	for _, relation := range relations {
-		err := c.FS.InitNewRelationDir(relation.RelationID())
+		err := c.FS.InitNewRelationDir(relation.OID())
 		if err != nil {
 			return c.error(err)
 		}
-		defFile, err := c.FS.OpenRelationDef(relation.RelationID())
+		defFile, err := c.FS.OpenRelationDef(relation.OID())
 		if err != nil {
 			return c.error(err)
 		}

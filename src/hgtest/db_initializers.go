@@ -43,6 +43,7 @@ func (b *TestDBBuilder) WithUsersTable() *TestDBBuilder {
 		err := b.db.CreateRel(users)
 		assert.ErrIsNil(err, b.t)
 	}
+
 	b.funcToExec = append(b.funcToExec, usersTableFunc)
 	return b
 }

@@ -69,7 +69,7 @@ func (p Page) Data() []byte {
 }
 
 func (p Page) RelationID() relation.ID {
-	return p.table.RelationID()
+	return p.table.OID()
 }
 
 func (p Page) Tuple(tIndex TupleIndex) Tuple {
@@ -92,8 +92,8 @@ func (p Page) Bytes() []byte {
 
 func (p Page) PageTag() pageio.PageTag {
 	return pageio.PageTag{
-		PageId:   p.id,
-		Relation: p.RelationID(),
+		PageId:  p.id,
+		OwnerID: p.RelationID(),
 	}
 }
 

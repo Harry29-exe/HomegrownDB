@@ -41,7 +41,7 @@ func (te targetEntry) AnalyseForInsert(
 	colRef := val.(pnode.ColumnRef)
 	query := currentCtx.Query
 
-	// rte must be of kind Relation
+	// rte must be of kind OwnerID
 	rte := query.GetRTE(query.ResultRel)
 	colDef, ok := rte.Ref.ColumnByName(colRef.Name)
 	if !ok {

@@ -1,7 +1,7 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"errors"
@@ -16,7 +16,7 @@ func NewStdBuffer(bufferSize uint, pageIOStore pageio.Store) StdBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 	for i := uint(0); i < bufferSize; i++ {
 		descriptorArray[i] = pageDescriptor{
-			pageTag:          pageio.PageTag{Relation: 0, PageId: page.InvalidId},
+			pageTag:          pageio.PageTag{OwnerID: 0, PageId: page.InvalidId},
 			slotIndex:        i,
 			refCount:         0,
 			usageCount:       0,
@@ -52,8 +52,8 @@ type buffer struct {
 	ioStore pageio.Store
 }
 
-func (b *buffer) ReadRPage(relation relation.Relation, pageId page.Id, strategy rbm) (stdPage, error) {
-	tag := pageio.PageTag{PageId: pageId, Relation: relation.RelationID()}
+func (b *buffer) ReadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
+	tag := pageio.PageTag{PageId: pageId, OwnerID: ownerID}
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -71,12 +71,12 @@ func (b *buffer) ReadRPage(relation relation.Relation, pageId page.Id, strategy 
 
 	} else {
 		b.bufferMapLock.RUnlock()
-		return b.loadRPage(relation, pageId, strategy)
+		return b.loadRPage(ownerID, pageId, strategy)
 	}
 }
 
-func (b *buffer) ReadWPage(relation relation.Relation, pageId page.Id, strategy rbm) (stdPage, error) {
-	tag := pageio.PageTag{PageId: pageId, Relation: relation.RelationID()}
+func (b *buffer) ReadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
+	tag := pageio.PageTag{PageId: pageId, OwnerID: ownerID}
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -96,7 +96,7 @@ func (b *buffer) ReadWPage(relation relation.Relation, pageId page.Id, strategy 
 	} else {
 		b.bufferMapLock.RUnlock()
 		//todo add locks to new loadPage impl
-		return b.loadWPage(relation, pageId, strategy)
+		return b.loadWPage(ownerID, pageId, strategy)
 	}
 }
 
@@ -124,8 +124,8 @@ func (b *buffer) ReleaseRPage(tag pageio.PageTag) {
 	descriptor.unpin()
 }
 
-func (b *buffer) loadWPage(rel relation.Relation, pageId page.Id, strategy rbm) (stdPage, error) {
-	descriptor, err := b.loadPage(rel, pageId)
+func (b *buffer) loadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
+	descriptor, err := b.loadPage(ownerID, pageId)
 	pageIsNew := false
 	if err != nil {
 		if errors.Is(err, pageio.NoPageErrorType) {
@@ -143,8 +143,8 @@ func (b *buffer) loadWPage(rel relation.Relation, pageId page.Id, strategy rbm) 
 	}, nil
 }
 
-func (b *buffer) loadRPage(rel relation.Relation, pageId page.Id, strategy rbm) (stdPage, error) {
-	descriptor, err := b.loadPage(rel, pageId)
+func (b *buffer) loadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
+	descriptor, err := b.loadPage(ownerID, pageId)
 	descriptor.contentLock.RLock()
 	if err != nil {
 		println("pageId: ", pageId, ", ", err.Error())
@@ -163,8 +163,8 @@ func (b *buffer) loadRPage(rel relation.Relation, pageId page.Id, strategy rbm) 
 //
 // todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
 // 2) prawdopodobnie zaimplementować własną hash mape
-func (b *buffer) loadPage(relation relation.Relation, pageId page.Id) (*pageDescriptor, error) {
-	pageTag := pageio.PageTag{Relation: relation.RelationID(), PageId: pageId}
+func (b *buffer) loadPage(ownerID dbobj.OID, pageId page.Id) (*pageDescriptor, error) {
+	pageTag := pageio.PageTag{OwnerID: ownerID, PageId: pageId}
 
 	for {
 		descriptor, err := b.prepareVictimPage()
@@ -191,7 +191,7 @@ func (b *buffer) loadPage(relation relation.Relation, pageId page.Id) (*pageDesc
 		}
 
 		delete(b.bufferMap, descriptor.pageTag)
-		relationIO := b.ioStore.Get(relation.RelationID())
+		relationIO := b.ioStore.Get(ownerID)
 		if pageId == NewPage {
 			pageTag.PageId = relationIO.PrepareNewPage()
 		}
@@ -254,7 +254,7 @@ func (b *buffer) flushPage(descriptor *pageDescriptor, pageData []byte) error {
 		descriptor.unpin()
 	}()
 
-	err := b.ioStore.Get(descriptorTag.Relation).FlushPage(descriptorTag.PageId, pageData)
+	err := b.ioStore.Get(descriptorTag.OwnerID).FlushPage(descriptorTag.PageId, pageData)
 	if err != nil {
 		return err
 	}

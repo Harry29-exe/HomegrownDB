@@ -105,8 +105,8 @@ func (p Page) Bytes() []byte {
 
 func (p Page) PageTag() pageio.PageTag {
 	return pageio.PageTag{
-		PageId:   p.id,
-		Relation: p.relationId,
+		PageId:  p.id,
+		OwnerID: p.relationId,
 	}
 }
 

@@ -5,51 +5,32 @@ import (
 	"HomegrownDB/dbsystem/relation/table"
 )
 
+// todo thought if this should be deleted as fsm generaly don't need to be locked
 type Store interface {
-	GetFsmFor(relation relation.ID) *FreeSpaceMap
-	GetFSM(fsmId relation.ID) *FreeSpaceMap
-	RegisterFSM(fsm *FreeSpaceMap)
+	Register(fsm *FSM)
+
+	GetFSM(fsmId relation.ID) *FSM
 	DeleteFSM(id table.Id)
 }
 
 func NewStore() Store {
 	return &StdStore{
-		fsmMap:       map[relation.ID]*FreeSpaceMap{},
-		parentFsmMap: map[relation.ID]*FreeSpaceMap{},
+		fsmMap: map[relation.ID]*FSM{},
 	}
-}
-
-func NewStoreWith(fsm []*FreeSpaceMap) Store {
-	store := &StdStore{
-		fsmMap:       map[relation.ID]*FreeSpaceMap{},
-		parentFsmMap: map[relation.ID]*FreeSpaceMap{},
-	}
-
-	for _, spaceMap := range fsm {
-		store.fsmMap[spaceMap.ID] = spaceMap
-		store.parentFsmMap[spaceMap.parentRelationId] = spaceMap
-	}
-	return store
 }
 
 var _ Store = &StdStore{}
 
 type StdStore struct {
-	fsmMap       map[relation.ID]*FreeSpaceMap
-	parentFsmMap map[relation.ID]*FreeSpaceMap
+	fsmMap map[relation.ID]*FSM
 }
 
-func (s StdStore) GetFsmFor(relation relation.ID) *FreeSpaceMap {
-	return s.parentFsmMap[relation]
+func (s StdStore) Register(fsm *FSM) {
+	s.fsmMap[fsm.fsmOID] = fsm
 }
 
-func (s StdStore) GetFSM(fsmId table.Id) *FreeSpaceMap {
+func (s StdStore) GetFSM(fsmId table.Id) *FSM {
 	return s.fsmMap[fsmId]
-}
-
-func (s StdStore) RegisterFSM(fsm *FreeSpaceMap) {
-	s.fsmMap[fsm.RelationID()] = fsm
-	s.parentFsmMap[fsm.parentRelationId] = fsm
 }
 
 func (s StdStore) DeleteFSM(id table.Id) {

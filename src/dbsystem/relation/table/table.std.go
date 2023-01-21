@@ -41,6 +41,10 @@ func (t *StdTable) SetName(name string) {
 	t.name = name
 }
 
+func (t *StdTable) SetFsmOID(oid dbobj.OID) {
+	t.FreeSpaceMapOID = oid
+}
+
 func (t *StdTable) Name() string {
 	return t.name
 }

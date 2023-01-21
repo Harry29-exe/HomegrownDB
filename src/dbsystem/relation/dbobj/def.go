@@ -2,6 +2,6 @@ package dbobj
 
 type OID = uint64
 
-type DBObj interface {
+type Obj interface {
 	OID() OID
 }

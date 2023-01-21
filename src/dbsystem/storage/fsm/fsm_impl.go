@@ -7,15 +7,15 @@ import (
 	"fmt"
 )
 
-func (f *FreeSpaceMap) findPage(space uint8, ctx tx.Tx) (page.Id, error) {
+func (f *FSM) findPage(space uint8, ctx tx.Tx) (page.Id, error) {
 	var internalErr internalError
 	pageIndex, nodeIndex := uint32(0), uint16(0)
 	lastPageIndex, lastNodeIndex := uint32(0), uint16(0)
 	newLeafNodeVal, leafNodeVal := uint8(0), uint8(0)
 
 	for {
-		pageTag := pageio.NewPageTag(pageIndex, f)
-		rPage, err := f.buff.RFsmPage(f, pageIndex)
+		pageTag := pageio.NewPageTag(pageIndex, f.fsmOID)
+		rPage, err := f.buff.RFsmPage(f.fsmOID, pageIndex)
 		if err != nil {
 			return 0, err
 		}
@@ -51,12 +51,12 @@ func (f *FreeSpaceMap) findPage(space uint8, ctx tx.Tx) (page.Id, error) {
 	return f.calcPageId(pageIndex, nodeIndex), nil
 }
 
-func (f *FreeSpaceMap) calcPageId(pageIndex uint32, nodeIndex uint16) page.Id {
+func (f *FSM) calcPageId(pageIndex uint32, nodeIndex uint16) page.Id {
 	pageIndexInLayer := pageIndex - uint32(leafNodeCount+1)
 	return pageIndexInLayer*uint32(leafNodeCount) + uint32(nodeIndex-nonLeafNodeCount)
 }
 
-func (f *FreeSpaceMap) findLeafNode(space uint8, pageData []byte) (uint16, internalError) {
+func (f *FSM) findLeafNode(space uint8, pageData []byte) (uint16, internalError) {
 	var nodeIndex uint16 = 0
 	if pageData[0] < space {
 		return 0, noSpace
@@ -81,10 +81,10 @@ func (f *FreeSpaceMap) findLeafNode(space uint8, pageData []byte) (uint16, inter
 	return nodeIndex, none
 }
 
-func (f *FreeSpaceMap) updatePages(space uint8, pageIndex uint32, nodeIndex uint16) error {
-	tag := pageio.NewPageTag(pageIndex, f)
+func (f *FSM) updatePages(space uint8, pageIndex uint32, nodeIndex uint16) error {
+	tag := pageio.NewPageTag(pageIndex, f.fsmOID)
 
-	wPage, err := f.buff.WFsmPage(f, pageIndex)
+	wPage, err := f.buff.WFsmPage(f.fsmOID, pageIndex)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (f *FreeSpaceMap) updatePages(space uint8, pageIndex uint32, nodeIndex uint
 	return nil
 }
 
-func (f *FreeSpaceMap) updatePage(space uint8, pageData []byte, nodeIndex uint16) {
+func (f *FSM) updatePage(space uint8, pageData []byte, nodeIndex uint16) {
 	pageData[nodeIndex] = space
 	for nodeIndex != 0 {
 		parentIndex := f.getParentIndex(nodeIndex)
@@ -120,19 +120,19 @@ func (f *FreeSpaceMap) updatePage(space uint8, pageData []byte, nodeIndex uint16
 	}
 }
 
-func (f *FreeSpaceMap) getParentIndex(childNodeIndex uint16) uint16 {
+func (f *FSM) getParentIndex(childNodeIndex uint16) uint16 {
 	return (childNodeIndex - 1) / 2
 }
 
-func (f *FreeSpaceMap) getLeftNodeIndex(parentNodeIndex uint16) uint16 {
+func (f *FSM) getLeftNodeIndex(parentNodeIndex uint16) uint16 {
 	return parentNodeIndex*2 + 1
 }
 
-func (f *FreeSpaceMap) getRightNodeIndex(parentNodeIndex uint16) uint16 {
+func (f *FSM) getRightNodeIndex(parentNodeIndex uint16) uint16 {
 	return parentNodeIndex*2 + 2
 }
 
-func (f *FreeSpaceMap) getFsmPageIndex(nodeIndex uint16, pageIndex uint32) uint32 {
+func (f *FSM) getFsmPageIndex(nodeIndex uint16, pageIndex uint32) uint32 {
 	inLayerNodeIndex := uint32(nodeIndex - nonLeafNodeCount)
 	if pageIndex == 0 {
 		return inLayerNodeIndex + 1
@@ -148,7 +148,7 @@ func (f *FreeSpaceMap) getFsmPageIndex(nodeIndex uint16, pageIndex uint32) uint3
 	}
 }
 
-func (f *FreeSpaceMap) getFsmParentPageIndex(pageIndex uint32) (parentPageIndex uint32, nodeIndex uint16) {
+func (f *FSM) getFsmParentPageIndex(pageIndex uint32) (parentPageIndex uint32, nodeIndex uint16) {
 	if pageIndex > uint32(leafNodeCount) { // layer 2
 		inLayerPageIndex := pageIndex - (uint32(leafNodeCount) + 1)
 
@@ -163,7 +163,7 @@ func (f *FreeSpaceMap) getFsmParentPageIndex(pageIndex uint32) (parentPageIndex 
 	return
 }
 
-func (f *FreeSpaceMap) leafNodeToPageId(nodeIndex uint16, pageIndex uint16, pageLayer uint16) uint16 {
+func (f *FSM) leafNodeToPageId(nodeIndex uint16, pageIndex uint16, pageLayer uint16) uint16 {
 	return (nodeIndex - (leafNodeCount - 1)) + pageLayer*leafNodeCount + pageIndex
 }
 

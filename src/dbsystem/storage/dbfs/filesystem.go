@@ -1,14 +1,14 @@
 package dbfs
 
 import (
-	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"errors"
 	"fmt"
 	"os"
 )
 
 type FS interface {
-	RelationFS
+	PageObjectFS
 	PropertiesFS
 	DBInitializerFS
 	Truncate(path string, newSize int64) error
@@ -29,11 +29,11 @@ type DBInitializerFS interface {
 	DestroyDB() error
 }
 
-type RelationFS interface {
-	OpenRelationDataFile(relation relation.Relation) (FileLike, error)
-	OpenRelationDef(relation relation.ID) (FileLike, error)
+type PageObjectFS interface {
+	OpenRelationDataFile(oid dbobj.OID) (FileLike, error)
+	OpenRelationDef(oid dbobj.OID) (FileLike, error)
 	// InitNewRelationDir create directory and all files(empty) for given relation ID
-	InitNewRelationDir(relationID relation.ID) error
+	InitNewRelationDir(oid dbobj.OID) error
 }
 
 func LoadFS(rootPath string) (FS, error) {
@@ -109,20 +109,6 @@ func (fs *StdFS) InitDBSystemDirs() error {
 	return nil
 }
 
-func (fs *StdFS) OpenRelationDataFile(relation relation.Relation) (FileLike, error) {
-	filepath := fmt.Sprintf("%s/%s/%d/%s", fs.RootPath, RelationsDirname, relation.RelationID(), DataFilename)
-	file, err := os.OpenFile(filepath, os.O_RDWR, os.ModeType)
-	if err != nil {
-		return nil, err
-	}
-
-	return file, nil
-}
-
-// -------------------------
-//      DBInitializerFS
-// -------------------------
-
 func (fs *StdFS) InitDBSystemConfigAndProps(configData []byte, propertiesData []byte) error {
 	err := fs.createFile(Path(fs.RootPath, ConfigFilename), configData)
 	if err != nil {
@@ -135,8 +121,20 @@ func (fs *StdFS) InitDBSystemConfigAndProps(configData []byte, propertiesData []
 	return nil
 }
 
-func (fs *StdFS) OpenRelationDef(relationId relation.ID) (FileLike, error) {
-	filepath := fmt.Sprintf("%s/%s/%d/%s", fs.RootPath, RelationsDirname, relationId, DefinitionFilename)
+// -------------------------
+//      DBInitializerFS
+// -------------------------
+
+func (fs *StdFS) DestroyDB() error {
+	return os.RemoveAll(fs.RootPath)
+}
+
+// -------------------------
+//      PageObjectFS
+// -------------------------
+
+func (fs *StdFS) OpenRelationDataFile(oid dbobj.OID) (FileLike, error) {
+	filepath := fmt.Sprintf("%s/%s/%d/%s", fs.RootPath, RelationsDirname, oid, DataFilename)
 	file, err := os.OpenFile(filepath, os.O_RDWR, os.ModeType)
 	if err != nil {
 		return nil, err
@@ -145,16 +143,18 @@ func (fs *StdFS) OpenRelationDef(relationId relation.ID) (FileLike, error) {
 	return file, nil
 }
 
-func (fs *StdFS) DestroyDB() error {
-	return os.RemoveAll(fs.RootPath)
+func (fs *StdFS) OpenRelationDef(oid dbobj.OID) (FileLike, error) {
+	filepath := fmt.Sprintf("%s/%s/%d/%s", fs.RootPath, RelationsDirname, oid, DefinitionFilename)
+	file, err := os.OpenFile(filepath, os.O_RDWR, os.ModeType)
+	if err != nil {
+		return nil, err
+	}
+
+	return file, nil
 }
 
-// -------------------------
-//      RelationFS
-// -------------------------
-
-func (fs *StdFS) InitNewRelationDir(relationId relation.ID) error {
-	path := fmt.Sprintf("%s/%s/%d", fs.RootPath, RelationsDirname, relationId)
+func (fs *StdFS) InitNewRelationDir(oid dbobj.OID) error {
+	path := fmt.Sprintf("%s/%s/%d", fs.RootPath, RelationsDirname, oid)
 	_, err := os.Stat(path)
 	if !os.IsNotExist(err) {
 		return os.ErrExist

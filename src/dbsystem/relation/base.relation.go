@@ -1,6 +1,9 @@
 package relation
 
-import "HomegrownDB/common/bparse"
+import (
+	"HomegrownDB/common/bparse"
+	"HomegrownDB/dbsystem/relation/dbobj"
+)
 
 func NewBaseRelation(id ID, relKind Kind, dirFilePath string, dataSize int64) BaseRelation {
 	return BaseRelation{
@@ -25,15 +28,25 @@ func DeserializeBaseRelation(deserializer *bparse.Deserializer) BaseRelation {
 var _ Relation = &BaseRelation{}
 
 type BaseRelation struct {
-	ID      ID
-	RelKind Kind
+	ID               ID
+	RelKind          Kind
+	FreeSpaceMapOID  dbobj.OID
+	VisibilityMapOID dbobj.OID
 }
 
-func (s *BaseRelation) RelationID() ID {
+func (s *BaseRelation) FsmOID() dbobj.OID {
+	return s.FreeSpaceMapOID
+}
+
+func (s *BaseRelation) VmOID() dbobj.OID {
+	return s.VisibilityMapOID
+}
+
+func (s *BaseRelation) OID() ID {
 	return s.ID
 }
 
-func (s *BaseRelation) SetRelationID(id ID) {
+func (s *BaseRelation) SetOID(id ID) {
 	s.ID = id
 }
 
