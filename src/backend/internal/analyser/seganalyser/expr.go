@@ -36,12 +36,14 @@ func (ex exprAnalyser) AnalyseColRef(pnode pnode2.ColumnRef, currentCtx anlsr.Qu
 
 	if alias := pnode.TableAlias; alias != "" {
 		rTable = QueryHelper.findRteByAlias(alias, query)
+		if rTable == nil {
+			return nil, AnlsrErr.TableWithAliasNotExist(alias)
+		}
 	} else {
 		rTable = QueryHelper.findRteWithField(pnode.Name, query)
-	}
-
-	if rTable == nil {
-		return nil, AnlsrErr.NewColumnNotExist(query, pnode.Name, pnode.TableAlias)
+		if rTable == nil {
+			return nil, AnlsrErr.NewColumnNotExist(query, pnode.Name, pnode.TableAlias)
+		}
 	}
 
 	col, ok := rTable.Ref.ColumnByName(pnode.Name)

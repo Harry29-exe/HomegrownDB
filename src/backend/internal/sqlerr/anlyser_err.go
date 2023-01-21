@@ -42,6 +42,27 @@ func (c ColumnNotExist) Error() string {
 }
 
 // -------------------------
+//      TableNotExist
+// -------------------------
+
+func (a anlsr) TableWithAliasNotExist(alias string) TableNotExist {
+	return TableNotExist{TableAlias: alias}
+}
+
+type TableNotExist struct {
+	TableName  string
+	TableAlias string
+}
+
+func (e TableNotExist) Error() string {
+	if e.TableAlias != "" {
+		return fmt.Sprintf("table with alias: \"%s\" does not exist", e.TableAlias)
+	} else {
+		return fmt.Sprintf("table with name: \"%s\" does not exist", e.TableName)
+	}
+}
+
+// -------------------------
 //      IllegalNode
 // -------------------------
 

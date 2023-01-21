@@ -1,14 +1,14 @@
 package seganalyser
 
 import (
-	node2 "HomegrownDB/backend/internal/node"
+	"HomegrownDB/backend/internal/node"
 )
 
 var QueryHelper = queryHelper{}
 
 type queryHelper struct{}
 
-func (queryHelper) findRteByAlias(alias string, query node2.Query) node2.RangeTableEntry {
+func (queryHelper) findRteByAlias(alias string, query node.Query) node.RangeTableEntry {
 	for _, rTable := range query.RTables {
 		if rTable.Alias != nil && rTable.Alias.AliasName == alias {
 			return rTable
@@ -17,9 +17,9 @@ func (queryHelper) findRteByAlias(alias string, query node2.Query) node2.RangeTa
 	return nil
 }
 
-func (queryHelper) findRteWithField(fieldName string, query node2.Query) node2.RangeTableEntry {
+func (queryHelper) findRteWithField(fieldName string, query node.Query) node.RangeTableEntry {
 	for _, rTable := range query.RTables {
-		if rTable.Kind != node2.RteRelation {
+		if rTable.Kind != node.RteRelation {
 			continue
 		}
 
@@ -33,7 +33,7 @@ func (queryHelper) findRteWithField(fieldName string, query node2.Query) node2.R
 	return nil
 }
 
-func (queryHelper) findRteWithId(id node2.RteID, query node2.Query) node2.RangeTableEntry {
+func (queryHelper) findRteWithId(id node.RteID, query node.Query) node.RangeTableEntry {
 	for _, rTable := range query.RTables {
 		if rTable.Id == id {
 			return rTable
