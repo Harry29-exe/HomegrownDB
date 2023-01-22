@@ -24,7 +24,9 @@ func (m modifyTableBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 		Plan: specificPlan,
 		Left: CreateFromPlan(specificPlan.Left, ctx),
 		OutputPattern: &dpage.TuplePattern{
-			Columns:   []dpage.ColumnInfo{{CType: hgtype.NewInt8(hgtype.Args{})}},
+			Columns: []dpage.ColumnInfo{
+				{CType: hgtype.Int8{}, Name: "Rows"},
+			},
 			BitmapLen: 1,
 		},
 		txCtx:       ctx.Tx,
@@ -81,6 +83,11 @@ func (m *ModifyTable) HasNext() bool {
 }
 
 func (m *ModifyTable) Init(plan node.Plan) error {
-	//TODO implement me
-	panic("implement me")
+	// ModifyTable does not need to be initialized
+	return nil
+}
+
+func (m *ModifyTable) Close() error {
+	// // ModifyTable does not need to be closed
+	return nil
 }

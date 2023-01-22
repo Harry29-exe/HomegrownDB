@@ -19,9 +19,12 @@ func (s seqScanBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 	seqScanPlan := plan.(node.SeqScan)
 	scanTable := ctx.GetRTE(seqScanPlan.RteId).Ref
 	return &SeqScan{
+		scan: scan{
+			Plan: plan,
+			Tx:   ctx.Tx,
+		},
 		Plan:          seqScanPlan,
 		OutputPattern: dpage.NewPatternFromTable(scanTable),
-		txCtx:         ctx.Tx,
 		buff:          ctx.Buff,
 		table:         scanTable,
 		nextPageId:    0,
@@ -33,6 +36,7 @@ func (s seqScanBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 var _ ExecNode = &SeqScan{}
 
 type SeqScan struct {
+	scan
 	Plan          node.SeqScan
 	OutputPattern *dpage.TuplePattern
 
@@ -43,23 +47,39 @@ type SeqScan struct {
 	nextPageId  page.Id
 	nextTupleId tpage.TupleIndex
 	done        bool
-
 }
+
+//todo !!!!Next and HasNext are poc, they are awful for performance!!!!
 
 func (s SeqScan) Next() dpage.Tuple {
 	rPage, err := s.buff.RTablePage(s.table, s.nextPageId)
 	if err != nil {
 		s.done = true
 	}
-
+	defer s.buff.RPageRelease(rPage.PageTag())
+	tuple := rPage.Tuple(s.nextTupleId)
+	outputTuple := s.createOutputTuple(tuple)
 }
 
 func (s SeqScan) HasNext() bool {
-	//TODO implement me
-	panic("implement me")
+	rPage, err := s.buff.RTablePage(s.table, s.nextPageId)
+	if err != nil {
+		return false
+	}
+	defer s.buff.RPageRelease(rPage.PageTag())
+	return rPage.TupleCount() > s.nextTupleId
 }
 
 func (s SeqScan) Init(plan node.Plan) error {
 	//TODO implement me
 	panic("implement me")
+}
+
+func (s SeqScan) Close() error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s SeqScan) mapTuple(tuple tpage.WTuple) dpage.WTuple {
+
 }

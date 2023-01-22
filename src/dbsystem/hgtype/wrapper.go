@@ -14,19 +14,10 @@ var (
 )
 
 func NewTypeData(tag Tag, args Args) TypeData {
-	var t Type
-	switch tag {
-	case TypeStr:
-		t = Str{}
-	case TypeInt8:
-		t = Int8{}
-	default:
-		//todo implement me
-		panic("Not implemented")
-	}
+	t := tag.Type()
 
 	return TypeData{
-		t:    t,
+		Type: t,
 		Tag:  tag,
 		Args: args,
 	}
@@ -52,7 +43,7 @@ func NewTypeDataWithDefaultArgs(tag Tag) TypeData {
 	}
 
 	return TypeData{
-		t:    t,
+		Type: t,
 		Tag:  tag,
 		Args: args,
 	}
@@ -60,7 +51,7 @@ func NewTypeDataWithDefaultArgs(tag Tag) TypeData {
 
 func NewStr(args Args) TypeData {
 	return TypeData{
-		t:    Str{},
+		Type: Str{},
 		Tag:  TypeStr,
 		Args: args,
 	}
@@ -68,16 +59,20 @@ func NewStr(args Args) TypeData {
 
 func NewInt8(args Args) TypeData {
 	return TypeData{
-		t:    Int8{},
+		Type: Int8{},
 		Tag:  TypeInt8,
 		Args: args,
 	}
 }
 
 type TypeData struct {
-	t    Type
+	Type Type
 	Tag  Tag
 	Args Args
+}
+
+func (w TypeData) Validate(value []byte) error {
+	return w.Type.Validate(w.Args, value)
 }
 
 func SerializeTypeData(typeData TypeData, s *bparse.Serializer) {
@@ -104,23 +99,23 @@ func (w TypeData) TypeEqual(wrapper TypeData) bool {
 // -------------------------
 
 func (w TypeData) Skip(data []byte) []byte {
-	return w.t.Skip(w.Args, data)
+	return w.Type.Skip(data)
 }
 
 func (w TypeData) Copy(dest []byte, data []byte) (copiedBytes int) {
-	return w.t.Copy(w.Args, dest, data)
+	return w.Type.Copy(dest, data)
 }
 
 func (w TypeData) IsToastPtr(data []byte) bool {
-	return w.t.IsToastPtr(w.Args, data)
+	return w.Type.IsToastPtr(data)
 }
 
 func (w TypeData) Value(data []byte) (value []byte) {
-	return w.t.Value(w.Args, data)
+	return w.Type.Value(data)
 }
 
 func (w TypeData) ValueAndSkip(data []byte) (value, next []byte) {
-	return w.t.ValueAndSkip(w.Args, data)
+	return w.Type.ValueAndSkip(data)
 }
 
 // -------------------------
@@ -128,7 +123,7 @@ func (w TypeData) ValueAndSkip(data []byte) (value, next []byte) {
 // -------------------------
 
 func (w TypeData) WriteTuple(dest []byte, value []byte) int {
-	return w.t.WriteTuple(w.Args, dest, value)
+	return w.Type.WriteTuple(dest, value)
 }
 
 // -------------------------
@@ -136,11 +131,11 @@ func (w TypeData) WriteTuple(dest []byte, value []byte) int {
 // -------------------------
 
 func (w TypeData) Equal(v1, v2 []byte) bool {
-	return w.t.Equal(w.Args, v1, v2)
+	return w.Type.Equal(v1, v2)
 }
 
 func (w TypeData) Cmp(v1, v2 []byte) int {
-	return w.t.Cmp(w.Args, v1, v2)
+	return w.Type.Cmp(v1, v2)
 }
 
 // -------------------------
@@ -148,9 +143,9 @@ func (w TypeData) Cmp(v1, v2 []byte) int {
 // -------------------------
 
 func (w TypeData) ToStr(val []byte) string {
-	return w.t.ToStr(w.Args, val)
+	return w.Type.ToStr(val)
 }
 
 func (w TypeData) Rand(r random.Random) []byte {
-	return w.t.Rand(w.Args, r)
+	return w.Type.Rand(w.Args, r)
 }

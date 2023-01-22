@@ -64,6 +64,11 @@ func (v *ValuesScan) Init(plan node2.Plan) error {
 	panic("implement me")
 }
 
+func (v *ValuesScan) Close() error {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (v *ValuesScan) tupleFromValues() dpage.Tuple {
 	tupleValues := make([][]byte, len(v.Values[0]))
 	for col := 0; col < len(tupleValues); col++ {

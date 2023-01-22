@@ -9,6 +9,7 @@ type ExecNode interface {
 	Next() dpage.Tuple
 	HasNext() bool
 	Init(plan node.Plan) error
+	Close() error
 }
 
 func Create(plan node.Plan) {

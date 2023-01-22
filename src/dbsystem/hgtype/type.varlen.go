@@ -22,7 +22,7 @@ type varLen struct{}
 //      TypeReader
 // -------------------------
 
-func (v varLen) Skip(args Args, data []byte) []byte {
+func (v varLen) Skip(data []byte) []byte {
 	if toast.IsVarLenToasted(data[0]) {
 		return data[:toast.InTupleSize]
 	}
@@ -36,7 +36,7 @@ func (v varLen) Skip(args Args, data []byte) []byte {
 	}
 }
 
-func (v varLen) Copy(args Args, dest []byte, data []byte) (copiedBytes int) {
+func (v varLen) Copy(dest []byte, data []byte) (copiedBytes int) {
 	if toast.IsVarLenToasted(data[0]) {
 		return copy(dest, data[:toast.InTupleSize])
 	}
@@ -50,11 +50,11 @@ func (v varLen) Copy(args Args, dest []byte, data []byte) (copiedBytes int) {
 	}
 }
 
-func (v varLen) IsToastPtr(args Args, data []byte) bool {
+func (v varLen) IsToastPtr(data []byte) bool {
 	return toast.IsVarLenToasted(data[0])
 }
 
-func (v varLen) Value(args Args, data []byte) (value []byte) {
+func (v varLen) Value(data []byte) (value []byte) {
 	if v.lenIsOneByte(data[0]) {
 		l := v.oneByteLen(data)
 		val := make([]byte, l+3)
@@ -70,7 +70,7 @@ func (v varLen) Value(args Args, data []byte) (value []byte) {
 	}
 }
 
-func (v varLen) ValueAndSkip(args Args, data []byte) (value, next []byte) {
+func (v varLen) ValueAndSkip(data []byte) (value, next []byte) {
 	if v.lenIsOneByte(data[0]) { // 1 byte header
 		l := v.oneByteLen(data)
 		next = data[l:]
@@ -92,7 +92,7 @@ func (v varLen) ValueAndSkip(args Args, data []byte) (value, next []byte) {
 //      TypeWriter
 // -------------------------
 
-func (v varLen) WriteTuple(args Args, dest []byte, value []byte) int {
+func (v varLen) WriteTuple(dest []byte, value []byte) int {
 	//TODO implement me
 	panic("implement me")
 }

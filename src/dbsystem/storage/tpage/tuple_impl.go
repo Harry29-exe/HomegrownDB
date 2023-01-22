@@ -36,6 +36,15 @@ func (t Tuple) Bytes() []byte {
 	return t.bytes
 }
 
+func (t Tuple) Copy() WTuple {
+	array := make([]byte, len(t.bytes))
+	copy(array, t.bytes)
+	return Tuple{
+		bytes: array,
+		table: t.table,
+	}
+}
+
 func (t Tuple) CreatedByTx() tx.Id {
 	return tx.Id(bparse.Parse.UInt4(t.bytes[toTxId:]))
 }

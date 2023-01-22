@@ -11,7 +11,7 @@ func NewPatternFromTable(def table.RDefinition) *TuplePattern {
 	columns := make([]ColumnInfo, len(tableColumns))
 	for c := 0; c < len(columns); c++ {
 		columns[c] = ColumnInfo{
-			CType: tableColumns[c].CType(),
+			CType: tableColumns[c].CType().Type,
 			Name:  tableColumns[c].Name(),
 		}
 	}
@@ -35,7 +35,7 @@ type TuplePattern struct {
 }
 
 type ColumnInfo struct {
-	CType hgtype.TypeData
+	CType hgtype.Type
 	Name  string
 }
 

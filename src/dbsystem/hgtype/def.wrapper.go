@@ -6,14 +6,13 @@ import (
 
 type WrapperOp interface {
 	TypeEqual(wrapper TypeData) bool
+	// Validate check if given value is fulfilling provided args
+	Validate(value []byte) error
 }
 
 type Operations interface {
 	Equal(v1, v2 []byte) bool
 	Cmp(v1, v2 []byte) int
-}
-
-type Converter interface {
 }
 
 type Reader interface {
@@ -38,12 +37,12 @@ type Writer interface {
 	// returns written bytes (support toast and lob ptrs)
 	WriteTuple(dest []byte, value []byte) int
 	// WriteNormalized rewrites hgtype from old tuple/qrow to byte slice
-	// returns written bytes (don't support toast and lob ptrs)
+	// returns written bytes (don'Type support toast and lob ptrs)
 	//WriteNormalized(dest []byte, value []byte) int //todo not sure if this method is needed
 }
 
 type Debug interface {
-	// ToStr Should be called on result of Value(data) as it won't always
+	// ToStr Should be called on result of Value(data) as it won'Type always
 	// work on raw data (because of support data)
 	ToStr(val []byte) string
 	// Rand generate random data that normally could belong to

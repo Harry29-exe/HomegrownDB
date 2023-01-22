@@ -251,8 +251,8 @@ type targetEntry struct {
 	Temp bool // Temp if true then entry should be eliminated before tuple is emitted
 }
 
-func (t TargetEntry) Type() hgtype.Tag {
-	return t.ExprToExec.Type()
+func (t TargetEntry) TypeTag() hgtype.Tag {
+	return t.ExprToExec.TypeTag()
 }
 
 func (t TargetEntry) dEqual(node Node) bool {

@@ -58,8 +58,8 @@ func (v rteValues) analyseRow(row []pnode.Node, firstRow []node2.Expr, currentCt
 		aConst, err := ExprDelegator.DelegateAnalyse(row[col], currentCtx)
 		if err != nil {
 			return nil, err
-		} else if aConst.Type() != firstRow[col].Type() {
-			return nil, fmt.Errorf("incompatible types %s != %s", aConst.Type().ToStr(), firstRow[col].Type().ToStr())
+		} else if aConst.TypeTag() != firstRow[col].TypeTag() {
+			return nil, fmt.Errorf("incompatible types %s != %s", aConst.TypeTag().ToStr(), firstRow[col].TypeTag().ToStr())
 		}
 
 		resultRow[col] = aConst

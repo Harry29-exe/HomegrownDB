@@ -16,6 +16,7 @@ type RTuple interface {
 	ColValue(id column.Order) []byte
 	DataSize() int
 
+	Copy() WTuple
 	Table() table.RDefinition
 	Data() []byte
 }

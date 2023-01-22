@@ -197,12 +197,6 @@ func (t tupleDebugger) stringifyNullBitmap(tuple Tuple, arr *strutils.StrArray) 
 	builder.WriteRune('\n')
 
 	for i := 0; i < len(tuple.pattern.Columns); i++ {
-		col := tuple.pattern.Columns[i]
-		if !col.CType.Args.Nullable {
-			builder.WriteString(fmt.Sprintf("| %d: %d ", i, -1))
-			continue
-		}
-
 		byteIndex := uint16(i / 8)
 		bitIndex := uint16(i) - byteIndex*8
 		bit := bparse.Bit.GetBit(tuple.bytes[toNullBitmap+byteIndex], uint8(bitIndex))

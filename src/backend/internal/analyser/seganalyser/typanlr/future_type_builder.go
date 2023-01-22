@@ -16,7 +16,7 @@ func CreateFutureType(expr node2.Expr) FutureType {
 }
 
 func createFTFromConst(expr node2.Const) FutureType {
-	switch expr.Type() {
+	switch expr.TypeTag() {
 	case hgtype.TypeInt8:
 		return FutureType{
 			TypeTag:  hgtype.TypeInt8,

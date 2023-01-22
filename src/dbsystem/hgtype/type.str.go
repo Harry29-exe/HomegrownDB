@@ -17,19 +17,19 @@ func (s Str) Tag() Tag {
 	return TypeStr
 }
 
-var _ TypeOperations = Str{}
+var _ Operations = Str{}
 
-func (s Str) Equal(args Args, v1, v2 []byte) bool {
+func (s Str) Equal(v1, v2 []byte) bool {
 	return bytes.Equal(v1, v2)
 }
 
-func (s Str) Cmp(args Args, v1, v2 []byte) int {
+func (s Str) Cmp(v1, v2 []byte) int {
 	return bytes.Compare(v1, v2)
 }
 
 var _ TypeDebug = Str{}
 
-func (s Str) ToStr(args Args, val []byte) string {
+func (s Str) ToStr(val []byte) string {
 	return string(val)
 }
 
@@ -45,6 +45,11 @@ func (s Str) Rand(args Args, r random.Random) []byte {
 	}
 
 	return buff.Bytes()
+}
+
+func (s Str) Validate(args Args, value []byte) error {
+	//TODO implement me
+	panic("implement me")
 }
 
 var StrUtils = strUtils{}

@@ -12,10 +12,10 @@ type FutureType struct {
 }
 
 func (f *FutureType) UpdateType(expr node2.Expr) error {
-	if f.TypeTag != expr.Type() {
+	if f.TypeTag != expr.TypeTag() {
 		return sqlerr.TypeMismatch{
 			ExpectedType: f.TypeTag,
-			ActualType:   expr.Type(),
+			ActualType:   expr.TypeTag(),
 			Value:        expr,
 		}
 	}

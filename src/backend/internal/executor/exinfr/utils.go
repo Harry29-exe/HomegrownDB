@@ -1,13 +1,12 @@
 package exinfr
 
 import (
-	node2 "HomegrownDB/backend/internal/node"
-	"HomegrownDB/dbsystem/hgtype"
+	node "HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/storage/dpage"
 	"math"
 )
 
-func PatternFromTargetList(targetList []node2.TargetEntry) *dpage.TuplePattern {
+func PatternFromTargetList(targetList []node.TargetEntry) *dpage.TuplePattern {
 	pattern := &dpage.TuplePattern{
 		Columns:   make([]dpage.ColumnInfo, len(targetList)),
 		BitmapLen: uint16(math.Ceil(float64(len(targetList)) / 8)),
@@ -20,17 +19,8 @@ func PatternFromTargetList(targetList []node2.TargetEntry) *dpage.TuplePattern {
 	return pattern
 }
 
-func typeFromTargetEntry(entry node2.TargetEntry) dpage.ColumnInfo {
-	var entryType hgtype.TypeData
-	switch entry.ExprToExec.Tag() {
-	case node2.TagConst:
-		entryType = hgtype.NewTypeDataWithDefaultArgs(entry.Type())
-	case node2.TagVar:
-		entryType = entry.ExprToExec.(node2.Var).TypeData
-	default:
-		//todo implement me
-		panic("Not implemented")
-	}
+func typeFromTargetEntry(entry node.TargetEntry) dpage.ColumnInfo {
+	entryType := entry.TypeTag().Type()
 
 	return dpage.ColumnInfo{
 		CType: entryType,
@@ -38,18 +28,18 @@ func typeFromTargetEntry(entry node2.TargetEntry) dpage.ColumnInfo {
 	}
 }
 
-func PattenFromRTE(rte node2.RangeTableEntry) *dpage.TuplePattern {
+func PattenFromRTE(rte node.RangeTableEntry) *dpage.TuplePattern {
 	switch rte.Kind {
-	case node2.RteValues:
+	case node.RteValues:
 		colTypes := make([]dpage.ColumnInfo, len(rte.ColTypes))
 		for i := 0; i < len(rte.ColTypes); i++ {
 			colTypes[i] = dpage.ColumnInfo{
-				CType: rte.ColTypes[i],
+				CType: rte.ColTypes[i].Type,
 				Name:  rte.ColAlias[i].AliasName,
 			}
 		}
 		return dpage.NewPattern(colTypes)
-	case node2.RteRelation:
+	case node.RteRelation:
 		return dpage.NewPatternFromTable(rte.Ref)
 	default:
 		//todo implement me
