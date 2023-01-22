@@ -13,7 +13,6 @@ import (
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
-	"HomegrownDB/dbsystem/storage/tpage"
 	"HomegrownDB/hgtest"
 	"testing"
 )
@@ -66,7 +65,7 @@ func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 table.Defini
 	assert.EqArray(wPage.Bytes(), wPage0FromIO, t)
 }
 
-func insertTPageWithSingleTuple(pageId page.Id, table1 table.Definition, buff SharedBuffer, rand random.Random, t *testing.T) tpage.WPage {
+func insertTPageWithSingleTuple(pageId page.Id, table1 table.Definition, buff SharedBuffer, rand random.Random, t *testing.T) page.WPage {
 	wPage0, err := buff.WTablePage(table1, pageId)
 	assert.IsNil(err, t)
 	p0Tuple0 := hgtest.Table.RandTPageTuple(table1, rand).Bytes()
@@ -76,15 +75,9 @@ func insertTPageWithSingleTuple(pageId page.Id, table1 table.Definition, buff Sh
 	return wPage0
 }
 
-func copyTPage(tPage tpage.RPage) (pageCopy []byte) {
+func copyTPage(tPage page.RPage) (pageCopy []byte) {
 	pageCopy = make([]byte, config.PageSize)
-	switch tablePage := tPage.(type) {
-	case tpage.Page:
-		copy(pageCopy, tablePage.Bytes())
-	default:
-		panic("not known RPage type")
-	}
-
+	tPage.CopyBytes(pageCopy)
 	return
 }
 

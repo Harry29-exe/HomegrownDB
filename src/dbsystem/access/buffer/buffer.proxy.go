@@ -6,7 +6,6 @@ import (
 	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
-	"HomegrownDB/dbsystem/storage/tpage"
 )
 
 func NewSharedBuffer(buffSize uint, store pageio.Store) SharedBuffer {
@@ -23,25 +22,25 @@ type bufferProxy struct {
 
 var _ SharedBuffer = &bufferProxy{}
 
-func (b *bufferProxy) RTablePage(table table.RDefinition, pageId page.Id) (tpage.RPage, error) {
+func (b *bufferProxy) RTablePage(table table.RDefinition, pageId page.Id) (page.RPage, error) {
 	rPage, err := b.buffer.ReadRPage(table.OID(), pageId, RbmRead)
 	if err != nil {
 		return nil, err
 	}
 
-	return tpage.AsPage(rPage.Bytes, pageId, table), nil
+	return page.AsPage(rPage.Bytes, pageId, page.PatternFromTable(table)), nil
 }
 
-func (b *bufferProxy) WTablePage(table table.RDefinition, pageId page.Id) (tpage.WPage, error) {
+func (b *bufferProxy) WTablePage(table table.RDefinition, pageId page.Id) (page.WPage, error) {
 	wPage, err := b.buffer.ReadWPage(table.OID(), pageId, RbmReadOrCreate)
 	if err != nil {
 		return nil, err
 	}
 
 	if wPage.IsNew {
-		return tpage.InitNewPage(table, pageId, wPage.Bytes), nil
+		return page.InitNewPage(page.PatternFromTable(table), pageId, wPage.Bytes), nil
 	} else {
-		return tpage.AsPage(wPage.Bytes, pageId, table), nil
+		return page.AsPage(wPage.Bytes, pageId, page.PatternFromTable(table)), nil
 	}
 }
 

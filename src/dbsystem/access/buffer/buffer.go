@@ -5,7 +5,6 @@ import (
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
 	"HomegrownDB/dbsystem/storage/page"
-	"HomegrownDB/dbsystem/storage/tpage"
 )
 
 type SharedBuffer interface {
@@ -17,8 +16,8 @@ type SharedBuffer interface {
 }
 
 type TableBuffer interface {
-	RTablePage(table table.RDefinition, pageId page.Id) (tpage.RPage, error)
-	WTablePage(table table.RDefinition, pageId page.Id) (tpage.WPage, error)
+	RTablePage(table table.RDefinition, pageId page.Id) (page.RPage, error)
+	WTablePage(table table.RDefinition, pageId page.Id) (page.WPage, error)
 }
 
 type FsmBuffer interface {

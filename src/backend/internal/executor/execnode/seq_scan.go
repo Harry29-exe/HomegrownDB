@@ -6,7 +6,6 @@ import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
-	"HomegrownDB/dbsystem/storage/tpage"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -44,7 +43,7 @@ type SeqScan struct {
 	table table.RDefinition
 
 	nextPageId  page.Id
-	nextTupleId tpage.TupleIndex
+	nextTupleId page.TupleIndex
 	done        bool
 }
 
@@ -82,7 +81,7 @@ func (s SeqScan) Close() error {
 	panic("implement me")
 }
 
-func (s SeqScan) mapTuple(tuple tpage.WTuple) page.WTuple {
+func (s SeqScan) mapTuple(tuple page.WTuple) page.WTuple {
 	//todo implement me
 	panic("Not implemented")
 }

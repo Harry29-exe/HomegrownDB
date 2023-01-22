@@ -8,6 +8,7 @@ type RPage interface {
 	Tuple(tupleIndex uint16) Tuple
 	TupleCount() uint16
 	FreeSpace() uint16
+	CopyBytes(dest []byte)
 
 	PageTag() page.PageTag
 }

@@ -7,7 +7,6 @@ import (
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
-	"HomegrownDB/dbsystem/storage/tpage"
 	"testing"
 )
 
@@ -32,7 +31,7 @@ type TestDBUtils struct {
 func (u TestDBUtils) FillTablePages(pagesToFill int, tableName string) {
 	table, tableIO := u.TableByName(tableName), u.PageIOByTableName(tableName)
 	filledPages := 0
-	tablePage := tpage.AsPage(make([]byte, page.Size), page.Id(filledPages), table)
+	tablePage := page.AsTablePage(make([]byte, page.Size), page.Id(filledPages), table)
 	insertedTuples := 0
 	for filledPages < pagesToFill {
 		err := tablePage.InsertTuple(u.RandTuple(table).Bytes())
@@ -44,7 +43,7 @@ func (u TestDBUtils) FillTablePages(pagesToFill int, tableName string) {
 			if err != nil {
 				panic("could not create new page: " + err.Error())
 			}
-			tablePage = tpage.AsPage(make([]byte, page.Size), page.Id(filledPages), table)
+			tablePage = page.AsTablePage(make([]byte, page.Size), page.Id(filledPages), table)
 		}
 	}
 }
@@ -57,7 +56,7 @@ func (u TestDBUtils) TableByName(tableName string) table.Definition {
 	return u.DB.TableStore().AccessTable(id, table.WLockMode)
 }
 
-func (u TestDBUtils) RandTuple(tableRel table.Definition) tpage.Tuple {
+func (u TestDBUtils) RandTuple(tableRel table.Definition) page.Tuple {
 	return Table.RandTPageTuple(tableRel, u.Rand)
 }
 

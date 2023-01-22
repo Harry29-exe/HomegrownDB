@@ -101,6 +101,10 @@ func (p Page) Bytes() []byte {
 	return p.bytes
 }
 
+func (p Page) CopyBytes(dest []byte) {
+	copy(dest, p.bytes)
+}
+
 func (p Page) PageTag() page.PageTag {
 	return page.PageTag{
 		PageId:  p.id,

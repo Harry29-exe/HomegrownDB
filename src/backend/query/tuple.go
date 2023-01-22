@@ -1,6 +1,8 @@
 package query
 
-import "HomegrownDB/dbsystem/storage/tpage"
+import (
+	"HomegrownDB/dbsystem/storage/page"
+)
 
 type TupleSlot struct {
 	Type TupleType
@@ -15,8 +17,8 @@ const (
 
 type TPageTuple struct {
 	TupleSlot
-	Tuple tpage.Tuple
-	TID   tpage.TID
+	Tuple page.Tuple
+	TID   page.TID
 }
 
 type MemTuple struct {
