@@ -69,7 +69,7 @@ func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 table.Defini
 func insertTPageWithSingleTuple(pageId page.Id, table1 table.Definition, buff SharedBuffer, rand random.Random, t *testing.T) tpage.WPage {
 	wPage0, err := buff.WTablePage(table1, pageId)
 	assert.IsNil(err, t)
-	p0Tuple0 := hgtest.Table.RandTuple(table1, rand).Tuple.Bytes()
+	p0Tuple0 := hgtest.Table.RandTPageTuple(table1, rand).Bytes()
 	err = wPage0.InsertTuple(p0Tuple0)
 	assert.IsNil(err, t)
 

@@ -1,8 +1,8 @@
-package dpage
+package data
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/storage/page"
+	page "HomegrownDB/dbsystem/storage/page/internal"
 	"crypto/md5"
 	"encoding/binary"
 )

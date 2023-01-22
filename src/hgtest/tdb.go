@@ -35,7 +35,7 @@ func (u TestDBUtils) FillTablePages(pagesToFill int, tableName string) {
 	tablePage := tpage.AsPage(make([]byte, page.Size), page.Id(filledPages), table)
 	insertedTuples := 0
 	for filledPages < pagesToFill {
-		err := tablePage.InsertTuple(u.RandTuple(table).Tuple.Bytes())
+		err := tablePage.InsertTuple(u.RandTuple(table).Bytes())
 		insertedTuples++
 
 		if err != nil {
@@ -57,8 +57,8 @@ func (u TestDBUtils) TableByName(tableName string) table.Definition {
 	return u.DB.TableStore().AccessTable(id, table.WLockMode)
 }
 
-func (u TestDBUtils) RandTuple(tableRel table.Definition) tpage.TupleToSave {
-	return Table.RandTuple(tableRel, u.Rand)
+func (u TestDBUtils) RandTuple(tableRel table.Definition) tpage.Tuple {
+	return Table.RandTPageTuple(tableRel, u.Rand)
 }
 
 // -------------------------

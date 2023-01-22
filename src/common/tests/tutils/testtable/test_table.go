@@ -45,7 +45,7 @@ func (t *TUtils) FillPages(pagesToFill int, tableIO pageio.IO) {
 	tablePage := tpage.AsPage(make([]byte, pageSize), page.Id(filledPages), t.table)
 	insertedTuples := 0
 	for filledPages < pagesToFill {
-		err := tablePage.InsertTuple(t.RandTuple().Tuple.Bytes())
+		err := tablePage.InsertTuple(t.RandTuple().Bytes())
 		insertedTuples++
 
 		if err != nil {
@@ -62,7 +62,7 @@ func (t *TUtils) FillPages(pagesToFill int, tableIO pageio.IO) {
 func (t *TUtils) PutRandomTupleToPage(tupleCount int, tablePage tpage.Page) []tpage.Tuple {
 	tuples := make([]tpage.Tuple, tupleCount)
 	for i := 0; i < tupleCount; i++ {
-		tuple := t.RandTuple().Tuple
+		tuple := t.RandTuple()
 		tuples[i] = tuple
 		err := tablePage.InsertTuple(tuple.Bytes())
 		if err != nil {
@@ -73,17 +73,14 @@ func (t *TUtils) PutRandomTupleToPage(tupleCount int, tablePage tpage.Page) []tp
 	return tuples
 }
 
-func (t *TUtils) RandTuple() tpage.TupleToSave {
-	values := map[string][]byte{}
+func (t *TUtils) RandTuple() tpage.Tuple {
+	values := make([][]byte, t.table.ColumnCount())
 	for i := uint16(0); i < t.table.ColumnCount(); i++ {
 		col := t.table.Column(i)
-		values[col.Name()] = col.CType().Rand(t.rand)
+		values[i] = col.CType().Rand(t.rand)
 	}
 
-	tuple, err := tpage.NewTestTuple(t.table, values, &tx.StdTx{Id: tx.Id(t.rand.Int31())})
-	if err != nil {
-		panic(err.Error())
-	}
+	tuple := tpage.NewTuple(values, t.table, &tx.StdTx{Id: tx.Id(t.rand.Int31())})
 
 	return tuple
 }

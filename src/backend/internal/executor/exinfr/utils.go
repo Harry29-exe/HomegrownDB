@@ -1,14 +1,14 @@
 package exinfr
 
 import (
-	node "HomegrownDB/backend/internal/node"
-	"HomegrownDB/dbsystem/storage/dpage"
+	"HomegrownDB/backend/internal/node"
+	"HomegrownDB/dbsystem/storage/page"
 	"math"
 )
 
-func PatternFromTargetList(targetList []node.TargetEntry) *dpage.TuplePattern {
-	pattern := &dpage.TuplePattern{
-		Columns:   make([]dpage.ColumnInfo, len(targetList)),
+func PatternFromTargetList(targetList []node.TargetEntry) page.TuplePattern {
+	pattern := page.TuplePattern{
+		Columns:   make([]page.ColumnInfo, len(targetList)),
 		BitmapLen: uint16(math.Ceil(float64(len(targetList)) / 8)),
 	}
 
@@ -19,28 +19,28 @@ func PatternFromTargetList(targetList []node.TargetEntry) *dpage.TuplePattern {
 	return pattern
 }
 
-func typeFromTargetEntry(entry node.TargetEntry) dpage.ColumnInfo {
+func typeFromTargetEntry(entry node.TargetEntry) page.ColumnInfo {
 	entryType := entry.TypeTag().Type()
 
-	return dpage.ColumnInfo{
+	return page.ColumnInfo{
 		CType: entryType,
 		Name:  entry.ColName,
 	}
 }
 
-func PattenFromRTE(rte node.RangeTableEntry) *dpage.TuplePattern {
+func PattenFromRTE(rte node.RangeTableEntry) page.TuplePattern {
 	switch rte.Kind {
 	case node.RteValues:
-		colTypes := make([]dpage.ColumnInfo, len(rte.ColTypes))
+		colTypes := make([]page.ColumnInfo, len(rte.ColTypes))
 		for i := 0; i < len(rte.ColTypes); i++ {
-			colTypes[i] = dpage.ColumnInfo{
+			colTypes[i] = page.ColumnInfo{
 				CType: rte.ColTypes[i].Type,
 				Name:  rte.ColAlias[i].AliasName,
 			}
 		}
-		return dpage.NewPattern(colTypes)
+		return page.NewPattern(colTypes)
 	case node.RteRelation:
-		return dpage.NewPatternFromTable(rte.Ref)
+		return page.PatternFromTable(rte.Ref)
 	default:
 		//todo implement me
 		panic("Not implemented")

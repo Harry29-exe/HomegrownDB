@@ -1,4 +1,4 @@
-package dpage
+package data
 
 import (
 	"HomegrownDB/dbsystem/access/lob"

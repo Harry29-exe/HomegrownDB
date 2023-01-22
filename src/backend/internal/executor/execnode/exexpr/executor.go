@@ -1,16 +1,16 @@
 package exexpr
 
 import (
-	node "HomegrownDB/backend/internal/node"
-	"HomegrownDB/dbsystem/storage/dpage"
+	"HomegrownDB/backend/internal/node"
+	"HomegrownDB/dbsystem/storage/page"
 )
 
 type ExNodeInput struct {
 	Plan node.Plan
 
-	Internal   dpage.Tuple // internal result if node is scan node
-	LeftInput  dpage.Tuple // input from left node
-	RightInput dpage.Tuple // input from right node
+	Internal   page.Tuple // internal result if node is scan node
+	LeftInput  page.Tuple // input from left node
+	RightInput page.Tuple // input from right node
 }
 
 func Execute(expr node.Expr, input ExNodeInput) []byte {

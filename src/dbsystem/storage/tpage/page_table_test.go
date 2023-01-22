@@ -44,7 +44,7 @@ func TestPage_Tuple(t *testing.T) {
 	//txCtx1 := tx.NewContext(1)
 	table1.TUtils.SetRand(random.NewRandom(13))
 	for tupleIndex := uint16(0); tupleIndex < 20; tupleIndex++ {
-		tuple := table1.TUtils.RandTuple().Tuple
+		tuple := table1.TUtils.RandTuple()
 		err := page.InsertTuple(tuple.Bytes())
 		if err != nil {
 			t.Errorf("could not insert tuple nr %d because of error: %e", tupleIndex, err)

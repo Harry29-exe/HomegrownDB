@@ -61,10 +61,10 @@ func (b *bufferProxy) WFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page,
 	return fsmpage.Page{Bytes: wPage.Bytes}, nil
 }
 
-func (b *bufferProxy) WPageRelease(tag pageio.PageTag) {
+func (b *bufferProxy) WPageRelease(tag page.PageTag) {
 	b.buffer.ReleaseWPage(tag)
 }
 
-func (b *bufferProxy) RPageRelease(tag pageio.PageTag) {
+func (b *bufferProxy) RPageRelease(tag page.PageTag) {
 	b.buffer.ReleaseRPage(tag)
 }

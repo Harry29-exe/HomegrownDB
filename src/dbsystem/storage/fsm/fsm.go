@@ -46,7 +46,7 @@ func NewFSM(fsmOID dbobj.OID, buff buffer.SharedBuffer) *FSM {
 
 func initNewFsmIO(fsm *FSM) error {
 	for i := 0; i < int(leafNodeCount+1); i++ {
-		tag := pageio.NewPageTag(page.Id(i), fsm.fsmOID)
+		tag := page.NewPageTag(page.Id(i), fsm.fsmOID)
 		_, err := fsm.buff.WFsmPage(fsm.fsmOID, page.Id(i))
 		if err != nil {
 			return err

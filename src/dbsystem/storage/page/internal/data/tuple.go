@@ -1,8 +1,8 @@
-package dpage
+package data
 
 import (
 	"HomegrownDB/dbsystem/relation/table/column"
-	"HomegrownDB/dbsystem/storage/page"
+	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/tx"
 )
 

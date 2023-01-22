@@ -1,22 +1,54 @@
-package dpage
+package data
 
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/strutils"
 	"HomegrownDB/dbsystem/relation/table/column"
-	"HomegrownDB/dbsystem/storage/page"
+	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/tx"
 	"encoding/binary"
 	"fmt"
 	"strings"
 )
 
+func NewTuple(values [][]byte, pattern TuplePattern, tx tx.Tx) Tuple {
+	headerLen := int(toNullBitmap + pattern.BitmapLen)
+	tupleLen := headerLen
+	for _, value := range values {
+		tupleLen += len(value)
+	}
+	tuple := Tuple{
+		bytes:   make([]byte, tupleLen),
+		pattern: pattern,
+	}
+
+	if tx != nil {
+		txId := tx.TxID()
+		tuple.SetModifiedByTx(txId)
+		tuple.SetCreatedByTx(txId)
+	}
+
+	tupleData := tuple.bytes[headerLen:]
+	var copiedBytes int
+	for i, value := range values {
+		if value == nil {
+			tuple.SetIsNull(column.Order(i))
+			continue
+		}
+
+		copiedBytes = copy(tupleData, value)
+		tupleData = tupleData[copiedBytes:]
+	}
+
+	return tuple
+}
+
 var _ WTuple = Tuple{}
 
 type Tuple struct {
 	bytes []byte
 
-	pattern *TuplePattern
+	pattern TuplePattern
 }
 
 // TID tuple id composed of Id and InPage
@@ -28,8 +60,6 @@ type TID struct {
 type TupleIndex = uint16
 
 const TupleIndexSize = 2
-
-type InTuplePtr = uint16
 
 func (t Tuple) Bytes() []byte {
 	return t.bytes
@@ -152,7 +182,7 @@ func (t Tuple) tidTupleIndexSlice() []byte {
 }
 
 func (t Tuple) NullBitmapSlice() []byte {
-	if t.pattern == nil {
+	if len(t.pattern.Columns) == 0 {
 		panic("Tuple table is nil")
 	}
 
@@ -165,7 +195,9 @@ var nullBitmapMasks = [8]byte{
 	16, 32, 64, 128,
 }
 
-// +++++ Debug +++++
+// -------------------------
+//      Debug
+// -------------------------
 
 // TupleDebugger helps with debugging of Tuple structure
 var TupleDebugger = tupleDebugger{}

@@ -1,4 +1,4 @@
-package dpage
+package data
 
 import (
 	"HomegrownDB/dbsystem/hgtype"
@@ -6,7 +6,7 @@ import (
 	"math"
 )
 
-func NewPatternFromTable(def table.RDefinition) *TuplePattern {
+func PatternFromTable(def table.RDefinition) TuplePattern {
 	tableColumns := def.Columns()
 	columns := make([]ColumnInfo, len(tableColumns))
 	for c := 0; c < len(columns); c++ {
@@ -16,14 +16,14 @@ func NewPatternFromTable(def table.RDefinition) *TuplePattern {
 		}
 	}
 
-	return &TuplePattern{
+	return TuplePattern{
 		Columns:   columns,
 		BitmapLen: calcBitmapLen(len(columns)),
 	}
 }
 
-func NewPattern(columns []ColumnInfo) *TuplePattern {
-	return &TuplePattern{
+func NewPattern(columns []ColumnInfo) TuplePattern {
+	return TuplePattern{
 		Columns:   columns,
 		BitmapLen: calcBitmapLen(len(columns)),
 	}

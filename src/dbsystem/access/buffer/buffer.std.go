@@ -3,7 +3,6 @@ package buffer
 import (
 	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/storage/page"
-	"HomegrownDB/dbsystem/storage/pageio"
 )
 
 // todo change methods to operate on ArrayIndexes
@@ -11,8 +10,8 @@ type StdBuffer interface {
 	ReadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error)
 	ReadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error)
 
-	ReleaseWPage(tag pageio.PageTag)
-	ReleaseRPage(tag pageio.PageTag)
+	ReleaseWPage(tag page.PageTag)
+	ReleaseRPage(tag page.PageTag)
 }
 
 // rbm  read buffer mode
@@ -31,7 +30,7 @@ const (
 
 type stdPage struct {
 	Bytes          []byte
-	Tag            pageio.PageTag
+	Tag            page.PageTag
 	IsNew          bool
 	IsReadFromDisc bool
 }

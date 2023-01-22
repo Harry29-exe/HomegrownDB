@@ -2,11 +2,11 @@ package execnode
 
 import (
 	"HomegrownDB/backend/internal/node"
-	"HomegrownDB/dbsystem/storage/dpage"
+	"HomegrownDB/dbsystem/storage/page"
 )
 
 type ExecNode interface {
-	Next() dpage.Tuple
+	Next() page.Tuple
 	HasNext() bool
 	Init(plan node.Plan) error
 	Close() error

@@ -1,8 +1,6 @@
 package pageio
 
 import (
-	"HomegrownDB/dbsystem/relation/dbobj"
-	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"io"
 )
@@ -30,23 +28,4 @@ type noPageError struct{}
 
 func (n noPageError) Error() string {
 	return "No page with given index"
-}
-
-func NewTablePageTag(pageIndex page.Id, tableDef table.RDefinition) PageTag {
-	return PageTag{
-		PageId:  pageIndex,
-		OwnerID: tableDef.OID(),
-	}
-}
-
-func NewPageTag(pageIndex page.Id, objID dbobj.OID) PageTag {
-	return PageTag{
-		PageId:  pageIndex,
-		OwnerID: objID,
-	}
-}
-
-type PageTag struct {
-	PageId  page.Id
-	OwnerID dbobj.OID
 }

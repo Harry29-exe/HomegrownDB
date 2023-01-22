@@ -5,7 +5,6 @@ import (
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/relation/table"
-	"HomegrownDB/dbsystem/storage/dpage"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/tpage"
 	"HomegrownDB/dbsystem/tx"
@@ -24,7 +23,7 @@ func (s seqScanBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 			Tx:   ctx.Tx,
 		},
 		Plan:          seqScanPlan,
-		OutputPattern: dpage.NewPatternFromTable(scanTable),
+		OutputPattern: page.PatternFromTable(scanTable),
 		buff:          ctx.Buff,
 		table:         scanTable,
 		nextPageId:    0,
@@ -38,7 +37,7 @@ var _ ExecNode = &SeqScan{}
 type SeqScan struct {
 	scan
 	Plan          node.SeqScan
-	OutputPattern *dpage.TuplePattern
+	OutputPattern page.TuplePattern
 
 	txCtx tx.Tx
 	buff  buffer.SharedBuffer
@@ -51,14 +50,17 @@ type SeqScan struct {
 
 //todo !!!!Next and HasNext are poc, they are awful for performance!!!!
 
-func (s SeqScan) Next() dpage.Tuple {
+func (s SeqScan) Next() page.Tuple {
 	rPage, err := s.buff.RTablePage(s.table, s.nextPageId)
 	if err != nil {
 		s.done = true
 	}
 	defer s.buff.RPageRelease(rPage.PageTag())
 	tuple := rPage.Tuple(s.nextTupleId)
-	outputTuple := s.createOutputTuple(tuple)
+	_ = tuple
+	//todo implement me
+	panic("Not implemented")
+	//outputTuple := s.createOutputTuple(tuple)
 }
 
 func (s SeqScan) HasNext() bool {
@@ -80,6 +82,7 @@ func (s SeqScan) Close() error {
 	panic("implement me")
 }
 
-func (s SeqScan) mapTuple(tuple tpage.WTuple) dpage.WTuple {
-
+func (s SeqScan) mapTuple(tuple tpage.WTuple) page.WTuple {
+	//todo implement me
+	panic("Not implemented")
 }

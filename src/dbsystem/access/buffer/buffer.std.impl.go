@@ -16,7 +16,7 @@ func NewStdBuffer(bufferSize uint, pageIOStore pageio.Store) StdBuffer {
 	descriptorArray := make([]pageDescriptor, bufferSize)
 	for i := uint(0); i < bufferSize; i++ {
 		descriptorArray[i] = pageDescriptor{
-			pageTag:          pageio.PageTag{OwnerID: 0, PageId: page.InvalidId},
+			pageTag:          page.PageTag{OwnerID: 0, PageId: page.InvalidId},
 			slotIndex:        i,
 			refCount:         0,
 			usageCount:       0,
@@ -28,7 +28,7 @@ func NewStdBuffer(bufferSize uint, pageIOStore pageio.Store) StdBuffer {
 	}
 
 	return &buffer{
-		bufferMap:     map[pageio.PageTag]slotIndex{},
+		bufferMap:     map[page.PageTag]slotIndex{},
 		bufferMapLock: &sync.RWMutex{},
 
 		descriptorArray: descriptorArray,
@@ -41,7 +41,7 @@ func NewStdBuffer(bufferSize uint, pageIOStore pageio.Store) StdBuffer {
 }
 
 type buffer struct {
-	bufferMap     map[pageio.PageTag]slotIndex
+	bufferMap     map[page.PageTag]slotIndex
 	bufferMapLock *sync.RWMutex
 
 	descriptorArray []pageDescriptor
@@ -53,7 +53,7 @@ type buffer struct {
 }
 
 func (b *buffer) ReadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
-	tag := pageio.PageTag{PageId: pageId, OwnerID: ownerID}
+	tag := page.PageTag{PageId: pageId, OwnerID: ownerID}
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -76,7 +76,7 @@ func (b *buffer) ReadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (std
 }
 
 func (b *buffer) ReadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
-	tag := pageio.PageTag{PageId: pageId, OwnerID: ownerID}
+	tag := page.PageTag{PageId: pageId, OwnerID: ownerID}
 	b.bufferMapLock.RLock()
 
 	pageArrIndex, ok := b.bufferMap[tag]
@@ -100,7 +100,7 @@ func (b *buffer) ReadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (std
 	}
 }
 
-func (b *buffer) ReleaseWPage(tag pageio.PageTag) {
+func (b *buffer) ReleaseWPage(tag page.PageTag) {
 	b.bufferMapLock.RLock()
 	index := b.bufferMap[tag]
 	b.bufferMapLock.RUnlock()
@@ -114,7 +114,7 @@ func (b *buffer) ReleaseWPage(tag pageio.PageTag) {
 	descriptor.unpin()
 }
 
-func (b *buffer) ReleaseRPage(tag pageio.PageTag) {
+func (b *buffer) ReleaseRPage(tag page.PageTag) {
 	b.bufferMapLock.RLock()
 	index := b.bufferMap[tag]
 	b.bufferMapLock.RUnlock()
@@ -164,7 +164,7 @@ func (b *buffer) loadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (std
 // todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
 // 2) prawdopodobnie zaimplementować własną hash mape
 func (b *buffer) loadPage(ownerID dbobj.OID, pageId page.Id) (*pageDescriptor, error) {
-	pageTag := pageio.PageTag{OwnerID: ownerID, PageId: pageId}
+	pageTag := page.PageTag{OwnerID: ownerID, PageId: pageId}
 
 	for {
 		descriptor, err := b.prepareVictimPage()

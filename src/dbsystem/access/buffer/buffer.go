@@ -5,7 +5,6 @@ import (
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
 	"HomegrownDB/dbsystem/storage/page"
-	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/storage/tpage"
 )
 
@@ -13,8 +12,8 @@ type SharedBuffer interface {
 	TableBuffer
 	FsmBuffer
 
-	WPageRelease(tag pageio.PageTag)
-	RPageRelease(tag pageio.PageTag)
+	WPageRelease(tag page.PageTag)
+	RPageRelease(tag page.PageTag)
 }
 
 type TableBuffer interface {

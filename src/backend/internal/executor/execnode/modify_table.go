@@ -7,8 +7,8 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/inputtype"
 	"HomegrownDB/dbsystem/relation/table"
-	"HomegrownDB/dbsystem/storage/dpage"
 	"HomegrownDB/dbsystem/storage/fsm"
+	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -23,8 +23,8 @@ func (m modifyTableBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 	return &ModifyTable{
 		Plan: specificPlan,
 		Left: CreateFromPlan(specificPlan.Left, ctx),
-		OutputPattern: &dpage.TuplePattern{
-			Columns: []dpage.ColumnInfo{
+		OutputPattern: page.TuplePattern{
+			Columns: []page.ColumnInfo{
 				{CType: hgtype.Int8{}, Name: "Rows"},
 			},
 			BitmapLen: 1,
@@ -42,7 +42,7 @@ var _ ExecNode = &ModifyTable{}
 type ModifyTable struct {
 	Plan          node.ModifyTable
 	Left          ExecNode
-	OutputPattern *dpage.TuplePattern
+	OutputPattern page.TuplePattern
 
 	txCtx       tx.Tx
 	buff        buffer.SharedBuffer
@@ -51,7 +51,7 @@ type ModifyTable struct {
 	done        bool
 }
 
-func (m *ModifyTable) Next() dpage.Tuple {
+func (m *ModifyTable) Next() page.Tuple {
 	tuplesInserted := int64(0)
 	for m.Left.HasNext() {
 		tuple := m.Left.Next()
@@ -75,7 +75,7 @@ func (m *ModifyTable) Next() dpage.Tuple {
 
 	m.done = true
 	outputValues := [][]byte{inputtype.ConvInt8(tuplesInserted)}
-	return dpage.NewTuple(outputValues, m.OutputPattern, m.txCtx)
+	return page.NewTuple(outputValues, m.OutputPattern, m.txCtx)
 }
 
 func (m *ModifyTable) HasNext() bool {

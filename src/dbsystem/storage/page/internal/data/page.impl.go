@@ -1,4 +1,4 @@
-package dpage
+package data
 
 // For better understanding of struct TablePage
 // it's recommended to view page.doc.svg diagram
@@ -6,16 +6,14 @@ package dpage
 
 import (
 	"HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/storage/page"
-	"HomegrownDB/dbsystem/storage/pageio"
+	page "HomegrownDB/dbsystem/storage/page/internal"
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"testing"
 )
 
 // todo add handling for inserting into empty page
-func EmptyTablePage(pattern *TuplePattern, relationId relation.ID, t *testing.T) Page {
+func EmptyTablePage(pattern TuplePattern, relationId relation.ID) Page {
 	rawPage := make([]byte, page.Size)
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
@@ -23,18 +21,18 @@ func EmptyTablePage(pattern *TuplePattern, relationId relation.ID, t *testing.T)
 	copy(rawPage[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
 	copy(rawPage[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
 
-	page := Page{
+	newPage := Page{
 		pattern:    pattern,
 		relationId: relationId,
 		id:         page.InvalidId,
 		bytes:      rawPage,
 	}
-	page.updateHash()
+	newPage.updateHash()
 
-	return page
+	return newPage
 }
 
-func InitNewTablePage(pattern *TuplePattern, tableId relation.ID, pageId page.Id, pageSlot []byte) Page {
+func InitNewTablePage(pattern TuplePattern, tableId relation.ID, pageId page.Id, pageSlot []byte) Page {
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
 
@@ -48,7 +46,7 @@ func InitNewTablePage(pattern *TuplePattern, tableId relation.ID, pageId page.Id
 	return page
 }
 
-func InitNewPage(pattern *TuplePattern, pageId page.Id, pageSlot []byte) Page {
+func InitNewPage(pattern TuplePattern, pageId page.Id, pageSlot []byte) Page {
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
 
@@ -61,7 +59,7 @@ func InitNewPage(pattern *TuplePattern, pageId page.Id, pageSlot []byte) Page {
 	return page
 }
 
-func AsPage(data []byte, pageId page.Id, pattern *TuplePattern) Page {
+func AsPage(data []byte, pageId page.Id, pattern TuplePattern) Page {
 	return Page{
 		pattern:    pattern,
 		bytes:      data,
@@ -71,7 +69,7 @@ func AsPage(data []byte, pageId page.Id, pattern *TuplePattern) Page {
 }
 
 type Page struct {
-	pattern    *TuplePattern
+	pattern    TuplePattern
 	id         page.Id
 	relationId relation.ID
 	bytes      []byte
@@ -103,8 +101,8 @@ func (p Page) Bytes() []byte {
 	return p.bytes
 }
 
-func (p Page) PageTag() pageio.PageTag {
-	return pageio.PageTag{
+func (p Page) PageTag() page.PageTag {
+	return page.PageTag{
 		PageId:  p.id,
 		OwnerID: p.relationId,
 	}

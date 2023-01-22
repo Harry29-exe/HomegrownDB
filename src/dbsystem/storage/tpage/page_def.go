@@ -1,7 +1,7 @@
 package tpage
 
 import (
-	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/dbsystem/storage/page"
 )
 
 type RPage interface {
@@ -9,7 +9,7 @@ type RPage interface {
 	TupleCount() uint16
 	FreeSpace() uint16
 
-	PageTag() pageio.PageTag
+	PageTag() page.PageTag
 }
 
 type WPage interface {
