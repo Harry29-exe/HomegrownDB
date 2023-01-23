@@ -49,20 +49,24 @@ type SeqScan struct {
 
 //todo !!!!Next and HasNext are poc, they are awful for performance!!!!
 
-func (s SeqScan) Next() page.Tuple {
+func (s *SeqScan) Next() page.Tuple {
 	rPage, err := s.buff.RTablePage(s.table, s.nextPageId)
 	if err != nil {
 		s.done = true
 	}
 	defer s.buff.RPageRelease(rPage.PageTag())
 	tuple := rPage.Tuple(s.nextTupleId)
-	_ = tuple
-	//todo implement me
-	panic("Not implemented")
-	//outputTuple := s.createOutputTuple(tuple)
+	outputTuple := s.createOutputTuple(tuple)
+	s.nextTupleId++
+	if s.nextTupleId == rPage.TupleCount() {
+		s.nextTupleId = 0
+		s.nextPageId++
+	}
+
+	return outputTuple
 }
 
-func (s SeqScan) HasNext() bool {
+func (s *SeqScan) HasNext() bool {
 	rPage, err := s.buff.RTablePage(s.table, s.nextPageId)
 	if err != nil {
 		return false
@@ -71,17 +75,17 @@ func (s SeqScan) HasNext() bool {
 	return rPage.TupleCount() > s.nextTupleId
 }
 
-func (s SeqScan) Init(plan node.Plan) error {
+func (s *SeqScan) Init(plan node.Plan) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s SeqScan) Close() error {
+func (s *SeqScan) Close() error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s SeqScan) mapTuple(tuple page.WTuple) page.WTuple {
+func (s *SeqScan) mapTuple(tuple page.WTuple) page.WTuple {
 	//todo implement me
 	panic("Not implemented")
 }

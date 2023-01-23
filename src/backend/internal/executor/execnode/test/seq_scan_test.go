@@ -3,6 +3,7 @@ package exenode
 import (
 	"HomegrownDB/backend/internal/executor"
 	"HomegrownDB/backend/internal/testinfr"
+	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/hgtest"
@@ -23,4 +24,10 @@ func TestSeqScan_SimpleSelect(t *testing.T) {
 	selectPlan := testinfr.ParseAnalyseAndPlan(selectQuery, dbUtils.DB.TableStore(), t)
 	selectResult := executor.Execute(selectPlan, selectTx, dbUtils.DB)
 	assert.Eq(1, len(selectResult), t)
+
+	resultRow := selectResult[0]
+	// todo create utils for validating binary values
+	assert.EqArray(bparse.Serialize.Int8(1), resultRow.ColValue(0), t)
+	assert.EqArray([]byte("Bob"), resultRow.ColValue(1)[4:], t)
+
 }

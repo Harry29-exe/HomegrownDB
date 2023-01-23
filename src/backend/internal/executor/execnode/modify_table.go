@@ -80,7 +80,7 @@ func (m *ModifyTable) tryInsert(tuple page.Tuple) error {
 	}
 	defer m.buff.WPageRelease(wPage.PageTag())
 
-	return wPage.InsertTuple(tuple.Data())
+	return wPage.InsertTuple(tuple.Bytes())
 }
 
 func (m *ModifyTable) HasNext() bool {

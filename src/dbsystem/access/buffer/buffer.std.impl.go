@@ -148,7 +148,6 @@ func (b *buffer) loadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (std
 	descriptor, err := b.loadPage(ownerID, pageId)
 	descriptor.contentLock.RLock()
 	if err != nil {
-		println("pageId: ", pageId, ", ", err.Error())
 		return stdPage{}, err
 	}
 

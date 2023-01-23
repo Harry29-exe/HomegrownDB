@@ -90,7 +90,7 @@ func (t Tuple) IsNull(id column.Order) bool {
 	var byteNumber = id / 8
 	value := t.bytes[toNullBitmap+byteNumber]
 	divRest := id % 8
-	return value&nullBitmapMasks[divRest] == 0
+	return value&nullBitmapMasks[divRest] > 0
 }
 
 func (t Tuple) SetIsNull(id column.Order) {
@@ -110,9 +110,12 @@ func (t Tuple) SetIsNotNull(id column.Order) {
 }
 
 func (t Tuple) ColValue(id column.Order) []byte {
+	if t.IsNull(id) {
+		return nil
+	}
 	subsequent := t.bytes[toNullBitmap+t.pattern.BitmapLen:]
 	for i := uint16(0); i < id; i++ {
-		if t.IsNull(id) {
+		if t.IsNull(i) {
 			continue
 		}
 		subsequent = t.pattern.Columns[i].CType.
