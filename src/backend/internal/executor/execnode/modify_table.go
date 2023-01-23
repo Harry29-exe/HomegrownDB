@@ -53,22 +53,13 @@ type ModifyTable struct {
 
 func (m *ModifyTable) Next() page.Tuple {
 	tuplesInserted := int64(0)
+	var err error
+
 	for m.Left.HasNext() {
 		tuple := m.Left.Next()
-		for {
-			pageId, err := m.fsm.FindPage(uint16(tuple.TupleSize()), m.txCtx)
-			if err != nil {
-				panic(err.Error())
-			}
-			wPage, err := m.buff.WTablePage(m.resultTable, pageId)
-			if err != nil {
-				panic(err.Error())
-			}
-
-			err = wPage.InsertTuple(tuple.Data())
-			if err == nil {
-				break
-			}
+		err = m.tryInsert(tuple)
+		for err != nil {
+			err = m.tryInsert(tuple)
 		}
 		tuplesInserted++
 	}
@@ -76,6 +67,20 @@ func (m *ModifyTable) Next() page.Tuple {
 	m.done = true
 	outputValues := [][]byte{inputtype.ConvInt8(tuplesInserted)}
 	return page.NewTuple(outputValues, m.OutputPattern, m.txCtx)
+}
+
+func (m *ModifyTable) tryInsert(tuple page.Tuple) error {
+	pageId, err := m.fsm.FindPage(uint16(tuple.TupleSize()), m.txCtx)
+	if err != nil {
+		panic(err.Error())
+	}
+	wPage, err := m.buff.WTablePage(m.resultTable, pageId)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer m.buff.WPageRelease(wPage.PageTag())
+
+	return wPage.InsertTuple(tuple.Data())
 }
 
 func (m *ModifyTable) HasNext() bool {

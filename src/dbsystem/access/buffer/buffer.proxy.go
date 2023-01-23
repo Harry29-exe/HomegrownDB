@@ -28,7 +28,7 @@ func (b *bufferProxy) RTablePage(table table.RDefinition, pageId page.Id) (page.
 		return nil, err
 	}
 
-	return page.AsPage(rPage.Bytes, pageId, page.PatternFromTable(table)), nil
+	return page.AsTablePage(rPage.Bytes, pageId, table), nil
 }
 
 func (b *bufferProxy) WTablePage(table table.RDefinition, pageId page.Id) (page.WPage, error) {
@@ -38,9 +38,9 @@ func (b *bufferProxy) WTablePage(table table.RDefinition, pageId page.Id) (page.
 	}
 
 	if wPage.IsNew {
-		return page.InitNewPage(page.PatternFromTable(table), pageId, wPage.Bytes), nil
+		return page.InitNewTablePage(wPage.Bytes, table, wPage.Tag.PageId), nil
 	} else {
-		return page.AsPage(wPage.Bytes, pageId, page.PatternFromTable(table)), nil
+		return page.AsTablePage(wPage.Bytes, wPage.Tag.PageId, table), nil
 	}
 }
 

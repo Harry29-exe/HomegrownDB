@@ -139,6 +139,7 @@ func (b *buffer) loadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (std
 	pageStart := uintptr(descriptor.slotIndex) * uintptr(page.Size)
 	return stdPage{
 		Bytes: b.pageBufferArray[pageStart : pageStart+uintptr(page.Size)],
+		Tag:   descriptor.pageTag,
 		IsNew: pageIsNew,
 	}, nil
 }
@@ -182,9 +183,9 @@ func (b *buffer) loadPage(ownerID dbobj.OID, pageId page.Id) (*pageDescriptor, e
 				b.bufferMapLock.Unlock()
 				return descriptor, nil
 			}
-
-			// checking if other goroutine didn't start using this page
-		} else if descriptor.refCount != 1 {
+		}
+		// checking if other goroutine didn't start using this slot
+		if descriptor.refCount != 1 {
 			descriptor.unpin()
 			b.bufferMapLock.Unlock()
 			continue

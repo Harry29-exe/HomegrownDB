@@ -3,6 +3,7 @@ package exenode
 import (
 	"HomegrownDB/backend/internal/executor"
 	"HomegrownDB/backend/internal/testinfr"
+	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/hgtest"
 	"testing"
@@ -10,10 +11,16 @@ import (
 
 func TestSeqScan_SimpleSelect(t *testing.T) {
 	dbUtils := hgtest.CreateAndLoadDBWith(nil, t).WithUsersTable().Build()
-	currentTx := dbUtils.DB.TxManager().New(tx.CommittedRead)
 
-	inputQuery := "SELECT u.id, u.name FROM users u"
-	plan := testinfr.ParseAnalyseAndPlan(inputQuery, dbUtils.DB.TableStore(), t)
+	insertTx := dbUtils.DB.TxManager().New(tx.CommittedRead)
+	insertQuery := "INSERT INTO users (id, name) VALUES (1, 'Bob')"
+	insertPlan := testinfr.ParseAnalyseAndPlan(insertQuery, dbUtils.DB.TableStore(), t)
+	insertResult := executor.Execute(insertPlan, insertTx, dbUtils.DB)
+	assert.Eq(1, len(insertResult), t)
 
-	executor.Execute(plan, currentTx, dbUtils.DB)
+	selectTx := dbUtils.DB.TxManager().New(tx.CommittedRead)
+	selectQuery := "SELECT u.id, u.name FROM users u"
+	selectPlan := testinfr.ParseAnalyseAndPlan(selectQuery, dbUtils.DB.TableStore(), t)
+	selectResult := executor.Execute(selectPlan, selectTx, dbUtils.DB)
+	assert.Eq(1, len(selectResult), t)
 }

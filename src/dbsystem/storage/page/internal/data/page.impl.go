@@ -6,6 +6,7 @@ package data
 
 import (
 	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"encoding/binary"
 	"errors"
@@ -32,39 +33,25 @@ func EmptyTablePage(pattern TuplePattern, relationId relation.ID) Page {
 	return newPage
 }
 
-func InitNewTablePage(pattern TuplePattern, tableId relation.ID, pageId page.Id, pageSlot []byte) Page {
+func InitNewPage(pageSlot []byte, ownerId dbobj.OID, pageId page.Id, pattern TuplePattern) Page {
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
 
 	copy(pageSlot[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
 	copy(pageSlot[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
 
-	page := AsPage(pageSlot, pageId, pattern)
-	page.relationId = tableId
+	page := AsPage(pageSlot, ownerId, pageId, pattern)
 	page.updateHash()
 
 	return page
 }
 
-func InitNewPage(pattern TuplePattern, pageId page.Id, pageSlot []byte) Page {
-	uint16Zero := make([]byte, 2)
-	binary.BigEndian.PutUint16(uint16Zero, 0)
-
-	copy(pageSlot[poPrtToLastTuplePtr:poPrtToLastTuplePtr+InPagePointerSize], uint16Zero)
-	copy(pageSlot[poPtrToLastTupleStart:poPtrToLastTupleStart+InPagePointerSize], uint16Zero)
-
-	page := AsPage(pageSlot, pageId, pattern)
-	page.updateHash()
-
-	return page
-}
-
-func AsPage(data []byte, pageId page.Id, pattern TuplePattern) Page {
+func AsPage(data []byte, ownerId dbobj.OID, pageId page.Id, pattern TuplePattern) Page {
 	return Page{
 		pattern:    pattern,
 		bytes:      data,
 		id:         pageId,
-		relationId: relation.InvalidRelId,
+		relationId: ownerId,
 	}
 }
 

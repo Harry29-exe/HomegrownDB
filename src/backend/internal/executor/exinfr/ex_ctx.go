@@ -1,7 +1,7 @@
 package exinfr
 
 import (
-	node2 "HomegrownDB/backend/internal/node"
+	node "HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/hg"
 	table "HomegrownDB/dbsystem/relation/table"
@@ -12,26 +12,27 @@ import (
 type ExCtx = *executionCtx
 
 func NewExCtx(
-	stmt node2.PlanedStmt,
+	stmt node.PlanedStmt,
 	txCtx tx.Tx,
 	store hg.DBStore,
 ) ExCtx {
 	cache, rteMap := createCache(stmt.Tables, store.TableStore())
 	return &executionCtx{
-		Stmt:     stmt,
-		Buff:     store.SharedBuffer(),
-		FsmStore: store.FsmStore(),
-		Tables:   cache,
-		Tx:       txCtx,
-		rteMap:   rteMap,
+		Stmt:       stmt,
+		Buff:       store.SharedBuffer(),
+		FsmStore:   store.FsmStore(),
+		Tables:     cache,
+		TableStore: store.TableStore(),
+		Tx:         txCtx,
+		rteMap:     rteMap,
 	}
 }
 
-func createCache(rteList []node2.RangeTableEntry, store table.Store) (table.Cache, map[node2.RteID]node2.RangeTableEntry) {
+func createCache(rteList []node.RangeTableEntry, store table.Store) (table.Cache, map[node.RteID]node.RangeTableEntry) {
 	cache := map[table.Id]table.RDefinition{}
-	rteMap := map[node2.RteID]node2.RangeTableEntry{}
+	rteMap := map[node.RteID]node.RangeTableEntry{}
 	for _, rte := range rteList {
-		if rte.Kind == node2.RteRelation {
+		if rte.Kind == node.RteRelation {
 			tab := store.AccessTable(rte.TableId, rte.LockMode)
 			cache[rte.TableId] = tab
 			rte.Ref = tab
@@ -42,15 +43,24 @@ func createCache(rteList []node2.RangeTableEntry, store table.Store) (table.Cach
 }
 
 type executionCtx struct {
-	Stmt     node2.PlanedStmt
-	Buff     buffer.SharedBuffer
-	FsmStore fsm.Store
-	Tables   table.Cache
-	Tx       tx.Tx
+	Stmt       node.PlanedStmt
+	Buff       buffer.SharedBuffer
+	FsmStore   fsm.Store
+	Tables     table.Cache
+	TableStore table.Store
+	Tx         tx.Tx
 
-	rteMap map[node2.RteID]node2.RangeTableEntry
+	rteMap map[node.RteID]node.RangeTableEntry
 }
 
-func (e ExCtx) GetRTE(id node2.RteID) node2.RangeTableEntry {
+func (e ExCtx) GetRTE(id node.RteID) node.RangeTableEntry {
 	return e.rteMap[id]
+}
+
+func (e ExCtx) Close() error {
+	//for i, tableDef := range e.Tables {
+	//	e.TableStore.AccessTable()
+	//}
+	//todo implement me
+	panic("Not implemented")
 }

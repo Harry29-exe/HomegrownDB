@@ -1,6 +1,7 @@
 package page
 
 import (
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/storage/page/internal/data"
@@ -16,16 +17,20 @@ type (
 	WPage = data.WPage
 )
 
-func InitNewPage(pattern TuplePattern, pageId page.Id, pageSlot []byte) WPage {
-	return data.InitNewPage(pattern, pageId, pageSlot)
+func InitNewPage(pageSlot []byte, ownerId dbobj.OID, pageId page.Id, pattern TuplePattern) WPage {
+	return data.InitNewPage(pageSlot, ownerId, pageId, pattern)
 }
 
-func AsPage(pageData []byte, pageId page.Id, pattern TuplePattern) WPage {
-	return data.AsPage(pageData, pageId, pattern)
+func InitNewTablePage(pageSlot []byte, table table.RDefinition, pageId page.Id) WPage {
+	return data.InitNewPage(pageSlot, table.OID(), pageId, data.PatternFromTable(table))
+}
+
+func AsPage(pageData []byte, ownerId dbobj.OID, pageId Id, pattern TuplePattern) WPage {
+	return data.AsPage(pageData, ownerId, pageId, pattern)
 }
 
 func AsTablePage(pageData []byte, pageId page.Id, table table.RDefinition) WPage {
-	return data.AsPage(pageData, pageId, data.PatternFromTable(table))
+	return data.AsPage(pageData, table.OID(), pageId, data.PatternFromTable(table))
 }
 
 // -------------------------
