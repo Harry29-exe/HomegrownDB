@@ -207,6 +207,12 @@ var TupleDebugger = tupleDebugger{}
 
 type tupleDebugger struct{}
 
+func (t tupleDebugger) Print(tuple Tuple) {
+	for _, line := range t.TupleDescription(tuple) {
+		println(line)
+	}
+}
+
 func (t tupleDebugger) TupleDescription(tuple Tuple) []string {
 	strArr := &strutils.StrArray{}
 

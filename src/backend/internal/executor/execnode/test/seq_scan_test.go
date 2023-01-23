@@ -27,7 +27,6 @@ func TestSeqScan_SimpleSelect(t *testing.T) {
 
 	resultRow := selectResult[0]
 	// todo create utils for validating binary values
-	assert.EqArray(bparse.Serialize.Int8(1), resultRow.ColValue(0), t)
-	assert.EqArray([]byte("Bob"), resultRow.ColValue(1)[4:], t)
-
+	assert.EqArray(bparse.Serialize.Int8(1), resultRow.ColValue(0), t) // id
+	assert.EqArray([]byte("Bob"), resultRow.ColValue(1)[4:], t)        // name
 }
