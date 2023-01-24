@@ -1,5 +1,7 @@
 package tx
 
+import "math"
+
 type Tx interface {
 	TxID() Id
 	Level() IsolationLevel
@@ -31,6 +33,12 @@ func (s StdTx) CommandExecuted() uint16 {
 }
 
 type Id int32
+
+const (
+	MaxId     Id = math.MaxInt32 - 1
+	InvalidId Id = math.MaxInt32
+)
+
 type Counter = uint16
 
 const (

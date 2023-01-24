@@ -1,64 +1,47 @@
 package main
 
-type WE struct {
-	i int
-}
-
-var testFilePath = "/home/kamil/Downloads/test.hdbd"
+import (
+	"HomegrownDB/dbsystem/hg"
+	"HomegrownDB/frontend/server"
+	"HomegrownDB/starter"
+	"log"
+	"os"
+)
 
 func main() {
-	//dbsystem.Config.DBHomePath()
-	//dbsystem.DBHomePath()
-	array := make([]WE, 2)
-	value := &array[1]
-	value.i = 10
-	println(array[1].i)
+	log.SetFlags(log.Lshortfile | log.Ldate | log.Ltime)
+	switch {
+	case len(os.Args) < 2:
+		println("please enter command: install or start")
+		os.Exit(-1)
+	case os.Args[1] == "install":
+		err := starter.InstallDefault()
+		if err != nil {
+			println(err.Error())
+			os.Exit(1)
+		}
+		os.Exit(0)
+	case os.Args[1] == "start":
+		db, err := hg.Load(nil)
+		if err != nil {
+			println(err.Error())
+			os.Exit(1)
+		}
+		_ = db
+		frontendServer := server.CreateDefaultServer(
+			"0.0.0.0",
+			"8080",
+			nil,
+		)
+		err = frontendServer.Start()
+		if err != nil {
+			log.Printf("can start frontend frontendServer: %s", err.Error())
+			os.Exit(1)
+		}
+	default:
+		println("not supported command: " + os.Args[0])
+		os.Exit(-1)
+	}
 
-	//file, err := os.OpenFile(testFilePath, os.O_CREATE|os.O_RDWR, os.ModePerm)
-	//if err != nil {
-	//	println(err.Error())
-	//	os.Exit(1)
-	//}
-	//
-	//data1 := "Data 1 for this file"
-	//fmt.Printf("Writing following string with len = %d,\n%s\n", len(data1), data1)
-	//_, err = file.Write([]byte(data1))
-	//if err != nil {
-	//	println(err.Error())
-	//	os.Exit(2)
-	//}
-	//
-	//data2 := "Data 2 for this file2"
-	//fmt.Printf("Writing following string with len = %d,\n%s\n", len(data2), data2)
-	//_, err = file.WriteAt([]byte(data2), 0)
-	//if err != nil {
-	//	println(err.Error())
-	//	os.Exit(3)
-	//}
-	//
-	//fileInf, err := file.Stat()
-	//if err != nil {
-	//	println(err)
-	//	os.Exit(4)
-	//}
-	//
-	//fLen := fileInf.Size()
-	//fmt.Printf("File len = %d\n", fLen)
-	//contentBuffer := make([]byte, fLen)
-	//_, err = file.ReadAt(contentBuffer, 0)
-	//if err != nil {
-	//	println(err.Error())
-	//	os.Exit(5)
-	//}
-	//fmt.Printf("File content:\n%s\n", string(contentBuffer))
-	//
-	//err = file.Truncate(8)
-	//if err != nil {
-	//	println(err.Error())
-	//	os.Exit(6)
-	//}
-	//
-	//fileInf, _ = file.Stat()
-	//fLen = fileInf.Size()
-	//fmt.Printf("File len = %d\n", fLen)
+	log.Print("Successfully started database")
 }

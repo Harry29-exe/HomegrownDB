@@ -1,6 +1,7 @@
 package server
 
 import (
+	"HomegrownDB/frontend/handler"
 	"HomegrownDB/frontend/server/http"
 )
 
@@ -9,6 +10,6 @@ type DBServer interface {
 	Stop() error
 }
 
-func CreateDefaultService(address string, port string) DBServer {
-	return http.CreateDBServer(address, port)
+func CreateDefaultServer(address string, port string, handlers handler.Handlers) DBServer {
+	return http.CreateDBServer(address, port, handlers)
 }

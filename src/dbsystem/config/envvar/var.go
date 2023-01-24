@@ -12,11 +12,11 @@ func SetOsEnv(envName string, envValue string) error {
 	if err != nil {
 		return err
 	}
-	file, err := os.Open(homeDir + "/" + ".zprofile")
+	file, err := os.OpenFile(homeDir+"/"+".zprofile", os.O_RDWR, os.ModeType)
 	if err == nil {
 		return writeOsEnv(file, envName, envValue)
 	}
-	file, err = os.Open(homeDir + "/.bash_profile")
+	file, err = os.OpenFile(homeDir+"/.bash_profile", os.O_RDWR, os.ModeType)
 	if err == nil {
 		return writeOsEnv(file, envName, envValue)
 	}
