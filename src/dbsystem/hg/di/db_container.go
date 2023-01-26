@@ -23,3 +23,18 @@ type Container struct {
 	SharedBuffer buffer.SharedBuffer
 	TxManager    tx.Manager
 }
+
+func (c *Container) CreateFrontendContainer() FrontendContainer {
+	return FrontendContainer{
+		AuthManger:         nil,
+		ExecutionContainer: c.CreateExecutionContainer(),
+	}
+}
+
+func (c *Container) CreateExecutionContainer() ExecutionContainer {
+	return ExecutionContainer{
+		SharedBuffer: c.SharedBuffer,
+		FsmStore:     c.FsmStore,
+		TableStore:   c.TableStore,
+	}
+}
