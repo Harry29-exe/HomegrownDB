@@ -13,11 +13,6 @@ func Create(args CreateArgs) error {
 	return CreateDB(args)
 }
 
-func LoadFromPath(rootPath string) (DB, error) {
-	//todo implement me
-	panic("Not implemented")
-}
-
 // Load create DB object with provided FutureContainer, if fc is nil then Load
 // will create default
 func Load(fc *di.FutureContainer) (DB, error) {
@@ -44,5 +39,6 @@ func DefaultFutureContainer() di.FutureContainer {
 		FsmStoreProvider:     di.FsmStore,
 		SharedBufferProvider: di.SharedBuffer,
 		TxManagerProvider:    di.TxManager,
+		AuthManagerProvider:  di.AuthManager,
 	}
 }

@@ -6,13 +6,17 @@ import (
 	"math"
 )
 
+type WithPattern interface {
+	Pattern() TuplePattern
+}
+
 func PatternFromTable(def table.RDefinition) TuplePattern {
 	tableColumns := def.Columns()
-	columns := make([]ColumnInfo, len(tableColumns))
+	columns := make([]PatternCol, len(tableColumns))
 	for c := 0; c < len(columns); c++ {
-		columns[c] = ColumnInfo{
-			CType: tableColumns[c].CType().Type,
-			Name:  tableColumns[c].Name(),
+		columns[c] = PatternCol{
+			Type: tableColumns[c].CType().Type,
+			Name: tableColumns[c].Name(),
 		}
 	}
 
@@ -22,7 +26,7 @@ func PatternFromTable(def table.RDefinition) TuplePattern {
 	}
 }
 
-func NewPattern(columns []ColumnInfo) TuplePattern {
+func NewPattern(columns []PatternCol) TuplePattern {
 	return TuplePattern{
 		Columns:   columns,
 		BitmapLen: calcBitmapLen(len(columns)),
@@ -30,13 +34,13 @@ func NewPattern(columns []ColumnInfo) TuplePattern {
 }
 
 type TuplePattern struct {
-	Columns   []ColumnInfo
+	Columns   []PatternCol
 	BitmapLen uint16
 }
 
-type ColumnInfo struct {
-	CType hgtype.Type
-	Name  string
+type PatternCol struct {
+	Type hgtype.Type
+	Name string
 }
 
 func calcBitmapLen(columnCount int) uint16 {

@@ -35,6 +35,14 @@ type DBSystem struct {
 	oidCounter appsync.SyncCounter[dbobj.OID]
 }
 
+func (db *DBSystem) ExecutionContainer() di.ExecutionContainer {
+	return db.DIC.CreateExecutionContainer()
+}
+
+func (db *DBSystem) FrontendContainer() di.FrontendContainer {
+	return db.DIC.CreateFrontendContainer()
+}
+
 func (db *DBSystem) Destroy() error {
 	return db.FS().DestroyDB()
 }

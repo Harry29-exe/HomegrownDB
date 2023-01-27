@@ -10,7 +10,7 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-func Execute(query string, tx tx.Tx, container di.ExecutionContainer) ([]page.Tuple, error) {
+func Execute(query string, tx tx.Tx, container di.ExecutionContainer) ([]page.RTuple, error) {
 	parseTree, err := parser.Parse(query)
 	if err != nil {
 		return nil, err
@@ -24,5 +24,13 @@ func Execute(query string, tx tx.Tx, container di.ExecutionContainer) ([]page.Tu
 		return nil, err
 	}
 
-	return executor.Execute(plan, tx, container), nil
+	return mapTuples(executor.Execute(plan, tx, container)), nil
+}
+
+func mapTuples(tuples []page.Tuple) []page.RTuple {
+	rTuples := make([]page.RTuple, len(tuples))
+	for i, tuple := range tuples {
+		rTuples[i] = tuple
+	}
+	return rTuples
 }

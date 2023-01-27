@@ -7,5 +7,6 @@ type Handlers struct {
 }
 
 func NewHandlers(container di.FrontendContainer) Handlers {
-
+	//todo implement me
+	panic("Not implemented")
 }

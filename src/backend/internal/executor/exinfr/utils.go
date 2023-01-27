@@ -23,8 +23,8 @@ func typeFromTargetEntry(entry node.TargetEntry) page.ColumnInfo {
 	entryType := entry.TypeTag().Type()
 
 	return page.ColumnInfo{
-		CType: entryType,
-		Name:  entry.ColName,
+		Type: entryType,
+		Name: entry.ColName,
 	}
 }
 
@@ -34,8 +34,8 @@ func PattenFromRTE(rte node.RangeTableEntry) page.TuplePattern {
 		colTypes := make([]page.ColumnInfo, len(rte.ColTypes))
 		for i := 0; i < len(rte.ColTypes); i++ {
 			colTypes[i] = page.ColumnInfo{
-				CType: rte.ColTypes[i].Type,
-				Name:  rte.ColAlias[i].AliasName,
+				Type: rte.ColTypes[i].Type,
+				Name: rte.ColAlias[i].AliasName,
 			}
 		}
 		return page.NewPattern(colTypes)

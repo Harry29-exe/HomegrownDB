@@ -15,5 +15,5 @@ func TestModifyTable_SimpleInsert(t *testing.T) {
 	inputQuery := "INSERT INTO users (id, name) VALUES (1, 'bob')"
 	plan := testinfr.ParseAnalyseAndPlan(inputQuery, dbUtils.DB.TableStore(), t)
 
-	executor.Execute(plan, currentTx, dbUtils.DB)
+	executor.Execute(plan, currentTx, dbUtils.DB.ExecutionContainer())
 }

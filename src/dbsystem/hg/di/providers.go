@@ -2,6 +2,7 @@ package di
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/auth"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dbfs"
@@ -48,4 +49,8 @@ func SharedBuffer(args SimpleArgs, store pageio.Store) (buffer.SharedBuffer, err
 
 func TxManager(args SimpleArgs) (tx.Manager, error) {
 	return tx.NewManager(args.P.NextTxID), nil
+}
+
+func AuthManager(args SimpleArgs) (auth.Manager, error) {
+	return auth.NewAllowAllManager(), nil
 }

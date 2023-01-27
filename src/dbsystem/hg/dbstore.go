@@ -2,6 +2,7 @@ package hg
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/hg/di"
 	"HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table"
@@ -18,6 +19,9 @@ type DBStore interface {
 	PageIOStore() pageio.Store
 	SharedBuffer() buffer.SharedBuffer
 	TxManager() tx.Manager
+
+	ExecutionContainer() di.ExecutionContainer
+	FrontendContainer() di.FrontendContainer
 
 	NextRelId() relation.ID
 	NextOID() dbobj.OID

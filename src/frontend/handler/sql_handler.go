@@ -23,6 +23,14 @@ const (
 	SqlResultJSON
 )
 
+func NewSqlHandler(container di.FrontendContainer) SqlHandler {
+	return stdSqlHandler{
+		Container:  container.ExecutionContainer,
+		AuthManger: container.AuthManger,
+		TxManger:   container.TxManager,
+	}
+}
+
 type stdSqlHandler struct {
 	Container  di.ExecutionContainer
 	AuthManger auth.Manager
@@ -36,6 +44,8 @@ func (s stdSqlHandler) Handle(query string, txId tx.Id, authentication auth.Auth
 	if err != nil {
 		return nil, err
 	}
+	//todo use user in backend.Execute
+	_ = user
 
 	var transaction tx.Tx
 	if txId == tx.InvalidId {
@@ -45,5 +55,26 @@ func (s stdSqlHandler) Handle(query string, txId tx.Id, authentication auth.Auth
 	}
 
 	resultRows, err := backend.Execute(query, transaction, s.Container)
+	if err != nil {
+		return nil, err
+	}
+	return ToJsonResult(resultRows), nil
+}
 
+// -------------------------
+//      Result
+// -------------------------
+
+var _ SqlResult = JsonResult{}
+
+type JsonResult struct {
+	data []byte
+}
+
+func (r JsonResult) Result() []byte {
+	return r.data
+}
+
+func (r JsonResult) Type() SqlResultType {
+	return SqlResultJSON
 }

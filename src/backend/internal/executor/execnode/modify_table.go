@@ -25,7 +25,7 @@ func (m modifyTableBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 		Left: CreateFromPlan(specificPlan.Left, ctx),
 		OutputPattern: page.TuplePattern{
 			Columns: []page.ColumnInfo{
-				{CType: hgtype.Int8{}, Name: "Rows"},
+				{Type: hgtype.Int8{}, Name: "Rows"},
 			},
 			BitmapLen: 1,
 		},

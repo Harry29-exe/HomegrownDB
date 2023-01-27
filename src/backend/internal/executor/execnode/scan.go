@@ -26,8 +26,8 @@ func (s scan) createOutputTuple(internal page.Tuple) page.Tuple {
 	for i, targetEntry := range targetList {
 		values[i] = exexpr.Execute(targetEntry.ExprToExec, exInput)
 		patternCols[i] = page.ColumnInfo{
-			CType: targetEntry.TypeTag().Type(),
-			Name:  targetEntry.ColName,
+			Type: targetEntry.TypeTag().Type(),
+			Name: targetEntry.ColName,
 		}
 	}
 

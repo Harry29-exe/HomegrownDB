@@ -65,6 +65,10 @@ func (t Tuple) Bytes() []byte {
 	return t.bytes
 }
 
+func (t Tuple) Pattern() TuplePattern {
+	return t.pattern
+}
+
 func (t Tuple) CreatedByTx() tx.Id {
 	return tx.Id(bparse.Parse.UInt4(t.bytes[toTxId:]))
 }
@@ -118,11 +122,11 @@ func (t Tuple) ColValue(id column.Order) []byte {
 		if t.IsNull(i) {
 			continue
 		}
-		subsequent = t.pattern.Columns[i].CType.
+		subsequent = t.pattern.Columns[i].Type.
 			Skip(subsequent)
 	}
 
-	return t.pattern.Columns[id].CType.Value(subsequent)
+	return t.pattern.Columns[id].Type.Value(subsequent)
 }
 
 func (t Tuple) Data() []byte {
@@ -265,8 +269,8 @@ func (t tupleDebugger) stringifyColumnValues(tuple Tuple, arr *strutils.StrArray
 			continue
 		}
 
-		value, nextData = col.CType.ValueAndSkip(nextData)
+		value, nextData = col.Type.ValueAndSkip(nextData)
 
-		arr.FormatAndAdd("%s: %s", col.Name, col.CType.ToStr(value))
+		arr.FormatAndAdd("%s: %s", col.Name, col.Type.ToStr(value))
 	}
 }

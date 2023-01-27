@@ -42,7 +42,8 @@ type (
 	WTuple       = data.WTuple
 	Tuple        = data.Tuple
 	TuplePattern = data.TuplePattern
-	ColumnInfo   = data.ColumnInfo
+	PatternCol   = data.PatternCol
+	ColumnInfo   = data.PatternCol
 	TID          = data.TID
 	TupleIndex   = data.TupleIndex
 )

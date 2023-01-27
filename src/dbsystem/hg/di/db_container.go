@@ -2,6 +2,7 @@ package di
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/auth"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dbfs"
@@ -22,12 +23,14 @@ type Container struct {
 
 	SharedBuffer buffer.SharedBuffer
 	TxManager    tx.Manager
+	AuthManager  auth.Manager
 }
 
 func (c *Container) CreateFrontendContainer() FrontendContainer {
 	return FrontendContainer{
-		AuthManger:         nil,
+		AuthManger:         c.AuthManager,
 		ExecutionContainer: c.CreateExecutionContainer(),
+		TxManager:          c.TxManager,
 	}
 }
 

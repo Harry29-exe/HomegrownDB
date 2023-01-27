@@ -2,6 +2,7 @@ package di
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/auth"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dbfs"
@@ -27,6 +28,7 @@ type (
 	FsmStoreProvider     = func(args SimpleArgs) (fsm.Store, error)
 	SharedBufferProvider = func(args SimpleArgs, store pageio.Store) (buffer.SharedBuffer, error)
 	TxManagerProvider    = func(args SimpleArgs) (tx.Manager, error)
+	AuthManagerProvider  = func(args SimpleArgs) (auth.Manager, error)
 )
 
 type FutureContainer struct {
@@ -39,6 +41,7 @@ type FutureContainer struct {
 	FsmStoreProvider     FsmStoreProvider
 	SharedBufferProvider SharedBufferProvider
 	TxManagerProvider    TxManagerProvider
+	AuthManagerProvider  AuthManagerProvider
 
 	container *Container
 	err       error
@@ -65,6 +68,8 @@ func (c *FutureContainer) Build() (*Container, error) {
 		container.SharedBuffer, c.err = c.SharedBufferProvider(c.args(), container.PageIOStore)
 	}, func() {
 		container.TxManager, c.err = c.TxManagerProvider(c.args())
+	}, func() {
+		container.AuthManager, c.err = c.AuthManagerProvider(c.args())
 	})
 
 	return container, c.err
