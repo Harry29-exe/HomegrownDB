@@ -24,14 +24,14 @@ func NewDB(container *di.Container) DB {
 }
 
 type State struct {
-	NextRID relation.ID
+	NextRID relation.OID
 	NextOID dbobj.OID
 }
 
 type DBSystem struct {
 	DIC *di.Container
 
-	ridCounter appsync.SyncCounter[relation.ID]
+	ridCounter appsync.SyncCounter[relation.OID]
 	oidCounter appsync.SyncCounter[dbobj.OID]
 }
 
@@ -71,7 +71,7 @@ func (db *DBSystem) TxManager() tx.Manager {
 	return db.DIC.TxManager
 }
 
-func (db *DBSystem) NextRelId() relation.ID {
+func (db *DBSystem) NextRelId() relation.OID {
 	return db.ridCounter.GetAndIncr()
 }
 

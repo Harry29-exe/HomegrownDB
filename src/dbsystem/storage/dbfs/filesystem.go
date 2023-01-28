@@ -32,7 +32,7 @@ type DBInitializerFS interface {
 type PageObjectFS interface {
 	OpenRelationDataFile(oid dbobj.OID) (FileLike, error)
 	OpenRelationDef(oid dbobj.OID) (FileLike, error)
-	// InitNewRelationDir create directory and all files(empty) for given relation ID
+	// InitNewRelationDir create directory and all files(empty) for given relation id
 	InitNewRelationDir(oid dbobj.OID) error
 }
 

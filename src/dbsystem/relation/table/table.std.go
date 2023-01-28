@@ -17,8 +17,6 @@ var (
 
 type StdTable struct {
 	relation.BaseRelation
-	oid      dbobj.OID
-	tableId  Id
 	columns  []column.WDef
 	rColumns []column.Def
 	name     string
@@ -28,10 +26,6 @@ type StdTable struct {
 	columnsCount        uint16
 }
 
-func (t *StdTable) SetTableId(id Id) {
-	t.tableId = id
-}
-
 func (t *StdTable) Hash() string {
 	//TODO implement me
 	panic("implement me")
@@ -39,10 +33,6 @@ func (t *StdTable) Hash() string {
 
 func (t *StdTable) SetName(name string) {
 	t.name = name
-}
-
-func (t *StdTable) SetFsmOID(oid dbobj.OID) {
-	t.FreeSpaceMapOID = oid
 }
 
 func (t *StdTable) Name() string {

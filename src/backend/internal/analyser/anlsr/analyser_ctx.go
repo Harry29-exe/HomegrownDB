@@ -15,8 +15,8 @@ func NewCtx(store table2.Store) Ctx {
 		RteIdCounter: appsync.NewSimpleCounter[node.RteID](0),
 
 		TableStore: store,
-		TableCache: map[relation.ID]table2.Definition{},
-		TableIdMap: map[string]relation.ID{},
+		TableCache: map[relation.OID]table2.Definition{},
+		TableIdMap: map[string]relation.OID{},
 	}
 }
 
@@ -24,11 +24,11 @@ type ctx struct {
 	RteIdCounter RteIdCounter
 
 	TableStore table2.Store
-	TableCache map[relation.ID]table2.Definition
-	TableIdMap map[string]relation.ID // TableIdMap map[tableName] = tableId
+	TableCache map[relation.OID]table2.Definition
+	TableIdMap map[string]relation.OID // TableIdMap map[tableName] = tableId
 }
 
-func (c Ctx) GetTableById(id relation.ID) table2.RDefinition {
+func (c Ctx) GetTableById(id relation.OID) table2.RDefinition {
 	cachedTable, ok := c.TableCache[id]
 	if ok {
 		return cachedTable

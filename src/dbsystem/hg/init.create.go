@@ -66,7 +66,7 @@ type creatorCtx struct {
 }
 
 // -------------------------
-//      Init
+//      InitRel
 // -------------------------
 
 func (c *creatorCtx) initRootPath() *creatorCtx {

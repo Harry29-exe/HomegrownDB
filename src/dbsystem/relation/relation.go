@@ -2,23 +2,23 @@ package relation
 
 import (
 	"HomegrownDB/dbsystem/relation/dbobj"
-	"math"
 )
 
-type ID = dbobj.OID
+type OID = dbobj.OID
 
 var (
-	InvalidRelId ID = math.MaxUint32
-	MaxRelId     ID = math.MaxUint32 - 1
+	InvalidRelId OID = dbobj.InvalidOID
+	MaxRelId     OID = dbobj.MaxOID
 )
 
 type Relation interface {
 	dbobj.Obj
-	SetOID(id ID)
+	SetOID(id OID)
 	Kind() Kind
 
 	FsmOID() dbobj.OID
 	VmOID() dbobj.OID
+	InitRel(id OID, fsmID OID, vmID OID)
 }
 
 type Kind uint8

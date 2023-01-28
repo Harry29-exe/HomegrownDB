@@ -23,7 +23,7 @@ type DBStore interface {
 	ExecutionContainer() di.ExecutionContainer
 	FrontendContainer() di.FrontendContainer
 
-	NextRelId() relation.ID
+	NextRelId() relation.OID
 	NextOID() dbobj.OID
 }
 
@@ -36,6 +36,6 @@ type DB interface {
 
 type RelationsOperations interface {
 	CreateRel(rel relation.Relation) error
-	LoadRel(rid relation.ID) error
+	LoadRel(rid relation.OID) error
 	DeleteRel(rel relation.Relation) error
 }

@@ -35,19 +35,17 @@ type Definition interface {
 	RDefinition
 
 	SetName(name string)
-	SetFsmOID(oid dbobj.OID)
 
 	AddColumn(definition column.WDef) error
 	RemoveColumn(name string) error
 }
 
 // Id of table object, 0 if id is invalid
-type Id = relation.ID
+type Id = relation.OID
 
 func NewDefinition(name string) Definition {
 	table := &StdTable{
 		BaseRelation: relation.BaseRelation{},
-		tableId:      0,
 		columns:      []column.WDef{},
 		rColumns:     []column.Def{},
 		name:         name,

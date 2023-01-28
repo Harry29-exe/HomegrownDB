@@ -24,6 +24,7 @@ func (tblStore) TableStore(t *testing.T, tables ...table2.Definition) table2.Sto
 func (tblStore) StoreWithUsersTable(t *testing.T) (store table2.Store, users table2.Definition) {
 	store = table2.NewEmptyTableStore()
 	users = tt_user.Def(t)
+	users.InitRel(1, 2, 3)
 	err := store.AddNewTable(users)
 	if err != nil {
 		t.Error(err.Error())

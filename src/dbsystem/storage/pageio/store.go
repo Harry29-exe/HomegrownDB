@@ -7,7 +7,7 @@ import (
 )
 
 type Store interface {
-	Get(id relation.ID) IO
+	Get(id relation.OID) IO
 	Load(rel relation.Relation) error
 	Register(id dbobj.OID, io IO)
 }
@@ -15,16 +15,16 @@ type Store interface {
 func NewStore(fs dbfs.FS) *StdStore {
 	return &StdStore{
 		FS:    fs,
-		ioMap: map[relation.ID]IO{},
+		ioMap: map[relation.OID]IO{},
 	}
 }
 
 type StdStore struct {
 	FS    dbfs.FS
-	ioMap map[relation.ID]IO
+	ioMap map[relation.OID]IO
 }
 
-func (s *StdStore) Get(id relation.ID) IO {
+func (s *StdStore) Get(id relation.OID) IO {
 	return s.ioMap[id]
 }
 

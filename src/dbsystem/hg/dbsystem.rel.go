@@ -25,8 +25,7 @@ func (db *DBSystem) CreateRel(rel relation.Relation) error {
 }
 
 func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
-	tableDef.SetOID(db.NextOID())
-	tableDef.SetFsmOID(db.NextOID())
+	tableDef.InitRel(db.NextOID(), db.NextOID(), db.NextOID())
 
 	if err = db.FS().InitNewRelationDir(tableDef.OID()); err != nil {
 		return err
@@ -82,7 +81,7 @@ func (db *DBSystem) createFSM(fsmOID dbobj.OID) (err error) {
 	return nil
 }
 
-func (db *DBSystem) saveRelDefinition(id relation.ID, definition []byte) (err error) {
+func (db *DBSystem) saveRelDefinition(id relation.OID, definition []byte) (err error) {
 	file, err := db.FS().OpenRelationDef(id)
 	if err != nil {
 		return err
@@ -106,7 +105,7 @@ func (db *DBSystem) saveRelDefinition(id relation.ID, definition []byte) (err er
 	return nil
 }
 
-func (db *DBSystem) LoadRel(rid relation.ID) error {
+func (db *DBSystem) LoadRel(rid relation.OID) error {
 	data, err := db.readRelationDefFile(rid)
 	if err != nil {
 		return err
@@ -115,7 +114,7 @@ func (db *DBSystem) LoadRel(rid relation.ID) error {
 	baseRel := relation.DeserializeBaseRelation(d)
 
 	var rel relation.Relation
-	switch baseRel.RelKind {
+	switch baseRel.Kind() {
 	case relation.TypeTable:
 		return db.loadTable(data)
 	case relation.TypeIndex:
@@ -139,7 +138,7 @@ func (db *DBSystem) loadTable(serializedTable []byte) error {
 	return nil
 }
 
-func (db *DBSystem) readRelationDefFile(rid relation.ID) (data []byte, err error) {
+func (db *DBSystem) readRelationDefFile(rid relation.OID) (data []byte, err error) {
 	file, err := db.FS().OpenRelationDef(rid)
 	defer func() {
 		if err != nil {

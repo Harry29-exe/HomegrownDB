@@ -1,7 +1,6 @@
 package table
 
 import (
-	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/relation"
 	"fmt"
 	"sync"
@@ -12,10 +11,8 @@ func NewTestTableStore(tables ...Definition) (Store, error) {
 }
 
 func NewTableStore(tables []Definition) (Store, error) { //todo delete this error
-	maxId, missingIds := findMaxAndMissing(tables)
-
 	nameTableMap := map[string]Id{}
-	definitionsArray := map[relation.ID]Definition{}
+	definitionsArray := map[relation.OID]Definition{}
 	for _, def := range tables {
 		id := def.OID()
 		nameTableMap[def.Name()] = id
@@ -23,10 +20,8 @@ func NewTableStore(tables []Definition) (Store, error) { //todo delete this erro
 	}
 
 	return &stdStore{
-		nameTableMap:    nameTableMap,
-		definitions:     definitionsArray,
-		changeListeners: nil,
-		tableIdCounter:  appsync.NewIdResolver(maxId+1, missingIds),
+		nameTableMap: nameTableMap,
+		definitions:  definitionsArray,
 	}, nil
 }
 
@@ -35,10 +30,7 @@ func NewEmptyTableStore() Store {
 		storeLock: &sync.RWMutex{},
 
 		nameTableMap: map[string]Id{},
-		definitions:  map[relation.ID]Definition{},
-
-		changeListeners: nil,
-		tableIdCounter:  appsync.NewIdResolver(Id(0), nil),
+		definitions:  map[relation.OID]Definition{},
 	}
 }
 
@@ -68,11 +60,7 @@ type stdStore struct {
 
 	// store data
 	nameTableMap map[string]Id
-	definitions  map[relation.ID]Definition
-
-	// store utils
-	changeListeners []func()
-	tableIdCounter  *appsync.IdResolver[Id]
+	definitions  map[relation.OID]Definition
 }
 
 func (t *stdStore) FindTable(name string) Id {
@@ -98,11 +86,8 @@ func (t *stdStore) AddNewTable(table Definition) error {
 	t.storeLock.Lock()
 	defer t.storeLock.Unlock()
 
-	id := t.tableIdCounter.NextId()
-	table.SetOID(id)
-
-	t.definitions[id] = table
-	t.nameTableMap[table.Name()] = id
+	t.definitions[table.OID()] = table
+	t.nameTableMap[table.Name()] = table.OID()
 
 	return nil
 }
@@ -128,7 +113,6 @@ func (t *stdStore) RemoveTable(id Id) error {
 	tableDef := t.definitions[id]
 	delete(t.nameTableMap, tableDef.Name())
 	t.definitions[id] = nil
-	t.tableIdCounter.AddId(id)
 
 	return nil
 }

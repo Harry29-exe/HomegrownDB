@@ -25,21 +25,21 @@ func SerializeProperties(properties DBProperties) []byte {
 type DBProperties struct {
 	Relations []RelPTR
 	NextTxID  tx.Id
-	NextRID   relation.ID
+	NextRID   relation.OID
 	NextOID   dbobj.OID
 }
 
 func DefaultDBProperties() DBProperties {
 	return DBProperties{
 		Relations: make([]RelPTR, 0),
-		NextRID:   0,
-		NextOID:   0,
+		NextRID:   1,
+		NextOID:   1,
 	}
 }
 
 type RelPTR struct {
 	RelKind    relation.Kind
-	RelationID relation.ID
+	RelationID relation.OID
 }
 
 func ReadInitProperties(fs dbfs.PropertiesFS) (DBProperties, error) {

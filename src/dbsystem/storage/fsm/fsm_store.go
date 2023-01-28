@@ -9,20 +9,20 @@ import (
 type Store interface {
 	Register(fsm *FSM)
 
-	GetFSM(fsmId relation.ID) *FSM
+	GetFSM(fsmId relation.OID) *FSM
 	DeleteFSM(id table.Id)
 }
 
 func NewStore() Store {
 	return &StdStore{
-		fsmMap: map[relation.ID]*FSM{},
+		fsmMap: map[relation.OID]*FSM{},
 	}
 }
 
 var _ Store = &StdStore{}
 
 type StdStore struct {
-	fsmMap map[relation.ID]*FSM
+	fsmMap map[relation.OID]*FSM
 }
 
 func (s StdStore) Register(fsm *FSM) {

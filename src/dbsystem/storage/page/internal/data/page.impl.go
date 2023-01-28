@@ -14,7 +14,7 @@ import (
 )
 
 // todo add handling for inserting into empty page
-func EmptyTablePage(pattern TuplePattern, relationId relation.ID) Page {
+func EmptyTablePage(pattern TuplePattern, relationId relation.OID) Page {
 	rawPage := make([]byte, page.Size)
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
@@ -58,7 +58,7 @@ func AsPage(data []byte, ownerId dbobj.OID, pageId page.Id, pattern TuplePattern
 type Page struct {
 	pattern    TuplePattern
 	id         page.Id
-	relationId relation.ID
+	relationId relation.OID
 	bytes      []byte
 }
 

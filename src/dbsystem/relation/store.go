@@ -6,28 +6,28 @@ import (
 )
 
 type Store interface {
-	Get(id ID) Relation
+	Get(id OID) Relation
 	Register(relation Relation)
-	Remove(id ID)
+	Remove(id OID)
 
-	NewRelationID() ID
+	NewRelationID() OID
 }
 
 func NewStore() Store {
 	return &store{
 		lock:      &sync.RWMutex{},
-		relations: map[ID]Relation{},
-		idCounter: appsync.NewSyncCounter[ID](0),
+		relations: map[OID]Relation{},
+		idCounter: appsync.NewSyncCounter[OID](0),
 	}
 }
 
 type store struct {
 	lock      *sync.RWMutex
-	relations map[ID]Relation
-	idCounter appsync.SyncCounter[ID]
+	relations map[OID]Relation
+	idCounter appsync.SyncCounter[OID]
 }
 
-func (s *store) Get(id ID) Relation {
+func (s *store) Get(id OID) Relation {
 	s.lock.RLock()
 	defer s.lock.Unlock()
 	return s.relations[id]
@@ -44,7 +44,7 @@ func (s *store) Register(relation Relation) {
 	s.relations[id] = relation
 }
 
-func (s *store) Remove(id ID) {
+func (s *store) Remove(id OID) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -55,6 +55,6 @@ func (s *store) Remove(id ID) {
 	delete(s.relations, id)
 }
 
-func (s *store) NewRelationID() ID {
+func (s *store) NewRelationID() OID {
 	return s.idCounter.IncrAndGet()
 }
