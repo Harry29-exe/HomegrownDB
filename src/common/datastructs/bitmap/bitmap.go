@@ -29,6 +29,12 @@ func (b Bitmap) Clear(n int) {
 	b.bytes[byteNo] = b.bytes[byteNo] & clearBitMasks[bitNo]
 }
 
+func (b Bitmap) ClearAll() {
+	for i := 0; i < len(b.bytes); i++ {
+		b.bytes[i] = 0
+	}
+}
+
 func (b Bitmap) IsSet(n int) bool {
 	byteNo := n / 8
 	bitNo := n - byteNo

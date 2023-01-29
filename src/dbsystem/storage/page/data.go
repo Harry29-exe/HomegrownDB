@@ -48,6 +48,10 @@ type (
 	TupleIndex   = data.TupleIndex
 )
 
+func NewTupleBuilder() data.TupleBuilder {
+	return data.NewTupleBuilder()
+}
+
 func NewPattern(columns []ColumnInfo) TuplePattern {
 	return data.NewPattern(columns)
 }

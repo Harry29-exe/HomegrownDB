@@ -7,11 +7,41 @@ import (
 	"HomegrownDB/dbsystem/relation/table/column"
 )
 
+type RelationsTable interface {
+	table.RDefinition
+	ColumnOID() column.Def
+	ColumnRelKind() column.Def
+	ColumnFsmOID() column.Def
+	ColumnVmOID() column.Def
+}
+
+var _ RelationsTable = relationsTable{}
+
+type relationsTable struct {
+	table.RDefinition
+}
+
+func (r relationsTable) ColumnOID() column.Def {
+	return r.Column(0)
+}
+
+func (r relationsTable) ColumnRelKind() column.Def {
+	return r.Column(1)
+}
+
+func (r relationsTable) ColumnFsmOID() column.Def {
+	return r.Column(2)
+}
+
+func (r relationsTable) ColumnVmOID() column.Def {
+	return r.Column(3)
+}
+
 // -------------------------
 //      Def
 // -------------------------
 
-func RelationsTableDef() table.RDefinition {
+func RelationsTableDef() RelationsTable {
 	columns := []column.WDef{
 		relations.oid(),
 		relations.relKind(),
@@ -19,13 +49,15 @@ func RelationsTableDef() table.RDefinition {
 		relations.vmOID(),
 	}
 
-	return newTableDef(
-		RelationsName,
-		RelationsOID,
-		RelationsFsmOID,
-		RelationsVmOID,
-		columns,
-	)
+	return relationsTable{
+		newTableDef(
+			RelationsName,
+			RelationsOID,
+			RelationsFsmOID,
+			RelationsVmOID,
+			columns,
+		),
+	}
 }
 
 var relations = relationsBuilder{}

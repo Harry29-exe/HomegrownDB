@@ -13,10 +13,11 @@ type TupleBuilder interface {
 	Init(pattern TuplePattern)
 	WriteValue(value hgtype.Value) error
 	VolatileTuple(tx tx.Tx, command uint16) Tuple
+	Reset()
 }
 
-func NewTupleBuilder(buff bytes.Buffer) {
-
+func NewTupleBuilder() TupleBuilder {
+	return tupleBuilder{}
 }
 
 type tupleBuilder struct {
@@ -44,10 +45,15 @@ func (t tupleBuilder) WriteValue(value hgtype.Value) error {
 	switch validateResult.Status {
 
 	case hgtype.ValidateOk:
-		err := col.Type.WriteValue(&t.dataBuff, value)
-		if err != nil {
-			return err
+		if value.NormValue == nil {
+			t.nullBitmap.Set(t.valuesWritten)
+		} else {
+			err := col.Type.WriteValue(&t.dataBuff, value)
+			if err != nil {
+				return err
+			}
 		}
+		t.valuesWritten++
 		return nil
 	case hgtype.ValidateConv:
 		panic("types conv is not supported yet")
@@ -72,4 +78,10 @@ func (t tupleBuilder) VolatileTuple(tx tx.Tx, commands uint16) Tuple {
 	tuple.SetTxCommandCounter(commands)
 
 	return tuple
+}
+
+func (t tupleBuilder) Reset() {
+	t.valuesWritten = 0
+	t.dataBuff.Reset()
+	t.nullBitmap.ClearAll()
 }
