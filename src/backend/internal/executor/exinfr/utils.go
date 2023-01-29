@@ -2,6 +2,7 @@ package exinfr
 
 import (
 	"HomegrownDB/backend/internal/node"
+	"HomegrownDB/dbsystem/hgtype/coltype"
 	"HomegrownDB/dbsystem/storage/page"
 	"math"
 )
@@ -20,10 +21,10 @@ func PatternFromTargetList(targetList []node.TargetEntry) page.TuplePattern {
 }
 
 func typeFromTargetEntry(entry node.TargetEntry) page.ColumnInfo {
-	entryType := entry.TypeTag().Type()
+	entryType := entry.TypeTag()
 
 	return page.ColumnInfo{
-		Type: entryType,
+		Type: coltype.NewDefaultColType(entryType),
 		Name: entry.ColName,
 	}
 }
@@ -34,7 +35,7 @@ func PattenFromRTE(rte node.RangeTableEntry) page.TuplePattern {
 		colTypes := make([]page.ColumnInfo, len(rte.ColTypes))
 		for i := 0; i < len(rte.ColTypes); i++ {
 			colTypes[i] = page.ColumnInfo{
-				Type: rte.ColTypes[i].Type,
+				Type: rte.ColTypes[i],
 				Name: rte.ColAlias[i].AliasName,
 			}
 		}

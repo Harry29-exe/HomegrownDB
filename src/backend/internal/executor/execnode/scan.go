@@ -3,6 +3,7 @@ package execnode
 import (
 	"HomegrownDB/backend/internal/executor/execnode/exexpr"
 	"HomegrownDB/backend/internal/node"
+	"HomegrownDB/dbsystem/hgtype/coltype"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -26,7 +27,7 @@ func (s scan) createOutputTuple(internal page.Tuple) page.Tuple {
 	for i, targetEntry := range targetList {
 		values[i] = exexpr.Execute(targetEntry.ExprToExec, exInput)
 		patternCols[i] = page.ColumnInfo{
-			Type: targetEntry.TypeTag().Type(),
+			Type: coltype.NewDefaultColType(targetEntry.TypeTag()),
 			Name: targetEntry.ColName,
 		}
 	}

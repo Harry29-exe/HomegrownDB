@@ -2,7 +2,7 @@ package table
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/coltype"
 	relation "HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table/column"
@@ -76,7 +76,7 @@ func (t *StdTable) ColumnCount() uint16 {
 	return t.columnsCount
 }
 
-func (t *StdTable) CTypePattern() []hgtype.TypeData {
+func (t *StdTable) CTypePattern() []coltype.ColumnType {
 	//todo implement me
 	panic("Not implemented")
 }
@@ -95,7 +95,7 @@ func (t *StdTable) ColumnOrder(name string) (order column.Order, ok bool) {
 }
 
 // todo array of ctypes?
-func (t *StdTable) ColumnType(id column.Order) hgtype.TypeData {
+func (t *StdTable) ColumnType(id column.Order) coltype.ColumnType {
 	return t.columns[id].CType()
 }
 

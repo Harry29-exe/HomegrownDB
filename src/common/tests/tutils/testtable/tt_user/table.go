@@ -13,6 +13,7 @@ package tt_user
 import (
 	"HomegrownDB/common/tests/tutils/testtable"
 	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/coltype"
 	"HomegrownDB/dbsystem/relation/table/column"
 	"testing"
 )
@@ -45,8 +46,8 @@ const (
 )
 
 var (
-	C0IdType      = hgtype.NewInt8(hgtype.Args{})
-	C1AgeType     = hgtype.NewInt8(hgtype.Args{})
-	C2NameType    = hgtype.NewStr(hgtype.Args{Length: 255, VarLen: true, UTF8: true})
-	C3SurnameType = hgtype.NewStr(hgtype.Args{Length: 255, VarLen: true, UTF8: true})
+	C0IdType      = coltype.NewInt8(hgtype.Args{})
+	C1AgeType     = coltype.NewInt8(hgtype.Args{})
+	C2NameType    = coltype.NewStr(hgtype.Args{Length: 255, VarLen: true, UTF8: true})
+	C3SurnameType = coltype.NewStr(hgtype.Args{Length: 255, VarLen: true, UTF8: true})
 )

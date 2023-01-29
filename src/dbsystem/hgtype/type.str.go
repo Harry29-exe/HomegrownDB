@@ -17,7 +17,7 @@ func (s Str) Tag() Tag {
 	return TypeStr
 }
 
-var _ Operations = Str{}
+var _ TypeOperations = Str{}
 
 func (s Str) Equal(v1, v2 []byte) bool {
 	return bytes.Equal(v1, v2)
@@ -47,10 +47,43 @@ func (s Str) Rand(args Args, r random.Random) []byte {
 	return buff.Bytes()
 }
 
-func (s Str) Validate(args Args, value []byte) error {
-	//TODO implement me
-	panic("implement me")
+func (s Str) Validate(args Args, value Value) ValidateResult {
+	switch value.TypeTag {
+	case TypeStr:
+		l := StrUtils.StrLen(value.NormValue)
+		if len(value.NormValue) == 0 && !args.Nullable {
+			return ValidateResult{Status: ValidateErr, Reason: NullNotAllowed{}}
+		} else if l > args.Length {
+			return ValidateResult{Status: ValidateErr, Reason: ToLongErr{}}
+		} else if !args.UTF8 && !StrUtils.IsASCII(value.NormValue) {
+			return ValidateResult{Status: ValidateErr, Reason: UTF8NotAllowed{}}
+		}
+		return ValidateResult{Status: ValidateOk}
+	default:
+		return ValidateResult{Status: ValidateErr}
+	}
 }
+
+func (s Str) WriteValue(writer UniWriter, value Value, args Args) error {
+	if args.VarLen {
+		return s.varLen.WriteValue(writer, value)
+	} else {
+		dataLen := s.fourByteLen(value.NormValue) - fourByteLen
+		if _, err := writer.Write(value.NormValue[4:]); err != nil {
+			return err
+		}
+		for i := 0; i < int(args.Length)-int(dataLen); i++ {
+			if err := writer.WriteByte(' '); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// -------------------------
+//      StrUtils
+// -------------------------
 
 var StrUtils = strUtils{}
 

@@ -8,6 +8,7 @@ import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/coltype"
 	"testing"
 )
 
@@ -39,9 +40,9 @@ func (selectValues) expectedValuesSelect(t *testing.T) node2.Query {
 		{node2.NewConstInt8(1), testinfr2.NewConstStr("Bob", t)},
 		{node2.NewConstInt8(2), testinfr2.NewConstStr("Alice", t)},
 	})
-	valuesRTE.ColTypes = []hgtype.TypeData{
-		hgtype.NewInt8(hgtype.Args{}),
-		hgtype.NewStr(hgtype.Args{VarLen: true, Length: uint32(len("Alice")), UTF8: false}),
+	valuesRTE.ColTypes = []coltype.ColumnType{
+		coltype.NewInt8(hgtype.Args{}),
+		coltype.NewStr(hgtype.Args{VarLen: true, Length: uint32(len("Alice")), UTF8: false}),
 	}
 	query.RTables = []node2.RangeTableEntry{valuesRTE}
 	query.FromExpr = node2.NewFromExpr2(nil, valuesRTE.CreateRef())

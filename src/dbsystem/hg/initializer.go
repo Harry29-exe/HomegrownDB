@@ -1,16 +1,19 @@
 package hg
 
-import "HomegrownDB/dbsystem/hg/di"
+import (
+	"HomegrownDB/dbsystem/hg/di"
+	"HomegrownDB/dbsystem/hg/internal/creator"
+)
 
-type CreateArgs = CreatorProps
+type CreateArgs = creator.Props
 
 const (
-	CreatorModeDBInitializer CreatorMode = DBInstaller
-	CreatorModeTest          CreatorMode = Test
+	CreatorModeDBInitializer creator.Mode = creator.DBInstaller
+	CreatorModeTest          creator.Mode = creator.Test
 )
 
 func Create(args CreateArgs) error {
-	return CreateDB(args)
+	return creator.CreateDB(args)
 }
 
 // Load create DB object with provided FutureContainer, if fc is nil then Load

@@ -13,14 +13,9 @@ const (
 
 var (
 	_ TypeReader = varLen{}
-	_ TypeWriter = varLen{}
 )
 
 type varLen struct{}
-
-// -------------------------
-//      TypeReader
-// -------------------------
 
 func (v varLen) Skip(data []byte) []byte {
 	if toast.IsVarLenToasted(data[0]) {
@@ -35,6 +30,10 @@ func (v varLen) Skip(data []byte) []byte {
 		return data[l:]
 	}
 }
+
+// -------------------------
+//      TypeReader
+// -------------------------
 
 func (v varLen) Copy(dest []byte, data []byte) (copiedBytes int) {
 	if toast.IsVarLenToasted(data[0]) {
@@ -88,18 +87,34 @@ func (v varLen) ValueAndSkip(data []byte) (value, next []byte) {
 	}
 }
 
-// -------------------------
-//      TypeWriter
-// -------------------------
+func (v varLen) WriteValue(writer UniWriter, value Value) error {
+	normalizedLen := v.fourByteLen(value.NormValue)
+	if v.lenCanBeOneByte(normalizedLen - fourByteLen) {
+		err := writer.WriteByte(byte(normalizedLen - fourByteLen + oneByteLen))
+		if err != nil {
+			return err
+		}
+		_, err = writer.Write(value.NormValue[4:normalizedLen])
+		if err != nil {
+			return err
+		}
+	} else {
+		_, err := writer.Write(value.NormValue)
+		if err != nil {
+			return err
+		}
+	}
 
-func (v varLen) WriteTuple(dest []byte, value []byte) int {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 // -------------------------
 //      private
 // -------------------------
+
+func (v varLen) lenCanBeOneByte(dataLen uint32) bool {
+	return dataLen+1 > 128
+}
 
 func (v varLen) lenIsOneByte(firstByte byte) bool {
 	return firstByte > 127
@@ -113,11 +128,14 @@ func (v varLen) oneByteLen(data []byte) uint8 {
 	return data[0] & oneByteHeaderMask
 }
 
-// 01111111
-var oneByteHeaderMask = byte(127)
-
-// 00111111 11111111 11111111 11111111
-var fourByteHeaderMask = uint32(1073741823)
+const (
+	// 01111111
+	oneByteHeaderMask = byte(127)
+	oneByteLen        = 1
+	// 00111111 11111111 11111111 11111111
+	fourByteHeaderMask = uint32(1073741823)
+	fourByteLen        = 4
+)
 
 var VarLenUtils = varLenUtils{}
 

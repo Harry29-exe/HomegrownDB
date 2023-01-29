@@ -5,6 +5,7 @@ import (
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/coltype"
 	"HomegrownDB/dbsystem/hgtype/inputtype"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm"
@@ -25,7 +26,7 @@ func (m modifyTableBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 		Left: CreateFromPlan(specificPlan.Left, ctx),
 		OutputPattern: page.TuplePattern{
 			Columns: []page.ColumnInfo{
-				{Type: hgtype.Int8{}, Name: "Rows"},
+				{Type: coltype.NewDefaultColType(hgtype.TypeInt8), Name: "Rows"},
 			},
 			BitmapLen: 1,
 		},

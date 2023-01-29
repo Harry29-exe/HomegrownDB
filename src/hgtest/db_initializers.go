@@ -17,7 +17,7 @@ type TestDBBuilder struct {
 
 func CreateAndLoadDBWith(fc *di.FutureContainer, t *testing.T) *TestDBBuilder {
 	rootPath := TestRootPath(t)
-	err := hg.Create(hg.CreateArgs{Mode: hg.Test, RootPath: rootPath})
+	err := hg.Create(hg.CreateArgs{Mode: hg.CreatorModeTest, RootPath: rootPath})
 	assert.ErrIsNil(err, t)
 
 	if fc == nil {

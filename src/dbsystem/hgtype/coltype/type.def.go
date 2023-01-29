@@ -1,14 +1,9 @@
-package hgtype
+package coltype
 
 import (
 	"HomegrownDB/common/random"
+	"HomegrownDB/dbsystem/hgtype"
 )
-
-type WrapperOp interface {
-	TypeEqual(wrapper TypeData) bool
-	// Validate check if given value is fulfilling provided args
-	Validate(value []byte) error
-}
 
 type Operations interface {
 	Equal(v1, v2 []byte) bool
@@ -33,12 +28,13 @@ type Reader interface {
 }
 
 type Writer interface {
+	WriteValue(writer hgtype.UniWriter, value hgtype.Value) error
 	// WriteTuple rewrites hgtype from old tuple/qrow to new tuple
 	// returns written bytes (support toast and lob ptrs)
-	WriteTuple(dest []byte, value []byte) int
-	// WriteNormalized rewrites hgtype from old tuple/qrow to byte slice
+	//WriteTuple(dest []byte, value []byte) int
+	// WriteValue rewrites hgtype from old tuple/qrow to byte slice
 	// returns written bytes (don'Type support toast and lob ptrs)
-	//WriteNormalized(dest []byte, value []byte) int //todo not sure if this method is needed
+	//WriteValue(dest []byte, value []byte) int //todo not sure if this method is needed
 }
 
 type Debug interface {

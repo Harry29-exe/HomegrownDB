@@ -4,20 +4,12 @@ import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/random"
 	"bytes"
-	"errors"
 	"strconv"
 )
 
 var _ Type = Int8{}
 
 type Int8 struct{}
-
-func (i Int8) Validate(args Args, value []byte) error {
-	if len(value) == 8 {
-		return nil
-	}
-	return errors.New("values is not 8 bytes long")
-}
 
 func (i Int8) Tag() Tag {
 	return TypeInt8
@@ -43,8 +35,18 @@ func (i Int8) ValueAndSkip(data []byte) (value, next []byte) {
 	return data[:8], data[8:]
 }
 
-func (i Int8) WriteTuple(dest []byte, value []byte) int {
-	return copy(dest, value)
+func (i Int8) Validate(args Args, value Value) ValidateResult {
+	switch value.TypeTag {
+	case TypeInt8:
+		return ValidateResult{Status: ValidateOk}
+	default:
+		return ValidateResult{Status: ValidateErr, Reason: TypesNotConvertable{}}
+	}
+}
+
+func (i Int8) WriteValue(writer UniWriter, value Value, _ Args) error {
+	_, err := writer.Write(value.NormValue)
+	return err
 }
 
 func (i Int8) Equal(v1, v2 []byte) bool {

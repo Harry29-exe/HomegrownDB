@@ -1,18 +1,15 @@
-package hg
+package creator
 
 import (
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/storage/dbfs"
-	"os"
 )
 
-func CreateDB(props CreatorProps) error {
+func CreateDB(props Props) error {
 	ctx := creatorCtx{Props: props}
 	ctx.initRootPath().
 		initConfigurationAndProperties().
-		initDBFilesystem().
-		createRelations()
+		initDBFilesystem()
 	return ctx.err
 }
 
@@ -20,34 +17,18 @@ func CreateDB(props CreatorProps) error {
 //      Props
 // -------------------------
 
-type CreatorMode uint8
+type Mode uint8
 
 const (
-	DBInstaller CreatorMode = iota
+	DBInstaller Mode = iota
 	Test
 )
 
-type CreatorProps struct {
-	Mode              CreatorMode
-	RootPath          string              // RootPath path where db will be initialized (nullable)
-	RelationsToCreate []relation.Relation // Relations that DBCreator will create
-	Config            config.Configuration
-	Props             config.DBProperties
-}
-
-func (c *CreatorProps) initEmptyWithDefault() error {
-	if c.RootPath == "" {
-		homedir, err := os.UserHomeDir()
-		if err != nil {
-			return err
-		}
-		c.RootPath = homedir + "/.HomegrownDB"
-	}
-	if c.RelationsToCreate == nil {
-
-	}
-
-	return nil
+type Props struct {
+	Mode     Mode
+	RootPath string // RootPath path where db will be initialized (nullable)
+	Config   config.Configuration
+	Props    config.DBProperties
 }
 
 // -------------------------
@@ -55,7 +36,7 @@ func (c *CreatorProps) initEmptyWithDefault() error {
 // -------------------------
 
 type creatorCtx struct {
-	Props CreatorProps
+	Props Props
 
 	RootPath string
 	Config   config.Configuration
@@ -66,7 +47,7 @@ type creatorCtx struct {
 }
 
 // -------------------------
-//      InitRel
+//      Init
 // -------------------------
 
 func (c *creatorCtx) initRootPath() *creatorCtx {
@@ -110,31 +91,20 @@ func (c *creatorCtx) initDBFilesystem() *creatorCtx {
 //      Create
 // -------------------------
 
-func (c *creatorCtx) createRelations() *creatorCtx {
-	if c.err != nil {
-		return c
-	}
-	relations := c.Props.RelationsToCreate
-	for _, relation := range relations {
-		err := c.FS.InitNewRelationDir(relation.OID())
-		if err != nil {
-			return c.error(err)
-		}
-		defFile, err := c.FS.OpenRelationDef(relation.OID())
-		if err != nil {
-			return c.error(err)
-		}
-		_, err = defFile.Write(SerializeRel(relation))
-		if err != nil {
-			return c.error(err)
-		}
-		err = defFile.Close()
-		if err != nil {
-			return c.error(err)
-		}
-	}
-	return nil
-}
+//func (c *creatorCtx) createSysTables() *creatorCtx {
+//	c.FS.InitNewRelationDir()
+//}
+//
+//func (c *creatorCtx) createRelationsAndColumnsTables() *creatorCtx {
+//	relationsTable := systable.RelationsTableDef()
+//	columnsTable := systable.ColumnsTableDef()
+//
+//	err := c.FS.InitNewRelationDir(relationsTable.OID())
+//	if err != nil {
+//		return c.error(err)
+//	}
+//	err = c.FS.
+//}
 
 // -------------------------
 //      Internal

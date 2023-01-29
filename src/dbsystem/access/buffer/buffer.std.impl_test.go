@@ -201,7 +201,7 @@ type usersTCtx struct {
 
 func bootstrapTCtx_Users(provider di.SharedBufferProvider, t *testing.T) *usersTCtx {
 	rootPath := hgtest.TestRootPath(t)
-	err := hg.Create(hg.CreateArgs{Mode: hg.Test, RootPath: rootPath})
+	err := hg.Create(hg.CreateArgs{Mode: hg.CreatorModeTest, RootPath: rootPath})
 	assert.ErrIsNil(err, t)
 
 	container := hg.DefaultFutureContainer()

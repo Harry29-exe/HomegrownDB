@@ -11,7 +11,3 @@ type ExecNode interface {
 	Init(plan node.Plan) error
 	Close() error
 }
-
-func Create(plan node.Plan) {
-
-}

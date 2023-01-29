@@ -9,6 +9,7 @@ import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/coltype"
 	"HomegrownDB/dbsystem/relation/table"
 	"testing"
 )
@@ -42,9 +43,9 @@ func (insertTest) expectedSimplePositive1(users table.Definition, t *testing.T) 
 	valuesRte := node2.NewValuesRTE(rteIdCounter.Next(), [][]node2.Expr{
 		{node2.NewConstInt8(1), NewConstStr("bob", t)},
 	})
-	valuesRte.ColTypes = []hgtype.TypeData{
-		hgtype.NewInt8(hgtype.Args{}),
-		hgtype.NewStr(hgtype.Args{
+	valuesRte.ColTypes = []coltype.ColumnType{
+		coltype.NewInt8(hgtype.Args{}),
+		coltype.NewStr(hgtype.Args{
 			Length: uint32(len("bob")),
 			VarLen: true,
 			UTF8:   false,

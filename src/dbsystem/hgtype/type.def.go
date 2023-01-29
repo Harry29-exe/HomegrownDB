@@ -3,15 +3,16 @@ package hgtype
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/random"
+	"io"
 )
 
 type Type interface {
 	Tag() Tag
 	// Validate check if given value is fulfilling provided args
-	Validate(args Args, value []byte) error
+	Validate(args Args, value Value) ValidateResult
 	TypeReader
 	TypeWriter
-	Operations
+	TypeOperations
 	TypeDebug
 }
 
@@ -38,12 +39,25 @@ func DeserializeArgs(d *bparse.Deserializer) Args {
 	}
 }
 
-type TypeOperations interface {
-	Equal(args Args, v1, v2 []byte) bool
-	Cmp(args Args, v1, v2 []byte) int
+// ValidateResult validation result that contains information about saving
+// value to tuple
+type ValidateResult struct {
+	Status ValidateStatus // Status whether value can be assigned to column with this type
+	Toast  bool           // Toast whether value should be stored in toast
+	Reason error          // Reason is present only when Status is false
 }
 
-type TypeConverter interface {
+type ValidateStatus int8
+
+const (
+	ValidateOk ValidateStatus = iota
+	ValidateConv
+	ValidateErr
+)
+
+type TypeOperations interface {
+	Equal(v1, v2 []byte) bool
+	Cmp(v1, v2 []byte) int
 }
 
 type TypeReader interface {
@@ -63,13 +77,14 @@ type TypeReader interface {
 	ValueAndSkip(data []byte) (value, next []byte)
 }
 
+// UniWriter - universal writer combines many
+type UniWriter interface {
+	io.Writer
+	io.ByteWriter
+}
+
 type TypeWriter interface {
-	// WriteTuple rewrites hgtype from old tuple/qrow to new tuple
-	// returns written bytes (support toast and lob ptrs)
-	WriteTuple(dest []byte, value []byte) int
-	// WriteNormalized rewrites hgtype from old tuple/qrow to byte slice
-	// returns written bytes (don'Type support toast and lob ptrs)
-	//WriteNormalized(dest []byte, value []byte) int //todo not sure if this method is needed
+	WriteValue(writer UniWriter, value Value, args Args) error
 }
 
 type TypeDebug interface {

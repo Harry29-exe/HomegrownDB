@@ -2,6 +2,7 @@ package node
 
 import (
 	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/coltype"
 	"HomegrownDB/dbsystem/hgtype/inputtype"
 	"HomegrownDB/dbsystem/relation/table/column"
 	"fmt"
@@ -31,7 +32,7 @@ func (e expr) ExprTag() Tag {
 //      Var
 // -------------------------
 
-func NewVar(id RteID, colOrder column.Order, typeData hgtype.TypeData) Var {
+func NewVar(id RteID, colOrder column.Order, typeData coltype.ColumnType) Var {
 	return &_var{
 		expr:     newExpr(TagVar),
 		RteID:    id,
@@ -48,11 +49,11 @@ type _var struct {
 	expr
 	RteID    RteID
 	ColOrder column.Order
-	TypeData hgtype.TypeData
+	TypeData coltype.ColumnType
 }
 
 func (v Var) TypeTag() hgtype.Tag {
-	return v.TypeData.Tag
+	return v.TypeData.Type.Tag()
 }
 
 func (v Var) dEqual(node Node) bool {
@@ -63,7 +64,7 @@ func (v Var) dEqual(node Node) bool {
 }
 
 func (v Var) DPrint(nesting int) string {
-	return fmt.Sprintf("%s{RteId: %d, ColOrder: %d, TypeData: %+v}",
+	return fmt.Sprintf("%s{RteId: %d, ColOrder: %d, ColumnType: %+v}",
 		v.dTag(nesting), v.RteID, v.ColOrder, v.TypeData,
 	)
 }

@@ -2,8 +2,8 @@ package seganalyser
 
 import (
 	"HomegrownDB/backend/internal/analyser/anlsr"
-	node2 "HomegrownDB/backend/internal/node"
-	pnode2 "HomegrownDB/backend/internal/pnode"
+	"HomegrownDB/backend/internal/node"
+	"HomegrownDB/backend/internal/pnode"
 	. "HomegrownDB/backend/internal/sqlerr"
 	"errors"
 )
@@ -13,14 +13,14 @@ var ExprDelegator = exprDelegator{}
 type exprDelegator struct{}
 
 func (ex exprDelegator) DelegateAnalyse(
-	pnodeExpr pnode2.Node,
+	pnodeExpr pnode.Node,
 	currentCtx anlsr.QueryCtx,
-) (node2.Expr, error) {
+) (node.Expr, error) {
 	switch pnodeExpr.Tag() {
-	case pnode2.TagColumnRef:
-		return ExprAnalyser.AnalyseColRef(pnodeExpr.(pnode2.ColumnRef), currentCtx)
-	case pnode2.TagAConst:
-		return ExprAnalyser.AnalyseConst(pnodeExpr.(pnode2.AConst), currentCtx)
+	case pnode.TagColumnRef:
+		return ExprAnalyser.AnalyseColRef(pnodeExpr.(pnode.ColumnRef), currentCtx)
+	case pnode.TagAConst:
+		return ExprAnalyser.AnalyseConst(pnodeExpr.(pnode.AConst), currentCtx)
 	default:
 		return nil, errors.New("") //todo better error
 	}
@@ -30,37 +30,37 @@ var ExprAnalyser = exprAnalyser{}
 
 type exprAnalyser struct{}
 
-func (ex exprAnalyser) AnalyseColRef(pnode pnode2.ColumnRef, currentCtx anlsr.QueryCtx) (node2.Var, error) {
-	var rTable node2.RangeTableEntry
+func (ex exprAnalyser) AnalyseColRef(columnRef pnode.ColumnRef, currentCtx anlsr.QueryCtx) (node.Var, error) {
+	var rTable node.RangeTableEntry
 	var query = currentCtx.Query
 
-	if alias := pnode.TableAlias; alias != "" {
+	if alias := columnRef.TableAlias; alias != "" {
 		rTable = QueryHelper.findRteByAlias(alias, query)
 		if rTable == nil {
 			return nil, AnlsrErr.TableWithAliasNotExist(alias)
 		}
 	} else {
-		rTable = QueryHelper.findRteWithField(pnode.Name, query)
+		rTable = QueryHelper.findRteWithField(columnRef.Name, query)
 		if rTable == nil {
-			return nil, AnlsrErr.NewColumnNotExist(query, pnode.Name, pnode.TableAlias)
+			return nil, AnlsrErr.NewColumnNotExist(query, columnRef.Name, columnRef.TableAlias)
 		}
 	}
 
-	col, ok := rTable.Ref.ColumnByName(pnode.Name)
+	col, ok := rTable.Ref.ColumnByName(columnRef.Name)
 	if !ok {
-		return nil, AnlsrErr.NewColumnNotExist(query, pnode.Name, pnode.TableAlias)
+		return nil, AnlsrErr.NewColumnNotExist(query, columnRef.Name, columnRef.TableAlias)
 	}
 
-	return node2.NewVar(rTable.Id, col.Order(), col.CType()), nil
+	return node.NewVar(rTable.Id, col.Order(), col.CType()), nil
 }
 
-func (ex exprAnalyser) AnalyseConst(aConst pnode2.AConst, currentCtx anlsr.QueryCtx) (node2.Const, error) {
+func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, currentCtx anlsr.QueryCtx) (node.Const, error) {
 	switch aConst.Type {
-	case pnode2.AConstInt:
-		return node2.NewConstInt8(aConst.Int), nil
-	case pnode2.AConstStr:
-		return node2.NewConstStr(aConst.Str)
-	case pnode2.AConstFloat:
+	case pnode.AConstInt:
+		return node.NewConstInt8(aConst.Int), nil
+	case pnode.AConstStr:
+		return node.NewConstStr(aConst.Str)
+	case pnode.AConstFloat:
 		//todo implement me
 		panic("Not implemented")
 		//return node.NewConst(hgtype.TypeFloat8, aConst.Float), nil

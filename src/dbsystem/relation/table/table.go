@@ -2,7 +2,7 @@ package table
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/coltype"
 	relation "HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table/column"
@@ -18,13 +18,13 @@ type RDefinition interface {
 	BitmapLen() uint16
 	ColumnCount() uint16
 
-	CTypePattern() []hgtype.TypeData
+	CTypePattern() []coltype.ColumnType
 
 	ColumnName(columnId column.Order) string
 	ColumnOrder(name string) (order column.Order, ok bool)
 	ColumnId(order column.Order) dbobj.OID
 
-	ColumnType(id column.Order) hgtype.TypeData
+	ColumnType(id column.Order) coltype.ColumnType
 	ColumnByName(name string) (col column.Def, ok bool)
 	ColumnById(id dbobj.OID) column.Def
 	Column(index column.Order) column.Def

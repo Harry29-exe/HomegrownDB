@@ -1,7 +1,7 @@
 package data
 
 import (
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/coltype"
 	"HomegrownDB/dbsystem/relation/table"
 	"math"
 )
@@ -15,7 +15,7 @@ func PatternFromTable(def table.RDefinition) TuplePattern {
 	columns := make([]PatternCol, len(tableColumns))
 	for c := 0; c < len(columns); c++ {
 		columns[c] = PatternCol{
-			Type: tableColumns[c].CType().Type,
+			Type: tableColumns[c].CType(),
 			Name: tableColumns[c].Name(),
 		}
 	}
@@ -39,7 +39,7 @@ type TuplePattern struct {
 }
 
 type PatternCol struct {
-	Type hgtype.Type
+	Type coltype.ColumnType
 	Name string
 }
 
