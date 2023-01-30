@@ -9,7 +9,7 @@ import (
 
 func PatternFromTargetList(targetList []node.TargetEntry) page.TuplePattern {
 	pattern := page.TuplePattern{
-		Columns:   make([]page.ColumnInfo, len(targetList)),
+		Columns:   make([]page.PatternCol, len(targetList)),
 		BitmapLen: uint16(math.Ceil(float64(len(targetList)) / 8)),
 	}
 
@@ -20,10 +20,10 @@ func PatternFromTargetList(targetList []node.TargetEntry) page.TuplePattern {
 	return pattern
 }
 
-func typeFromTargetEntry(entry node.TargetEntry) page.ColumnInfo {
+func typeFromTargetEntry(entry node.TargetEntry) page.PatternCol {
 	entryType := entry.TypeTag()
 
-	return page.ColumnInfo{
+	return page.PatternCol{
 		Type: coltype.NewDefaultColType(entryType),
 		Name: entry.ColName,
 	}
@@ -32,9 +32,9 @@ func typeFromTargetEntry(entry node.TargetEntry) page.ColumnInfo {
 func PattenFromRTE(rte node.RangeTableEntry) page.TuplePattern {
 	switch rte.Kind {
 	case node.RteValues:
-		colTypes := make([]page.ColumnInfo, len(rte.ColTypes))
+		colTypes := make([]page.PatternCol, len(rte.ColTypes))
 		for i := 0; i < len(rte.ColTypes); i++ {
-			colTypes[i] = page.ColumnInfo{
+			colTypes[i] = page.PatternCol{
 				Type: rte.ColTypes[i],
 				Name: rte.ColAlias[i].AliasName,
 			}

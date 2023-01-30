@@ -7,13 +7,20 @@ import (
 	"HomegrownDB/dbsystem/relation/table/column"
 )
 
+type ColumnsTable interface {
+	ColumnOID() column.Def
+	ColumnRelationOID() column.Def
+	ColumnName() column.Def
+	ColumnsArgsLength() column.Def
+}
+
 func ColumnsTableDef() table.RDefinition {
 	tableCols := []column.WDef{
 		columns.oid(),
 		columns.relationOID(),
 		columns.name(),
+		columns.argsLength(),
 	}
-	tableCols = append(tableCols, columns.argsColumns()...)
 
 	return newTableDef(
 		ColumnsName,
@@ -56,17 +63,10 @@ func (columnsBuilder) name() column.WDef {
 		}))
 }
 
-func (columnsBuilder) argsColumns() []column.WDef {
-	return []column.WDef{
-		column.NewDefinition(
-			"arg_length",
-			false,
-			coltype.NewInt8(hgtype.Args{}),
-		),
-		//column.NewDefinition(
-		//	"arg_nullable",
-		//	false,
-		//	hgtype.),
-		//todo add more args when hgtype.bool will be implemented
-	}
+func (columnsBuilder) argsLength() column.WDef {
+	return column.NewDefinition(
+		"arg_length",
+		false,
+		coltype.NewInt8(hgtype.Args{}),
+	)
 }

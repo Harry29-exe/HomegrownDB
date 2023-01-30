@@ -41,18 +41,19 @@ type (
 	RTuple       = data.RTuple
 	WTuple       = data.WTuple
 	Tuple        = data.Tuple
+	TupleIndex   = data.TupleIndex
+	TID          = data.TID
+	TupleBuilder = data.TupleBuilder
+
 	TuplePattern = data.TuplePattern
 	PatternCol   = data.PatternCol
-	ColumnInfo   = data.PatternCol
-	TID          = data.TID
-	TupleIndex   = data.TupleIndex
 )
 
 func NewTupleBuilder() data.TupleBuilder {
 	return data.NewTupleBuilder()
 }
 
-func NewPattern(columns []ColumnInfo) TuplePattern {
+func NewPattern(columns []PatternCol) TuplePattern {
 	return data.NewPattern(columns)
 }
 

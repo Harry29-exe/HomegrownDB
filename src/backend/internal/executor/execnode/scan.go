@@ -21,12 +21,12 @@ func (s scan) createOutputTuple(internal page.Tuple) page.Tuple {
 		LeftInput:  page.Tuple{},
 		RightInput: page.Tuple{},
 	}
-	patternCols := make([]page.ColumnInfo, len(targetList))
+	patternCols := make([]page.PatternCol, len(targetList))
 
 	values := make([][]byte, len(targetList))
 	for i, targetEntry := range targetList {
 		values[i] = exexpr.Execute(targetEntry.ExprToExec, exInput)
-		patternCols[i] = page.ColumnInfo{
+		patternCols[i] = page.PatternCol{
 			Type: coltype.NewDefaultColType(targetEntry.TypeTag()),
 			Name: targetEntry.ColName,
 		}

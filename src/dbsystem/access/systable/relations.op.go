@@ -6,7 +6,6 @@ import (
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
-	"log"
 )
 
 var relationsDef = RelationsTableDef()
@@ -19,25 +18,12 @@ func (o RelationsOps) TableAsRelationsRow(
 	tx tx.Tx,
 	commands uint16,
 ) page.Tuple {
-	builder := page.NewTupleBuilder()
-	builder.Init(page.PatternFromTable(table))
+	builder := newTupleBuilder(relationsDef)
 
-	err := builder.WriteValue(inputtype.ConvInt8Value(int64(table.OID())))
-	if err != nil {
-		log.Printf("unexpected err: %s\n", err.Error())
-	}
-	err = builder.WriteValue(inputtype.ConvInt8Value(int64(relation.TypeTable)))
-	if err != nil {
-		log.Printf("unexpected err: %s\n", err.Error())
-	}
-	err = builder.WriteValue(inputtype.ConvInt8Value(int64(table.FsmOID())))
-	if err != nil {
-		log.Printf("unexpected err: %s\n", err.Error())
-	}
-	err = builder.WriteValue(inputtype.ConvInt8Value(int64(table.VmOID())))
-	if err != nil {
-		log.Printf("unexpected err: %s\n", err.Error())
-	}
+	builder.WriteValue(inputtype.ConvInt8Value(int64(table.OID())))
+	builder.WriteValue(inputtype.ConvInt8Value(int64(relation.TypeTable)))
+	builder.WriteValue(inputtype.ConvInt8Value(int64(table.FsmOID())))
+	builder.WriteValue(inputtype.ConvInt8Value(int64(table.VmOID())))
 
-	return builder.VolatileTuple(tx, commands)
+	return builder.Tuple(tx, commands)
 }
