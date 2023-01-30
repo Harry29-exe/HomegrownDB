@@ -2,7 +2,7 @@ package typanlr
 
 import (
 	node2 "HomegrownDB/backend/internal/node"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 )
 
 func CreateFutureType(expr node2.Expr) FutureType {
@@ -17,20 +17,20 @@ func CreateFutureType(expr node2.Expr) FutureType {
 
 func createFTFromConst(expr node2.Const) FutureType {
 	switch expr.TypeTag() {
-	case hgtype.TypeInt8:
+	case rawtype.TypeInt8:
 		return FutureType{
-			TypeTag:  hgtype.TypeInt8,
-			TypeArgs: hgtype.Args{},
+			TypeTag:  rawtype.TypeInt8,
+			TypeArgs: rawtype.Args{},
 		}
-	case hgtype.TypeStr:
-		args := hgtype.Args{
+	case rawtype.TypeStr:
+		args := rawtype.Args{
 			Length: uint32(len(expr.Val)),
-			UTF8:   !hgtype.StrUtils.IsASCII(expr.Val),
+			UTF8:   !rawtype.StrUtils.IsASCII(expr.Val),
 			VarLen: true,
 		}
 
 		return FutureType{
-			TypeTag:  hgtype.TypeStr,
+			TypeTag:  rawtype.TypeStr,
 			TypeArgs: args,
 		}
 	default:

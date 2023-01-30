@@ -1,15 +1,15 @@
-package inputtype
+package intype
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"fmt"
 )
 
 func ConvStr(val string) ([]byte, error) {
 	l := len(val) + 4
-	if l > hgtype.MaxVarLenSize {
-		return nil, fmt.Errorf("string values can not be longer that %d", hgtype.MaxVarLenSize) //todo better err
+	if l > rawtype.MaxVarLenSize {
+		return nil, fmt.Errorf("string values can not be longer that %d", rawtype.MaxVarLenSize) //todo better err
 	}
 	serializedVal := make([]byte, l)
 	bparse.Serialize.PutUInt4(uint32(l), serializedVal)
@@ -17,13 +17,13 @@ func ConvStr(val string) ([]byte, error) {
 	return serializedVal, nil
 }
 
-func ConvStrValue(val string) (hgtype.Value, error) {
+func ConvStrValue(val string) (rawtype.Value, error) {
 	normValue, err := ConvStr(val)
 	if err != nil {
-		return hgtype.Value{}, err
+		return rawtype.Value{}, err
 	}
-	return hgtype.Value{
-		TypeTag:   hgtype.TypeStr,
+	return rawtype.Value{
+		TypeTag:   rawtype.TypeStr,
 		NormValue: normValue,
 	}, err
 }

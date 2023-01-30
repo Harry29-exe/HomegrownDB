@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/backend/internal/analyser/seganalyser/typanlr"
 	node2 "HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"fmt"
 )
 
@@ -14,7 +14,7 @@ import (
 // -------------------------
 
 type FutureType struct {
-	Type hgtype.Tag
+	Type rawtype.Tag
 	Args any
 }
 

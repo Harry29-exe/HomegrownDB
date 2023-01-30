@@ -3,8 +3,8 @@ package data_test
 import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/hgtype/coltype"
-	"HomegrownDB/dbsystem/hgtype/inputtype"
+	"HomegrownDB/dbsystem/hgtype/intype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	. "HomegrownDB/dbsystem/storage/page/internal/data"
 	"HomegrownDB/dbsystem/tx"
 	"strings"
@@ -16,10 +16,10 @@ func TestBuildSimplePage(t *testing.T) {
 	builder, pattern := createBuilderAndPattern()
 
 	// when
-	col0 := inputtype.ConvInt8Value(8)
+	col0 := intype.ConvInt8Value(8)
 	err := builder.WriteValue(col0)
 	assert.ErrIsNil(err, t)
-	col1, err := inputtype.ConvStrValue("Bob")
+	col1, err := intype.ConvStrValue("Bob")
 	assert.ErrIsNil(err, t)
 	err = builder.WriteValue(col1)
 	assert.ErrIsNil(err, t)
@@ -37,10 +37,10 @@ func TestBuildMultiplePages(t *testing.T) {
 
 	// when
 	// creating first tuple
-	col0v1 := inputtype.ConvInt8Value(8)
+	col0v1 := intype.ConvInt8Value(8)
 	err := builder.WriteValue(col0v1)
 	assert.ErrIsNil(err, t)
-	col1v1, err := inputtype.ConvStrValue("Bob")
+	col1v1, err := intype.ConvStrValue("Bob")
 	assert.ErrIsNil(err, t)
 	err = builder.WriteValue(col1v1)
 	assert.ErrIsNil(err, t)
@@ -49,12 +49,12 @@ func TestBuildMultiplePages(t *testing.T) {
 	// starting creating second
 	builder.Reset()
 
-	col0v2 := inputtype.ConvInt8Value(14)
+	col0v2 := intype.ConvInt8Value(14)
 	err = builder.WriteValue(col0v2)
 	assert.ErrIsNil(err, t)
 	// testing whether value has been overridden (normally we should not use volatileTuple after builder.Reset())
 	assert.True(pattern.Columns[0].Type.Equal(col0v2.NormValue, tupleV1.ColValue(0)), t)
-	col1v2, err := inputtype.ConvStrValue(strings.Repeat("Alice", 200))
+	col1v2, err := intype.ConvStrValue(strings.Repeat("Alice", 200))
 	assert.ErrIsNil(err, t)
 	err = builder.WriteValue(col1v2)
 	assert.ErrIsNil(err, t)
@@ -69,11 +69,11 @@ func createBuilderAndPattern() (TupleBuilder, TuplePattern) {
 	builder := NewTupleBuilder()
 	pattern := NewPattern([]PatternCol{
 		{
-			Type: coltype.NewInt8(hgtype.Args{}),
+			Type: hgtype.NewInt8(rawtype.Args{}),
 			Name: "col0",
 		},
 		{
-			Type: coltype.NewStr(hgtype.Args{Length: 10_000, VarLen: true}),
+			Type: hgtype.NewStr(rawtype.Args{Length: 10_000, VarLen: true}),
 			Name: "col1",
 		},
 	})

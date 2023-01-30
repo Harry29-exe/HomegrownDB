@@ -2,7 +2,7 @@ package typanlr
 
 import (
 	"HomegrownDB/backend/internal/node"
-	"HomegrownDB/dbsystem/hgtype/coltype"
+	"HomegrownDB/dbsystem/hgtype"
 )
 
 func CreateFutureTypes(exprs []node.Expr) FutureTypes {
@@ -33,10 +33,10 @@ func (f *FutureTypes) UpdateTypes(exprs []node.Expr) error {
 	return nil
 }
 
-func (f *FutureTypes) CreateTypes() []coltype.ColumnType {
-	types := make([]coltype.ColumnType, len(f.Types))
+func (f *FutureTypes) CreateTypes() []hgtype.ColumnType {
+	types := make([]hgtype.ColumnType, len(f.Types))
 	for i, ft := range f.Types {
-		types[i] = coltype.NewColType(ft.TypeTag, ft.TypeArgs)
+		types[i] = hgtype.NewColType(ft.TypeTag, ft.TypeArgs)
 	}
 	return types
 }

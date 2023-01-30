@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/hgtype/coltype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/relation/table/column"
 	"reflect"
@@ -16,8 +16,8 @@ func TestSerializeSimpleTable(t *testing.T) {
 	def := table.NewDefinition("users")
 
 	err := addColumns(def,
-		column.NewDefinition("id", false, coltype.NewInt8(hgtype.Args{})),
-		column.NewDefinition("name", false, coltype.NewStr(hgtype.Args{Length: 255})),
+		column.NewDefinition("id", false, hgtype.NewInt8(rawtype.Args{})),
+		column.NewDefinition("name", false, hgtype.NewStr(rawtype.Args{Length: 255})),
 	)
 	if err != nil {
 		return

@@ -2,8 +2,8 @@ package node
 
 import (
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/hgtype/coltype"
-	"HomegrownDB/dbsystem/hgtype/inputtype"
+	"HomegrownDB/dbsystem/hgtype/intype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/relation/table/column"
 	"fmt"
 )
@@ -11,7 +11,7 @@ import (
 type Expr interface {
 	Node
 	ExprTag() Tag
-	TypeTag() hgtype.Tag
+	TypeTag() rawtype.Tag
 }
 
 func newExpr(exprTag Tag) expr {
@@ -32,7 +32,7 @@ func (e expr) ExprTag() Tag {
 //      Var
 // -------------------------
 
-func NewVar(id RteID, colOrder column.Order, typeData coltype.ColumnType) Var {
+func NewVar(id RteID, colOrder column.Order, typeData hgtype.ColumnType) Var {
 	return &_var{
 		expr:     newExpr(TagVar),
 		RteID:    id,
@@ -49,10 +49,10 @@ type _var struct {
 	expr
 	RteID    RteID
 	ColOrder column.Order
-	TypeData coltype.ColumnType
+	TypeData hgtype.ColumnType
 }
 
-func (v Var) TypeTag() hgtype.Tag {
+func (v Var) TypeTag() rawtype.Tag {
 	return v.TypeData.Type.Tag()
 }
 
@@ -75,7 +75,7 @@ func (v Var) DPrint(nesting int) string {
 
 var _ Expr = &_const{}
 
-func NewConst(cType hgtype.Tag, val []byte) Const {
+func NewConst(cType rawtype.Tag, val []byte) Const {
 	return &_const{
 		expr: newExpr(TagConst),
 		Type: cType,
@@ -84,22 +84,22 @@ func NewConst(cType hgtype.Tag, val []byte) Const {
 }
 
 func NewConstInt8(val int64) Const {
-	serializedVal := inputtype.ConvInt8(val)
+	serializedVal := intype.ConvInt8(val)
 	return &_const{
 		expr: newExpr(TagConst),
-		Type: hgtype.TypeInt8,
+		Type: rawtype.TypeInt8,
 		Val:  serializedVal,
 	}
 }
 
 func NewConstStr(val string) (Const, error) {
-	serializedVal, err := inputtype.ConvStr(val)
+	serializedVal, err := intype.ConvStr(val)
 	if err != nil {
 		return nil, err
 	}
 	return &_const{
 		expr: newExpr(TagConst),
-		Type: hgtype.TypeStr,
+		Type: rawtype.TypeStr,
 		Val:  serializedVal,
 	}, nil
 }
@@ -108,11 +108,11 @@ type Const = *_const
 
 type _const struct {
 	expr
-	Type hgtype.Tag
+	Type rawtype.Tag
 	Val  []byte // normalized value
 }
 
-func (c Const) TypeTag() hgtype.Tag {
+func (c Const) TypeTag() rawtype.Tag {
 	return c.Type
 }
 

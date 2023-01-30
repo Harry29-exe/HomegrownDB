@@ -2,7 +2,7 @@ package exinfr
 
 import (
 	"HomegrownDB/backend/internal/node"
-	"HomegrownDB/dbsystem/hgtype/coltype"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/storage/page"
 	"math"
 )
@@ -24,7 +24,7 @@ func typeFromTargetEntry(entry node.TargetEntry) page.PatternCol {
 	entryType := entry.TypeTag()
 
 	return page.PatternCol{
-		Type: coltype.NewDefaultColType(entryType),
+		Type: hgtype.NewDefaultColType(entryType),
 		Name: entry.ColName,
 	}
 }

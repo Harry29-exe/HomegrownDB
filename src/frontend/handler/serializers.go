@@ -2,7 +2,7 @@ package handler
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/storage/page"
 	"bytes"
 	"fmt"
@@ -44,11 +44,11 @@ func (s *resultJsonSerializer) serializeRow(tuple page.RTuple, columns []page.Pa
 	s.Buffer.WriteRune('}')
 }
 
-func (s *resultJsonSerializer) serializeValue(value []byte, t hgtype.Type) {
+func (s *resultJsonSerializer) serializeValue(value []byte, t rawtype.Type) {
 	switch t.Tag() {
-	case hgtype.TypeStr:
+	case rawtype.TypeStr:
 		s.Buffer.WriteString(fmt.Sprintf("\"%s\"", string(value)))
-	case hgtype.TypeInt8:
+	case rawtype.TypeInt8:
 		s.Buffer.WriteString(fmt.Sprintf("%d", bparse.Parse.Int8(value)))
 	default:
 		log.Panic("unsupported hgtype type: " + t.Tag().ToStr())

@@ -2,7 +2,7 @@ package data
 
 import (
 	"HomegrownDB/common/datastructs/bitmap"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/tx"
 	"bytes"
 	"errors"
@@ -11,7 +11,7 @@ import (
 
 type TupleBuilder interface {
 	Init(pattern TuplePattern)
-	WriteValue(value hgtype.Value) error
+	WriteValue(value rawtype.Value) error
 	VolatileTuple(tx tx.Tx, command uint16) Tuple
 	Reset()
 }
@@ -39,12 +39,12 @@ func (t *tupleBuilder) Init(pattern TuplePattern) {
 
 var _ TupleBuilder = &tupleBuilder{}
 
-func (t *tupleBuilder) WriteValue(value hgtype.Value) error {
+func (t *tupleBuilder) WriteValue(value rawtype.Value) error {
 	col := t.pattern.Columns[t.valuesWritten]
 	validateResult := col.Type.Validate(value)
 	switch validateResult.Status {
 
-	case hgtype.ValidateOk:
+	case rawtype.ValidateOk:
 		if value.NormValue == nil {
 			t.nullBitmap.Set(t.valuesWritten)
 		} else {
@@ -55,7 +55,7 @@ func (t *tupleBuilder) WriteValue(value hgtype.Value) error {
 		}
 		t.valuesWritten++
 		return nil
-	case hgtype.ValidateConv:
+	case rawtype.ValidateConv:
 		panic("types conv is not supported yet")
 	default:
 		if validateResult.Reason != nil {

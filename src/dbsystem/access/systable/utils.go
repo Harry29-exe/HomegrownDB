@@ -1,7 +1,7 @@
 package systable
 
 import (
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/relation/table/column"
 	"HomegrownDB/dbsystem/storage/page"
@@ -33,7 +33,7 @@ type optimisticTupleBuilder struct {
 	builder page.TupleBuilder
 }
 
-func (o optimisticTupleBuilder) WriteValue(value hgtype.Value) {
+func (o optimisticTupleBuilder) WriteValue(value rawtype.Value) {
 	err := o.builder.WriteValue(value)
 	if err != nil {
 		log.Panicf("unexpected err: %s", err)

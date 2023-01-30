@@ -2,7 +2,7 @@ package column
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/hgtype/coltype"
+	"HomegrownDB/dbsystem/hgtype"
 	. "HomegrownDB/dbsystem/relation/dbobj"
 )
 
@@ -13,7 +13,7 @@ type Def interface {
 	Nullable() bool
 	Id() OID
 	Order() Order
-	CType() coltype.ColumnType
+	CType() hgtype.ColumnType
 
 	DefaultValue() []byte
 	//// Serialize should save all important Data to byte stream.
@@ -44,7 +44,7 @@ func Deserialize(deserializer *bparse.Deserializer) WDef {
 	return col
 }
 
-func NewDefinition(name string, nullable bool, columnType coltype.ColumnType) WDef {
+func NewDefinition(name string, nullable bool, columnType hgtype.ColumnType) WDef {
 	return &column{
 		name:     name,
 		nullable: nullable,

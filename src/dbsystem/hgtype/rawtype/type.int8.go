@@ -1,8 +1,9 @@
-package hgtype
+package rawtype
 
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/random"
+	"HomegrownDB/dbsystem/hgtype/typeerr"
 	"bytes"
 	"strconv"
 )
@@ -40,7 +41,7 @@ func (i Int8) Validate(args Args, value Value) ValidateResult {
 	case TypeInt8:
 		return ValidateResult{Status: ValidateOk}
 	default:
-		return ValidateResult{Status: ValidateErr, Reason: TypesNotConvertable{}}
+		return ValidateResult{Status: ValidateErr, Reason: typeerr.TypesNotConvertable{}}
 	}
 }
 

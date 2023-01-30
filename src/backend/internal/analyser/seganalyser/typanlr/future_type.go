@@ -3,12 +3,12 @@ package typanlr
 import (
 	node2 "HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/sqlerr"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 )
 
 type FutureType struct {
-	TypeTag  hgtype.Tag
-	TypeArgs hgtype.Args
+	TypeTag  rawtype.Tag
+	TypeArgs rawtype.Args
 }
 
 func (f *FutureType) UpdateType(expr node2.Expr) error {
@@ -30,9 +30,9 @@ func (f *FutureType) UpdateType(expr node2.Expr) error {
 
 func (f *FutureType) updateByConst(expr node2.Const) error {
 	switch f.TypeTag {
-	case hgtype.TypeInt8:
+	case rawtype.TypeInt8:
 		return nil
-	case hgtype.TypeStr:
+	case rawtype.TypeStr:
 		return f.updateStr(expr.Val)
 	default:
 		//todo implement me
@@ -41,11 +41,11 @@ func (f *FutureType) updateByConst(expr node2.Const) error {
 }
 
 func (f *FutureType) updateStr(str []byte) error {
-	strLen := hgtype.StrUtils.StrLen(str)
+	strLen := rawtype.StrUtils.StrLen(str)
 	if f.TypeArgs.Length < strLen {
 		f.TypeArgs.Length = strLen - 4 //string len - 4 bytes of header
 	}
-	if !f.TypeArgs.UTF8 && !hgtype.StrUtils.IsASCII(str) {
+	if !f.TypeArgs.UTF8 && !rawtype.StrUtils.IsASCII(str) {
 		f.TypeArgs.UTF8 = true
 	}
 

@@ -1,8 +1,9 @@
-package hgtype
+package rawtype
 
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/random"
+	"HomegrownDB/dbsystem/hgtype/typeerr"
 	"bytes"
 	"unicode"
 )
@@ -52,11 +53,11 @@ func (s Str) Validate(args Args, value Value) ValidateResult {
 	case TypeStr:
 		l := StrUtils.StrLen(value.NormValue)
 		if len(value.NormValue) == 0 && !args.Nullable {
-			return ValidateResult{Status: ValidateErr, Reason: NullNotAllowed{}}
+			return ValidateResult{Status: ValidateErr, Reason: typeerr.NullNotAllowed{}}
 		} else if l > args.Length {
-			return ValidateResult{Status: ValidateErr, Reason: ToLongErr{}}
+			return ValidateResult{Status: ValidateErr, Reason: typeerr.ToLongErr{}}
 		} else if !args.UTF8 && !StrUtils.IsASCII(value.NormValue) {
-			return ValidateResult{Status: ValidateErr, Reason: UTF8NotAllowed{}}
+			return ValidateResult{Status: ValidateErr, Reason: typeerr.UTF8NotAllowed{}}
 		}
 		return ValidateResult{Status: ValidateOk}
 	default:

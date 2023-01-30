@@ -12,7 +12,7 @@ package ttable2
 import (
 	"HomegrownDB/common/tests/tutils/testtable"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/hgtype/coltype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/relation/table/column"
 	"testing"
 )
@@ -38,7 +38,7 @@ const (
 )
 
 var (
-	C0IdType     = coltype.NewInt8(hgtype.Args{})
-	C1NameType   = coltype.NewStr(hgtype.Args{Length: 255, VarLen: true, UTF8: true})
-	C2SpecieType = coltype.NewStr(hgtype.Args{Length: 255, VarLen: true, UTF8: true})
+	C0IdType     = hgtype.NewInt8(rawtype.Args{})
+	C1NameType   = hgtype.NewStr(rawtype.Args{Length: 255, VarLen: true, UTF8: true})
+	C2SpecieType = hgtype.NewStr(rawtype.Args{Length: 255, VarLen: true, UTF8: true})
 )

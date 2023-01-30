@@ -1,4 +1,4 @@
-package hgtype
+package rawtype
 
 type Value struct {
 	TypeTag   Tag    // Tag of type of Value

@@ -1,4 +1,4 @@
-package hgtype
+package typeerr
 
 type ToLongErr struct{}
 

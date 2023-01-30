@@ -2,7 +2,7 @@ package ttable1
 
 import (
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/hgtype/coltype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/relation/table/column"
 )
 
@@ -20,7 +20,7 @@ const (
 )
 
 var (
-	C0AwesomeKeyType  = coltype.NewInt8(hgtype.Args{})
-	C1NullableColType = coltype.NewInt8(hgtype.Args{})
-	C2NonNullCollType = coltype.NewInt8(hgtype.Args{})
+	C0AwesomeKeyType  = hgtype.NewInt8(rawtype.Args{})
+	C1NullableColType = hgtype.NewInt8(rawtype.Args{})
+	C2NonNullCollType = hgtype.NewInt8(rawtype.Args{})
 )

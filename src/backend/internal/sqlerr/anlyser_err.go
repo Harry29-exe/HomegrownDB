@@ -3,7 +3,7 @@ package sqlerr
 import (
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/dberr"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"fmt"
 )
 
@@ -73,7 +73,7 @@ type IllegalNode struct {
 //      TypeMismatch
 // -------------------------
 
-func NewTypeMismatch(expectedType hgtype.Tag, actualType hgtype.Tag, value any) TypeMismatch {
+func NewTypeMismatch(expectedType rawtype.Tag, actualType rawtype.Tag, value any) TypeMismatch {
 	return TypeMismatch{
 		ExpectedType: expectedType,
 		ActualType:   actualType,
@@ -84,8 +84,8 @@ func NewTypeMismatch(expectedType hgtype.Tag, actualType hgtype.Tag, value any) 
 var _ dberr.DBError = TypeMismatch{}
 
 type TypeMismatch struct {
-	ExpectedType hgtype.Tag
-	ActualType   hgtype.Tag
+	ExpectedType rawtype.Tag
+	ActualType   rawtype.Tag
 	Value        any
 }
 

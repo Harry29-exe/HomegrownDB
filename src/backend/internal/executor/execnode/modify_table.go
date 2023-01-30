@@ -5,8 +5,8 @@ import (
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/hgtype/coltype"
-	"HomegrownDB/dbsystem/hgtype/inputtype"
+	"HomegrownDB/dbsystem/hgtype/intype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
@@ -26,7 +26,7 @@ func (m modifyTableBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 		Left: CreateFromPlan(specificPlan.Left, ctx),
 		OutputPattern: page.TuplePattern{
 			Columns: []page.PatternCol{
-				{Type: coltype.NewDefaultColType(hgtype.TypeInt8), Name: "Rows"},
+				{Type: hgtype.NewDefaultColType(rawtype.TypeInt8), Name: "Rows"},
 			},
 			BitmapLen: 1,
 		},
@@ -66,7 +66,7 @@ func (m *ModifyTable) Next() page.Tuple {
 	}
 
 	m.done = true
-	outputValues := [][]byte{inputtype.ConvInt8(tuplesInserted)}
+	outputValues := [][]byte{intype.ConvInt8(tuplesInserted)}
 	return page.NewTuple(outputValues, m.OutputPattern, m.txCtx)
 }
 

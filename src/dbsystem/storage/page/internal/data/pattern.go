@@ -1,7 +1,7 @@
 package data
 
 import (
-	"HomegrownDB/dbsystem/hgtype/coltype"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/relation/table"
 	"math"
 )
@@ -39,7 +39,7 @@ type TuplePattern struct {
 }
 
 type PatternCol struct {
-	Type coltype.ColumnType
+	Type hgtype.ColumnType
 	Name string
 }
 

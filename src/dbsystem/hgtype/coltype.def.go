@@ -1,16 +1,23 @@
-package coltype
+package hgtype
 
 import (
 	"HomegrownDB/common/random"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 )
 
-type Operations interface {
+type ColType interface {
+	CTOperations
+	CTReader
+	CTWriter
+	CTDebug
+}
+
+type CTOperations interface {
 	Equal(v1, v2 []byte) bool
 	Cmp(v1, v2 []byte) int
 }
 
-type Reader interface {
+type CTReader interface {
 	// Skip skips the data belonging to this column
 	// this function supports toasts and lobs
 	Skip(data []byte) []byte
@@ -27,8 +34,8 @@ type Reader interface {
 	ValueAndSkip(data []byte) (value, next []byte)
 }
 
-type Writer interface {
-	WriteValue(writer hgtype.UniWriter, value hgtype.Value) error
+type CTWriter interface {
+	WriteValue(writer rawtype.UniWriter, value rawtype.Value) error
 	// WriteTuple rewrites hgtype from old tuple/qrow to new tuple
 	// returns written bytes (support toast and lob ptrs)
 	//WriteTuple(dest []byte, value []byte) int
@@ -37,7 +44,7 @@ type Writer interface {
 	//WriteValue(dest []byte, value []byte) int //todo not sure if this method is needed
 }
 
-type Debug interface {
+type CTDebug interface {
 	// ToStr Should be called on result of Value(data) as it won'Type always
 	// work on raw data (because of support data)
 	ToStr(val []byte) string

@@ -2,7 +2,7 @@ package column
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/hgtype/coltype"
+	"HomegrownDB/dbsystem/hgtype"
 	. "HomegrownDB/dbsystem/relation/dbobj"
 )
 
@@ -13,7 +13,7 @@ type column struct {
 	nullable bool
 	id       OID
 	order    Order
-	hgType   coltype.ColumnType
+	hgType   hgtype.ColumnType
 }
 
 func (c *column) Name() string {
@@ -40,7 +40,7 @@ func (c *column) SetOrder(order Order) {
 	c.order = order
 }
 
-func (c *column) CType() coltype.ColumnType {
+func (c *column) CType() hgtype.ColumnType {
 	return c.hgType
 }
 
@@ -53,7 +53,7 @@ func (c *column) Serialize(serializer *bparse.Serializer) {
 	serializer.Bool(c.nullable)
 	serializer.Uint32(uint32(c.id))
 	serializer.Uint16(c.order)
-	coltype.SerializeTypeData(c.hgType, serializer)
+	hgtype.SerializeTypeData(c.hgType, serializer)
 }
 
 func (c *column) Deserialize(deserializer *bparse.Deserializer) {
@@ -61,5 +61,5 @@ func (c *column) Deserialize(deserializer *bparse.Deserializer) {
 	c.nullable = deserializer.Bool()
 	c.id = OID(deserializer.Uint32())
 	c.order = deserializer.Uint16()
-	c.hgType = coltype.DeserializeTypeData(deserializer)
+	c.hgType = hgtype.DeserializeTypeData(deserializer)
 }

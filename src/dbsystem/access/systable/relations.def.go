@@ -2,7 +2,7 @@ package systable
 
 import (
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/hgtype/coltype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/relation/table/column"
 )
@@ -68,7 +68,7 @@ func (relationsBuilder) oid() column.WDef {
 	return column.NewDefinition(
 		"id",
 		false,
-		coltype.NewInt8(hgtype.Args{}),
+		hgtype.NewInt8(rawtype.Args{}),
 	)
 }
 
@@ -76,7 +76,7 @@ func (relationsBuilder) relKind() column.WDef {
 	return column.NewDefinition(
 		"rel_kind",
 		false,
-		coltype.NewInt8(hgtype.Args{}),
+		hgtype.NewInt8(rawtype.Args{}),
 	)
 }
 
@@ -84,7 +84,7 @@ func (relationsBuilder) fsmOID() column.WDef {
 	return column.NewDefinition(
 		"fsm_oid",
 		false,
-		coltype.NewInt8(hgtype.Args{}),
+		hgtype.NewInt8(rawtype.Args{}),
 	)
 }
 
@@ -92,7 +92,7 @@ func (relationsBuilder) vmOID() column.WDef {
 	return column.NewDefinition(
 		"vm_oid",
 		false,
-		coltype.NewInt8(hgtype.Args{}),
+		hgtype.NewInt8(rawtype.Args{}),
 	)
 }
 

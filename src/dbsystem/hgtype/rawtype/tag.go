@@ -1,4 +1,4 @@
-package hgtype
+package rawtype
 
 type Tag uint8
 

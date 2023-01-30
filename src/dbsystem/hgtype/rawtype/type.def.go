@@ -1,4 +1,4 @@
-package hgtype
+package rawtype
 
 import (
 	"HomegrownDB/common/bparse"

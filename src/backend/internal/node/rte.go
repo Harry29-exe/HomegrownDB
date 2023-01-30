@@ -2,7 +2,7 @@ package node
 
 import (
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/hgtype/coltype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 	table2 "HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/relation/table/column"
 	"fmt"
@@ -100,7 +100,7 @@ type rangeTableEntry struct {
 	ValuesList [][]Expr // list of expression node lists
 
 	//Kind = RteValues, RteCte, RteNamedTupleStore, RteTableFunc
-	ColTypes []coltype.ColumnType
+	ColTypes []hgtype.ColumnType
 
 	// general
 	Alias    Alias
@@ -252,7 +252,7 @@ type targetEntry struct {
 	Temp bool // Temp if true then entry should be eliminated before tuple is emitted
 }
 
-func (t TargetEntry) TypeTag() hgtype.Tag {
+func (t TargetEntry) TypeTag() rawtype.Tag {
 	return t.ExprToExec.TypeTag()
 }
 

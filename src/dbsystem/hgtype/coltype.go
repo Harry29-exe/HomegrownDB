@@ -1,19 +1,19 @@
-package coltype
+package hgtype
 
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/random"
-	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/hgtype/rawtype"
 )
 
 var (
-	_ Operations = ColumnType{}
-	_ Reader     = ColumnType{}
-	_ Writer     = ColumnType{}
-	_ Debug      = ColumnType{}
+	_ CTOperations = ColumnType{}
+	_ CTReader     = ColumnType{}
+	_ CTWriter     = ColumnType{}
+	_ CTDebug      = ColumnType{}
 )
 
-func NewColType(tag hgtype.Tag, args hgtype.Args) ColumnType {
+func NewColType(tag rawtype.Tag, args rawtype.Args) ColumnType {
 	t := tag.Type()
 
 	return ColumnType{
@@ -23,20 +23,20 @@ func NewColType(tag hgtype.Tag, args hgtype.Args) ColumnType {
 	}
 }
 
-func NewDefaultColType(tag hgtype.Tag) ColumnType {
-	var t hgtype.Type
-	args := hgtype.Args{
+func NewDefaultColType(tag rawtype.Tag) ColumnType {
+	var t rawtype.Type
+	args := rawtype.Args{
 		Nullable: true,
 	}
 
 	switch tag {
-	case hgtype.TypeStr:
-		t = hgtype.Str{}
+	case rawtype.TypeStr:
+		t = rawtype.Str{}
 		args.UTF8 = true
-		args.Length = uint32(hgtype.UnknownVarLenSize)
+		args.Length = uint32(rawtype.UnknownVarLenSize)
 		args.VarLen = true
-	case hgtype.TypeInt8:
-		t = hgtype.Int8{}
+	case rawtype.TypeInt8:
+		t = rawtype.Int8{}
 	default:
 		//todo implement me
 		panic("Not implemented")
@@ -49,44 +49,44 @@ func NewDefaultColType(tag hgtype.Tag) ColumnType {
 	}
 }
 
-func NewStr(args hgtype.Args) ColumnType {
+func NewStr(args rawtype.Args) ColumnType {
 	return ColumnType{
-		Type: hgtype.Str{},
-		Tag:  hgtype.TypeStr,
+		Type: rawtype.Str{},
+		Tag:  rawtype.TypeStr,
 		Args: args,
 	}
 }
 
-func NewInt8(args hgtype.Args) ColumnType {
+func NewInt8(args rawtype.Args) ColumnType {
 	return ColumnType{
-		Type: hgtype.Int8{},
+		Type: rawtype.Int8{},
 		Args: args,
 	}
 }
 
 type ColumnType struct {
-	Type hgtype.Type
-	Tag  hgtype.Tag
-	Args hgtype.Args
+	Type rawtype.Type
+	Tag  rawtype.Tag
+	Args rawtype.Args
 }
 
 func SerializeTypeData(typeData ColumnType, s *bparse.Serializer) {
 	s.Uint8(uint8(typeData.Type.Tag()))
-	hgtype.SerializeArgs(typeData.Args, s)
+	rawtype.SerializeArgs(typeData.Args, s)
 }
 
 func DeserializeTypeData(d *bparse.Deserializer) ColumnType {
-	tag := hgtype.Tag(d.Uint8())
-	args := hgtype.DeserializeArgs(d)
+	tag := rawtype.Tag(d.Uint8())
+	args := rawtype.DeserializeArgs(d)
 	return NewColType(tag, args)
 }
 
-func (t ColumnType) Validate(value hgtype.Value) hgtype.ValidateResult {
+func (t ColumnType) Validate(value rawtype.Value) rawtype.ValidateResult {
 	return t.Type.Validate(t.Args, value)
 }
 
 // -------------------------
-//      Reader
+//      CTReader
 // -------------------------
 
 func (t ColumnType) Skip(data []byte) []byte {
@@ -110,15 +110,15 @@ func (t ColumnType) ValueAndSkip(data []byte) (value, next []byte) {
 }
 
 // -------------------------
-//      Writer
+//      CTWriter
 // -------------------------
 
-func (t ColumnType) WriteValue(writer hgtype.UniWriter, value hgtype.Value) error {
+func (t ColumnType) WriteValue(writer rawtype.UniWriter, value rawtype.Value) error {
 	return t.Type.WriteValue(writer, value, t.Args)
 }
 
 // -------------------------
-//      Operations
+//      CTOperations
 // -------------------------
 
 func (t ColumnType) Equal(v1, v2 []byte) bool {
@@ -130,7 +130,7 @@ func (t ColumnType) Cmp(v1, v2 []byte) int {
 }
 
 // -------------------------
-//      Debug
+//      CTDebug
 // -------------------------
 
 func (t ColumnType) ToStr(val []byte) string {
