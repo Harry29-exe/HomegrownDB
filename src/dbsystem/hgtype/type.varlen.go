@@ -90,7 +90,9 @@ func (v varLen) ValueAndSkip(data []byte) (value, next []byte) {
 func (v varLen) WriteValue(writer UniWriter, value Value) error {
 	normalizedLen := v.fourByteLen(value.NormValue)
 	if v.lenCanBeOneByte(normalizedLen - fourByteLen) {
-		err := writer.WriteByte(byte(normalizedLen - fourByteLen + oneByteLen))
+		err := writer.WriteByte(
+			v.toOneByteLen(byte(normalizedLen - fourByteLen + oneByteLen)),
+		)
 		if err != nil {
 			return err
 		}
@@ -113,7 +115,7 @@ func (v varLen) WriteValue(writer UniWriter, value Value) error {
 // -------------------------
 
 func (v varLen) lenCanBeOneByte(dataLen uint32) bool {
-	return dataLen+1 > 128
+	return dataLen+1 < 128
 }
 
 func (v varLen) lenIsOneByte(firstByte byte) bool {
@@ -126,6 +128,10 @@ func (v varLen) fourByteLen(data []byte) uint32 {
 
 func (v varLen) oneByteLen(data []byte) uint8 {
 	return data[0] & oneByteHeaderMask
+}
+
+func (v varLen) toOneByteLen(length uint8) byte {
+	return length | (^oneByteHeaderMask)
 }
 
 const (

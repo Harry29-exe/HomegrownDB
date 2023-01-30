@@ -16,3 +16,14 @@ func ConvStr(val string) ([]byte, error) {
 	copy(serializedVal[4:], val)
 	return serializedVal, nil
 }
+
+func ConvStrValue(val string) (hgtype.Value, error) {
+	normValue, err := ConvStr(val)
+	if err != nil {
+		return hgtype.Value{}, err
+	}
+	return hgtype.Value{
+		TypeTag:   hgtype.TypeStr,
+		NormValue: normValue,
+	}, err
+}
