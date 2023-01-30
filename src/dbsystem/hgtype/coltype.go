@@ -49,21 +49,6 @@ func NewDefaultColType(tag rawtype.Tag) ColumnType {
 	}
 }
 
-func NewStr(args rawtype.Args) ColumnType {
-	return ColumnType{
-		Type: rawtype.Str{},
-		Tag:  rawtype.TypeStr,
-		Args: args,
-	}
-}
-
-func NewInt8(args rawtype.Args) ColumnType {
-	return ColumnType{
-		Type: rawtype.Int8{},
-		Args: args,
-	}
-}
-
 type ColumnType struct {
 	Type rawtype.Type
 	Tag  rawtype.Tag

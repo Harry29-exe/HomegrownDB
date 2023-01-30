@@ -5,6 +5,10 @@ import (
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 )
 
+type (
+	Args = rawtype.Args
+)
+
 type ColType interface {
 	CTOperations
 	CTReader

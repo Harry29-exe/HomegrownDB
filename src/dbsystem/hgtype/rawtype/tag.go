@@ -5,6 +5,7 @@ type Tag uint8
 const (
 	TypeInt8 Tag = iota
 	TypeFloat8
+	TypeBool
 	TypeStr
 )
 
@@ -16,6 +17,8 @@ func (t Tag) Type() Type {
 	switch t {
 	case TypeInt8:
 		return Int8{}
+	case TypeBool:
+		return Bool{}
 	case TypeFloat8:
 		//todo implement me
 		panic("Not implemented")
@@ -26,8 +29,9 @@ func (t Tag) Type() Type {
 	}
 }
 
-var ctypeNames = map[Tag]string{
-	TypeInt8:   "TypeInt8",
-	TypeFloat8: "TypeFloat8",
-	TypeStr:    "TypeStr",
+var ctypeNames = []string{
+	"TypeInt8",
+	"TypeFloat8",
+	"TypeBool",
+	"TypeStr",
 }
