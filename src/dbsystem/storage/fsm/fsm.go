@@ -16,11 +16,11 @@ func CreateFreeSpaceMap(
 	fsmOID dbobj.OID,
 	fs dbfs.FS,
 ) error {
-	err := fs.InitNewRelationDir(fsmOID)
+	err := fs.InitNewPageObjectDir(fsmOID)
 	if err != nil {
 		return err
 	}
-	file, err := fs.OpenRelationDataFile(fsmOID)
+	file, err := fs.OpenPageObjectFile(fsmOID)
 	if err != nil {
 		return err
 	}

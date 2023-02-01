@@ -38,7 +38,7 @@ func (s *StdStore) Register(id dbobj.OID, io IO) {
 }
 
 func (s *StdStore) Load(rel relation.Relation) error {
-	file, err := s.FS.OpenRelationDataFile(rel.OID())
+	file, err := s.FS.OpenPageObjectFile(rel.OID())
 	if err != nil {
 		return err
 	}

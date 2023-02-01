@@ -30,10 +30,10 @@ type DBInitializerFS interface {
 }
 
 type PageObjectFS interface {
-	OpenRelationDataFile(oid dbobj.OID) (FileLike, error)
-	OpenRelationDef(oid dbobj.OID) (FileLike, error)
+	OpenPageObjectFile(oid dbobj.OID) (FileLike, error)
+	OpenPageObjectDef(oid dbobj.OID) (FileLike, error)
 	// InitNewRelationDir create directory and all files(empty) for given relation id
-	InitNewRelationDir(oid dbobj.OID) error
+	InitNewPageObjectDir(oid dbobj.OID) error
 }
 
 func LoadFS(rootPath string) (FS, error) {
@@ -133,7 +133,7 @@ func (fs *StdFS) DestroyDB() error {
 //      PageObjectFS
 // -------------------------
 
-func (fs *StdFS) OpenRelationDataFile(oid dbobj.OID) (FileLike, error) {
+func (fs *StdFS) OpenPageObjectFile(oid dbobj.OID) (FileLike, error) {
 	filepath := fmt.Sprintf("%s/%s/%d/%s", fs.RootPath, RelationsDirname, oid, DataFilename)
 	file, err := os.OpenFile(filepath, os.O_RDWR, os.ModeType)
 	if err != nil {
@@ -143,7 +143,7 @@ func (fs *StdFS) OpenRelationDataFile(oid dbobj.OID) (FileLike, error) {
 	return file, nil
 }
 
-func (fs *StdFS) OpenRelationDef(oid dbobj.OID) (FileLike, error) {
+func (fs *StdFS) OpenPageObjectDef(oid dbobj.OID) (FileLike, error) {
 	filepath := fmt.Sprintf("%s/%s/%d/%s", fs.RootPath, RelationsDirname, oid, DefinitionFilename)
 	file, err := os.OpenFile(filepath, os.O_RDWR, os.ModeType)
 	if err != nil {
@@ -153,7 +153,7 @@ func (fs *StdFS) OpenRelationDef(oid dbobj.OID) (FileLike, error) {
 	return file, nil
 }
 
-func (fs *StdFS) InitNewRelationDir(oid dbobj.OID) error {
+func (fs *StdFS) InitNewPageObjectDir(oid dbobj.OID) error {
 	path := fmt.Sprintf("%s/%s/%d", fs.RootPath, RelationsDirname, oid)
 	_, err := os.Stat(path)
 	if !os.IsNotExist(err) {

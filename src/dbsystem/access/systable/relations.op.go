@@ -10,11 +10,8 @@ import (
 
 var relationsDef = RelationsTableDef()
 
-type RelationsOps struct {
-}
-
-func (o RelationsOps) TableAsRelationsRow(
-	table table.Definition,
+func TableAsRelationsRow(
+	table table.RDefinition,
 	tx tx.Tx,
 	commands uint16,
 ) page.Tuple {

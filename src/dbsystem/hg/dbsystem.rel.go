@@ -27,7 +27,7 @@ func (db *DBSystem) CreateRel(rel relation.Relation) error {
 func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
 	tableDef.InitRel(db.NextOID(), db.NextOID(), db.NextOID())
 
-	if err = db.FS().InitNewRelationDir(tableDef.OID()); err != nil {
+	if err = db.FS().InitNewPageObjectDir(tableDef.OID()); err != nil {
 		return err
 	}
 
@@ -64,7 +64,7 @@ func (db *DBSystem) createFSM(fsmOID dbobj.OID) (err error) {
 		return err
 	}
 
-	file, err := fs.OpenRelationDataFile(fsmOID)
+	file, err := fs.OpenPageObjectFile(fsmOID)
 	if err != nil {
 		//todo remove fsm
 		return err
@@ -82,7 +82,7 @@ func (db *DBSystem) createFSM(fsmOID dbobj.OID) (err error) {
 }
 
 func (db *DBSystem) saveRelDefinition(id relation.OID, definition []byte) (err error) {
-	file, err := db.FS().OpenRelationDef(id)
+	file, err := db.FS().OpenPageObjectDef(id)
 	if err != nil {
 		return err
 	}
@@ -139,7 +139,7 @@ func (db *DBSystem) loadTable(serializedTable []byte) error {
 }
 
 func (db *DBSystem) readRelationDefFile(rid relation.OID) (data []byte, err error) {
-	file, err := db.FS().OpenRelationDef(rid)
+	file, err := db.FS().OpenPageObjectDef(rid)
 	defer func() {
 		if err != nil {
 			_ = file.Close()

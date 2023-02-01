@@ -92,14 +92,14 @@ func (c *creatorCtx) initDBFilesystem() *creatorCtx {
 // -------------------------
 
 //func (c *creatorCtx) createSysTables() *creatorCtx {
-//	c.FS.InitNewRelationDir()
+//	c.FS.InitNewPageObjectDir()
 //}
 //
-//func (c *creatorCtx) createRelationsAndColumnsTables() *creatorCtx {
+//func (c *creatorCtx) initRelationsAndColumns() *creatorCtx {
 //	relationsTable := systable.RelationsTableDef()
 //	columnsTable := systable.ColumnsTableDef()
 //
-//	err := c.FS.InitNewRelationDir(relationsTable.OID())
+//	err := c.FS.InitNewPageObjectDir(relationsTable.OID())
 //	if err != nil {
 //		return c.error(err)
 //	}
