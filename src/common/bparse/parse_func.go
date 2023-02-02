@@ -34,6 +34,10 @@ func (p parser) Int8(data []byte) (value int64) {
 	return int64(binary.BigEndian.Uint64(data[:8]))
 }
 
+func (p parser) Bool(data []byte) (value bool) {
+	return data[0] > 0
+}
+
 func (p parser) SmBytes(data []byte) (value []byte) {
 	return data[1 : uint16(data[0])+2]
 }

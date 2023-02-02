@@ -53,7 +53,7 @@ type _var struct {
 }
 
 func (v Var) TypeTag() rawtype.Tag {
-	return v.TypeData.Type.Tag()
+	return v.TypeData.ColType.Tag()
 }
 
 func (v Var) dEqual(node Node) bool {
@@ -131,7 +131,7 @@ func (c Const) dEqual(node Node) bool {
 }
 
 func (c Const) DPrint(nesting int) string {
-	return fmt.Sprintf("@%s{Tag: %s, Val: %+v}",
+	return fmt.Sprintf("@%s{ColTag: %s, Val: %+v}",
 		c.dTag(nesting), c.Type.ToStr(), c.Val)
 }
 

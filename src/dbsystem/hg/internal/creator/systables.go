@@ -6,16 +6,9 @@ import (
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
-	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
 	"log"
 )
-
-type sysTablesCreator struct {
-	FS    dbfs.FS
-	cache *pageCache
-	err   error
-}
 
 func createSysTables(fs dbfs.FS) error {
 	creator := sysTablesCreator{FS: fs}
@@ -25,13 +18,26 @@ func createSysTables(fs dbfs.FS) error {
 
 	creatorTX := tx.StdTx{Id: 0}
 	return creator.
-		createTable(systable.RelationsOID, systable.RelationsFsmOID, systable.RelationsVmOID).
-		createTable(systable.ColumnsOID, systable.ColumnsFsmOID, systable.ColumnsVmOID).
+		createTable(systable.HGRelationsOID, systable.HGRelationsFsmOID, systable.HGRelationsVmOID).
+		createTable(systable.HGColumnsOID, systable.HGColumnsFsmOID, systable.HGColumnsVmOID).
 		insertTuples(relationsTable.OID(),
 			systable.TableAsRelationsRow(relationsTable, creatorTX, 0),
 			systable.TableAsRelationsRow(columnsTable, creatorTX, 0),
 		).
+		insertTuples(systable.HGColumnsOID,
+			systable.Columns.DataToRows(systable.HGRelationsOID, relationsTable.Columns(), creatorTX, 0)...,
+		).
+		insertTuples(systable.HGColumnsOID,
+			systable.Columns.DataToRows(systable.HGColumnsOID, columnsTable.Columns(), creatorTX, 0)...,
+		).
+		flushPages().
 		getError()
+}
+
+type sysTablesCreator struct {
+	FS    dbfs.FS
+	cache *pageCache
+	err   error
 }
 
 func (c *sysTablesCreator) createTable(oid dbobj.OID, fsmOID dbobj.OID, vmOID dbobj.OID) *sysTablesCreator {
@@ -54,7 +60,7 @@ func (c *sysTablesCreator) createTable(oid dbobj.OID, fsmOID dbobj.OID, vmOID db
 	return c
 }
 
-func (c *sysTablesCreator) insertTuples(tableOID dbobj.OID, tuples ...page.Tuple) *sysTablesCreator {
+func (c *sysTablesCreator) insertTuples(tableOID dbobj.OID, tuples ...page.WTuple) *sysTablesCreator {
 	if c.hasErr() {
 		return c
 	}
@@ -68,25 +74,13 @@ func (c *sysTablesCreator) insertTuples(tableOID dbobj.OID, tuples ...page.Tuple
 	return c
 }
 
-func (c *sysTablesCreator) flushPages(oid dbobj.OID, pages []page.WPage) *sysTablesCreator {
+func (c *sysTablesCreator) flushPages() *sysTablesCreator {
 	if c.hasErr() {
 		return c
 	}
 
-	relationsFile, err := c.FS.OpenPageObjectFile(oid)
-	if err != nil {
+	if err := c.cache.flush(); err != nil {
 		return c.error(err)
-	}
-	relationsIO, err := pageio.NewPageIO(relationsFile)
-	if err != nil {
-		return c.error(err)
-	}
-
-	for pageID, pageToFlush := range pages {
-		err = relationsIO.FlushPage(page.Id(pageID), pageToFlush.Bytes())
-		if err != nil {
-			return c.error(err)
-		}
 	}
 	return c
 }

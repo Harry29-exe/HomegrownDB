@@ -53,9 +53,9 @@ func (insertTest) expectedSimplePositive1(users table.Definition, t *testing.T) 
 	}
 	query.TargetList = []node2.TargetEntry{
 		node2.NewTargetEntry(node2.NewVar(valuesRte.Id, 0, users.Column(0).CType()), tt_user.C0IdOrder, tt_user.C0Id),
-		node2.NewTargetEntry(node2.NewConst(tt_user.C1AgeType.Tag, nil), tt_user.C1AgeOrder, tt_user.C1Age),
+		node2.NewTargetEntry(node2.NewConst(tt_user.C1AgeType.ColTag, nil), tt_user.C1AgeOrder, tt_user.C1Age),
 		node2.NewTargetEntry(node2.NewVar(valuesRte.Id, 1, users.Column(2).CType()), tt_user.C2NameOrder, tt_user.C2Name),
-		node2.NewTargetEntry(node2.NewConst(tt_user.C3SurnameType.Tag, nil), tt_user.C3SurnameOrder, tt_user.C3Surname),
+		node2.NewTargetEntry(node2.NewConst(tt_user.C3SurnameType.ColTag, nil), tt_user.C3SurnameOrder, tt_user.C3Surname),
 	}
 
 	query.AppendRTE(valuesRte)

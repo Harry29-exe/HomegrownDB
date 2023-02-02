@@ -4,23 +4,23 @@ import "HomegrownDB/dbsystem/hgtype/rawtype"
 
 func NewStr(args Args) ColumnType {
 	return ColumnType{
-		Type: rawtype.Str{},
-		Tag:  rawtype.TypeStr,
-		Args: args,
+		ColType: rawtype.Str{},
+		ColTag:  rawtype.TypeStr,
+		ColArgs: args,
 	}
 }
 
 func NewInt8(args Args) ColumnType {
 	return ColumnType{
-		Type: rawtype.Int8{},
-		Args: args,
+		ColType: rawtype.Int8{},
+		ColArgs: args,
 	}
 }
 
 func NewBool(args Args) ColumnType {
 	return ColumnType{
-		Type: rawtype.Bool{},
-		Tag:  rawtype.TypeBool,
-		Args: args,
+		ColType: rawtype.Bool{},
+		ColTag:  rawtype.TypeBool,
+		ColArgs: args,
 	}
 }

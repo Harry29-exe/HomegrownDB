@@ -10,7 +10,15 @@ func CreateDB(props Props) error {
 	ctx.initRootPath().
 		initConfigurationAndProperties().
 		initDBFilesystem()
-	return ctx.err
+	if ctx.err != nil {
+		return ctx.err
+	}
+
+	err := createSysTables(ctx.FS)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // -------------------------
@@ -86,29 +94,6 @@ func (c *creatorCtx) initDBFilesystem() *creatorCtx {
 
 	return c
 }
-
-// -------------------------
-//      Create
-// -------------------------
-
-//func (c *creatorCtx) createSysTables() *creatorCtx {
-//	c.FS.InitNewPageObjectDir()
-//}
-//
-//func (c *creatorCtx) initRelationsAndColumns() *creatorCtx {
-//	relationsTable := systable.RelationsTableDef()
-//	columnsTable := systable.ColumnsTableDef()
-//
-//	err := c.FS.InitNewPageObjectDir(relationsTable.OID())
-//	if err != nil {
-//		return c.error(err)
-//	}
-//	err = c.FS.
-//}
-
-// -------------------------
-//      Internal
-// -------------------------
 
 func (c *creatorCtx) modeEqTest() bool {
 	return c.Props.Mode == Test

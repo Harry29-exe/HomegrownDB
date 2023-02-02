@@ -7,91 +7,66 @@ import (
 	"HomegrownDB/dbsystem/relation/table/column"
 )
 
-type ColumnsTable interface {
-	ColumnOID() column.Def
-	ColumnRelationOID() column.Def
-	ColumnName() column.Def
-	ColumnArgsLength() column.Def
-	ColumnArgsNullable() column.Def
-	ColumnArgsVarLen() column.Def
-	ColumnArgsUTF8() column.Def
-}
-
-var _ ColumnsTable = columnsTable{}
-
-type columnsTable struct {
-	table.RDefinition
-}
-
-func (c columnsTable) ColumnOID() column.Def {
-	return c.RDefinition.Column(0)
-}
-
-func (c columnsTable) ColumnRelationOID() column.Def {
-	return c.RDefinition.Column(1)
-}
-
-func (c columnsTable) ColumnName() column.Def {
-	return c.RDefinition.Column(2)
-}
-
-func (c columnsTable) ColumnArgsLength() column.Def {
-	return c.RDefinition.Column(3)
-}
-
-func (c columnsTable) ColumnArgsNullable() column.Def {
-	return c.RDefinition.Column(4)
-}
-
-func (c columnsTable) ColumnArgsVarLen() column.Def {
-	return c.RDefinition.Column(5)
-}
-
-func (c columnsTable) ColumnArgsUTF8() column.Def {
-	return c.RDefinition.Column(6)
-}
-
 func ColumnsTableDef() table.RDefinition {
+	colBuilder := columnsBuilder{}
+
 	tableCols := []column.WDef{
-		columns.oid(),
-		columns.relationOID(),
-		columns.name(),
-		columns.argsLength(),
+		colBuilder.oid(),
+		colBuilder.relationOID(),
+		colBuilder.colName(),
+		colBuilder.typeTag(),
+		colBuilder.argsLength(),
+		colBuilder.argsNullable(),
+		colBuilder.argsVarLen(),
+		colBuilder.argsUTF8(),
 	}
 
 	return newTableDef(
 		ColumnsName,
-		ColumnsOID,
-		ColumnsFsmOID,
-		ColumnsVmOID,
+		HGColumnsOID,
+		HGColumnsFsmOID,
+		HGColumnsVmOID,
 		tableCols,
 	)
 }
 
-var columns = columnsBuilder{}
+const (
+	ColumnsOrderOID column.Order = iota
+	ColumnsOrderRelationOID
+	ColumnsOrderColName
+	ColumnsOrderColOrder
+	ColumnsOrderTypeTag
+	ColumnsOrderArgsLength
+	ColumnsOrderArgsNullable
+	ColumnsOrderArgsVarLen
+	ColumnsOrderArgsUTF8
+)
 
 type columnsBuilder struct{}
 
-func (columnsBuilder) oid() column.WDef {
+func (c *columnsBuilder) oid() (col column.WDef) {
 	return column.NewDefinition(
 		"id",
-		false,
+		HGColumnsColOID,
+		ColumnsOrderOID,
 		hgtype.NewInt8(rawtype.Args{}),
 	)
 }
 
-func (columnsBuilder) relationOID() column.WDef {
+func (c *columnsBuilder) relationOID() column.WDef {
 	return column.NewDefinition(
 		"relation_oid",
-		false,
+		HGColumnsColOID,
+		ColumnsOrderRelationOID,
 		hgtype.NewInt8(rawtype.Args{}),
 	)
 }
 
-func (columnsBuilder) name() column.WDef {
+func (c *columnsBuilder) colName() column.WDef {
 	return column.NewDefinition(
 		"col_name",
-		false,
+		HGColumnsColColName,
+		ColumnsOrderColName,
 		hgtype.NewStr(rawtype.Args{
 			Length:   255,
 			Nullable: false,
@@ -100,34 +75,56 @@ func (columnsBuilder) name() column.WDef {
 		}))
 }
 
-func (columnsBuilder) argsLength() column.WDef {
+func (c *columnsBuilder) colOrder() column.WDef {
 	return column.NewDefinition(
-		"arg_length",
-		false,
+		"col_order",
+		HGColumnsColColOrder,
+		ColumnsOrderColOrder,
 		hgtype.NewInt8(rawtype.Args{Nullable: false}),
 	)
 }
 
-func (columnsBuilder) argsNullable() column.WDef {
+func (c *columnsBuilder) typeTag() column.WDef {
+	return column.NewDefinition(
+		"type_tag",
+		HGColumnsColTypeTag,
+		ColumnsOrderTypeTag,
+		hgtype.NewInt8(rawtype.Args{Nullable: false}),
+	)
+}
+
+func (c *columnsBuilder) argsLength() column.WDef {
+	return column.NewDefinition(
+		"arg_length",
+		HGColumnsColArgsLength,
+		ColumnsOrderArgsLength,
+		hgtype.NewInt8(rawtype.Args{Nullable: false}),
+	)
+}
+
+func (c *columnsBuilder) argsNullable() column.WDef {
 	return column.NewDefinition(
 		"arg_nullable",
-		false,
+		HGColumnsColArgsNullable,
+		ColumnsOrderArgsNullable,
 		hgtype.NewBool(hgtype.Args{Nullable: false}),
 	)
 }
 
-func (columnsBuilder) argsVarLen() column.WDef {
+func (c *columnsBuilder) argsVarLen() column.WDef {
 	return column.NewDefinition(
 		"arg_VarLen",
-		false,
+		HGColumnsColArgsVarLen,
+		ColumnsOrderArgsVarLen,
 		hgtype.NewBool(rawtype.Args{Nullable: false}),
 	)
 }
 
-func (columnsBuilder) argsUTF8() column.WDef {
+func (c *columnsBuilder) argsUTF8() column.WDef {
 	return column.NewDefinition(
 		"arg_UTF8",
-		false,
+		HGColumnsColArgsUTF8,
+		ColumnsOrderArgsUTF8,
 		hgtype.NewBool(rawtype.Args{Nullable: false}),
 	)
 }

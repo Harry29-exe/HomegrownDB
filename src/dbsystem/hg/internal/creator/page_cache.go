@@ -26,7 +26,7 @@ type pageCache struct {
 	cache  map[dbobj.OID][]page.WPage
 }
 
-func (c *pageCache) insert(oid dbobj.OID, tuple page.Tuple) error {
+func (c *pageCache) insert(oid dbobj.OID, tuple page.WTuple) error {
 	tupleBytes := tuple.Bytes()
 
 	pages := c.cache[oid]
@@ -48,5 +48,17 @@ func (c *pageCache) insert(oid dbobj.OID, tuple page.Tuple) error {
 }
 
 func (c *pageCache) flush() error {
-
+	for oid, pages := range c.cache {
+		dataFile, err := c.fs.OpenPageObjectFile(oid)
+		if err != nil {
+			return err
+		}
+		for _, wPage := range pages {
+			_, err = dataFile.Write(wPage.Bytes())
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

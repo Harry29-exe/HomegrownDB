@@ -16,6 +16,7 @@ type RTuple interface {
 	DataSize() int
 
 	Data() []byte
+	Bytes() []byte
 	WithPattern
 }
 

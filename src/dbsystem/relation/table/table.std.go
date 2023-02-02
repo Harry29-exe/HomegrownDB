@@ -1,7 +1,6 @@
 package table
 
 import (
-	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype"
 	relation "HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/relation/dbobj"
@@ -37,34 +36,6 @@ func (t *StdTable) SetName(name string) {
 
 func (t *StdTable) Name() string {
 	return t.name
-}
-
-func (t *StdTable) Serialize(serializer *bparse.Serializer) {
-	relation.SerializeBaseRelation(&t.BaseRelation, serializer)
-	serializer.MdString(t.name)
-	serializer.Uint16(t.columnsCount)
-
-	for _, col := range t.columns {
-		col.Serialize(serializer)
-	}
-}
-
-func (t *StdTable) Deserialize(deserializer *bparse.Deserializer) {
-	t.BaseRelation = relation.DeserializeBaseRelation(deserializer)
-	t.name = deserializer.MdString()
-	t.columnsCount = deserializer.Uint16()
-
-	t.columns = make([]column.WDef, t.columnsCount)
-	t.rColumns = make([]column.Def, t.columnsCount)
-	t.columnName_OrderMap = map[string]column.Order{}
-	t.columnsNames = make([]string, t.columnsCount)
-	for i := 0; i < int(t.columnsCount); i++ {
-		col := column.Deserialize(deserializer)
-		t.columns[col.Order()] = col
-		t.rColumns[col.Order()] = col
-		t.columnName_OrderMap[col.Name()] = col.Order()
-		t.columnsNames[col.Order()] = col.Name()
-	}
 }
 
 // BitmapLen returns number of bytes in tuple that constitute null bitmap

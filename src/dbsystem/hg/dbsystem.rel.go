@@ -105,39 +105,6 @@ func (db *DBSystem) saveRelDefinition(id relation.OID, definition []byte) (err e
 	return nil
 }
 
-func (db *DBSystem) LoadRel(rid relation.OID) error {
-	data, err := db.readRelationDefFile(rid)
-	if err != nil {
-		return err
-	}
-	d := bparse.NewDeserializer(data)
-	baseRel := relation.DeserializeBaseRelation(d)
-
-	var rel relation.Relation
-	switch baseRel.Kind() {
-	case relation.TypeTable:
-		return db.loadTable(data)
-	case relation.TypeIndex:
-		//todo implement me
-		panic("Not implemented")
-	default:
-		panic(fmt.Sprintf("unknown relation type %+v", rel))
-	}
-}
-
-func (db *DBSystem) loadTable(serializedTable []byte) error {
-	tableDef := table.Deserialize(serializedTable)
-
-	if err := db.PageIOStore().Load(tableDef); err != nil {
-		return err
-	}
-	if err := db.TableStore().LoadTable(tableDef); err != nil {
-		//todo delete table from pageio
-		return err
-	}
-	return nil
-}
-
 func (db *DBSystem) readRelationDefFile(rid relation.OID) (data []byte, err error) {
 	file, err := db.FS().OpenPageObjectDef(rid)
 	defer func() {

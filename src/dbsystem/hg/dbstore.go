@@ -36,6 +36,5 @@ type DB interface {
 
 type RelationsOperations interface {
 	CreateRel(rel relation.Relation) error
-	LoadRel(rid relation.OID) error
 	DeleteRel(rel relation.Relation) error
 }

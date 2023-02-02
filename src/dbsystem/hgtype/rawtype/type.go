@@ -64,7 +64,7 @@ type TypeWriter interface {
 }
 
 type TypeDebug interface {
-	// ToStr Should be called on result of Value(data) as it won'Type always
+	// ToStr Should be called on result of Value(data) as it won'ColType always
 	// work on raw data (because of support data)
 	ToStr(val []byte) string
 	// Rand generate random data that normally could belong to

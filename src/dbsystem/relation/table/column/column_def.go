@@ -1,23 +1,21 @@
 package column
 
 import (
-	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype"
 	. "HomegrownDB/dbsystem/relation/dbobj"
 )
 
 // Def describes column config and provides segparser and serializer
 type Def interface {
-	bparse.Serializable
 	Name() string
 	Nullable() bool
 	Id() OID
 	Order() Order
-	CType() hgtype.ColumnType
+	CType() hgtype.ColType
 
 	DefaultValue() []byte
 	//// Serialize should save all important Data to byte stream.
-	//// It has to start with MdString of column.Tag.
+	//// It has to start with MdString of column.ColTag.
 	//Serialize() []byte
 	//// Deserialize takes the same Data that Serialize returned
 	//// and set this column definitions to match given Data
@@ -38,18 +36,11 @@ type Order = uint16
 // InnerOrder describes order of column in tuple
 type InnerOrder = uint16
 
-func Deserialize(deserializer *bparse.Deserializer) WDef {
-	col := &column{}
-	col.Deserialize(deserializer)
-	return col
-}
-
-func NewDefinition(name string, nullable bool, columnType hgtype.ColumnType) WDef {
+func NewDefinition(name string, oid OID, order Order, columnType hgtype.ColType) WDef {
 	return &column{
-		name:     name,
-		nullable: nullable,
-		id:       0,
-		order:    0,
-		hgType:   columnType,
+		name:   name,
+		id:     oid,
+		order:  order,
+		hgType: columnType,
 	}
 }

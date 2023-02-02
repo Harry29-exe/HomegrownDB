@@ -10,10 +10,28 @@ const (
 )
 
 const (
-	RelationsOID OID = iota
-	RelationsFsmOID
-	RelationsVmOID
-	ColumnsOID
-	ColumnsFsmOID
-	ColumnsVmOID
+	HGRelationsOID OID = iota
+	HGRelationsFsmOID
+	HGRelationsVmOID
+
+	HGRelationsColOID
+	HGRelationsColRelKind
+	HGRelationsColFsmOID
+	HGRelationsColVmOID
+
+	// HGColumnsOID start of sys_columns
+
+	HGColumnsOID
+	HGColumnsFsmOID
+	HGColumnsVmOID
+
+	HGColumnsColOID
+	HGColumnsColRelationOID
+	HGColumnsColColName
+	HGColumnsColColOrder
+	HGColumnsColTypeTag
+	HGColumnsColArgsLength
+	HGColumnsColArgsNullable
+	HGColumnsColArgsVarLen
+	HGColumnsColArgsUTF8
 )

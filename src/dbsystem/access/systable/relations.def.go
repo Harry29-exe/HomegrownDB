@@ -52,9 +52,9 @@ func RelationsTableDef() RelationsTable {
 	return relationsTable{
 		newTableDef(
 			RelationsName,
-			RelationsOID,
-			RelationsFsmOID,
-			RelationsVmOID,
+			HGRelationsOID,
+			HGRelationsFsmOID,
+			HGRelationsVmOID,
 			columns,
 		),
 	}
@@ -65,35 +65,19 @@ var relations = relationsBuilder{}
 type relationsBuilder struct{}
 
 func (relationsBuilder) oid() column.WDef {
-	return column.NewDefinition(
-		"id",
-		false,
-		hgtype.NewInt8(rawtype.Args{}),
-	)
+	return column.NewDefinition("id", hgtype.NewInt8(rawtype.Args{}))
 }
 
 func (relationsBuilder) relKind() column.WDef {
-	return column.NewDefinition(
-		"rel_kind",
-		false,
-		hgtype.NewInt8(rawtype.Args{}),
-	)
+	return column.NewDefinition("rel_kind", hgtype.NewInt8(rawtype.Args{}))
 }
 
 func (relationsBuilder) fsmOID() column.WDef {
-	return column.NewDefinition(
-		"fsm_oid",
-		false,
-		hgtype.NewInt8(rawtype.Args{}),
-	)
+	return column.NewDefinition("fsm_oid", hgtype.NewInt8(rawtype.Args{}))
 }
 
 func (relationsBuilder) vmOID() column.WDef {
-	return column.NewDefinition(
-		"vm_oid",
-		false,
-		hgtype.NewInt8(rawtype.Args{}),
-	)
+	return column.NewDefinition("vm_oid", hgtype.NewInt8(rawtype.Args{}))
 }
 
 //todo add locks columns

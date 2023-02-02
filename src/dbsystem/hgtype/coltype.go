@@ -1,7 +1,6 @@
 package hgtype
 
 import (
-	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 )
@@ -17,9 +16,9 @@ func NewColType(tag rawtype.Tag, args rawtype.Args) ColumnType {
 	t := tag.Type()
 
 	return ColumnType{
-		Type: t,
-		Tag:  tag,
-		Args: args,
+		ColType: t,
+		ColTag:  tag,
+		ColArgs: args,
 	}
 }
 
@@ -43,31 +42,31 @@ func NewDefaultColType(tag rawtype.Tag) ColumnType {
 	}
 
 	return ColumnType{
-		Type: t,
-		Tag:  tag,
-		Args: args,
+		ColType: t,
+		ColTag:  tag,
+		ColArgs: args,
 	}
 }
 
 type ColumnType struct {
-	Type rawtype.Type
-	Tag  rawtype.Tag
-	Args rawtype.Args
+	ColType rawtype.Type
+	ColTag  rawtype.Tag
+	ColArgs rawtype.Args
 }
 
-func SerializeTypeData(typeData ColumnType, s *bparse.Serializer) {
-	s.Uint8(uint8(typeData.Type.Tag()))
-	rawtype.SerializeArgs(typeData.Args, s)
+func (t ColumnType) Type() rawtype.Type {
+	return t.ColType
+}
+func (t ColumnType) Tag() rawtype.Tag {
+	return t.ColTag
 }
 
-func DeserializeTypeData(d *bparse.Deserializer) ColumnType {
-	tag := rawtype.Tag(d.Uint8())
-	args := rawtype.DeserializeArgs(d)
-	return NewColType(tag, args)
+func (t ColumnType) Args() Args {
+	return t.ColArgs
 }
 
 func (t ColumnType) Validate(value rawtype.Value) rawtype.ValidateResult {
-	return t.Type.Validate(t.Args, value)
+	return t.ColType.Validate(t.ColArgs, value)
 }
 
 // -------------------------
@@ -75,23 +74,23 @@ func (t ColumnType) Validate(value rawtype.Value) rawtype.ValidateResult {
 // -------------------------
 
 func (t ColumnType) Skip(data []byte) []byte {
-	return t.Type.Skip(data)
+	return t.ColType.Skip(data)
 }
 
 func (t ColumnType) Copy(dest []byte, data []byte) (copiedBytes int) {
-	return t.Type.Copy(dest, data)
+	return t.ColType.Copy(dest, data)
 }
 
 func (t ColumnType) IsToastPtr(data []byte) bool {
-	return t.Type.IsToastPtr(data)
+	return t.ColType.IsToastPtr(data)
 }
 
 func (t ColumnType) Value(data []byte) (value []byte) {
-	return t.Type.Value(data)
+	return t.ColType.Value(data)
 }
 
 func (t ColumnType) ValueAndSkip(data []byte) (value, next []byte) {
-	return t.Type.ValueAndSkip(data)
+	return t.ColType.ValueAndSkip(data)
 }
 
 // -------------------------
@@ -99,7 +98,7 @@ func (t ColumnType) ValueAndSkip(data []byte) (value, next []byte) {
 // -------------------------
 
 func (t ColumnType) WriteValue(writer rawtype.UniWriter, value rawtype.Value) error {
-	return t.Type.WriteValue(writer, value, t.Args)
+	return t.ColType.WriteValue(writer, value, t.ColArgs)
 }
 
 // -------------------------
@@ -107,11 +106,11 @@ func (t ColumnType) WriteValue(writer rawtype.UniWriter, value rawtype.Value) er
 // -------------------------
 
 func (t ColumnType) Equal(v1, v2 []byte) bool {
-	return t.Type.Equal(v1, v2)
+	return t.ColType.Equal(v1, v2)
 }
 
 func (t ColumnType) Cmp(v1, v2 []byte) int {
-	return t.Type.Cmp(v1, v2)
+	return t.ColType.Cmp(v1, v2)
 }
 
 // -------------------------
@@ -119,9 +118,9 @@ func (t ColumnType) Cmp(v1, v2 []byte) int {
 // -------------------------
 
 func (t ColumnType) ToStr(val []byte) string {
-	return t.Type.ToStr(val)
+	return t.ColType.ToStr(val)
 }
 
 func (t ColumnType) Rand(r random.Random) []byte {
-	return t.Type.Rand(t.Args, r)
+	return t.ColType.Rand(t.ColArgs, r)
 }

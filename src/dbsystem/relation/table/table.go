@@ -1,7 +1,6 @@
 package table
 
 import (
-	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype"
 	relation "HomegrownDB/dbsystem/relation"
 	"HomegrownDB/dbsystem/relation/dbobj"
@@ -10,7 +9,6 @@ import (
 
 type RDefinition interface {
 	relation.Relation
-	bparse.Serializable
 
 	Name() string
 	Hash() string
@@ -56,12 +54,4 @@ func NewDefinition(name string) Definition {
 	}
 	table.initInMemoryFields()
 	return table
-}
-
-func Deserialize(data []byte) Definition {
-	def := &StdTable{}
-	deserializer := bparse.NewDeserializer(data)
-	def.Deserialize(deserializer)
-
-	return def
 }

@@ -16,7 +16,7 @@ func NewTestTableBuilder(name string) *Builder {
 }
 
 func (ttb *Builder) AddColumn(name string, nullable bool, typeData hgtype.ColumnType) *Builder {
-	col := column.NewDefinition(name, nullable, typeData)
+	col := column.NewDefinition(name, typeData)
 	if err := ttb.table.AddColumn(col); err != nil {
 		panic("could not add column to table during tests")
 	}
