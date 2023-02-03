@@ -42,7 +42,7 @@ func (selectValues) expectedValuesSelect(t *testing.T) node2.Query {
 	})
 	valuesRTE.ColTypes = []hgtype.ColumnType{
 		hgtype.NewInt8(rawtype.Args{}),
-		hgtype.NewStr(rawtype.Args{VarLen: true, Length: uint32(len("Alice")), UTF8: false}),
+		hgtype.NewStr(rawtype.Args{VarLen: true, Length: len("Alice"), UTF8: false}),
 	}
 	query.RTables = []node2.RangeTableEntry{valuesRTE}
 	query.FromExpr = node2.NewFromExpr2(nil, valuesRTE.CreateRef())

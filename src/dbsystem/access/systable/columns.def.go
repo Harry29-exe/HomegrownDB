@@ -14,6 +14,7 @@ func ColumnsTableDef() table.RDefinition {
 		colBuilder.oid(),
 		colBuilder.relationOID(),
 		colBuilder.colName(),
+		colBuilder.colOrder(),
 		colBuilder.typeTag(),
 		colBuilder.argsLength(),
 		colBuilder.argsNullable(),

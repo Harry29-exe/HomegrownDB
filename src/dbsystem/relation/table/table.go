@@ -16,13 +16,13 @@ type RDefinition interface {
 	BitmapLen() uint16
 	ColumnCount() uint16
 
-	CTypePattern() []hgtype.ColumnType
+	CTypePattern() []hgtype.ColType
 
 	ColumnName(columnId column.Order) string
 	ColumnOrder(name string) (order column.Order, ok bool)
 	ColumnId(order column.Order) dbobj.OID
 
-	ColumnType(id column.Order) hgtype.ColumnType
+	ColumnType(id column.Order) hgtype.ColType
 	ColumnByName(name string) (col column.Def, ok bool)
 	ColumnById(id dbobj.OID) column.Def
 	Column(index column.Order) column.Def

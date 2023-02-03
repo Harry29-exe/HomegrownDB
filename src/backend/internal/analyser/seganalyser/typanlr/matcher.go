@@ -5,10 +5,10 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 )
 
-func IsAssignable(destType hgtype.ColumnType, srcType hgtype.ColumnType) error {
+func IsAssignable(destType hgtype.ColType, srcType hgtype.ColType) error {
 	//todo there should be some arguments checking/conversion
-	if destType.ColTag != srcType.ColTag {
-		return sqlerr.NewTypeMismatch(destType.ColTag, srcType.ColTag, nil)
+	if destType.Tag() != srcType.Tag() {
+		return sqlerr.NewTypeMismatch(destType.Tag(), srcType.Tag(), nil)
 	}
 
 	return nil

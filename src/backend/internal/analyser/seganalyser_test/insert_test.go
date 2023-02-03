@@ -46,7 +46,7 @@ func (insertTest) expectedSimplePositive1(users table.Definition, t *testing.T) 
 	valuesRte.ColTypes = []hgtype.ColumnType{
 		hgtype.NewInt8(rawtype.Args{}),
 		hgtype.NewStr(rawtype.Args{
-			Length: uint32(len("bob")),
+			Length: len("bob"),
 			VarLen: true,
 			UTF8:   false,
 		}),

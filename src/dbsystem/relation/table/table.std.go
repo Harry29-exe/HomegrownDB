@@ -47,7 +47,7 @@ func (t *StdTable) ColumnCount() uint16 {
 	return t.columnsCount
 }
 
-func (t *StdTable) CTypePattern() []hgtype.ColumnType {
+func (t *StdTable) CTypePattern() []hgtype.ColType {
 	//todo implement me
 	panic("Not implemented")
 }
@@ -66,7 +66,7 @@ func (t *StdTable) ColumnOrder(name string) (order column.Order, ok bool) {
 }
 
 // todo array of ctypes?
-func (t *StdTable) ColumnType(id column.Order) hgtype.ColumnType {
+func (t *StdTable) ColumnType(id column.Order) hgtype.ColType {
 	return t.columns[id].CType()
 }
 

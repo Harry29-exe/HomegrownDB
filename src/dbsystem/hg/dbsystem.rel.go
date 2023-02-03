@@ -25,6 +25,8 @@ func (db *DBSystem) CreateRel(rel relation.Relation) error {
 }
 
 func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
+	//todo implement me
+	panic("Not implemented")
 	tableDef.InitRel(db.NextOID(), db.NextOID(), db.NextOID())
 
 	if err = db.FS().InitNewPageObjectDir(tableDef.OID()); err != nil {
@@ -32,7 +34,7 @@ func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
 	}
 
 	s := bparse.NewSerializer()
-	tableDef.Serialize(s)
+	//tableDef.Serialize(s)
 	if err = db.saveRelDefinition(tableDef.OID(), s.GetBytes()); err != nil {
 		// todo db.FS.DeleteRelationDir(...)
 		return err

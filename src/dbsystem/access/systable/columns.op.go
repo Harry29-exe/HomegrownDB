@@ -32,6 +32,8 @@ func (columnsOps) DataToRow(
 		log.Panicf("enexpected err: %s", err.Error())
 	}
 	builder.WriteValue(name)
+	builder.WriteValue(intype.ConvInt8Value(int64(col.Order())))
+	builder.WriteValue(intype.ConvInt8Value(int64(col.CType().Tag())))
 
 	args := col.CType().Args()
 	builder.WriteValue(intype.ConvInt8Value(int64(args.Length)))
@@ -63,7 +65,7 @@ func (o columnsOps) RowToData(row page.RTuple) column.WDef {
 	argsLength := GetInt8(ColumnsOrderArgsLength, row)
 	argsVarLen := GetBool(ColumnsOrderArgsVarLen, row)
 	argsUTF8 := GetBool(ColumnsOrderArgsUTF8, row)
-	argsNulable := GetBool(ColumnsOrderArgsNullable, row)
+	argsNullable := GetBool(ColumnsOrderArgsNullable, row)
 
 	return newColumnDef(
 		name,
@@ -71,7 +73,7 @@ func (o columnsOps) RowToData(row page.RTuple) column.WDef {
 		column.Order(order),
 		hgtype.NewColType(rawtype.Tag(typeTag), hgtype.Args{
 			Length:   int(argsLength),
-			Nullable: argsNulable,
+			Nullable: argsNullable,
 			VarLen:   argsVarLen,
 			UTF8:     argsUTF8,
 		}),

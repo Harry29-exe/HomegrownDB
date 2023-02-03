@@ -80,6 +80,7 @@ func (c *creatorCtx) initDBFilesystem() *creatorCtx {
 	if err != nil {
 		return c.error(err)
 	}
+	c.FS = fs
 	err = fs.InitDBSystemDirs()
 	if err != nil {
 		return c.error(err)

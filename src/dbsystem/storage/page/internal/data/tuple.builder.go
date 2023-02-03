@@ -41,9 +41,8 @@ var _ TupleBuilder = &tupleBuilder{}
 
 func (t *tupleBuilder) WriteValue(value rawtype.Value) error {
 	col := t.pattern.Columns[t.valuesWritten]
-	validateResult := col.Type.Validate(value)
+	validateResult := rawtype.TypeOp.Validate(col.Type.Args(), value)
 	switch validateResult.Status {
-
 	case rawtype.ValidateOk:
 		if value.NormValue == nil {
 			t.nullBitmap.Set(t.valuesWritten)

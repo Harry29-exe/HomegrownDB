@@ -20,11 +20,11 @@ func (t typeOp) Validate(args Args, value Value) ValidateResult {
 	}
 
 	if (!args.VarLen && args.Length != len(value.NormValue)) ||
-		args.VarLen && args.Length > VarLenHelper.dataLen(value.NormValue) {
+		args.VarLen && args.Length < VarLenHelper.dataLen(value.NormValue) {
 		return ValidateResult{Status: ValidateErr, Reason: typeerr.ToLongErr{}}
 	}
 
-	if !args.UTF8 {
+	if !args.UTF8 && value.TypeTag == TypeStr {
 		var data []byte
 		if args.VarLen {
 			data = VarLenHelper.data(value.NormValue)

@@ -39,7 +39,7 @@ type TuplePattern struct {
 }
 
 type PatternCol struct {
-	Type hgtype.ColumnType
+	Type hgtype.ColType
 	Name string
 }
 

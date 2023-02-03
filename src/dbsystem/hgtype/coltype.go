@@ -32,7 +32,7 @@ func NewDefaultColType(tag rawtype.Tag) ColumnType {
 	case rawtype.TypeStr:
 		t = rawtype.Str{}
 		args.UTF8 = true
-		args.Length = uint32(rawtype.UnknownVarLenSize)
+		args.Length = rawtype.UnknownVarLenSize
 		args.VarLen = true
 	case rawtype.TypeInt8:
 		t = rawtype.Int8{}

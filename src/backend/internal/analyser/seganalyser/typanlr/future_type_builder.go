@@ -24,7 +24,7 @@ func createFTFromConst(expr node2.Const) FutureType {
 		}
 	case rawtype.TypeStr:
 		args := rawtype.Args{
-			Length: uint32(len(expr.Val)),
+			Length: len(expr.Val),
 			UTF8:   !rawtype.StrUtils.IsASCII(expr.Val),
 			VarLen: true,
 		}

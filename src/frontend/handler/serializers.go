@@ -35,7 +35,7 @@ func (s *resultJsonSerializer) serializeRow(tuple page.RTuple, columns []page.Pa
 	}
 	s.Buffer.WriteRune('{')
 	s.Buffer.WriteString(fmt.Sprintf("\"%s\":", columns[0].Name))
-	s.serializeValue(tuple.ColValue(0), columns[0].Type.ColType)
+	s.serializeValue(tuple.ColValue(0), columns[0].Type.Type())
 
 	for _, column := range columns[1:] {
 		s.Buffer.WriteRune(',')

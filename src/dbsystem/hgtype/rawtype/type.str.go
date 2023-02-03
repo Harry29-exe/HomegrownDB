@@ -107,10 +107,10 @@ func (u strUtils) IsASCII(val []byte) bool {
 	return true
 }
 
-func (u strUtils) StrLen(val []byte) uint32 {
+func (u strUtils) StrLen(val []byte) int {
 	if VarLenUtils.IsHeaderOneByte(val[0]) {
-		return uint32(val[0])
+		return int(val[0])
 	} else {
-		return bparse.Parse.UInt4(val)
+		return int(bparse.Parse.UInt4(val))
 	}
 }

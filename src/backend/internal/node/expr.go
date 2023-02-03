@@ -32,7 +32,7 @@ func (e expr) ExprTag() Tag {
 //      Var
 // -------------------------
 
-func NewVar(id RteID, colOrder column.Order, typeData hgtype.ColumnType) Var {
+func NewVar(id RteID, colOrder column.Order, typeData hgtype.ColType) Var {
 	return &_var{
 		expr:     newExpr(TagVar),
 		RteID:    id,
@@ -49,11 +49,11 @@ type _var struct {
 	expr
 	RteID    RteID
 	ColOrder column.Order
-	TypeData hgtype.ColumnType
+	TypeData hgtype.ColType
 }
 
 func (v Var) TypeTag() rawtype.Tag {
-	return v.TypeData.ColType.Tag()
+	return v.TypeData.Tag()
 }
 
 func (v Var) dEqual(node Node) bool {

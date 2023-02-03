@@ -106,7 +106,7 @@ func (i insert) extendWithDefaultEntries(currentCtx anlsr.QueryCtx) error {
 			continue
 		}
 		query.TargetList[colOrder] = node2.NewTargetEntry(
-			node2.NewConst(colDef.CType().Tag, nil),
+			node2.NewConst(colDef.CType().Tag(), nil),
 			node2.AttribNo(colOrder),
 			colDef.Name(),
 		)

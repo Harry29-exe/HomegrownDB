@@ -3,12 +3,15 @@ package testtable
 import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/relation/table/column"
 )
 
 type Builder struct {
-	table table.Definition
+	table        table.Definition
+	NexColtOrder column.Order
+	NextOID      dbobj.OID
 }
 
 func NewTestTableBuilder(name string) *Builder {
@@ -16,7 +19,9 @@ func NewTestTableBuilder(name string) *Builder {
 }
 
 func (ttb *Builder) AddColumn(name string, nullable bool, typeData hgtype.ColumnType) *Builder {
-	col := column.NewDefinition(name, typeData)
+	col := column.NewDefinition(name, ttb.NextOID, ttb.NexColtOrder, typeData)
+	ttb.NextOID++
+	ttb.NexColtOrder++
 	if err := ttb.table.AddColumn(col); err != nil {
 		panic("could not add column to table during tests")
 	}
