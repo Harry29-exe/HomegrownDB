@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/backend/internal/analyser/seganalyser"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
-	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/access/relation/table"
 )
 
 func Analyse(stmt pnode.RawStmt, store table.Store) (node.Query, error) {

@@ -2,8 +2,8 @@ package testtable
 
 import (
 	"HomegrownDB/common/random"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"

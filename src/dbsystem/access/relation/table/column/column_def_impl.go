@@ -1,8 +1,8 @@
 package column
 
 import (
+	. "HomegrownDB/dbsystem/access/relation/dbobj"
 	"HomegrownDB/dbsystem/hgtype"
-	. "HomegrownDB/dbsystem/relation/dbobj"
 )
 
 var _ WDef = &column{}

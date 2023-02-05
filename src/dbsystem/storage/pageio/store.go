@@ -1,8 +1,8 @@
 package pageio
 
 import (
-	"HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
 	"HomegrownDB/dbsystem/storage/dbfs"
 )
 
@@ -12,7 +12,7 @@ type Store interface {
 	Register(id dbobj.OID, io IO)
 }
 
-func NewStore(fs dbfs.FS) *StdStore {
+func NewStore(fs dbfs.FS) Store {
 	return &StdStore{
 		FS:    fs,
 		ioMap: map[relation.OID]IO{},

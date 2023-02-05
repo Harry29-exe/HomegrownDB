@@ -5,8 +5,8 @@ package data
 // which shows how page's binary representations looks like
 
 import (
-	"HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"encoding/binary"
 	"errors"

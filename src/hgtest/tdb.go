@@ -2,9 +2,9 @@ package hgtest
 
 import (
 	"HomegrownDB/common/random"
+	"HomegrownDB/dbsystem/access/relation"
+	table2 "HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/hg"
-	"HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"testing"
@@ -48,15 +48,15 @@ func (u TestDBUtils) FillTablePages(pagesToFill int, tableName string) {
 	}
 }
 
-func (u TestDBUtils) TableByName(tableName string) table.Definition {
+func (u TestDBUtils) TableByName(tableName string) table2.Definition {
 	id := u.DB.TableStore().FindTable(tableName)
 	if id == relation.InvalidRelId {
 		u.T.Errorf("not table: " + tableName)
 	}
-	return u.DB.TableStore().AccessTable(id, table.WLockMode)
+	return u.DB.TableStore().AccessTable(id, table2.WLockMode)
 }
 
-func (u TestDBUtils) RandTuple(tableRel table.Definition) page.Tuple {
+func (u TestDBUtils) RandTuple(tableRel table2.Definition) page.Tuple {
 	return Table.RandTPageTuple(tableRel, u.Rand)
 }
 

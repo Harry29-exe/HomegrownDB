@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/common/tests"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/ttable1"
-	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/storage/page/internal/data"
 	"HomegrownDB/hgtest"
 	"fmt"

@@ -1,29 +1,9 @@
 package relation
 
 import (
-	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
 	"log"
 )
-
-func NewBaseRelation(relKind Kind) BaseRelation {
-	return BaseRelation{
-		relKind: relKind,
-	}
-}
-
-func SerializeBaseRelation(rel *BaseRelation, serializer *bparse.Serializer) {
-	serializer.Uint32(uint32(rel.id))
-	serializer.Uint8(uint8(rel.relKind))
-}
-
-func DeserializeBaseRelation(deserializer *bparse.Deserializer) BaseRelation {
-	return BaseRelation{
-		id:      OID(deserializer.Uint32()),
-		relKind: Kind(deserializer.Uint8()),
-	}
-
-}
 
 var _ Relation = &BaseRelation{}
 

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"HomegrownDB/dbsystem/relation/table"
-	"HomegrownDB/dbsystem/relation/table/column"
-	"HomegrownDB/dbsystem/relation/table/column/ctypes"
-	"HomegrownDB/dbsystem/relation/table/column/factory"
+	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/access/relation/table/column"
+	"HomegrownDB/dbsystem/access/relation/table/column/ctypes"
+	"HomegrownDB/dbsystem/access/relation/table/column/factory"
 	"HomegrownDB/dbsystem/storage/tpage"
 	"HomegrownDB/dbsystem/tx"
 	"os"

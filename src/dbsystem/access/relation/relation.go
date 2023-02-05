@@ -1,7 +1,7 @@
 package relation
 
 import (
-	"HomegrownDB/dbsystem/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
 )
 
 type OID = dbobj.OID

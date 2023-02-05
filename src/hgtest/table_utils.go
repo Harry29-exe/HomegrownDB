@@ -2,7 +2,7 @@ package hgtest
 
 import (
 	"HomegrownDB/common/random"
-	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 )

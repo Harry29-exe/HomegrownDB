@@ -7,7 +7,7 @@ import (
 	"HomegrownDB/backend/internal/planner"
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"testing"
 )
 

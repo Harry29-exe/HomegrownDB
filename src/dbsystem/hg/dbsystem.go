@@ -3,10 +3,10 @@ package hg
 import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/hg/di"
-	"HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/relation/dbobj"
-	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"

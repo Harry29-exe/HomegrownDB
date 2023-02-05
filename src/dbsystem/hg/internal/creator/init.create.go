@@ -2,6 +2,7 @@ package creator
 
 import (
 	"HomegrownDB/dbsystem/config"
+	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/dbfs"
 )
 
@@ -61,7 +62,7 @@ type creatorCtx struct {
 func (c *creatorCtx) initRootPath() *creatorCtx {
 	c.RootPath = c.Props.RootPath
 	if c.modeEqDBInstaller() {
-		err := config.SetRootPathEnv(c.RootPath)
+		err := storage.SetRootPathEnv(c.RootPath)
 		if err != nil {
 			return c.error(err)
 		}

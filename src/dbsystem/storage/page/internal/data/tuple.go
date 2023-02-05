@@ -1,7 +1,7 @@
 package data
 
 import (
-	"HomegrownDB/dbsystem/relation/table/column"
+	"HomegrownDB/dbsystem/access/relation/table/column"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -14,6 +14,7 @@ type RTuple interface {
 	IsNull(id column.Order) bool
 	ColValue(id column.Order) []byte
 	DataSize() int
+	TupleSize() int
 
 	Data() []byte
 	Bytes() []byte

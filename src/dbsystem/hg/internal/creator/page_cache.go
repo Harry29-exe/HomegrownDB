@@ -1,8 +1,8 @@
 package creator
 
 import (
-	"HomegrownDB/dbsystem/relation/dbobj"
-	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
 )

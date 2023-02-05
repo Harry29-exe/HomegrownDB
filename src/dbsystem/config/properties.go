@@ -1,8 +1,8 @@
 package config
 
 import (
-	"HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/tx"
 	"encoding/json"

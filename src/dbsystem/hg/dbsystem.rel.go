@@ -2,9 +2,9 @@ package hg
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/relation/dbobj"
-	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"fmt"

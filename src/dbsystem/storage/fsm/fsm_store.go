@@ -1,8 +1,8 @@
 package fsm
 
 import (
-	"HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/relation/table"
 )
 
 // todo thought if this should be deleted as fsm generaly don't need to be locked

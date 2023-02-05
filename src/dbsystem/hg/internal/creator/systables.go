@@ -1,8 +1,8 @@
 package creator
 
 import (
+	"HomegrownDB/dbsystem/access/relation/dbobj"
 	"HomegrownDB/dbsystem/access/systable"
-	"HomegrownDB/dbsystem/relation/dbobj"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
@@ -21,14 +21,14 @@ func createSysTables(fs dbfs.FS) error {
 		createTable(systable.HGRelationsOID, systable.HGRelationsFsmOID, systable.HGRelationsVmOID).
 		createTable(systable.HGColumnsOID, systable.HGColumnsFsmOID, systable.HGColumnsVmOID).
 		insertTuples(relationsTable.OID(),
-			systable.TableAsRelationsRow(relationsTable, creatorTX, 0),
-			systable.TableAsRelationsRow(columnsTable, creatorTX, 0),
+			systable.RelationsOps.TableAsRelationsRow(relationsTable, creatorTX),
+			systable.RelationsOps.TableAsRelationsRow(columnsTable, creatorTX),
 		).
 		insertTuples(systable.HGColumnsOID,
-			systable.Columns.DataToRows(systable.HGRelationsOID, relationsTable.Columns(), creatorTX, 0)...,
+			systable.ColumnsOps.DataToRows(systable.HGRelationsOID, relationsTable.Columns(), creatorTX, 0)...,
 		).
 		insertTuples(systable.HGColumnsOID,
-			systable.Columns.DataToRows(systable.HGColumnsOID, columnsTable.Columns(), creatorTX, 0)...,
+			systable.ColumnsOps.DataToRows(systable.HGColumnsOID, columnsTable.Columns(), creatorTX)...,
 		).
 		flushPages().
 		getError()

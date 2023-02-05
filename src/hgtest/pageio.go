@@ -2,7 +2,7 @@ package hgtest
 
 import (
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"testing"

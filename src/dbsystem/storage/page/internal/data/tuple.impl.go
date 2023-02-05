@@ -3,7 +3,7 @@ package data
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/strutils"
-	"HomegrownDB/dbsystem/relation/table/column"
+	"HomegrownDB/dbsystem/access/relation/table/column"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/tx"
 	"encoding/binary"

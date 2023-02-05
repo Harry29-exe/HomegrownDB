@@ -1,11 +1,11 @@
 package testtable
 
 import (
+	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/relation/dbobj"
-	"HomegrownDB/dbsystem/relation/table"
-	"HomegrownDB/dbsystem/relation/table/column"
 )
 
 type Builder struct {

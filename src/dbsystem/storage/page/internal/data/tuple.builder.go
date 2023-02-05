@@ -12,7 +12,7 @@ import (
 type TupleBuilder interface {
 	Init(pattern TuplePattern)
 	WriteValue(value rawtype.Value) error
-	VolatileTuple(tx tx.Tx, command uint16) Tuple
+	VolatileTuple(tx tx.Tx) Tuple
 	Reset()
 }
 
@@ -64,7 +64,7 @@ func (t *tupleBuilder) WriteValue(value rawtype.Value) error {
 	}
 }
 
-func (t *tupleBuilder) VolatileTuple(tx tx.Tx, commands uint16) Tuple {
+func (t *tupleBuilder) VolatileTuple(tx tx.Tx) Tuple {
 	tupleData := t.dataBuff.Bytes()
 	copy(tupleData[toNullBitmap:], t.nullBitmap.Bytes())
 
@@ -74,7 +74,7 @@ func (t *tupleBuilder) VolatileTuple(tx tx.Tx, commands uint16) Tuple {
 	}
 	tuple.SetCreatedByTx(tx.TxID())
 	tuple.SetModifiedByTx(tx.TxID())
-	tuple.SetTxCommandCounter(commands)
+	tuple.SetTxCommandCounter(tx.CommandExecuted())
 
 	return tuple
 }

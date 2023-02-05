@@ -1,7 +1,7 @@
 package table
 
 import (
-	"HomegrownDB/dbsystem/relation"
+	"HomegrownDB/dbsystem/access/relation"
 	"fmt"
 	"sync"
 )

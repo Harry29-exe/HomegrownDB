@@ -11,9 +11,9 @@ package ttable2
 
 import (
 	"HomegrownDB/common/tests/tutils/testtable"
+	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/relation/table/column"
 	"testing"
 )
 

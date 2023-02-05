@@ -2,7 +2,7 @@ package testinfr
 
 import (
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
-	table2 "HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"testing"
 )
 
@@ -10,8 +10,8 @@ var TestTableStore = tblStore{}
 
 type tblStore struct{}
 
-func (tblStore) TableStore(t *testing.T, tables ...table2.Definition) table2.Store {
-	store := table2.NewEmptyTableStore()
+func (tblStore) TableStore(t *testing.T, tables ...table.Definition) table.Store {
+	store := table.NewEmptyTableStore()
 	for _, tab := range tables {
 		err := store.AddNewTable(tab)
 		if err != nil {
@@ -21,8 +21,8 @@ func (tblStore) TableStore(t *testing.T, tables ...table2.Definition) table2.Sto
 	return store
 }
 
-func (tblStore) StoreWithUsersTable(t *testing.T) (store table2.Store, users table2.Definition) {
-	store = table2.NewEmptyTableStore()
+func (tblStore) StoreWithUsersTable(t *testing.T) (store table.Store, users table.Definition) {
+	store = table.NewEmptyTableStore()
 	users = tt_user.Def(t)
 	users.InitRel(1, 2, 3)
 	err := store.AddNewTable(users)

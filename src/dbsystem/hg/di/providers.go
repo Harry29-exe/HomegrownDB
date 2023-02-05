@@ -2,9 +2,10 @@ package di
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
+	table2 "HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/auth"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
@@ -12,7 +13,7 @@ import (
 )
 
 func RootPathFromEnv() (string, error) {
-	return config.ReadRootPathEnv()
+	return storage.ReadRootPathEnv()
 }
 
 func FS(rootPath string) (dbfs.FS, error) {
@@ -35,8 +36,8 @@ func PageIOStore(args SimpleArgs) (pageio.Store, error) {
 	return pageio.NewStore(args.FS), nil
 }
 
-func TableStore(args SimpleArgs) (table.Store, error) {
-	return table.NewEmptyTableStore(), nil
+func TableStore(args SimpleArgs) (table2.Store, error) {
+	return table2.NewEmptyTableStore(), nil
 }
 
 func FsmStore(args SimpleArgs) (fsm.Store, error) {

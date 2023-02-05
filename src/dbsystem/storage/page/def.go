@@ -1,9 +1,9 @@
 package page
 
 import (
+	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/relation/dbobj"
-	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/page/internal"
 	"math"
 )

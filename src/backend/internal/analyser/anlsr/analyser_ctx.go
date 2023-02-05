@@ -4,18 +4,18 @@ import (
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/sqlerr"
 	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/dbsystem/relation"
-	table2 "HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/relation/table"
 )
 
 type Ctx = *ctx
 
-func NewCtx(store table2.Store) Ctx {
+func NewCtx(store table.Store) Ctx {
 	return &ctx{
 		RteIdCounter: appsync.NewSimpleCounter[node.RteID](0),
 
 		TableStore: store,
-		TableCache: map[relation.OID]table2.Definition{},
+		TableCache: map[relation.OID]table.Definition{},
 		TableIdMap: map[string]relation.OID{},
 	}
 }
@@ -23,23 +23,23 @@ func NewCtx(store table2.Store) Ctx {
 type ctx struct {
 	RteIdCounter RteIdCounter
 
-	TableStore table2.Store
-	TableCache map[relation.OID]table2.Definition
+	TableStore table.Store
+	TableCache map[relation.OID]table.Definition
 	TableIdMap map[string]relation.OID // TableIdMap map[tableName] = tableId
 }
 
-func (c Ctx) GetTableById(id relation.OID) table2.RDefinition {
+func (c Ctx) GetTableById(id relation.OID) table.RDefinition {
 	cachedTable, ok := c.TableCache[id]
 	if ok {
 		return cachedTable
 	}
 
-	tab := c.TableStore.AccessTable(id, table2.RLockMode)
+	tab := c.TableStore.AccessTable(id, table.RLockMode)
 	c.TableCache[id] = tab
 	return tab
 }
 
-func (c Ctx) GetTable(name string) (table2.RDefinition, error) {
+func (c Ctx) GetTable(name string) (table.RDefinition, error) {
 	tableId, ok := c.TableIdMap[name]
 	if ok {
 		return c.TableCache[tableId], nil
@@ -50,7 +50,7 @@ func (c Ctx) GetTable(name string) (table2.RDefinition, error) {
 		return nil, sqlerr.NewNoTableWithNameErr(name)
 	}
 
-	tableDef := c.TableStore.AccessTable(tableId, table2.RLockMode)
+	tableDef := c.TableStore.AccessTable(tableId, table.RLockMode)
 	c.TableCache[tableId] = tableDef
 	return tableDef, nil
 }

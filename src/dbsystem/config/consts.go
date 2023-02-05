@@ -13,7 +13,6 @@ const (
 )
 
 const (
-	dbHomeVarName     = "HOMEGROWN_DB_HOME"
 	TableDirname      = "tables"
 	TableInfoFilename = "info"
 )

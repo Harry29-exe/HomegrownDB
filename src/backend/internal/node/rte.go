@@ -1,10 +1,10 @@
 package node
 
 import (
+	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	table2 "HomegrownDB/dbsystem/relation/table"
-	"HomegrownDB/dbsystem/relation/table/column"
 	"fmt"
 )
 
@@ -40,7 +40,7 @@ func (k rteKind) ToString() string {
 	}[k]
 }
 
-func NewRelationRTE(rteID RteID, ref table2.RDefinition) RangeTableEntry {
+func NewRelationRTE(rteID RteID, ref table.RDefinition) RangeTableEntry {
 	return &rangeTableEntry{
 		node:    node{tag: TagRTE},
 		Kind:    RteRelation,
@@ -83,9 +83,9 @@ type rangeTableEntry struct {
 	Id   RteID
 
 	// Kind = RteRelation
-	LockMode table2.TableLockMode
-	TableId  table2.Id
-	Ref      table2.RDefinition
+	LockMode table.TableLockMode
+	TableId  table.Id
+	Ref      table.RDefinition
 
 	// Kind = RteSubQuery
 	Subquery *query

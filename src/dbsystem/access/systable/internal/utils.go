@@ -1,17 +1,18 @@
-package systable
+package internal
 
 import (
 	"HomegrownDB/common/bparse"
+	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/access/relation/table/column"
+	"HomegrownDB/dbsystem/access/systable"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/relation/table"
-	"HomegrownDB/dbsystem/relation/table/column"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"log"
 )
 
-func newTableDef(name string, oid OID, fsmOID OID, vmOID OID, columns []column.WDef) table.RDefinition {
+func NewTableDef(name string, oid systable.OID, fsmOID systable.OID, vmOID systable.OID, columns []column.WDef) table.RDefinition {
 	tableDef := table.NewDefinition(name)
 	tableDef.InitRel(oid, fsmOID, vmOID)
 
@@ -25,7 +26,7 @@ func newTableDef(name string, oid OID, fsmOID OID, vmOID OID, columns []column.W
 	return tableDef
 }
 
-func newColumnDef(name string, oid OID, order column.Order, ctype hgtype.ColType) column.WDef {
+func NewColumnDef(name string, oid systable.OID, order column.Order, ctype hgtype.ColType) column.WDef {
 	return column.NewDefinition(name, oid, order, ctype)
 }
 
@@ -33,25 +34,25 @@ func newColumnDef(name string, oid OID, order column.Order, ctype hgtype.ColType
 //      TupleBuilder
 // -------------------------
 
-func newTupleBuilder(table table.RDefinition) optimisticTupleBuilder {
+func NewTupleBuilder(table table.RDefinition) OptimisticTupleBuilder {
 	builder := page.NewTupleBuilder()
 	builder.Init(page.PatternFromTable(table))
-	return optimisticTupleBuilder{builder}
+	return OptimisticTupleBuilder{builder}
 }
 
-type optimisticTupleBuilder struct {
+type OptimisticTupleBuilder struct {
 	builder page.TupleBuilder
 }
 
-func (o optimisticTupleBuilder) WriteValue(value rawtype.Value) {
+func (o OptimisticTupleBuilder) WriteValue(value rawtype.Value) {
 	err := o.builder.WriteValue(value)
 	if err != nil {
 		log.Panicf("unexpected err: %s", err)
 	}
 }
 
-func (o optimisticTupleBuilder) Tuple(tx tx.Tx, commands uint16) page.Tuple {
-	return o.builder.VolatileTuple(tx, commands)
+func (o OptimisticTupleBuilder) Tuple(tx tx.Tx) page.Tuple {
+	return o.builder.VolatileTuple(tx)
 }
 
 // -------------------------

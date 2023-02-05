@@ -1,11 +1,30 @@
-package envvar
+package storage
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"unicode"
 )
+
+const dbHomeVarName = "HOMEGROWN_DB_HOME"
+
+func ReadRootPathEnv() (string, error) {
+	home := os.Getenv(dbHomeVarName)
+	if home == "" {
+		return home, errors.New("env variable: " + dbHomeVarName + " is empty")
+	} else {
+		log.Printf("DB home path is set to: %s\n", home)
+	}
+
+	return home, nil
+}
+
+func SetRootPathEnv(rootPath string) error {
+	return SetOsEnv(dbHomeVarName, rootPath)
+}
 
 func SetOsEnv(envName string, envValue string) error {
 	homeDir, err := os.UserHomeDir()

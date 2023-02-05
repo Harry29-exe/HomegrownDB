@@ -2,9 +2,9 @@ package di
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/auth"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"

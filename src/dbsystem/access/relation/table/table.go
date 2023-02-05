@@ -1,10 +1,10 @@
 package table
 
 import (
+	relation "HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/hgtype"
-	relation "HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/relation/dbobj"
-	"HomegrownDB/dbsystem/relation/table/column"
 )
 
 type RDefinition interface {

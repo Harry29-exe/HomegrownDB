@@ -4,7 +4,7 @@ import (
 	anlsr2 "HomegrownDB/backend/internal/analyser/anlsr"
 	node2 "HomegrownDB/backend/internal/node"
 	pnode2 "HomegrownDB/backend/internal/pnode"
-	"HomegrownDB/dbsystem/relation/table/column"
+	"HomegrownDB/dbsystem/access/relation/table/column"
 )
 
 var Select = _select{}

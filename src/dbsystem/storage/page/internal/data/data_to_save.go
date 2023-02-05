@@ -2,7 +2,7 @@ package data
 
 import (
 	"HomegrownDB/dbsystem/access/lob"
-	"HomegrownDB/dbsystem/relation/table/column"
+	"HomegrownDB/dbsystem/access/relation/table/column"
 )
 
 type TupleToSave struct {

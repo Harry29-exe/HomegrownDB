@@ -1,10 +1,11 @@
 package systable
 
 import (
+	"HomegrownDB/dbsystem/access/relation/table/column"
+	"HomegrownDB/dbsystem/access/systable/internal"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/intype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/relation/table/column"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"log"
@@ -12,17 +13,12 @@ import (
 
 var columnsDef = ColumnsTableDef()
 
-var Columns = columnsOps{}
+var ColumnsOps = columnsOps{}
 
 type columnsOps struct{}
 
-func (columnsOps) DataToRow(
-	tableId OID,
-	col column.Def,
-	tx tx.Tx,
-	commands uint16,
-) page.WTuple {
-	builder := newTupleBuilder(columnsDef)
+func (columnsOps) DataToRow(tableId OID, col column.Def, tx tx.Tx) page.WTuple {
+	builder := internal.NewTupleBuilder(columnsDef)
 
 	builder.WriteValue(intype.ConvInt8Value(int64(col.Id())))
 	builder.WriteValue(intype.ConvInt8Value(int64(tableId)))
@@ -41,33 +37,28 @@ func (columnsOps) DataToRow(
 	builder.WriteValue(intype.ConvBoolValue(args.VarLen))
 	builder.WriteValue(intype.ConvBoolValue(args.UTF8))
 
-	return builder.Tuple(tx, commands)
+	return builder.Tuple(tx)
 }
 
-func (o columnsOps) DataToRows(
-	tableOID OID,
-	columns []column.Def,
-	tx tx.Tx,
-	commands uint16,
-) []page.WTuple {
+func (o columnsOps) DataToRows(tableOID OID, columns []column.Def, tx tx.Tx) []page.WTuple {
 	tuples := make([]page.WTuple, len(columns))
 	for i, colDef := range columns {
-		tuples[i] = o.DataToRow(tableOID, colDef, tx, commands)
+		tuples[i] = o.DataToRow(tableOID, colDef, tx)
 	}
 	return tuples
 }
 
 func (o columnsOps) RowToData(row page.RTuple) column.WDef {
-	name := GetString(ColumnsOrderColName, row)
-	colOID := GetInt8(ColumnsOrderOID, row)
-	order := GetInt8(ColumnsOrderColOrder, row)
-	typeTag := GetInt8(ColumnsOrderTypeTag, row)
-	argsLength := GetInt8(ColumnsOrderArgsLength, row)
-	argsVarLen := GetBool(ColumnsOrderArgsVarLen, row)
-	argsUTF8 := GetBool(ColumnsOrderArgsUTF8, row)
-	argsNullable := GetBool(ColumnsOrderArgsNullable, row)
+	name := internal.GetString(ColumnsOrderColName, row)
+	colOID := internal.GetInt8(ColumnsOrderOID, row)
+	order := internal.GetInt8(ColumnsOrderColOrder, row)
+	typeTag := internal.GetInt8(ColumnsOrderTypeTag, row)
+	argsLength := internal.GetInt8(ColumnsOrderArgsLength, row)
+	argsVarLen := internal.GetBool(ColumnsOrderArgsVarLen, row)
+	argsUTF8 := internal.GetBool(ColumnsOrderArgsUTF8, row)
+	argsNullable := internal.GetBool(ColumnsOrderArgsNullable, row)
 
-	return newColumnDef(
+	return internal.NewColumnDef(
 		name,
 		OID(colOID),
 		column.Order(order),

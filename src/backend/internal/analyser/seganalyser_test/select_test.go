@@ -7,7 +7,7 @@ import (
 	. "HomegrownDB/backend/internal/testinfr"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
-	"HomegrownDB/dbsystem/relation/table"
+	"HomegrownDB/dbsystem/access/relation/table"
 	"testing"
 )
 

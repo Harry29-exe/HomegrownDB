@@ -1,7 +1,7 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
 	"HomegrownDB/dbsystem/storage/page"
 )
 

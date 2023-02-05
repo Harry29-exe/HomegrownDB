@@ -3,8 +3,8 @@ package exinfr
 import (
 	node "HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
+	table2 "HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/hg/di"
-	table "HomegrownDB/dbsystem/relation/table"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -28,8 +28,8 @@ func NewExCtx(
 	}
 }
 
-func createCache(rteList []node.RangeTableEntry, store table.Store) (table.Cache, map[node.RteID]node.RangeTableEntry) {
-	cache := map[table.Id]table.RDefinition{}
+func createCache(rteList []node.RangeTableEntry, store table2.Store) (table2.Cache, map[node.RteID]node.RangeTableEntry) {
+	cache := map[table2.Id]table2.RDefinition{}
 	rteMap := map[node.RteID]node.RangeTableEntry{}
 	for _, rte := range rteList {
 		if rte.Kind == node.RteRelation {
@@ -46,8 +46,8 @@ type executionCtx struct {
 	Stmt       node.PlanedStmt
 	Buff       buffer.SharedBuffer
 	FsmStore   fsm.Store
-	Tables     table.Cache
-	TableStore table.Store
+	Tables     table2.Cache
+	TableStore table2.Store
 	Tx         tx.Tx
 
 	rteMap map[node.RteID]node.RangeTableEntry

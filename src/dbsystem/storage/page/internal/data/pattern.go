@@ -1,8 +1,8 @@
 package data
 
 import (
+	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/relation/table"
 	"math"
 )
 

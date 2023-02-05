@@ -1,21 +1,21 @@
 package table
 
 import (
+	relation2 "HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/hgtype"
-	relation "HomegrownDB/dbsystem/relation"
-	"HomegrownDB/dbsystem/relation/dbobj"
-	"HomegrownDB/dbsystem/relation/table/column"
 	"errors"
 	"math"
 )
 
 var (
-	_ Definition        = &StdTable{}
-	_ relation.Relation = &StdTable{}
+	_ Definition         = &StdTable{}
+	_ relation2.Relation = &StdTable{}
 )
 
 type StdTable struct {
-	relation.BaseRelation
+	relation2.BaseRelation
 	columns  []column.WDef
 	rColumns []column.Def
 	name     string
