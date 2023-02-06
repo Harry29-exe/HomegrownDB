@@ -3,7 +3,7 @@ package handler
 import (
 	"HomegrownDB/backend"
 	"HomegrownDB/dbsystem/auth"
-	"HomegrownDB/dbsystem/hg/di"
+	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/tx"
 )
 
@@ -23,7 +23,7 @@ const (
 	SqlResultJSON
 )
 
-func NewSqlHandler(container di.FrontendContainer) SqlHandler {
+func NewSqlHandler(container hg.FrontendContainer) SqlHandler {
 	return stdSqlHandler{
 		Container:  container.ExecutionContainer,
 		AuthManger: container.AuthManger,
@@ -32,7 +32,7 @@ func NewSqlHandler(container di.FrontendContainer) SqlHandler {
 }
 
 type stdSqlHandler struct {
-	Container  di.ExecutionContainer
+	Container  hg.ExecutionContainer
 	AuthManger auth.Manager
 	TxManger   tx.Manager
 }

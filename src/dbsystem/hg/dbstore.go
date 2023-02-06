@@ -1,11 +1,12 @@
 package hg
 
 import (
+	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/dbobj"
-	"HomegrownDB/dbsystem/hg/di"
-	"HomegrownDB/dbsystem/reldef"
+	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
@@ -13,6 +14,10 @@ import (
 )
 
 type DBModule interface {
+	StorageModule() storage.Module
+	ConfigModule() config.Module
+	AccessModule() access.Module
+	
 	RelationManager() relation.Manager
 	FS() dbfs.FS
 	FsmStore() fsm.Store
@@ -20,20 +25,14 @@ type DBModule interface {
 	SharedBuffer() buffer.SharedBuffer
 	TxManager() tx.Manager
 
-	ExecutionContainer() di.ExecutionContainer
-	FrontendContainer() di.FrontendContainer
+	ExecutionContainer() ExecutionContainer
+	FrontendContainer() FrontendContainer
 
 	NextOID() dbobj.OID
 }
 
 type DB interface {
 	DBModule
-	RelationsOperations
 	//io.Closer
 	Destroy() error
-}
-
-type RelationsOperations interface {
-	CreateRel(rel reldef.Relation) error
-	DeleteRel(rel reldef.Relation) error
 }

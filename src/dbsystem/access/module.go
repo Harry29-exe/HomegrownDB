@@ -13,31 +13,31 @@ type Module interface {
 }
 
 type ModuleBuilder struct {
-	StorageModule storage.Module
-	ConfigModule  config.Module
-
 	SharedBufferProvider   func(storageModule storage.Module, configModule config.Module) (buffer.SharedBuffer, error)
 	RelationMangerProvider func(module storage.Module, buff buffer.SharedBuffer) (relation.Manager, error)
 }
 
-func DefaultModuleBuilder(configModule config.Module, storageModule storage.Module) ModuleBuilder {
+func DefaultModuleBuilder() ModuleBuilder {
 	return ModuleBuilder{
-		StorageModule:          storageModule,
-		ConfigModule:           configModule,
 		SharedBufferProvider:   SharedBufferProvider,
 		RelationMangerProvider: RelationManagerProvider,
 	}
 }
 
-func NewModule(builder ModuleBuilder) (Module, error) {
+type ModuleDeps struct {
+	StorageModule storage.Module
+	ConfigModule  config.Module
+}
+
+func NewModule(builder ModuleBuilder, deps ModuleDeps) (Module, error) {
 	var err error
 	module := new(stdModule)
 
-	module.sharedBuffer, err = builder.SharedBufferProvider(builder.StorageModule, builder.ConfigModule)
+	module.sharedBuffer, err = builder.SharedBufferProvider(deps.StorageModule, deps.ConfigModule)
 	if err != nil {
 		return nil, err
 	}
-	module.relationManager, err = builder.RelationMangerProvider(builder.StorageModule, module.sharedBuffer)
+	module.relationManager, err = builder.RelationMangerProvider(deps.StorageModule, module.sharedBuffer)
 	if err != nil {
 		return nil, err
 	}

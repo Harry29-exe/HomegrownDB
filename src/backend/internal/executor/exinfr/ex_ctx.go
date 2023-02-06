@@ -4,7 +4,7 @@ import (
 	node "HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/relation"
-	"HomegrownDB/dbsystem/hg/di"
+	"HomegrownDB/dbsystem/hg"
 	relation2 "HomegrownDB/dbsystem/reldef"
 	table2 "HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/fsm"
@@ -16,7 +16,7 @@ type ExCtx = *executionCtx
 func NewExCtx(
 	stmt node.PlanedStmt,
 	txCtx tx.Tx,
-	container di.ExecutionContainer,
+	container hg.ExecutionContainer,
 ) ExCtx {
 	cache, rteMap := createCache(stmt.Tables, container.RelationManager)
 	return &executionCtx{

@@ -1,4 +1,4 @@
-package di
+package hg
 
 import (
 	"HomegrownDB/dbsystem/auth"

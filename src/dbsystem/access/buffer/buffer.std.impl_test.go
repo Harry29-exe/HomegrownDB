@@ -4,11 +4,13 @@ import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	. "HomegrownDB/dbsystem/access/buffer"
+	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/hg"
-	"HomegrownDB/dbsystem/hg/di"
 	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/hgtest"
 	"sync"
 	"testing"
@@ -199,20 +201,20 @@ type usersTCtx struct {
 	tableIO pageio.IO
 }
 
-func bootstrapTCtx_Users(provider di.SharedBufferProvider, t *testing.T) *usersTCtx {
+func bootstrapTCtx_Users(provider func(storageModule storage.Module, configModule config.Module) (SharedBuffer, error), t *testing.T) *usersTCtx {
 	rootPath := hgtest.TestRootPath(t)
 	err := hg.Create(hg.CreateArgs{Mode: hg.CreatorModeTest, RootPath: rootPath})
 	assert.ErrIsNil(err, t)
 
-	container := hg.DefaultFutureContainer()
-	container.RootProvider = func() (string, error) { return rootPath, nil }
-	container.SharedBufferProvider = provider
-	db, err := hg.Load(&container)
+	container := hg.DefaultMBuilders()
+	container.StorageMBuilder.RootPathProvider = func() (string, error) { return rootPath, nil }
+	container.AccessMBuilder.SharedBufferProvider = provider
+	db, err := hg.Load(container)
 	assert.ErrIsNil(err, t)
 	testDB := hgtest.NewTestDBUtils(db, t)
 
 	usersTable := tt_user.Def(t)
-	err = db.CreateRel(usersTable)
+	_, err = db.AccessModule().RelationManager().Create(usersTable, tx.StdTx{})
 	assert.ErrIsNil(err, t)
 
 	return &usersTCtx{
@@ -224,8 +226,8 @@ func bootstrapTCtx_Users(provider di.SharedBufferProvider, t *testing.T) *usersT
 
 func bootstrapSimpleTCtx_Users(bufferSize uint, t *testing.T) (*usersTCtx, StdBuffer) {
 	var testBuffer StdBuffer
-	ctx := bootstrapTCtx_Users(func(args di.SimpleArgs, store pageio.Store) (SharedBuffer, error) {
-		testBuffer = NewStdBuffer(bufferSize, store)
+	ctx := bootstrapTCtx_Users(func(storageModule storage.Module, configModule config.Module) (SharedBuffer, error) {
+		testBuffer = NewStdBuffer(bufferSize, storageModule.PageIOStore())
 		return AsSharedBuffer(testBuffer), nil
 	}, t)
 	return ctx, testBuffer

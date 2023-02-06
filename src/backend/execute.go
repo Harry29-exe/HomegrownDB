@@ -5,12 +5,12 @@ import (
 	"HomegrownDB/backend/internal/executor"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/planner"
-	"HomegrownDB/dbsystem/hg/di"
+	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 )
 
-func Execute(query string, tx tx.Tx, container di.ExecutionContainer) ([]page.RTuple, error) {
+func Execute(query string, tx tx.Tx, container hg.ExecutionContainer) ([]page.RTuple, error) {
 	parseTree, err := parser.Parse(query)
 	if err != nil {
 		return nil, err

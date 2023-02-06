@@ -1,8 +1,10 @@
 package hg
 
 import (
-	"HomegrownDB/dbsystem/hg/di"
+	"HomegrownDB/dbsystem/access"
+	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/hg/internal/creator"
+	"HomegrownDB/dbsystem/storage"
 )
 
 type CreateArgs = creator.Props
@@ -18,30 +20,47 @@ func Create(args CreateArgs) error {
 
 // Load create DB object with provided FutureContainer, if fc is nil then Load
 // will create default
-func Load(fc *di.FutureContainer) (DB, error) {
-	if fc == nil {
-		fcTemp := DefaultFutureContainer()
-		fc = &fcTemp
+func Load(builders *MBuilders) (DB, error) {
+	if builders == nil {
+		builders = DefaultMBuilders()
 	}
+	var err error
+	dbModule := new(DBSystem)
 
-	container, err := fc.Build()
+	dbModule.storageModule, err = storage.NewModule(builders.StorageMBuilder)
 	if err != nil {
 		return nil, err
 	}
-	return NewDB(container), nil
+
+	dbModule.configModule, err = config.NewModule(
+		builders.ConfigMBuilder,
+		config.ModuleDeps{StorageModule: dbModule.storageModule})
+	if err != nil {
+		return nil, err
+	}
+
+	dbModule.accessModule, err = access.NewModule(builders.AccessMBuilder, access.ModuleDeps{
+		StorageModule: dbModule.storageModule,
+		ConfigModule:  dbModule.configModule,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return dbModule, nil
 }
 
-func DefaultFutureContainer() di.FutureContainer {
-	return di.FutureContainer{
-		RootProvider:         di.RootPathFromEnv,
-		FsProvider:           di.FS,
-		ConfigProvider:       di.Configuration,
-		PropertiesProvider:   di.Properties,
-		PageIOStoreProvider:  di.PageIOStore,
-		TableStoreProvider:   di.TableStore,
-		FsmStoreProvider:     di.FsmStore,
-		SharedBufferProvider: di.SharedBuffer,
-		TxManagerProvider:    di.TxManager,
-		AuthManagerProvider:  di.AuthManager,
+// MBuilders wrapper to keep all module builders
+type MBuilders struct {
+	StorageMBuilder storage.ModuleBuilder
+	ConfigMBuilder  config.ModuleBuilder
+	AccessMBuilder  access.ModuleBuilder
+}
+
+func DefaultMBuilders() *MBuilders {
+	return &MBuilders{
+		StorageMBuilder: storage.DefaultModuleBuilder(),
+		ConfigMBuilder:  config.DefaultBuilder(),
+		AccessMBuilder:  access.DefaultModuleBuilder(),
 	}
 }

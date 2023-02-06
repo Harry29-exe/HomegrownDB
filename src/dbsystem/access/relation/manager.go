@@ -15,17 +15,17 @@ import (
 type Manager interface {
 	Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation, error)
 	Delete(relation reldef.Relation) error
-	GetByOID(oid reldef.OID) reldef.Relation
+	
 	FindByName(name string) (reldef.OID, error)
-
-	Lock(relationOID reldef.OID, mode LockMode)
-	Unlock(relationOID reldef.OID, mode LockMode)
+	Access(oid reldef.OID, mode LockMode) reldef.Relation
+	Free(relationOID reldef.OID, mode LockMode)
 }
 
 type LockMode uint8
 
 const (
-	LockRead LockMode = iota
+	LockNode LockMode = iota
+	LockRead
 	LockWrite
 )
 
@@ -101,22 +101,17 @@ func (s *stdManager) Delete(relation reldef.Relation) error {
 	panic("implement me")
 }
 
-func (s *stdManager) GetByOID(oid reldef.OID) reldef.Relation {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (s *stdManager) FindByName(name string) (reldef.OID, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *stdManager) Lock(relationOID reldef.OID, mode LockMode) {
+func (s *stdManager) Access(oid reldef.OID, mode LockMode) reldef.Relation {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *stdManager) Unlock(relationOID reldef.OID, mode LockMode) {
+func (s *stdManager) Free(relationOID reldef.OID, mode LockMode) {
 	//TODO implement me
 	panic("implement me")
 }

@@ -1,7 +1,6 @@
 package page
 
 import (
-	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page/internal"
@@ -17,7 +16,7 @@ const (
 	InvalidId = math.MaxUint32
 )
 
-const Size uint16 = config.PageSize
+const Size uint16 = internal.Size
 
 type PageTag = internal.PageTag
 

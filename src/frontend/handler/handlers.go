@@ -1,12 +1,14 @@
 package handler
 
-import "HomegrownDB/dbsystem/hg/di"
+import (
+	"HomegrownDB/dbsystem/hg"
+)
 
 type Handlers struct {
 	SqlHandler SqlHandler
 }
 
-func NewHandlers(container di.FrontendContainer) Handlers {
+func NewHandlers(container hg.FrontendContainer) Handlers {
 	//todo implement me
 	panic("Not implemented")
 }

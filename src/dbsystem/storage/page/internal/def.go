@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/dbobj"
 	"math"
 )
@@ -15,7 +14,7 @@ const (
 	InvalidId = math.MaxUint32
 )
 
-const Size uint16 = config.PageSize
+const Size uint16 = 8192
 
 type PageTag struct {
 	PageId  Id
