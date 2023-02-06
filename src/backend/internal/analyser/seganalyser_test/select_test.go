@@ -8,15 +8,19 @@ import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/hgtest"
 	"testing"
 )
 
 func TestSelect_u_name_FROM_users(t *testing.T) {
 	// given
 	query := "SELECT u.name FROM users u"
-
-	store, usersTable := TestTableStore.StoreWithUsersTable(t)
-	expectedQuery := expectedTree_u_name_FROM_users(usersTable)
+	testdb := hgtest.CreateAndLoadDBWith(nil, t).
+		WithUsersTable().
+		Build()
+	store := testdb.DB.AccessModule().RelationManager()
+	users := testdb.TableByName(tt_user.TableName)
+	expectedQuery := expectedTree_u_name_FROM_users(users)
 
 	//when
 	stmt, err := parser.Parse(query)

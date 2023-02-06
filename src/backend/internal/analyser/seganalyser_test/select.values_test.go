@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/backend/internal/analyser"
 	node2 "HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/parser"
-	testinfr2 "HomegrownDB/backend/internal/testinfr"
+	testinfr "HomegrownDB/backend/internal/testinfr"
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/hgtype"
@@ -15,7 +15,7 @@ import (
 func TestValuesSelect(t *testing.T) {
 	//given
 	inputQuery := "VALUES (1, 'Bob'), (2, 'Alice')"
-	store := testinfr2.TestTableStore.TableStore(t)
+	store := testinfr.NewRelationAccessManager()
 
 	//when
 	parseTree, err := parser.Parse(inputQuery)
@@ -25,7 +25,7 @@ func TestValuesSelect(t *testing.T) {
 
 	//then
 	expectedQuery := SelectValues.expectedValuesSelect(t)
-	testinfr2.NodeAssert.Eq(expectedQuery, query, t)
+	testinfr.NodeAssert.Eq(expectedQuery, query, t)
 }
 
 var SelectValues = selectValues{}
@@ -37,8 +37,8 @@ func (selectValues) expectedValuesSelect(t *testing.T) node2.Query {
 
 	query := node2.NewQuery(node2.CommandTypeSelect, nil)
 	valuesRTE := node2.NewValuesRTE(rteIdCounter.Next(), [][]node2.Expr{
-		{node2.NewConstInt8(1), testinfr2.NewConstStr("Bob", t)},
-		{node2.NewConstInt8(2), testinfr2.NewConstStr("Alice", t)},
+		{node2.NewConstInt8(1), testinfr.NewConstStr("Bob", t)},
+		{node2.NewConstInt8(2), testinfr.NewConstStr("Alice", t)},
 	})
 	valuesRTE.ColTypes = []hgtype.ColumnType{
 		hgtype.NewInt8(rawtype.Args{}),

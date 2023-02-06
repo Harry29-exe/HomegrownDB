@@ -5,13 +5,15 @@ import (
 	"HomegrownDB/backend/internal/planner"
 	. "HomegrownDB/backend/internal/testinfr"
 	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/hgtest"
 	"testing"
 )
 
 func TestInsertPlanner_SimpleInsert(t *testing.T) {
 	//given
 	inputQuery := "INSERT INTO users (id, name) VALUES (1, 'bob')"
-	store, _ := TestTableStore.StoreWithUsersTable(t)
+	testDB := hgtest.CreateAndLoadDBWith(nil, t).WithUsersTable().Build()
+	store := testDB.DB.AccessModule().RelationManager()
 	query := ParseAndAnalyse(inputQuery, store, t)
 	expectedPlan := SimpleInsert.expectedPlan(query, t)
 

@@ -4,19 +4,19 @@ import (
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/sqlerr"
 	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/reldef"
-	table2 "HomegrownDB/dbsystem/reldef/tabdef"
+	table "HomegrownDB/dbsystem/reldef/tabdef"
 )
 
 type Ctx = *ctx
 
-func NewCtx(store table.Store) Ctx {
+func NewCtx(store relation.AccessMngr) Ctx {
 	return &ctx{
 		RteIdCounter: appsync.NewSimpleCounter[node.RteID](0),
 
 		TableStore: store,
-		TableCache: map[reldef.OID]table2.Definition{},
+		TableCache: map[reldef.OID]table.RDefinition{},
 		TableIdMap: map[string]reldef.OID{},
 	}
 }
@@ -24,34 +24,42 @@ func NewCtx(store table.Store) Ctx {
 type ctx struct {
 	RteIdCounter RteIdCounter
 
-	TableStore table.Store
-	TableCache map[reldef.OID]table2.Definition
+	TableStore relation.AccessMngr
+	TableCache map[reldef.OID]table.RDefinition
 	TableIdMap map[string]reldef.OID // TableIdMap map[tableName] = tableId
 }
 
-func (c Ctx) GetTableById(id reldef.OID) table2.RDefinition {
+func (c Ctx) GetTableById(id reldef.OID) table.RDefinition {
 	cachedTable, ok := c.TableCache[id]
 	if ok {
 		return cachedTable
 	}
 
-	tab := c.TableStore.AccessTable(id, table.RLockMode)
+	rel := c.TableStore.Access(id, relation.LockRead)
+	if rel.Kind() != reldef.TypeTable {
+
+	}
+	tab := rel.(table.RDefinition)
 	c.TableCache[id] = tab
 	return tab
 }
 
-func (c Ctx) GetTable(name string) (table2.RDefinition, error) {
+func (c Ctx) GetTable(name string) (table.RDefinition, error) {
 	tableId, ok := c.TableIdMap[name]
 	if ok {
 		return c.TableCache[tableId], nil
 	}
 
-	tableId = c.TableStore.FindTable(name)
+	tableId = c.TableStore.FindByName(name)
 	if tableId == reldef.InvalidRelId {
 		return nil, sqlerr.NewNoTableWithNameErr(name)
 	}
 
-	tableDef := c.TableStore.AccessTable(tableId, table.RLockMode)
+	rel := c.TableStore.Access(tableId, relation.LockRead)
+	if rel.Kind() != reldef.TypeTable {
+		return nil, sqlerr.NewNoTableWithNameErr(name)
+	}
+	tableDef := rel.(table.Definition)
 	c.TableCache[tableId] = tableDef
 	return tableDef, nil
 }

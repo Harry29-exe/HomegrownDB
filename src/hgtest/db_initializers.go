@@ -4,28 +4,28 @@ import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/dbsystem/hg"
-	"HomegrownDB/dbsystem/hg/di"
+	"HomegrownDB/dbsystem/tx"
 	"testing"
 )
 
 type TestDBBuilder struct {
 	db hg.DB
 	t  *testing.T
+	tx tx.Tx
 
 	funcToExec []func()
 }
 
-func CreateAndLoadDBWith(fc *di.FutureContainer, t *testing.T) *TestDBBuilder {
+func CreateAndLoadDBWith(builders *hg.MBuilders, t *testing.T) *TestDBBuilder {
 	rootPath := TestRootPath(t)
 	err := hg.Create(hg.CreateArgs{Mode: hg.CreatorModeTest, RootPath: rootPath})
 	assert.ErrIsNil(err, t)
 
-	if fc == nil {
-		temp := hg.DefaultFutureContainer()
-		fc = &temp
+	if builders == nil {
+		builders = hg.DefaultMBuilders()
 	}
-	fc.RootProvider = createRootPathProvider(rootPath)
-	db, err := hg.Load(fc)
+	builders.StorageMBuilder.RootPathProvider = createRootPathProvider(rootPath)
+	db, err := hg.Load(builders)
 	assert.ErrIsNil(err, t)
 
 	t.Cleanup(func() {
@@ -34,13 +34,13 @@ func CreateAndLoadDBWith(fc *di.FutureContainer, t *testing.T) *TestDBBuilder {
 		}
 	})
 
-	return &TestDBBuilder{db: db, t: t}
+	return &TestDBBuilder{db: db, t: t, tx: tx.StdTx{}}
 }
 
 func (b *TestDBBuilder) WithUsersTable() *TestDBBuilder {
 	usersTableFunc := func() {
 		users := tt_user.Def(b.t)
-		err := b.db.CreateRel(users)
+		_, err := b.db.AccessModule().RelationManager().Create(users, b.tx)
 		assert.ErrIsNil(err, b.t)
 	}
 
@@ -65,7 +65,7 @@ func (b *TestDBBuilder) Build() TestDBUtils {
 //      test providers
 // -------------------------
 
-func createRootPathProvider(rootPath string) di.RootPathProvider {
+func createRootPathProvider(rootPath string) func() (string, error) {
 	return func() (string, error) {
 		return rootPath, nil
 	}

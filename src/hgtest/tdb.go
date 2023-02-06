@@ -2,7 +2,7 @@ package hgtest
 
 import (
 	"HomegrownDB/common/random"
-	table2 "HomegrownDB/dbsystem/access/reldef/tabdef"
+	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef"
@@ -50,11 +50,15 @@ func (u TestDBUtils) FillTablePages(pagesToFill int, tableName string) {
 }
 
 func (u TestDBUtils) TableByName(tableName string) tabdef.Definition {
-	id := u.DB.RelationManager().FindTable(tableName)
+	id := u.DB.RelationManager().FindByName(tableName)
 	if id == reldef.InvalidRelId {
 		u.T.Errorf("not tabdef: " + tableName)
 	}
-	return u.DB.RelationManager().AccessTable(id, table2.WLockMode)
+	rel := u.DB.RelationManager().Access(id, relation.LockWrite)
+	if rel.Kind() != reldef.TypeTable {
+		u.T.Errorf("relation is not table")
+	}
+	return rel.(tabdef.Definition)
 }
 
 func (u TestDBUtils) RandTuple(tableRel tabdef.Definition) page.Tuple {
@@ -66,7 +70,7 @@ func (u TestDBUtils) RandTuple(tableRel tabdef.Definition) page.Tuple {
 // -------------------------
 
 func (u TestDBUtils) PageIOByTableName(tableName string) pageio.IO {
-	id := u.DB.RelationManager().FindTable(tableName)
+	id := u.DB.RelationManager().FindByName(tableName)
 	if id == reldef.InvalidRelId {
 		u.T.Errorf("not tabdef: " + tableName)
 	}

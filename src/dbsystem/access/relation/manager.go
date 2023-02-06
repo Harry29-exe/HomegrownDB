@@ -15,8 +15,13 @@ import (
 type Manager interface {
 	Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation, error)
 	Delete(relation reldef.Relation) error
-	
-	FindByName(name string) (reldef.OID, error)
+	AccessMngr
+}
+
+type AccessMngr interface {
+	// FindByName finds relation with provided name and returns its oid,
+	// if relation does not exist returns dbobj.InvalidId
+	FindByName(name string) reldef.OID
 	Access(oid reldef.OID, mode LockMode) reldef.Relation
 	Free(relationOID reldef.OID, mode LockMode)
 }
@@ -24,7 +29,7 @@ type Manager interface {
 type LockMode uint8
 
 const (
-	LockNode LockMode = iota
+	LockNone LockMode = iota
 	LockRead
 	LockWrite
 )
@@ -101,7 +106,7 @@ func (s *stdManager) Delete(relation reldef.Relation) error {
 	panic("implement me")
 }
 
-func (s *stdManager) FindByName(name string) (reldef.OID, error) {
+func (s *stdManager) FindByName(name string) reldef.OID {
 	//TODO implement me
 	panic("implement me")
 }

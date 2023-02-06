@@ -1,12 +1,12 @@
 package exinfr
 
 import (
-	node "HomegrownDB/backend/internal/node"
+	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/hg"
-	relation2 "HomegrownDB/dbsystem/reldef"
-	table2 "HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -30,17 +30,16 @@ func NewExCtx(
 	}
 }
 
-func createCache(rteList []node.RangeTableEntry, store relation.Manager) (table2.Cache, map[node.RteID]node.RangeTableEntry) {
-	cache := map[table2.Id]table2.RDefinition{}
+func createCache(rteList []node.RangeTableEntry, store relation.Manager) (tabdef.Cache, map[node.RteID]node.RangeTableEntry) {
+	cache := map[tabdef.Id]tabdef.RDefinition{}
 	rteMap := map[node.RteID]node.RangeTableEntry{}
 	for _, rte := range rteList {
 		if rte.Kind == node.RteRelation {
-			store.Lock(rte.TableId, rte.LockMode)
-			rel := store.GetByOID(rte.TableId)
-			if rel.Kind() != relation2.TypeTable {
+			rel := store.Access(rte.TableId, rte.LockMode)
+			if rel.Kind() != reldef.TypeTable {
 				panic("illegal type")
 			}
-			tableDef := rel.(table2.RDefinition)
+			tableDef := rel.(tabdef.RDefinition)
 			cache[rte.TableId] = tableDef
 			rte.Ref = tableDef
 		}
@@ -53,7 +52,7 @@ type executionCtx struct {
 	Stmt       node.PlanedStmt
 	Buff       buffer.SharedBuffer
 	FsmStore   fsm.Store
-	Tables     table2.Cache
+	Tables     tabdef.Cache
 	TableStore relation.Manager
 	Tx         tx.Tx
 

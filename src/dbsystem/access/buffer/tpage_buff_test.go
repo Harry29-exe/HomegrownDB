@@ -9,8 +9,8 @@ import (
 	. "HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/hg"
-	"HomegrownDB/dbsystem/hg/di"
 	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/hgtest"
@@ -19,11 +19,11 @@ import (
 
 func TestTableBufferWriteRead(t *testing.T) {
 	//given
-	fc := hg.DefaultFutureContainer()
-	fc.SharedBufferProvider = func(args di.SimpleArgs, store pageio.Store) (SharedBuffer, error) {
-		return NewSharedBuffer(2, store), nil
+	builders := hg.DefaultMBuilders()
+	builders.AccessMBuilder.SharedBufferProvider = func(storageModule storage.Module, configModule config.Module) (SharedBuffer, error) {
+		return NewSharedBuffer(2, storageModule.PageIOStore()), nil
 	}
-	dbUtils := hgtest.CreateAndLoadDBWith(&fc, t).
+	dbUtils := hgtest.CreateAndLoadDBWith(builders, t).
 		WithUsersTable().
 		Build()
 	table1, tableIO, buff := dbUtils.TableByName(tt_user.TableName),

@@ -2,9 +2,9 @@ package internal
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/access/systable"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"HomegrownDB/dbsystem/storage/page"
@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-func NewTableDef(name string, oid systable.OID, fsmOID systable.OID, vmOID systable.OID, columns []column.WDef) tabdef.RDefinition {
+func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OID, columns []column.WDef) tabdef.RDefinition {
 	tableDef := tabdef.NewDefinition(name)
 	tableDef.InitRel(oid, fsmOID, vmOID)
 
@@ -26,7 +26,7 @@ func NewTableDef(name string, oid systable.OID, fsmOID systable.OID, vmOID systa
 	return tableDef
 }
 
-func NewColumnDef(name string, oid systable.OID, order column.Order, ctype hgtype.ColType) column.WDef {
+func NewColumnDef(name string, oid reldef.OID, order column.Order, ctype hgtype.ColType) column.WDef {
 	return column.NewDefinition(name, oid, order, ctype)
 }
 

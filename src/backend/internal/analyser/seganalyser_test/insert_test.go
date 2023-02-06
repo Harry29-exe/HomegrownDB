@@ -2,7 +2,7 @@ package seganalyser
 
 import (
 	"HomegrownDB/backend/internal/analyser"
-	node2 "HomegrownDB/backend/internal/node"
+	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/parser"
 	. "HomegrownDB/backend/internal/testinfr"
 	"HomegrownDB/common/datastructs/appsync"
@@ -11,13 +11,19 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/hgtest"
 	"testing"
 )
 
 func TestInsertAnalyse_SimplePositive1(t *testing.T) {
 	//given
 	query := "INSERT INTO users (id, name) VALUES (1, 'bob')"
-	store, users := TestTableStore.StoreWithUsersTable(t)
+	db := hgtest.CreateAndLoadDBWith(nil, t).
+		WithUsersTable().
+		Build()
+
+	store := db.DB.AccessModule().RelationManager()
+	users := db.TableByName(tt_user.TableName)
 	expectedNode := InsertTests.expectedSimplePositive1(users, t)
 
 	//when
@@ -31,17 +37,17 @@ func TestInsertAnalyse_SimplePositive1(t *testing.T) {
 	NodeAssert.Eq(expectedNode, queryNode, t)
 }
 
-func (insertTest) expectedSimplePositive1(users tabdef.Definition, t *testing.T) node2.Query {
-	rteIdCounter := appsync.NewSimpleCounter[node2.RteID](0)
+func (insertTest) expectedSimplePositive1(users tabdef.RDefinition, t *testing.T) node.Query {
+	rteIdCounter := appsync.NewSimpleCounter[node.RteID](0)
 
-	query := node2.NewQuery(node2.CommandTypeInsert, nil)
+	query := node.NewQuery(node.CommandTypeInsert, nil)
 
-	resultRel := node2.NewRelationRTE(rteIdCounter.Next(), users)
-	query.RTables = []node2.RangeTableEntry{resultRel}
+	resultRel := node.NewRelationRTE(rteIdCounter.Next(), users)
+	query.RTables = []node.RangeTableEntry{resultRel}
 	query.ResultRel = resultRel.Id
 
-	valuesRte := node2.NewValuesRTE(rteIdCounter.Next(), [][]node2.Expr{
-		{node2.NewConstInt8(1), NewConstStr("bob", t)},
+	valuesRte := node.NewValuesRTE(rteIdCounter.Next(), [][]node.Expr{
+		{node.NewConstInt8(1), NewConstStr("bob", t)},
 	})
 	valuesRte.ColTypes = []hgtype.ColumnType{
 		hgtype.NewInt8(rawtype.Args{}),
@@ -51,15 +57,15 @@ func (insertTest) expectedSimplePositive1(users tabdef.Definition, t *testing.T)
 			UTF8:   false,
 		}),
 	}
-	query.TargetList = []node2.TargetEntry{
-		node2.NewTargetEntry(node2.NewVar(valuesRte.Id, 0, users.Column(0).CType()), tt_user.C0IdOrder, tt_user.C0Id),
-		node2.NewTargetEntry(node2.NewConst(tt_user.C1AgeType.ColTag, nil), tt_user.C1AgeOrder, tt_user.C1Age),
-		node2.NewTargetEntry(node2.NewVar(valuesRte.Id, 1, users.Column(2).CType()), tt_user.C2NameOrder, tt_user.C2Name),
-		node2.NewTargetEntry(node2.NewConst(tt_user.C3SurnameType.ColTag, nil), tt_user.C3SurnameOrder, tt_user.C3Surname),
+	query.TargetList = []node.TargetEntry{
+		node.NewTargetEntry(node.NewVar(valuesRte.Id, 0, users.Column(0).CType()), tt_user.C0IdOrder, tt_user.C0Id),
+		node.NewTargetEntry(node.NewConst(tt_user.C1AgeType.ColTag, nil), tt_user.C1AgeOrder, tt_user.C1Age),
+		node.NewTargetEntry(node.NewVar(valuesRte.Id, 1, users.Column(2).CType()), tt_user.C2NameOrder, tt_user.C2Name),
+		node.NewTargetEntry(node.NewConst(tt_user.C3SurnameType.ColTag, nil), tt_user.C3SurnameOrder, tt_user.C3Surname),
 	}
 
 	query.AppendRTE(valuesRte)
-	query.FromExpr = node2.NewFromExpr2(nil, valuesRte.CreateRef())
+	query.FromExpr = node.NewFromExpr2(nil, valuesRte.CreateRef())
 
 	return query
 }

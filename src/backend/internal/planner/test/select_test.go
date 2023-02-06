@@ -9,14 +9,17 @@ import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/hgtest"
 	"testing"
 )
 
 func TestSelectPlanner_SimpleSelect(t *testing.T) {
 	//given
 	query := "SELECT u.name FROM users u"
-	store, usersTab := TestTableStore.StoreWithUsersTable(t)
-	expectedPlannedStmt := expectedPlan_SimpleSelect(usersTab, t)
+	testDB := hgtest.CreateAndLoadDBWith(nil, t).WithUsersTable().Build()
+	store := testDB.DB.AccessModule().RelationManager()
+	users := testDB.TableByName(tt_user.TableName)
+	expectedPlannedStmt := expectedPlan_SimpleSelect(users, t)
 
 	//when
 	rawStmt, err := parser.Parse(query)

@@ -7,24 +7,24 @@ import (
 	"HomegrownDB/backend/internal/planner"
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/access/relation"
 	"testing"
 )
 
 type RteIdCounter = appsync.SimpleSyncCounter[node2.RteID]
 
-func ParseAndAnalyse(query string, store table.Store, t *testing.T) node2.Query {
+func ParseAndAnalyse(query string, relManager relation.Manager, t *testing.T) node2.Query {
 	pTree, err := parser.Parse(query)
 	assert.ErrIsNil(err, t)
 
-	queryNode, err := analyser.Analyse(pTree, store)
+	queryNode, err := analyser.Analyse(pTree, relManager)
 	assert.ErrIsNil(err, t)
 
 	return queryNode
 }
 
-func ParseAnalyseAndPlan(query string, store table.Store, t *testing.T) node2.PlanedStmt {
-	queryTree := ParseAndAnalyse(query, store, t)
+func ParseAnalyseAndPlan(query string, relManager relation.Manager, t *testing.T) node2.PlanedStmt {
+	queryTree := ParseAndAnalyse(query, relManager, t)
 	planedStmt, err := planner.Plan(queryTree)
 	assert.ErrIsNil(err, t)
 	return planedStmt

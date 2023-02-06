@@ -19,6 +19,6 @@ func RelationManagerProvider(
 	storageModule storage.Module,
 	buff buffer.SharedBuffer,
 ) (relation.Manager, error) {
-	//todo implement me
-	panic("Not implemented")
+	manager := new(relation.Manager)
+	manager.
 }

@@ -24,7 +24,7 @@ func TestBuildSimplePage(t *testing.T) {
 	err = builder.WriteValue(col1)
 	assert.ErrIsNil(err, t)
 
-	tuple := builder.VolatileTuple(tx.StdTx{}, 0)
+	tuple := builder.VolatileTuple(tx.StdTx{})
 
 	// then
 	assert.True(pattern.Columns[0].Type.Equal(col0.NormValue, tuple.ColValue(0)), t)
@@ -44,7 +44,7 @@ func TestBuildMultiplePages(t *testing.T) {
 	assert.ErrIsNil(err, t)
 	err = builder.WriteValue(col1v1)
 	assert.ErrIsNil(err, t)
-	tupleV1 := builder.VolatileTuple(tx.StdTx{}, 0)
+	tupleV1 := builder.VolatileTuple(tx.StdTx{})
 
 	// starting creating second
 	builder.Reset()
@@ -58,7 +58,7 @@ func TestBuildMultiplePages(t *testing.T) {
 	assert.ErrIsNil(err, t)
 	err = builder.WriteValue(col1v2)
 	assert.ErrIsNil(err, t)
-	tupleV2 := builder.VolatileTuple(tx.StdTx{}, 0)
+	tupleV2 := builder.VolatileTuple(tx.StdTx{})
 
 	// then
 	assert.True(pattern.Columns[0].Type.Equal(col0v2.NormValue, tupleV2.ColValue(0)), t)

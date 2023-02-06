@@ -5,10 +5,10 @@ import (
 	"HomegrownDB/backend/internal/analyser/seganalyser"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
-	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/access/relation"
 )
 
-func Analyse(stmt pnode.RawStmt, store table.Store) (node.Query, error) {
+func Analyse(stmt pnode.RawStmt, store relation.AccessMngr) (node.Query, error) {
 	ctx := anlsr.NewCtx(store)
 	innerStmt := stmt.Stmt
 
