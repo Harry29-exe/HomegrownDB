@@ -1,9 +1,9 @@
 package systable
 
 import (
-	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/access/systable/internal"
 	"HomegrownDB/dbsystem/hgtype/intype"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -15,7 +15,7 @@ var RelationsOps = relationsOps{}
 type relationsOps struct{}
 
 func (relationsOps) TableAsRelationsRow(
-	table table.RDefinition,
+	table tabdef.RDefinition,
 	tx tx.Tx,
 ) page.Tuple {
 	builder := internal.NewTupleBuilder(relationsDef)
@@ -25,5 +25,5 @@ func (relationsOps) TableAsRelationsRow(
 	builder.WriteValue(intype.ConvInt8Value(int64(table.FsmOID())))
 	builder.WriteValue(intype.ConvInt8Value(int64(table.VmOID())))
 
-	return builder.Tuple(tx, tx.CommandExecuted())
+	return builder.Tuple(tx)
 }

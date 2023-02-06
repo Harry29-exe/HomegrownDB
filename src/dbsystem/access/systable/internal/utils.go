@@ -2,24 +2,24 @@ package internal
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/access/relation/table"
-	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/access/systable"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"log"
 )
 
-func NewTableDef(name string, oid systable.OID, fsmOID systable.OID, vmOID systable.OID, columns []column.WDef) table.RDefinition {
-	tableDef := table.NewDefinition(name)
+func NewTableDef(name string, oid systable.OID, fsmOID systable.OID, vmOID systable.OID, columns []column.WDef) tabdef.RDefinition {
+	tableDef := tabdef.NewDefinition(name)
 	tableDef.InitRel(oid, fsmOID, vmOID)
 
 	for _, colDef := range columns {
 		err := tableDef.AddColumn(colDef)
 		if err != nil {
-			log.Panicf("unexpected error while creating Relations table: %s", err.Error())
+			log.Panicf("unexpected error while creating Relations tabdef: %s", err.Error())
 		}
 	}
 
@@ -34,7 +34,7 @@ func NewColumnDef(name string, oid systable.OID, order column.Order, ctype hgtyp
 //      TupleBuilder
 // -------------------------
 
-func NewTupleBuilder(table table.RDefinition) OptimisticTupleBuilder {
+func NewTupleBuilder(table tabdef.RDefinition) OptimisticTupleBuilder {
 	builder := page.NewTupleBuilder()
 	builder.Init(page.PatternFromTable(table))
 	return OptimisticTupleBuilder{builder}

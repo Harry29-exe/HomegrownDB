@@ -1,12 +1,12 @@
 // Package segparser aggregate segment parsers.
 // Each parser parses segment that it can understand often using
 // other parsers. E.g. Select parser will use tables parser
-// and tables parser will use table parser.
+// and tables parser will use tabdef parser.
 //
 // Each parser should start at internal.TokenSource current token and
 // return value when internal.TokenSource is pointing at last token parsed
-// by parser. E.g. Table parser should start at table name and finish
-// when internal.TokenSource point either to table name or table alias (if exist)
+// by parser. E.g. Table parser should start at tabdef name and finish
+// when internal.TokenSource point either to tabdef name or tabdef alias (if exist)
 package segparser
 
 import (

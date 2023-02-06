@@ -81,7 +81,7 @@ var ResultTarget = resultTargetParser{}
 
 type resultTargetParser struct{}
 
-// Parse todo add support for field without table alias
+// Parse todo add support for field without tabdef alias
 func (t resultTargetParser) Parse(src tkSource, v tkValidator, mode resultTargetMode) (pnode.ResultTarget, error) {
 	switch mode {
 	case ResultTargetSelect:

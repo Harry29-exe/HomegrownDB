@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/common/tests"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/ttable1"
-	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page/internal/data"
 	"HomegrownDB/hgtest"
 	"fmt"
@@ -13,7 +13,7 @@ import (
 )
 
 func TestCreateEmptyPage(t *testing.T) {
-	tableDef := table.NewDefinition(
+	tableDef := tabdef.NewDefinition(
 		"test_table")
 	tableDef.SetOID(32)
 	tableDef.SetOID(12)
@@ -118,7 +118,7 @@ func TestPage_DeleteTuple_Last(t *testing.T) {
 	}
 }
 
-func putRandomTupleToPage(tupleCount int, page data.Page, table table.RDefinition, t *testing.T) []data.Tuple {
+func putRandomTupleToPage(tupleCount int, page data.Page, table tabdef.RDefinition, t *testing.T) []data.Tuple {
 	rand := random.NewRandom(0)
 	tuples := make([]data.Tuple, tupleCount)
 	for i := 0; i < tupleCount; i++ {

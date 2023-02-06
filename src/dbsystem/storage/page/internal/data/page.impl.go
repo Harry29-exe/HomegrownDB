@@ -5,8 +5,8 @@ package data
 // which shows how page's binary representations looks like
 
 import (
-	"HomegrownDB/dbsystem/access/relation"
-	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/reldef"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"encoding/binary"
 	"errors"
@@ -14,7 +14,7 @@ import (
 )
 
 // todo add handling for inserting into empty page
-func EmptyTablePage(pattern TuplePattern, relationId relation.OID) Page {
+func EmptyTablePage(pattern TuplePattern, relationId reldef.OID) Page {
 	rawPage := make([]byte, page.Size)
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
@@ -58,7 +58,7 @@ func AsPage(data []byte, ownerId dbobj.OID, pageId page.Id, pattern TuplePattern
 type Page struct {
 	pattern    TuplePattern
 	id         page.Id
-	relationId relation.OID
+	relationId reldef.OID
 	bytes      []byte
 }
 

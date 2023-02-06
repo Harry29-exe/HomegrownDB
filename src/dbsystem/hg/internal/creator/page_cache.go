@@ -1,16 +1,16 @@
 package creator
 
 import (
-	"HomegrownDB/dbsystem/access/relation/dbobj"
-	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
 )
 
-func newPageCache(fs dbfs.FS, tables ...table.RDefinition) *pageCache {
+func newPageCache(fs dbfs.FS, tables ...tabdef.RDefinition) *pageCache {
 	cache := pageCache{
 		fs:     fs,
-		tables: map[dbobj.OID]table.RDefinition{},
+		tables: map[dbobj.OID]tabdef.RDefinition{},
 		cache:  map[dbobj.OID][]page.WPage{},
 	}
 	for _, table := range tables {
@@ -22,7 +22,7 @@ func newPageCache(fs dbfs.FS, tables ...table.RDefinition) *pageCache {
 
 type pageCache struct {
 	fs     dbfs.FS
-	tables map[dbobj.OID]table.RDefinition
+	tables map[dbobj.OID]tabdef.RDefinition
 	cache  map[dbobj.OID][]page.WPage
 }
 

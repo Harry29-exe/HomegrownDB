@@ -1,8 +1,7 @@
 package config
 
 import (
-	"HomegrownDB/dbsystem/access/relation"
-	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/tx"
 	"encoding/json"
@@ -23,23 +22,14 @@ func SerializeProperties(properties DBProperties) []byte {
 }
 
 type DBProperties struct {
-	Relations []RelPTR
-	NextTxID  tx.Id
-	NextRID   relation.OID
-	NextOID   dbobj.OID
+	NextTxID tx.Id
+	NextOID  dbobj.OID
 }
 
 func DefaultDBProperties() DBProperties {
 	return DBProperties{
-		Relations: make([]RelPTR, 0),
-		NextRID:   1,
-		NextOID:   1,
+		NextOID: 1,
 	}
-}
-
-type RelPTR struct {
-	RelKind    relation.Kind
-	RelationID relation.OID
 }
 
 func ReadInitProperties(fs dbfs.PropertiesFS) (DBProperties, error) {

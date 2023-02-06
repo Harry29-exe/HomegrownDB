@@ -1,7 +1,7 @@
 package dbfs
 
 import (
-	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/dbobj"
 	"errors"
 	"fmt"
 	"os"
@@ -32,7 +32,7 @@ type DBInitializerFS interface {
 type PageObjectFS interface {
 	OpenPageObjectFile(oid dbobj.OID) (FileLike, error)
 	OpenPageObjectDef(oid dbobj.OID) (FileLike, error)
-	// InitNewRelationDir create directory and all files(empty) for given relation id
+	// InitNewRelationDir create directory and all files(empty) for given reldef id
 	InitNewPageObjectDir(oid dbobj.OID) error
 }
 

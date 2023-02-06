@@ -2,9 +2,10 @@ package hgtest
 
 import (
 	"HomegrownDB/common/random"
-	"HomegrownDB/dbsystem/access/relation"
-	table2 "HomegrownDB/dbsystem/access/relation/table"
+	table2 "HomegrownDB/dbsystem/access/reldef/tabdef"
 	"HomegrownDB/dbsystem/hg"
+	"HomegrownDB/dbsystem/reldef"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"testing"
@@ -48,15 +49,15 @@ func (u TestDBUtils) FillTablePages(pagesToFill int, tableName string) {
 	}
 }
 
-func (u TestDBUtils) TableByName(tableName string) table2.Definition {
-	id := u.DB.TableStore().FindTable(tableName)
-	if id == relation.InvalidRelId {
-		u.T.Errorf("not table: " + tableName)
+func (u TestDBUtils) TableByName(tableName string) tabdef.Definition {
+	id := u.DB.RelationManager().FindTable(tableName)
+	if id == reldef.InvalidRelId {
+		u.T.Errorf("not tabdef: " + tableName)
 	}
-	return u.DB.TableStore().AccessTable(id, table2.WLockMode)
+	return u.DB.RelationManager().AccessTable(id, table2.WLockMode)
 }
 
-func (u TestDBUtils) RandTuple(tableRel table2.Definition) page.Tuple {
+func (u TestDBUtils) RandTuple(tableRel tabdef.Definition) page.Tuple {
 	return Table.RandTPageTuple(tableRel, u.Rand)
 }
 
@@ -65,9 +66,9 @@ func (u TestDBUtils) RandTuple(tableRel table2.Definition) page.Tuple {
 // -------------------------
 
 func (u TestDBUtils) PageIOByTableName(tableName string) pageio.IO {
-	id := u.DB.TableStore().FindTable(tableName)
-	if id == relation.InvalidRelId {
-		u.T.Errorf("not table: " + tableName)
+	id := u.DB.RelationManager().FindTable(tableName)
+	if id == reldef.InvalidRelId {
+		u.T.Errorf("not tabdef: " + tableName)
 	}
 	return u.DB.PageIOStore().Get(id)
 }

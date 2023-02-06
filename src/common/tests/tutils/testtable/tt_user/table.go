@@ -1,5 +1,5 @@
 /*
-Package tt_user is following table definition
+Package tt_user is following tabdef definition
 
 	CREATE TABLE users (
 		id int8 PRIMARY KEY,
@@ -12,9 +12,9 @@ package tt_user
 
 import (
 	"HomegrownDB/common/tests/tutils/testtable"
-	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"testing"
 )
 

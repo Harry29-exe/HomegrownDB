@@ -1,7 +1,7 @@
-package relation
+package reldef
 
 import (
-	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/dbobj"
 	"log"
 )
 
@@ -28,7 +28,7 @@ func (s *BaseRelation) OID() OID {
 
 func (s *BaseRelation) InitRel(id OID, fsmID OID, vmID OID) {
 	if s.id != dbobj.InvalidOID {
-		log.Panic("relation can not be initialized multiple times")
+		log.Panic("reldef can not be initialized multiple times")
 	}
 	s.id = id
 	s.freeSpaceMapOID = fsmID

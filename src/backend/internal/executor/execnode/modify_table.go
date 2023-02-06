@@ -4,10 +4,10 @@ import (
 	"HomegrownDB/backend/internal/executor/exinfr"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/intype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
@@ -47,7 +47,7 @@ type ModifyTable struct {
 
 	txCtx       tx.Tx
 	buff        buffer.SharedBuffer
-	resultTable table.RDefinition
+	resultTable tabdef.RDefinition
 	fsm         *fsm.FSM
 	done        bool
 }

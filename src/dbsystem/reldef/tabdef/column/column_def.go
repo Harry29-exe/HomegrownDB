@@ -1,7 +1,7 @@
 package column
 
 import (
-	. "HomegrownDB/dbsystem/access/relation/dbobj"
+	. "HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/hgtype"
 )
 
@@ -30,7 +30,7 @@ type WDef interface {
 
 type Id = uint32
 
-// Order describes order of column in table
+// Order describes order of column in tabdef
 type Order = uint16
 
 // InnerOrder describes order of column in tuple

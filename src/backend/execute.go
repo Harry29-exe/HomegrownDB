@@ -15,7 +15,7 @@ func Execute(query string, tx tx.Tx, container di.ExecutionContainer) ([]page.RT
 	if err != nil {
 		return nil, err
 	}
-	queryTree, err := analyser.Analyse(parseTree, container.TableStore)
+	queryTree, err := analyser.Analyse(parseTree, container.RelationManager)
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,7 @@
 package data
 
 import (
-	"HomegrownDB/dbsystem/access/relation/table/column"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/tx"
 )

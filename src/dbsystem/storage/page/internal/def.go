@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"HomegrownDB/dbsystem/access/relation/dbobj"
 	"HomegrownDB/dbsystem/config"
+	"HomegrownDB/dbsystem/dbobj"
 	"math"
 )
 

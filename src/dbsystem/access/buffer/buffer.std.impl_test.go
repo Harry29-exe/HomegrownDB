@@ -4,9 +4,9 @@ import (
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	. "HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/hg/di"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/hgtest"
@@ -194,7 +194,7 @@ type usersTCtx struct {
 	hgtest.TestDBUtils
 	testBuffer StdBuffer
 
-	table table.Definition
+	table tabdef.Definition
 
 	tableIO pageio.IO
 }

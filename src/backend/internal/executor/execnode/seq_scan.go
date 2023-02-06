@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/backend/internal/executor/exinfr"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -40,7 +40,7 @@ type SeqScan struct {
 
 	txCtx tx.Tx
 	buff  buffer.SharedBuffer
-	table table.RDefinition
+	table tabdef.RDefinition
 
 	nextPageId  page.Id
 	nextTupleId page.TupleIndex

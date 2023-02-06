@@ -2,26 +2,35 @@ package relation
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/access/relation/dbobj"
-	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/access/systable"
+	"HomegrownDB/dbsystem/access/table"
+	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/reldef"
+	table2 "HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
 )
 
 type Manager interface {
-	Create(relation Relation, tx tx.Tx) (Relation, error)
-	Delete(relation Relation) error
-	FindByOID(oid OID) (Relation, error)
-	FindByName(name string) (Relation, error)
+	Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation, error)
+	Delete(relation reldef.Relation) error
+	GetByOID(oid reldef.OID) reldef.Relation
+	FindByName(name string) (reldef.OID, error)
 
-	Lock(relationOID OID)
-	Unlock(relationOID OID)
+	Lock(relationOID reldef.OID, mode LockMode)
+	Unlock(relationOID reldef.OID, mode LockMode)
 }
 
+type LockMode uint8
+
+const (
+	LockRead LockMode = iota
+	LockWrite
+)
+
 type OIDSequence interface {
-	NextOID() OID
+	NextOID() reldef.OID
 }
 
 type tid struct {
@@ -34,13 +43,13 @@ type stdManager struct {
 	FS          dbfs.FS
 	OIDSequence OIDSequence
 
-	oidMap  map[OID]tid
-	nameMap map[string]tid
+	oidMap  map[reldef.OID]tid
+	nameMap map[string]reldef.OID
 }
 
 var _ Manager = &stdManager{}
 
-func (s *stdManager) Create(relation Relation, tx tx.Tx) (Relation, error) {
+func (s *stdManager) Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation, error) {
 	if relation.OID() == dbobj.InvalidOID {
 		relation.InitRel(s.OIDSequence.NextOID(), s.OIDSequence.NextOID(), s.OIDSequence.NextOID())
 	}
@@ -49,15 +58,15 @@ func (s *stdManager) Create(relation Relation, tx tx.Tx) (Relation, error) {
 	}
 
 	switch relation.Kind() {
-	case TypeTable:
-		return relation, s.createTableInSysTables(relation.(table.Definition), tx)
+	case reldef.TypeTable:
+		return relation, s.createTableInSysTables(relation.(table2.Definition), tx)
 	default:
 		//todo implement me
 		panic("Not implemented")
 	}
 }
 
-func (s *stdManager) createTableInSysTables(definition table.Definition, tx tx.Tx) error {
+func (s *stdManager) createTableInSysTables(definition table2.Definition, tx tx.Tx) error {
 	tuple := systable.RelationsOps.TableAsRelationsRow(definition, tx)
 	err := table.Insert(tuple, tx, systable.RelationsTableDef(), fsm.NewFSM(systable.HGRelationsFsmOID, s.Buffer), s.Buffer)
 	if err != nil {
@@ -73,7 +82,7 @@ func (s *stdManager) createTableInSysTables(definition table.Definition, tx tx.T
 	return nil
 }
 
-func (s *stdManager) createRelationOnDisc(relation Relation) error {
+func (s *stdManager) createRelationOnDisc(relation reldef.Relation) error {
 	if err := s.FS.InitNewPageObjectDir(relation.OID()); err != nil {
 		return err
 	}
@@ -87,27 +96,27 @@ func (s *stdManager) createRelationOnDisc(relation Relation) error {
 	return nil
 }
 
-func (s *stdManager) Delete(relation Relation) error {
+func (s *stdManager) Delete(relation reldef.Relation) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *stdManager) FindByOID(oid OID) (Relation, error) {
+func (s *stdManager) GetByOID(oid reldef.OID) reldef.Relation {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *stdManager) FindByName(name string) (Relation, error) {
+func (s *stdManager) FindByName(name string) (reldef.OID, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *stdManager) Lock(relationOID OID) {
+func (s *stdManager) Lock(relationOID reldef.OID, mode LockMode) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *stdManager) Unlock(relationOID OID) {
+func (s *stdManager) Unlock(relationOID reldef.OID, mode LockMode) {
 	//TODO implement me
 	panic("implement me")
 }

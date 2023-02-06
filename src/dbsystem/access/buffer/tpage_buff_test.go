@@ -7,10 +7,10 @@ import (
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/common/tests/tutils/testtable/ttable1"
 	. "HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/hg/di"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/hgtest"
@@ -54,7 +54,7 @@ func TestTableBufferWriteRead(t *testing.T) {
 	checkIfPageIsSaved(1, wPage1Copy, table1, tableIO, buff, t)
 }
 
-func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 table.Definition, io pageio.IO, buff SharedBuffer, t *testing.T) {
+func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 tabdef.Definition, io pageio.IO, buff SharedBuffer, t *testing.T) {
 	wPage, err := buff.WTablePage(table1, pageId)
 	assert.IsNil(err, t)
 	assert.EqArray(expectedPage, wPage.Bytes(), t)
@@ -65,7 +65,7 @@ func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 table.Defini
 	assert.EqArray(wPage.Bytes(), wPage0FromIO, t)
 }
 
-func insertTPageWithSingleTuple(pageId page.Id, table1 table.Definition, buff SharedBuffer, rand random.Random, t *testing.T) page.WPage {
+func insertTPageWithSingleTuple(pageId page.Id, table1 tabdef.Definition, buff SharedBuffer, rand random.Random, t *testing.T) page.WPage {
 	wPage0, err := buff.WTablePage(table1, pageId)
 	assert.IsNil(err, t)
 	p0Tuple0 := hgtest.Table.RandTPageTuple(table1, rand).Bytes()

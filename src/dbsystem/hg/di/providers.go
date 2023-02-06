@@ -2,7 +2,7 @@ package di
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
-	table2 "HomegrownDB/dbsystem/access/relation/table"
+	table2 "HomegrownDB/dbsystem/access/reldef/tabdef"
 	"HomegrownDB/dbsystem/auth"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/storage"

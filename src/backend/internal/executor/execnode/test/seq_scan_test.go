@@ -15,13 +15,13 @@ func TestSeqScan_SimpleSelect(t *testing.T) {
 
 	insertTx := dbUtils.DB.TxManager().New(tx.CommittedRead)
 	insertQuery := "INSERT INTO users (id, name) VALUES (1, 'Bob')"
-	insertPlan := testinfr.ParseAnalyseAndPlan(insertQuery, dbUtils.DB.TableStore(), t)
+	insertPlan := testinfr.ParseAnalyseAndPlan(insertQuery, dbUtils.DB.RelationManager(), t)
 	insertResult := executor.Execute(insertPlan, insertTx, dbUtils.DB.ExecutionContainer())
 	assert.Eq(1, len(insertResult), t)
 
 	selectTx := dbUtils.DB.TxManager().New(tx.CommittedRead)
 	selectQuery := "SELECT u.id, u.name FROM users u"
-	selectPlan := testinfr.ParseAnalyseAndPlan(selectQuery, dbUtils.DB.TableStore(), t)
+	selectPlan := testinfr.ParseAnalyseAndPlan(selectQuery, dbUtils.DB.RelationManager(), t)
 	selectResult := executor.Execute(selectPlan, selectTx, dbUtils.DB.ExecutionContainer())
 	assert.Eq(1, len(selectResult), t)
 

@@ -3,7 +3,7 @@ package data
 import (
 	"HomegrownDB/common/bparse"
 	"HomegrownDB/common/strutils"
-	"HomegrownDB/dbsystem/access/relation/table/column"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/tx"
 	"encoding/binary"
@@ -190,7 +190,7 @@ func (t Tuple) tidTupleIndexSlice() []byte {
 
 func (t Tuple) NullBitmapSlice() []byte {
 	if len(t.pattern.Columns) == 0 {
-		panic("Tuple table is nil")
+		panic("Tuple tabdef is nil")
 	}
 
 	length := t.pattern.BitmapLen

@@ -80,7 +80,7 @@ var _ Node = &columnRef{}
 type columnRef struct {
 	node
 	Name       string // Name of referenced column
-	TableAlias string // TableAlias column's table alias or ""
+	TableAlias string // TableAlias column's tabdef alias or ""
 }
 
 func (c ColumnRef) Equal(node Node) bool {
@@ -212,7 +212,7 @@ func NewRangeVar(relName string, alias string) RangeVar {
 	}
 }
 
-// RangeVar range variable used in from clauses (basically table)
+// RangeVar range variable used in from clauses (basically tabdef)
 type rangeVar struct {
 	node
 	RelName string

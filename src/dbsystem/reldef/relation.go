@@ -1,7 +1,7 @@
-package relation
+package reldef
 
 import (
-	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/dbobj"
 )
 
 type OID = dbobj.OID

@@ -16,7 +16,7 @@ type NoTableWithNameErr struct {
 }
 
 func (n NoTableWithNameErr) Error() string {
-	return fmt.Sprintf("No table with name: %s", n.TableName)
+	return fmt.Sprintf("No tabdef with name: %s", n.TableName)
 }
 
 func NewNoTableWithColErr(colName string) NoTableWithCol {
@@ -28,7 +28,7 @@ type NoTableWithCol struct {
 }
 
 func (n NoTableWithCol) Error() string {
-	return fmt.Sprintf("No table with column: %s", n.ColName)
+	return fmt.Sprintf("No tabdef with column: %s", n.ColName)
 }
 
 // -------------------------

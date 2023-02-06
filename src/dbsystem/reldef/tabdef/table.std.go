@@ -1,21 +1,21 @@
-package table
+package tabdef
 
 import (
-	relation2 "HomegrownDB/dbsystem/access/relation"
-	"HomegrownDB/dbsystem/access/relation/dbobj"
-	"HomegrownDB/dbsystem/access/relation/table/column"
+	"HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/reldef"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"errors"
 	"math"
 )
 
 var (
-	_ Definition         = &StdTable{}
-	_ relation2.Relation = &StdTable{}
+	_ Definition      = &StdTable{}
+	_ reldef.Relation = &StdTable{}
 )
 
 type StdTable struct {
-	relation2.BaseRelation
+	reldef.BaseRelation
 	columns  []column.WDef
 	rColumns []column.Def
 	name     string
@@ -100,7 +100,7 @@ func (t *StdTable) Columns() []column.Def {
 func (t *StdTable) AddColumn(definition column.WDef) error {
 	_, ok := t.columnName_OrderMap[definition.Name()]
 	if ok {
-		return errors.New("table already contains column with name:" + definition.Name())
+		return errors.New("tabdef already contains column with name:" + definition.Name())
 	}
 	definition.SetOrder(t.columnsCount)
 

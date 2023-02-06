@@ -4,8 +4,7 @@ import (
 	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/relation"
-	"HomegrownDB/dbsystem/access/relation/dbobj"
-	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/hg/di"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
@@ -13,25 +12,22 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-var _ DBStore = &DBSystem{}
+var _ DBModule = &DBSystem{}
 
 func NewDB(container *di.Container) DB {
 	return &DBSystem{
 		DIC:        container,
-		ridCounter: appsync.NewSyncCounter(container.DBProps.NextRID),
 		oidCounter: appsync.NewSyncCounter(container.DBProps.NextOID),
 	}
 }
 
 type State struct {
-	NextRID relation.OID
 	NextOID dbobj.OID
 }
 
 type DBSystem struct {
 	DIC *di.Container
 
-	ridCounter appsync.SyncCounter[relation.OID]
 	oidCounter appsync.SyncCounter[dbobj.OID]
 }
 
@@ -47,8 +43,8 @@ func (db *DBSystem) Destroy() error {
 	return db.FS().DestroyDB()
 }
 
-func (db *DBSystem) TableStore() table.Store {
-	return db.DIC.TableStore
+func (db *DBSystem) RelationManager() relation.Manager {
+	return db.DIC.RelationManager
 }
 
 func (db *DBSystem) FsmStore() fsm.Store {
@@ -71,23 +67,17 @@ func (db *DBSystem) TxManager() tx.Manager {
 	return db.DIC.TxManager
 }
 
-func (db *DBSystem) NextRelId() relation.OID {
-	return db.ridCounter.GetAndIncr()
-}
-
 func (db *DBSystem) NextOID() dbobj.OID {
 	return db.oidCounter.GetAndIncr()
 }
 
 func (db *DBSystem) SetState(state State) error {
-	db.ridCounter = appsync.NewSyncCounter(state.NextRID)
 	db.oidCounter = appsync.NewSyncCounter(state.NextOID)
 	return nil
 }
 
 func (db *DBSystem) GetCurrentState() State {
 	return State{
-		NextRID: db.ridCounter.Get(),
 		NextOID: db.oidCounter.Get(),
 	}
 }

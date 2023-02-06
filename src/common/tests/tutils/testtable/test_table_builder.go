@@ -1,21 +1,21 @@
 package testtable
 
 import (
-	"HomegrownDB/dbsystem/access/relation"
-	"HomegrownDB/dbsystem/access/relation/dbobj"
-	"HomegrownDB/dbsystem/access/relation/table"
-	"HomegrownDB/dbsystem/access/relation/table/column"
+	"HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/hgtype"
+	"HomegrownDB/dbsystem/reldef"
+	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
 type Builder struct {
-	table        table.Definition
+	table        tabdef.Definition
 	NexColtOrder column.Order
 	NextOID      dbobj.OID
 }
 
 func NewTestTableBuilder(name string) *Builder {
-	return &Builder{table: table.NewDefinition(name)}
+	return &Builder{table: tabdef.NewDefinition(name)}
 }
 
 func (ttb *Builder) AddColumn(name string, nullable bool, typeData hgtype.ColumnType) *Builder {
@@ -23,20 +23,20 @@ func (ttb *Builder) AddColumn(name string, nullable bool, typeData hgtype.Column
 	ttb.NextOID++
 	ttb.NexColtOrder++
 	if err := ttb.table.AddColumn(col); err != nil {
-		panic("could not add column to table during tests")
+		panic("could not add column to tabdef during tests")
 	}
 
 	return ttb
 }
 
-func (ttb *Builder) SetIds(tableId table.Id, objectId relation.OID) *Builder {
+func (ttb *Builder) SetIds(tableId tabdef.Id, objectId reldef.OID) *Builder {
 	ttb.table.SetOID(tableId)
 	ttb.table.SetOID(objectId)
 
 	return ttb
 }
 
-func (ttb *Builder) GetTable() table.Definition {
+func (ttb *Builder) GetTable() tabdef.Definition {
 	table := ttb.table
 	ttb.table = nil
 

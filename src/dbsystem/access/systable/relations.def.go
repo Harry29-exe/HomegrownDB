@@ -1,14 +1,14 @@
 package systable
 
 import (
-	"HomegrownDB/dbsystem/access/relation/table"
-	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/access/systable/internal"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
-func RelationsTableDef() table.RDefinition {
+func RelationsTableDef() tabdef.RDefinition {
 	columns := []column.WDef{
 		relations.oid(),
 		relations.relKind(),
@@ -16,7 +16,7 @@ func RelationsTableDef() table.RDefinition {
 		relations.vmOID(),
 	}
 
-	return internal.newTableDef(
+	return internal.NewTableDef(
 		RelationsName,
 		HGRelationsOID,
 		HGRelationsFsmOID,

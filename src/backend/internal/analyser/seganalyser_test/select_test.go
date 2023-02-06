@@ -7,7 +7,7 @@ import (
 	. "HomegrownDB/backend/internal/testinfr"
 	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/common/tests/tutils/testtable/tt_user"
-	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"testing"
 )
 
@@ -29,7 +29,7 @@ func TestSelect_u_name_FROM_users(t *testing.T) {
 	NodeAssert.Eq(expectedQuery, queryNode, t)
 }
 
-func expectedTree_u_name_FROM_users(users table.Definition) node2.Query {
+func expectedTree_u_name_FROM_users(users tabdef.Definition) node2.Query {
 	expectedQuery := node2.NewQuery(node2.CommandTypeSelect, nil)
 	rte := node2.NewRelationRTE(0, users)
 	rte.Alias = node2.NewAlias("u")

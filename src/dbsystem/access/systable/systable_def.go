@@ -1,7 +1,7 @@
 package systable
 
 import (
-	"HomegrownDB/dbsystem/access/relation/dbobj"
+	"HomegrownDB/dbsystem/dbobj"
 )
 
 type OID = dbobj.OID

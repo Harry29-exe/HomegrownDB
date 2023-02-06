@@ -2,9 +2,9 @@ package hg
 
 import (
 	"HomegrownDB/common/bparse"
-	"HomegrownDB/dbsystem/access/relation"
-	"HomegrownDB/dbsystem/access/relation/dbobj"
-	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/reldef"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"fmt"
@@ -12,19 +12,19 @@ import (
 
 var _ RelationsOperations = &DBSystem{}
 
-func (db *DBSystem) CreateRel(rel relation.Relation) error {
+func (db *DBSystem) CreateRel(rel reldef.Relation) error {
 	switch rel.Kind() {
-	case relation.TypeTable:
-		return db.createTable(rel.(table.Definition))
-	case relation.TypeIndex:
+	case reldef.TypeTable:
+		return db.createTable(rel.(tabdef.Definition))
+	case reldef.TypeIndex:
 		//todo implement me
 		panic("Not implemented")
 	default:
-		panic(fmt.Sprintf("unknown relation type %+v", rel))
+		panic(fmt.Sprintf("unknown reldef type %+v", rel))
 	}
 }
 
-func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
+func (db *DBSystem) createTable(tableDef tabdef.Definition) (err error) {
 	//todo implement me
 	panic("Not implemented")
 	tableDef.InitRel(db.NextOID(), db.NextOID(), db.NextOID())
@@ -54,7 +54,7 @@ func (db *DBSystem) createTable(tableDef table.Definition) (err error) {
 	if err = db.createFSM(tableDef.FsmOID()); err != nil {
 		// todo Page.Remove(tableDef)
 		// todo db.FS.DeleteRelationDir(...)
-		// todo remove table from table store
+		// todo remove tabdef from tabdef store
 		return err
 	}
 	return nil
@@ -83,7 +83,7 @@ func (db *DBSystem) createFSM(fsmOID dbobj.OID) (err error) {
 	return nil
 }
 
-func (db *DBSystem) saveRelDefinition(id relation.OID, definition []byte) (err error) {
+func (db *DBSystem) saveRelDefinition(id reldef.OID, definition []byte) (err error) {
 	file, err := db.FS().OpenPageObjectDef(id)
 	if err != nil {
 		return err
@@ -107,7 +107,7 @@ func (db *DBSystem) saveRelDefinition(id relation.OID, definition []byte) (err e
 	return nil
 }
 
-func (db *DBSystem) readRelationDefFile(rid relation.OID) (data []byte, err error) {
+func (db *DBSystem) readRelationDefFile(rid reldef.OID) (data []byte, err error) {
 	file, err := db.FS().OpenPageObjectDef(rid)
 	defer func() {
 		if err != nil {
@@ -131,7 +131,7 @@ func (db *DBSystem) readRelationDefFile(rid relation.OID) (data []byte, err erro
 	return
 }
 
-func (db *DBSystem) DeleteRel(rel relation.Relation) error {
+func (db *DBSystem) DeleteRel(rel reldef.Relation) error {
 	//TODO implement me
 	panic("implement me")
 }

@@ -61,7 +61,7 @@ func (c *FutureContainer) Build() (*Container, error) {
 	}, func() {
 		container.PageIOStore, c.err = c.PageIOStoreProvider(c.args())
 	}, func() {
-		container.TableStore, c.err = c.TableStoreProvider(c.args())
+		container.RelationManager, c.err = c.TableStoreProvider(c.args())
 	}, func() {
 		container.FsmStore, c.err = c.FsmStoreProvider(c.args())
 	}, func() {

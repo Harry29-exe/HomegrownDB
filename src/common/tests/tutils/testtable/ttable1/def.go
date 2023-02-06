@@ -1,5 +1,5 @@
 /*
-Package ttable1 is following table definition
+Package ttable1 is following tabdef definition
 
 	CREATE TABLE awesome_table1 (
 
@@ -17,7 +17,7 @@ import (
 )
 
 /*
-Def creates following table definition
+Def creates following tabdef definition
 
 	CREATE TABLE awesome_table1 (
 			awesome_key   int8  PRIMARY KEY,

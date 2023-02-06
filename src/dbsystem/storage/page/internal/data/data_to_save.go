@@ -2,7 +2,7 @@ package data
 
 import (
 	"HomegrownDB/dbsystem/access/lob"
-	"HomegrownDB/dbsystem/access/relation/table/column"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
 type TupleToSave struct {
@@ -11,7 +11,7 @@ type TupleToSave struct {
 	LobValuesToSave []LobValueToSave
 }
 
-// BgValueToSave value to save in background table see documentation/storage_types.svg
+// BgValueToSave value to save in background tabdef see documentation/storage_types.svg
 type BgValueToSave struct {
 	Value    []byte
 	ColumnId column.Id

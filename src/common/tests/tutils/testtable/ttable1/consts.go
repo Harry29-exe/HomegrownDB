@@ -1,9 +1,9 @@
 package ttable1
 
 import (
-	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
 const (

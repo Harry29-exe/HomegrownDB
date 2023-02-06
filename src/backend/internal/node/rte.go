@@ -1,10 +1,11 @@
 package node
 
 import (
-	"HomegrownDB/dbsystem/access/relation/table"
-	"HomegrownDB/dbsystem/access/relation/table/column"
+	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"fmt"
 )
 
@@ -40,7 +41,7 @@ func (k rteKind) ToString() string {
 	}[k]
 }
 
-func NewRelationRTE(rteID RteID, ref table.RDefinition) RangeTableEntry {
+func NewRelationRTE(rteID RteID, ref tabdef.RDefinition) RangeTableEntry {
 	return &rangeTableEntry{
 		node:    node{tag: TagRTE},
 		Kind:    RteRelation,
@@ -76,16 +77,16 @@ type RangeTableEntry = *rangeTableEntry
 
 var _ Node = &rangeTableEntry{}
 
-// RangeTableEntry is db table that is used in query or plan
+// RangeTableEntry is db tabdef that is used in query or plan
 type rangeTableEntry struct {
 	node
 	Kind rteKind
 	Id   RteID
 
 	// Kind = RteRelation
-	LockMode table.TableLockMode
-	TableId  table.Id
-	Ref      table.RDefinition
+	LockMode relation.LockMode
+	TableId  tabdef.Id
+	Ref      tabdef.RDefinition
 
 	// Kind = RteSubQuery
 	Subquery *query

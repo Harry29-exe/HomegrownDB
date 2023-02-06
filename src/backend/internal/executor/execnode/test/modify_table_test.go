@@ -13,7 +13,7 @@ func TestModifyTable_SimpleInsert(t *testing.T) {
 	currentTx := dbUtils.DB.TxManager().New(tx.CommittedRead)
 
 	inputQuery := "INSERT INTO users (id, name) VALUES (1, 'bob')"
-	plan := testinfr.ParseAnalyseAndPlan(inputQuery, dbUtils.DB.TableStore(), t)
+	plan := testinfr.ParseAnalyseAndPlan(inputQuery, dbUtils.DB.RelationManager(), t)
 
 	executor.Execute(plan, currentTx, dbUtils.DB.ExecutionContainer())
 }

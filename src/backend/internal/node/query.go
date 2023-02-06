@@ -57,7 +57,7 @@ type query struct {
 
 	TargetList []TargetEntry
 
-	ResultRel RteID             // Id of result table, for insert, update, delete
+	ResultRel RteID             // Id of result tabdef, for insert, update, delete
 	RTables   []RangeTableEntry // Tables used in Query
 	FromExpr  FromExpr
 }

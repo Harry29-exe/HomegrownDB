@@ -1,10 +1,10 @@
 package main
 
 import (
-	"HomegrownDB/dbsystem/access/relation/table"
-	"HomegrownDB/dbsystem/access/relation/table/column"
-	"HomegrownDB/dbsystem/access/relation/table/column/ctypes"
-	"HomegrownDB/dbsystem/access/relation/table/column/factory"
+	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/dbsystem/reldef/tabdef/column/ctypes"
+	"HomegrownDB/dbsystem/reldef/tabdef/column/factory"
 	"HomegrownDB/dbsystem/storage/tpage"
 	"HomegrownDB/dbsystem/tx"
 	"os"
@@ -30,7 +30,7 @@ func main() {
 }
 
 func testTuplePrint() {
-	tableDef := table.NewDefinition("ttable1")
+	tableDef := tabdef.NewDefinition("ttable1")
 	tableDef.SetOID(231)
 	tableDef.SetOID(4352)
 

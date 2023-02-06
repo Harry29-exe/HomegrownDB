@@ -1,14 +1,14 @@
-package table
+package tabdef
 
 import (
-	relation "HomegrownDB/dbsystem/access/relation"
-	"HomegrownDB/dbsystem/access/relation/dbobj"
-	"HomegrownDB/dbsystem/access/relation/table/column"
+	"HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/hgtype"
+	relation2 "HomegrownDB/dbsystem/reldef"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
 type RDefinition interface {
-	relation.Relation
+	relation2.Relation
 
 	Name() string
 	Hash() string
@@ -38,12 +38,12 @@ type Definition interface {
 	RemoveColumn(name string) error
 }
 
-// Id of table object, 0 if id is invalid
-type Id = relation.OID
+// Id of tabdef object, 0 if id is invalid
+type Id = relation2.OID
 
 func NewDefinition(name string) Definition {
 	table := &StdTable{
-		BaseRelation: relation.BaseRelation{},
+		BaseRelation: relation2.BaseRelation{},
 		columns:      []column.WDef{},
 		rColumns:     []column.Def{},
 		name:         name,

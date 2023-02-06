@@ -2,7 +2,7 @@ package di
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/auth"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/storage/dbfs"
@@ -17,9 +17,9 @@ type Container struct {
 	Config   *config.Configuration
 	DBProps  config.DBProperties
 
-	PageIOStore pageio.Store
-	TableStore  table.Store
-	FsmStore    fsm.Store
+	PageIOStore     pageio.Store
+	RelationManager relation.Manager
+	FsmStore        fsm.Store
 
 	SharedBuffer buffer.SharedBuffer
 	TxManager    tx.Manager
@@ -36,8 +36,8 @@ func (c *Container) CreateFrontendContainer() FrontendContainer {
 
 func (c *Container) CreateExecutionContainer() ExecutionContainer {
 	return ExecutionContainer{
-		SharedBuffer: c.SharedBuffer,
-		FsmStore:     c.FsmStore,
-		TableStore:   c.TableStore,
+		SharedBuffer:    c.SharedBuffer,
+		FsmStore:        c.FsmStore,
+		RelationManager: c.RelationManager,
 	}
 }

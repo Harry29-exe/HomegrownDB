@@ -1,14 +1,14 @@
 package systable
 
 import (
-	"HomegrownDB/dbsystem/access/relation/table"
-	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/access/systable/internal"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
-func ColumnsTableDef() table.RDefinition {
+func ColumnsTableDef() tabdef.RDefinition {
 	colBuilder := columnsBuilder{}
 
 	tableCols := []column.WDef{
@@ -23,7 +23,7 @@ func ColumnsTableDef() table.RDefinition {
 		colBuilder.argsUTF8(),
 	}
 
-	return internal.newTableDef(
+	return internal.NewTableDef(
 		ColumnsName,
 		HGColumnsOID,
 		HGColumnsFsmOID,

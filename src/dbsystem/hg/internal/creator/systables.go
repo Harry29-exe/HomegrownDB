@@ -1,8 +1,8 @@
 package creator
 
 import (
-	"HomegrownDB/dbsystem/access/relation/dbobj"
 	"HomegrownDB/dbsystem/access/systable"
+	"HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
@@ -25,7 +25,7 @@ func createSysTables(fs dbfs.FS) error {
 			systable.RelationsOps.TableAsRelationsRow(columnsTable, creatorTX),
 		).
 		insertTuples(systable.HGColumnsOID,
-			systable.ColumnsOps.DataToRows(systable.HGRelationsOID, relationsTable.Columns(), creatorTX, 0)...,
+			systable.ColumnsOps.DataToRows(systable.HGRelationsOID, relationsTable.Columns(), creatorTX)...,
 		).
 		insertTuples(systable.HGColumnsOID,
 			systable.ColumnsOps.DataToRows(systable.HGColumnsOID, columnsTable.Columns(), creatorTX)...,

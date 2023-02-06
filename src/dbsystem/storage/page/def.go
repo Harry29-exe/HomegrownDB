@@ -1,9 +1,9 @@
 package page
 
 import (
-	"HomegrownDB/dbsystem/access/relation/dbobj"
-	"HomegrownDB/dbsystem/access/relation/table"
 	"HomegrownDB/dbsystem/config"
+	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page/internal"
 	"math"
 )
@@ -21,7 +21,7 @@ const Size uint16 = config.PageSize
 
 type PageTag = internal.PageTag
 
-func NewTablePageTag(pageIndex Id, tableDef table.RDefinition) PageTag {
+func NewTablePageTag(pageIndex Id, tableDef tabdef.RDefinition) PageTag {
 	return PageTag{
 		PageId:  pageIndex,
 		OwnerID: tableDef.OID(),

@@ -33,7 +33,7 @@ type ColumnNotExist struct {
 
 func (c ColumnNotExist) Error() string {
 	if c.TableAlias == "" {
-		return fmt.Sprintf("Could not find column: %s on table: %s",
+		return fmt.Sprintf("Could not find column: %s on tabdef: %s",
 			c.ColName, c.TableAlias)
 	} else {
 		return fmt.Sprintf("Could not find column: %s",
@@ -56,9 +56,9 @@ type TableNotExist struct {
 
 func (e TableNotExist) Error() string {
 	if e.TableAlias != "" {
-		return fmt.Sprintf("table with alias: \"%s\" does not exist", e.TableAlias)
+		return fmt.Sprintf("tabdef with alias: \"%s\" does not exist", e.TableAlias)
 	} else {
-		return fmt.Sprintf("table with name: \"%s\" does not exist", e.TableName)
+		return fmt.Sprintf("tabdef with name: \"%s\" does not exist", e.TableName)
 	}
 }
 

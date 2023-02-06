@@ -3,8 +3,10 @@ package exinfr
 import (
 	node "HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/buffer"
-	table2 "HomegrownDB/dbsystem/access/relation/table"
+	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/hg/di"
+	relation2 "HomegrownDB/dbsystem/reldef"
+	table2 "HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -16,26 +18,31 @@ func NewExCtx(
 	txCtx tx.Tx,
 	container di.ExecutionContainer,
 ) ExCtx {
-	cache, rteMap := createCache(stmt.Tables, container.TableStore)
+	cache, rteMap := createCache(stmt.Tables, container.RelationManager)
 	return &executionCtx{
 		Stmt:       stmt,
 		Buff:       container.SharedBuffer,
 		FsmStore:   container.FsmStore,
 		Tables:     cache,
-		TableStore: container.TableStore,
+		TableStore: container.RelationManager,
 		Tx:         txCtx,
 		rteMap:     rteMap,
 	}
 }
 
-func createCache(rteList []node.RangeTableEntry, store table2.Store) (table2.Cache, map[node.RteID]node.RangeTableEntry) {
+func createCache(rteList []node.RangeTableEntry, store relation.Manager) (table2.Cache, map[node.RteID]node.RangeTableEntry) {
 	cache := map[table2.Id]table2.RDefinition{}
 	rteMap := map[node.RteID]node.RangeTableEntry{}
 	for _, rte := range rteList {
 		if rte.Kind == node.RteRelation {
-			tab := store.AccessTable(rte.TableId, rte.LockMode)
-			cache[rte.TableId] = tab
-			rte.Ref = tab
+			store.Lock(rte.TableId, rte.LockMode)
+			rel := store.GetByOID(rte.TableId)
+			if rel.Kind() != relation2.TypeTable {
+				panic("illegal type")
+			}
+			tableDef := rel.(table2.RDefinition)
+			cache[rte.TableId] = tableDef
+			rte.Ref = tableDef
 		}
 		rteMap[rte.Id] = rte
 	}
@@ -47,7 +54,7 @@ type executionCtx struct {
 	Buff       buffer.SharedBuffer
 	FsmStore   fsm.Store
 	Tables     table2.Cache
-	TableStore table2.Store
+	TableStore relation.Manager
 	Tx         tx.Tx
 
 	rteMap map[node.RteID]node.RangeTableEntry
@@ -59,7 +66,7 @@ func (e ExCtx) GetRTE(id node.RteID) node.RangeTableEntry {
 
 func (e ExCtx) Close() error {
 	//for i, tableDef := range e.Tables {
-	//	e.TableStore.AccessTable()
+	//	e.RelationManager.AccessTable()
 	//}
 	//todo implement me
 	panic("Not implemented")

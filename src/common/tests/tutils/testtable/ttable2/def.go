@@ -1,5 +1,5 @@
 /*
-Package ttable2 is following table definition
+Package ttable2 is following tabdef definition
 
 	CREATE TABLE birds (
 		id int8 PRIMARY KEY,
@@ -11,9 +11,9 @@ package ttable2
 
 import (
 	"HomegrownDB/common/tests/tutils/testtable"
-	"HomegrownDB/dbsystem/access/relation/table/column"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"testing"
 )
 
