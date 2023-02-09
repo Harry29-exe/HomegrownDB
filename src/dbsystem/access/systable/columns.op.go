@@ -5,13 +5,12 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/intype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"log"
 )
-
-var columnsDef = ColumnsTableDef()
 
 var ColumnsOps = columnsOps{}
 
@@ -69,4 +68,8 @@ func (o columnsOps) RowToData(row page.RTuple) column.WDef {
 			UTF8:     argsUTF8,
 		}),
 	)
+}
+
+func (o columnsOps) TableOID(tuple page.RTuple) reldef.OID {
+	return reldef.OID(internal.GetInt8(ColumnsOrderRelationOID, tuple))
 }

@@ -102,7 +102,7 @@ func (t *StdTable) AddColumn(definition column.WDef) error {
 	if ok {
 		return errors.New("tabdef already contains column with name:" + definition.Name())
 	}
-	definition.SetOrder(t.columnsCount)
+	//definition.SetOrder(t.columnsCount)
 
 	t.columns = append(t.columns, definition)
 	t.rColumns = append(t.rColumns, definition)

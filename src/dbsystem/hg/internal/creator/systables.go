@@ -21,8 +21,8 @@ func createSysTables(fs dbfs.FS) error {
 		createTable(systable.HGRelationsOID, systable.HGRelationsFsmOID, systable.HGRelationsVmOID).
 		createTable(systable.HGColumnsOID, systable.HGColumnsFsmOID, systable.HGColumnsVmOID).
 		insertTuples(relationsTable.OID(),
-			systable.RelationsOps.TableAsRelationsRow(relationsTable, creatorTX),
-			systable.RelationsOps.TableAsRelationsRow(columnsTable, creatorTX),
+			panicOnErr(systable.RelationsOps.TableAsRelationsRow(relationsTable, creatorTX)),
+			panicOnErr(systable.RelationsOps.TableAsRelationsRow(columnsTable, creatorTX)),
 		).
 		insertTuples(systable.HGColumnsOID,
 			systable.ColumnsOps.DataToRows(systable.HGRelationsOID, relationsTable.Columns(), creatorTX)...,
@@ -97,4 +97,11 @@ func (c *sysTablesCreator) hasErr() bool {
 
 func (c *sysTablesCreator) getError() error {
 	return c.err
+}
+
+func panicOnErr[T any](val T, err error) T {
+	if err != nil {
+		log.Panic(err.Error())
+	}
+	return val
 }

@@ -18,6 +18,7 @@ const (
 
 	HGRelationsColOID
 	HGRelationsColRelKind
+	HGRelationsColRelName
 	HGRelationsColFsmOID
 	HGRelationsColVmOID
 

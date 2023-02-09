@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/dbsystem/access/table"
 	"HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/reldef"
-	table2 "HomegrownDB/dbsystem/reldef/tabdef"
+	tabdef "HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
@@ -64,14 +64,14 @@ func (s *stdManager) Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation
 
 	switch relation.Kind() {
 	case reldef.TypeTable:
-		return relation, s.createTableInSysTables(relation.(table2.Definition), tx)
+		return relation, s.createTableInSysTables(relation.(tabdef.Definition), tx)
 	default:
 		//todo implement me
 		panic("Not implemented")
 	}
 }
 
-func (s *stdManager) createTableInSysTables(definition table2.Definition, tx tx.Tx) error {
+func (s *stdManager) createTableInSysTables(definition tabdef.Definition, tx tx.Tx) error {
 	tuple := systable.RelationsOps.TableAsRelationsRow(definition, tx)
 	err := table.Insert(tuple, tx, systable.RelationsTableDef(), fsm.NewFSM(systable.HGRelationsFsmOID, s.Buffer), s.Buffer)
 	if err != nil {

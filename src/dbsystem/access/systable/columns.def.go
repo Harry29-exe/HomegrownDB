@@ -8,7 +8,13 @@ import (
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
+var columnsDef = createColumnsTableDef()
+
 func ColumnsTableDef() tabdef.RDefinition {
+	return columnsDef
+}
+
+func createColumnsTableDef() tabdef.RDefinition {
 	colBuilder := columnsBuilder{}
 
 	tableCols := []column.WDef{

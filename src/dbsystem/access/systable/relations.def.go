@@ -8,7 +8,13 @@ import (
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
+var relationsDef = createHGRelations()
+
 func RelationsTableDef() tabdef.RDefinition {
+	return relationsDef
+}
+
+func createHGRelations() tabdef.RDefinition {
 	columns := []column.WDef{
 		relations.oid(),
 		relations.relKind(),
@@ -28,6 +34,7 @@ func RelationsTableDef() tabdef.RDefinition {
 const (
 	RelationsOrderOID column.Order = iota
 	RelationsOrderRelKind
+	RelationsOrderRelName
 	RelationsOrderFsmOID
 	RelationsOrderVmOID
 )
@@ -51,6 +58,15 @@ func (relationsBuilder) relKind() column.WDef {
 		HGRelationsColRelKind,
 		RelationsOrderRelKind,
 		hgtype.NewInt8(rawtype.Args{}),
+	)
+}
+
+func (relationsBuilder) relName() column.WDef {
+	return column.NewDefinition(
+		"rel_name",
+		HGRelationsColRelName,
+		RelationsOrderRelName,
+		hgtype.NewStr(rawtype.Args{Length: 255, Nullable: false, VarLen: true, UTF8: false}),
 	)
 }
 
