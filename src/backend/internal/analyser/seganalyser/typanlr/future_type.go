@@ -1,7 +1,7 @@
 package typanlr
 
 import (
-	node2 "HomegrownDB/backend/internal/node"
+	node "HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/sqlerr"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 )
@@ -11,7 +11,7 @@ type FutureType struct {
 	TypeArgs rawtype.Args
 }
 
-func (f *FutureType) UpdateType(expr node2.Expr) error {
+func (f *FutureType) UpdateType(expr node.Expr) error {
 	if f.TypeTag != expr.TypeTag() {
 		return sqlerr.TypeMismatch{
 			ExpectedType: f.TypeTag,
@@ -20,15 +20,15 @@ func (f *FutureType) UpdateType(expr node2.Expr) error {
 		}
 	}
 	switch expr.Tag() {
-	case node2.TagConst:
-		return f.updateByConst(expr.(node2.Const))
+	case node.TagConst:
+		return f.updateByConst(expr.(node.Const))
 	default:
 		//todo implement me
 		panic("Not implemented")
 	}
 }
 
-func (f *FutureType) updateByConst(expr node2.Const) error {
+func (f *FutureType) updateByConst(expr node.Const) error {
 	switch f.TypeTag {
 	case rawtype.TypeInt8:
 		return nil

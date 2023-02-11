@@ -44,11 +44,11 @@ type Id = reldef.OID
 func NewDefinition(name string) Definition {
 	table := &StdTable{
 		BaseRelation: reldef.BaseRelation{
+			RelName: name,
 			RelKind: reldef.TypeTable,
 		},
 		columns:  []column.WDef{},
 		rColumns: []column.Def{},
-		name:     name,
 
 		columnName_OrderMap: map[string]column.Order{},
 		columnsNames:        nil,

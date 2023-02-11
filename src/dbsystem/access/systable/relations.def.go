@@ -18,6 +18,7 @@ func createHGRelations() tabdef.RDefinition {
 	columns := []column.WDef{
 		relations.oid(),
 		relations.relKind(),
+		relations.relName(),
 		relations.fsmOID(),
 		relations.vmOID(),
 	}

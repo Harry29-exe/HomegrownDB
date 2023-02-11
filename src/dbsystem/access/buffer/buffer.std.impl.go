@@ -191,7 +191,7 @@ func (b *buffer) loadPage(ownerID dbobj.OID, pageId page.Id) (*pageDescriptor, e
 		}
 
 		delete(b.bufferMap, descriptor.pageTag)
-		relationIO := b.ioStore.Get(ownerID)
+		relationIO := b.ioStore.GetOrLoad(ownerID)
 		if pageId == NewPage {
 			pageTag.PageId = relationIO.PrepareNewPage()
 		}
@@ -254,7 +254,7 @@ func (b *buffer) flushPage(descriptor *pageDescriptor, pageData []byte) error {
 		descriptor.unpin()
 	}()
 
-	err := b.ioStore.Get(descriptorTag.OwnerID).FlushPage(descriptorTag.PageId, pageData)
+	err := b.ioStore.GetOrLoad(descriptorTag.OwnerID).FlushPage(descriptorTag.PageId, pageData)
 	if err != nil {
 		return err
 	}

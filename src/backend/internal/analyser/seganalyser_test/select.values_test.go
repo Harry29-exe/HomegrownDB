@@ -2,7 +2,7 @@ package seganalyser
 
 import (
 	"HomegrownDB/backend/internal/analyser"
-	node2 "HomegrownDB/backend/internal/node"
+	node "HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/parser"
 	testinfr "HomegrownDB/backend/internal/testinfr"
 	"HomegrownDB/common/datastructs/appsync"
@@ -32,23 +32,23 @@ var SelectValues = selectValues{}
 
 type selectValues struct{}
 
-func (selectValues) expectedValuesSelect(t *testing.T) node2.Query {
-	rteIdCounter := appsync.NewSimpleCounter[node2.RteID](0)
+func (selectValues) expectedValuesSelect(t *testing.T) node.Query {
+	rteIdCounter := appsync.NewSimpleCounter[node.RteID](0)
 
-	query := node2.NewQuery(node2.CommandTypeSelect, nil)
-	valuesRTE := node2.NewValuesRTE(rteIdCounter.Next(), [][]node2.Expr{
-		{node2.NewConstInt8(1), testinfr.NewConstStr("Bob", t)},
-		{node2.NewConstInt8(2), testinfr.NewConstStr("Alice", t)},
+	query := node.NewQuery(node.CommandTypeSelect, nil)
+	valuesRTE := node.NewValuesRTE(rteIdCounter.Next(), [][]node.Expr{
+		{node.NewConstInt8(1), testinfr.NewConstStr("Bob", t)},
+		{node.NewConstInt8(2), testinfr.NewConstStr("Alice", t)},
 	})
 	valuesRTE.ColTypes = []hgtype.ColumnType{
-		hgtype.NewInt8(rawtype.Args{}),
-		hgtype.NewStr(rawtype.Args{VarLen: true, Length: len("Alice"), UTF8: false}),
+		hgtype.NewInt8(rawtype.Args{Nullable: true}),
+		hgtype.NewStr(rawtype.Args{VarLen: true, Length: len("Alice"), UTF8: false, Nullable: true}),
 	}
-	query.RTables = []node2.RangeTableEntry{valuesRTE}
-	query.FromExpr = node2.NewFromExpr2(nil, valuesRTE.CreateRef())
-	query.TargetList = []node2.TargetEntry{
-		node2.NewTargetEntry(node2.NewVar(valuesRTE.Id, 0, valuesRTE.ColTypes[0]), 0, ""),
-		node2.NewTargetEntry(node2.NewVar(valuesRTE.Id, 1, valuesRTE.ColTypes[1]), 1, ""),
+	query.RTables = []node.RangeTableEntry{valuesRTE}
+	query.FromExpr = node.NewFromExpr2(nil, valuesRTE.CreateRef())
+	query.TargetList = []node.TargetEntry{
+		node.NewTargetEntry(node.NewVar(valuesRTE.Id, 0, valuesRTE.ColTypes[0]), 0, ""),
+		node.NewTargetEntry(node.NewVar(valuesRTE.Id, 1, valuesRTE.ColTypes[1]), 1, ""),
 	}
 	return query
 }

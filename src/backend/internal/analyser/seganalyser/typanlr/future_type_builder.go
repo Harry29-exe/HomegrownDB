@@ -1,32 +1,37 @@
 package typanlr
 
 import (
-	node2 "HomegrownDB/backend/internal/node"
+	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 )
 
-func CreateFutureType(expr node2.Expr) FutureType {
+func CreateFutureType(expr node.Expr) FutureType {
 	switch expr.Tag() {
-	case node2.TagConst:
-		return createFTFromConst(expr.(node2.Const))
+	case node.TagConst:
+		return createFTFromConst(expr.(node.Const))
 	default:
 		//todo implement me
 		panic("Not implemented")
 	}
 }
 
-func createFTFromConst(expr node2.Const) FutureType {
+func createFTFromConst(expr node.Const) FutureType {
 	switch expr.TypeTag() {
 	case rawtype.TypeInt8:
 		return FutureType{
-			TypeTag:  rawtype.TypeInt8,
-			TypeArgs: rawtype.Args{},
+			TypeTag: rawtype.TypeInt8,
+			TypeArgs: rawtype.Args{
+				Length:   8,
+				VarLen:   false,
+				Nullable: true,
+			},
 		}
 	case rawtype.TypeStr:
 		args := rawtype.Args{
-			Length: len(expr.Val),
-			UTF8:   !rawtype.StrUtils.IsASCII(expr.Val),
-			VarLen: true,
+			Length:   len(expr.Val),
+			UTF8:     !rawtype.StrUtils.IsASCII(expr.Val),
+			VarLen:   true,
+			Nullable: true,
 		}
 
 		return FutureType{

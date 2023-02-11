@@ -2,7 +2,7 @@ package seganalyser
 
 import (
 	"HomegrownDB/backend/internal/analyser/anlsr"
-	node2 "HomegrownDB/backend/internal/node"
+	node "HomegrownDB/backend/internal/node"
 	pnode2 "HomegrownDB/backend/internal/pnode"
 )
 
@@ -10,7 +10,7 @@ import (
 //      RteResult
 // -------------------------
 
-func NewSingleRteResult(rte node2.RangeTableEntry) RteResult {
+func NewSingleRteResult(rte node.RangeTableEntry) RteResult {
 	return RteResult{
 		Rte:        rte,
 		RteRefNode: rte.CreateRef(),
@@ -18,8 +18,8 @@ func NewSingleRteResult(rte node2.RangeTableEntry) RteResult {
 }
 
 type RteResult struct {
-	Rte        node2.RangeTableEntry
-	RteRefNode node2.Node // RteRefNode is test like, node.RangeTableRef, Joins etc.
+	Rte        node.RangeTableEntry
+	RteRefNode node.Node // RteRefNode is test like, node.RangeTableRef, Joins etc.
 }
 
 // -------------------------
@@ -36,9 +36,9 @@ func (r rteRangeVar) Analyse(rangeVar pnode2.RangeVar, currentCtx anlsr.QueryCtx
 		return RteResult{}, err
 	}
 
-	rte := node2.NewRelationRTE(currentCtx.RteIdCounter.Next(), def)
+	rte := node.NewRelationRTE(currentCtx.RteIdCounter.Next(), def)
 	if rangeVar.Alias != "" {
-		rte.Alias = node2.NewAlias(rangeVar.Alias)
+		rte.Alias = node.NewAlias(rangeVar.Alias)
 	}
 
 	return NewSingleRteResult(rte), nil
@@ -58,6 +58,6 @@ func (rteSelect) Analyse(stmt pnode2.SelectStmt, currentCtx anlsr.QueryCtx) (Rte
 		return RteResult{}, err
 	}
 
-	rte := node2.NewSubqueryRTE(currentCtx.RteIdCounter.Next(), subquery)
+	rte := node.NewSubqueryRTE(currentCtx.RteIdCounter.Next(), subquery)
 	return NewSingleRteResult(rte), nil
 }

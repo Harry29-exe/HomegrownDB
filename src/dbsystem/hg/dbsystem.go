@@ -69,7 +69,7 @@ func (db *DBSystem) FsmStore() fsm.Store {
 }
 
 func (db *DBSystem) PageIOStore() pageio.Store {
-	return nil
+	return db.storageModule.PageIOStore()
 }
 
 func (db *DBSystem) SharedBuffer() buffer.SharedBuffer {

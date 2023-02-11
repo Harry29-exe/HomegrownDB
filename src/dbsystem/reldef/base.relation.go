@@ -8,10 +8,15 @@ import (
 var _ Relation = &BaseRelation{}
 
 type BaseRelation struct {
+	RelName          string
 	ID               OID
 	RelKind          Kind
 	FreeSpaceMapOID  OID
 	VisibilityMapOID OID
+}
+
+func (s *BaseRelation) Name() string {
+	return s.RelName
 }
 
 func (s *BaseRelation) FsmOID() OID {

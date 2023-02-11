@@ -29,7 +29,7 @@ func (c *loaderCache) loadRelations() error {
 	for {
 		err := c.loadRelPage(nextPageId)
 		if err != nil {
-			if errors.Is(err, canReadPageErr) {
+			if errors.As(err, &canNotReadPageErr) {
 				break
 			} else {
 				return err
@@ -45,7 +45,7 @@ func (c *loaderCache) loadRelPage(
 ) error {
 	rPage, err := c.buffer.RTablePage(systable.RelationsTableDef(), pageId)
 	if err != nil {
-		return canReadPage{canReadPageErr}
+		return canNotReadPage{err}
 	}
 	defer c.buffer.RPageRelease(rPage.PageTag())
 
@@ -64,7 +64,7 @@ func (c *loaderCache) loadColumns() error {
 	for {
 		err := c.loadColPage(nextPageId)
 		if err != nil {
-			if errors.Is(err, canReadPageErr) {
+			if errors.Is(err, canNotReadPageErr) {
 				break
 			} else {
 				return err
@@ -78,7 +78,7 @@ func (c *loaderCache) loadColumns() error {
 func (c *loaderCache) loadColPage(pageID page.Id) error {
 	rPage, err := c.buffer.RTablePage(systable.ColumnsTableDef(), pageID)
 	if err != nil {
-		return canReadPage{canReadPageErr}
+		return canNotReadPage{err}
 	}
 
 	defer c.buffer.RPageRelease(rPage.PageTag())

@@ -15,6 +15,7 @@ type Relation interface {
 	dbobj.Obj
 	SetOID(id OID)
 	Kind() Kind
+	Name() string
 
 	FsmOID() dbobj.OID
 	VmOID() dbobj.OID

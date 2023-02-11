@@ -74,5 +74,5 @@ func (u TestDBUtils) PageIOByTableName(tableName string) pageio.IO {
 	if id == reldef.InvalidRelId {
 		u.T.Errorf("not tabdef: " + tableName)
 	}
-	return u.DB.PageIOStore().Get(id)
+	return u.DB.PageIOStore().GetOrLoad(id)
 }

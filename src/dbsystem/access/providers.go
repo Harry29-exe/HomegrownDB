@@ -3,7 +3,9 @@ package access
 import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/sequence"
 	"HomegrownDB/dbsystem/config"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage"
 )
 
@@ -18,7 +20,11 @@ func SharedBufferProvider(
 func RelationManagerProvider(
 	storageModule storage.Module,
 	buff buffer.SharedBuffer,
+	oidSequence relation.OIDSequence,
 ) (relation.Manager, error) {
-	manager := new(relation.Manager)
-	manager.
+	return relation.NewManager(buff, storageModule.FS(), oidSequence)
+}
+
+func OIDSequenceProvider(configModule config.Module) (sequence.Sequence[reldef.OID], error) {
+	return sequence.NewInMemSequence(configModule.Props().NextOID), nil
 }

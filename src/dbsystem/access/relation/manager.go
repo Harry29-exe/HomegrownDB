@@ -6,10 +6,11 @@ import (
 	"HomegrownDB/dbsystem/access/table"
 	"HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/reldef"
-	tabdef "HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
+	"log"
 )
 
 type Manager interface {
@@ -35,12 +36,7 @@ const (
 )
 
 type OIDSequence interface {
-	NextOID() reldef.OID
-}
-
-type tid struct {
-	pageId  uint32
-	tupleId uint16
+	Next() reldef.OID
 }
 
 type stdManager struct {
@@ -48,19 +44,22 @@ type stdManager struct {
 	FS          dbfs.FS
 	OIDSequence OIDSequence
 
-	oidMap  map[reldef.OID]tid
 	nameMap map[string]reldef.OID
+	cache   cache
 }
 
 var _ Manager = &stdManager{}
 
 func (s *stdManager) Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation, error) {
 	if relation.OID() == dbobj.InvalidOID {
-		relation.InitRel(s.OIDSequence.NextOID(), s.OIDSequence.NextOID(), s.OIDSequence.NextOID())
+		relation.InitRel(s.OIDSequence.Next(), s.OIDSequence.Next(), s.OIDSequence.Next())
 	}
 	if err := s.createRelationOnDisc(relation); err != nil {
 		return nil, err
 	}
+
+	s.cache.relations[relation.OID()] = relation
+	s.nameMap[relation.Name()] = relation.OID()
 
 	switch relation.Kind() {
 	case reldef.TypeTable:
@@ -72,8 +71,11 @@ func (s *stdManager) Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation
 }
 
 func (s *stdManager) createTableInSysTables(definition tabdef.Definition, tx tx.Tx) error {
-	tuple := systable.RelationsOps.TableAsRelationsRow(definition, tx)
-	err := table.Insert(tuple, tx, systable.RelationsTableDef(), fsm.NewFSM(systable.HGRelationsFsmOID, s.Buffer), s.Buffer)
+	tuple, err := systable.RelationsOps.TableAsRelationsRow(definition, tx)
+	if err != nil {
+		return err
+	}
+	err = table.Insert(tuple, tx, systable.RelationsTableDef(), fsm.NewFSM(systable.HGRelationsFsmOID, s.Buffer), s.Buffer)
 	if err != nil {
 		return err
 	}
@@ -107,16 +109,19 @@ func (s *stdManager) Delete(relation reldef.Relation) error {
 }
 
 func (s *stdManager) FindByName(name string) reldef.OID {
-	//TODO implement me
-	panic("implement me")
+	oid, ok := s.nameMap[name]
+	if !ok {
+		return reldef.InvalidRelId
+	}
+	return oid
 }
 
 func (s *stdManager) Access(oid reldef.OID, mode LockMode) reldef.Relation {
-	//TODO implement me
-	panic("implement me")
+	log.Printf("waring: locking relations is not done")
+	return s.cache.relations[oid] //todo locking
 }
 
 func (s *stdManager) Free(relationOID reldef.OID, mode LockMode) {
-	//TODO implement me
-	panic("implement me")
+	//todo locking
+	log.Printf("waring: locking relations is not done")
 }

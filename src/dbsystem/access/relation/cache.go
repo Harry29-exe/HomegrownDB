@@ -80,12 +80,12 @@ func (c *cache) initTable(table table.Definition, loader *loaderCache) error {
 	return nil
 }
 
-var canReadPageErr error = canReadPage{}
+var canNotReadPageErr error = canNotReadPage{}
 
-type canReadPage struct {
+type canNotReadPage struct {
 	Cause error
 }
 
-func (c canReadPage) Error() string {
+func (c canNotReadPage) Error() string {
 	return fmt.Sprintf("can not read page becouse: %s", c.Cause.Error())
 }

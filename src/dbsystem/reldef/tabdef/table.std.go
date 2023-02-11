@@ -18,7 +18,6 @@ type StdTable struct {
 	reldef.BaseRelation
 	columns  []column.WDef
 	rColumns []column.Def
-	name     string
 
 	columnName_OrderMap map[string]column.Order
 	columnsNames        []string
@@ -31,11 +30,7 @@ func (t *StdTable) Hash() string {
 }
 
 func (t *StdTable) SetName(name string) {
-	t.name = name
-}
-
-func (t *StdTable) Name() string {
-	return t.name
+	t.RelName = name
 }
 
 // BitmapLen returns number of bytes in tuple that constitute null bitmap

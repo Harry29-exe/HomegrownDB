@@ -28,7 +28,7 @@ type DBProperties struct {
 
 func DefaultDBProperties() DBProperties {
 	return DBProperties{
-		NextOID: 1,
+		NextOID: 10_000, // OIDs less than 10_000 are reserved for system tables
 	}
 }
 

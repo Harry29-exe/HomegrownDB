@@ -88,5 +88,5 @@ func createTestSharedBuffer(t *testing.T) (testtable.TestTable, pageio.IO, Share
 	pageioStore := hgtest.PageIOUtils.With(t, fs, table1)
 
 	buff := NewSharedBuffer(2, pageioStore)
-	return table1, pageioStore.Get(table1.OID()), buff
+	return table1, pageioStore.GetOrLoad(table1.OID()), buff
 }
