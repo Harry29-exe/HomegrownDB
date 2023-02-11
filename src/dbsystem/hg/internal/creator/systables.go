@@ -49,7 +49,11 @@ func (c *sysTablesCreator) createTable(oid dbobj.OID, fsmOID dbobj.OID, vmOID db
 	if err != nil {
 		return c.error(err)
 	}
-	err = fsm.CreateFreeSpaceMap(fsmOID, c.FS)
+	err = c.FS.InitNewPageObjectDir(fsmOID)
+	if err != nil {
+		return c.error(err)
+	}
+	err = fsm.InitFreeSpaceMapFile(fsmOID, c.FS)
 	if err != nil {
 		return c.error(err)
 	}

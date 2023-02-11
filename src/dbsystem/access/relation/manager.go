@@ -99,6 +99,11 @@ func (s *stdManager) createRelationOnDisc(relation reldef.Relation) error {
 	if err := s.FS.InitNewPageObjectDir(relation.VmOID()); err != nil {
 		return err
 	}
+
+	if err := fsm.InitFreeSpaceMapFile(relation.FsmOID(), s.FS); err != nil {
+		return err
+	}
+
 	//todo add err handling (delete all created on fail)
 	return nil
 }

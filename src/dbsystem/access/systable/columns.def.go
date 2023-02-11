@@ -64,7 +64,7 @@ func (c *columnsBuilder) oid() (col column.WDef) {
 func (c *columnsBuilder) relationOID() column.WDef {
 	return column.NewDefinition(
 		"relation_oid",
-		HGColumnsColOID,
+		HGColumnsColRelationOID,
 		ColumnsOrderRelationOID,
 		hgtype.NewInt8(rawtype.Args{}),
 	)

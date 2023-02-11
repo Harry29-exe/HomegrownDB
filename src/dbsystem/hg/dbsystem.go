@@ -5,13 +5,13 @@ import (
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/access/transaction"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/dbobj"
 	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
-	"HomegrownDB/dbsystem/tx"
 )
 
 var _ DBModule = &DBSystem{}
@@ -80,8 +80,8 @@ func (db *DBSystem) FS() dbfs.FS {
 	return db.storageModule.FS()
 }
 
-func (db *DBSystem) TxManager() tx.Manager {
-	return nil
+func (db *DBSystem) TxManager() transaction.Manager {
+	return db.accessModule.TxManager()
 }
 
 func (db *DBSystem) NextOID() dbobj.OID {

@@ -1,8 +1,8 @@
 package data
 
 import (
-	"HomegrownDB/dbsystem/access/lob"
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/dbsystem/storage/lob"
 )
 
 type TupleToSave struct {

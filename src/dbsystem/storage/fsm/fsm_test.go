@@ -54,10 +54,10 @@ func newFsmTestHelper(t *testing.T) *fsmTestHelper {
 		Build()
 
 	table := dbUtils.TableByName(tt_user.TableName)
-	fsm := dbUtils.DB.FsmStore().GetFSM(table.FsmOID())
+	tableFsm := fsm.NewFSM(table.FsmOID(), dbUtils.DB.AccessModule().SharedBuffer())
 
 	return &fsmTestHelper{
-		fsMap:   fsm,
+		fsMap:   tableFsm,
 		t:       t,
 		tx:      nil,
 		pageIds: make([]page.Id, 0, 10),
@@ -80,9 +80,7 @@ func (pt *fsmTestHelper) testFsmUpdate(pageId page.Id, newSize uint8) {
 	err := pt.fsMap.UpdatePage(size, pageId)
 	assert.IsNil(err, pt.t)
 	foundPageId, err := pt.fsMap.FindPage(size, pt.tx)
-	if err != nil {
-		pt.t.Error(err.Error())
-	}
+	assert.ErrIsNil(err, pt.t)
 
 	assert.Eq(pageId, foundPageId, pt.t)
 }

@@ -146,10 +146,11 @@ func (b *buffer) loadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (std
 
 func (b *buffer) loadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
 	descriptor, err := b.loadPage(ownerID, pageId)
-	descriptor.contentLock.RLock()
 	if err != nil {
+		descriptor.unpin()
 		return stdPage{}, err
 	}
+	descriptor.contentLock.RLock()
 
 	pageStart := uintptr(descriptor.slotIndex) * uintptr(page.Size)
 	return stdPage{

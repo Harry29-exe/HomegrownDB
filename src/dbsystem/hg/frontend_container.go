@@ -1,12 +1,12 @@
 package hg
 
 import (
+	"HomegrownDB/dbsystem/access/transaction"
 	"HomegrownDB/dbsystem/auth"
-	"HomegrownDB/dbsystem/tx"
 )
 
 type FrontendContainer struct {
 	AuthManger         auth.Manager
 	ExecutionContainer ExecutionContainer
-	TxManager          tx.Manager
+	TxManager          transaction.Manager
 }

@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/access/sequence"
+	"HomegrownDB/dbsystem/access/transaction"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage"
@@ -17,6 +18,10 @@ func SharedBufferProvider(
 	return buff, nil
 }
 
+func OIDSequenceProvider(configModule config.Module) (sequence.Sequence[reldef.OID], error) {
+	return sequence.NewInMemSequence(configModule.Props().NextOID), nil
+}
+
 func RelationManagerProvider(
 	storageModule storage.Module,
 	buff buffer.SharedBuffer,
@@ -25,6 +30,9 @@ func RelationManagerProvider(
 	return relation.NewManager(buff, storageModule.FS(), oidSequence)
 }
 
-func OIDSequenceProvider(configModule config.Module) (sequence.Sequence[reldef.OID], error) {
-	return sequence.NewInMemSequence(configModule.Props().NextOID), nil
+func TxManagerProvider(
+	configModule config.Module,
+	buffer buffer.SharedBuffer,
+) (transaction.Manager, error) {
+	return transaction.NewManager(configModule.Props().NextTxID), nil
 }

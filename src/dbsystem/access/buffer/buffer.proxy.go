@@ -56,6 +56,10 @@ func (b *bufferProxy) WFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page,
 	wPage, err := b.buffer.ReadWPage(ownerID, pageId, RbmReadOrCreate)
 	if err != nil {
 		return fsmpage.Page{}, err
+	} else if wPage.IsNew {
+		for i := 0; i < int(pageSize); i++ {
+			wPage.Bytes[i] = 0
+		}
 	}
 	return fsmpage.Page{Bytes: wPage.Bytes}, nil
 }

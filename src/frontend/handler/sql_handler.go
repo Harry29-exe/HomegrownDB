@@ -2,6 +2,7 @@ package handler
 
 import (
 	"HomegrownDB/backend"
+	"HomegrownDB/dbsystem/access/transaction"
 	"HomegrownDB/dbsystem/auth"
 	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/tx"
@@ -34,7 +35,7 @@ func NewSqlHandler(container hg.FrontendContainer) SqlHandler {
 type stdSqlHandler struct {
 	Container  hg.ExecutionContainer
 	AuthManger auth.Manager
-	TxManger   tx.Manager
+	TxManger   transaction.Manager
 }
 
 var _ SqlHandler = &stdSqlHandler{}

@@ -11,6 +11,7 @@ import (
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
+	"log"
 )
 
 var _ Builder = modifyTableBuilder{}
@@ -21,6 +22,7 @@ func (m modifyTableBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 	specificPlan := plan.(node.ModifyTable)
 	resultRTE := ctx.GetRTE(specificPlan.ResultRelations[0])
 
+	resultTable := resultRTE.Ref
 	return &ModifyTable{
 		Plan: specificPlan,
 		Left: CreateFromPlan(specificPlan.Left, ctx),
@@ -32,8 +34,8 @@ func (m modifyTableBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 		},
 		txCtx:       ctx.Tx,
 		buff:        ctx.Buff,
-		resultTable: resultRTE.Ref,
-		fsm:         ctx.FsmStore.GetFSM(resultRTE.Ref.FsmOID()),
+		resultTable: resultTable,
+		fsm:         fsm.NewFSM(resultTable.FsmOID(), ctx.Buff),
 		done:        false,
 	}
 }
@@ -73,7 +75,7 @@ func (m *ModifyTable) Next() page.Tuple {
 func (m *ModifyTable) tryInsert(tuple page.Tuple) error {
 	pageId, err := m.fsm.FindPage(uint16(tuple.TupleSize()), m.txCtx)
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 	wPage, err := m.buff.WTablePage(m.resultTable, pageId)
 	if err != nil {

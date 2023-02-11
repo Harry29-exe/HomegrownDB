@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/access/sequence"
+	"HomegrownDB/dbsystem/access/transaction"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage"
@@ -12,12 +13,14 @@ import (
 type Module interface {
 	SharedBuffer() buffer.SharedBuffer
 	RelationManager() relation.Manager
+	TxManager() transaction.Manager
 }
 
 type ModuleBuilder struct {
 	SharedBufferProvider   func(storageModule storage.Module, configModule config.Module) (buffer.SharedBuffer, error)
-	RelationMangerProvider func(module storage.Module, buff buffer.SharedBuffer, sequence relation.OIDSequence) (relation.Manager, error)
 	OIDSequenceProvider    func(module config.Module) (sequence.Sequence[reldef.OID], error)
+	RelationMangerProvider func(module storage.Module, buff buffer.SharedBuffer, sequence relation.OIDSequence) (relation.Manager, error)
+	TxManagerProvider      func(configModule config.Module, buffer buffer.SharedBuffer) (transaction.Manager, error)
 }
 
 func DefaultModuleBuilder() ModuleBuilder {
@@ -25,6 +28,7 @@ func DefaultModuleBuilder() ModuleBuilder {
 		SharedBufferProvider:   SharedBufferProvider,
 		RelationMangerProvider: RelationManagerProvider,
 		OIDSequenceProvider:    OIDSequenceProvider,
+		TxManagerProvider:      TxManagerProvider,
 	}
 }
 
@@ -52,6 +56,8 @@ func NewModule(builder ModuleBuilder, deps ModuleDeps) (Module, error) {
 		return nil, err
 	}
 
+	module.txManager, err = builder.TxManagerProvider(deps.ConfigModule, module.sharedBuffer)
+
 	return module, nil
 }
 
@@ -61,8 +67,9 @@ func NewModule(builder ModuleBuilder, deps ModuleDeps) (Module, error) {
 
 type stdModule struct {
 	sharedBuffer    buffer.SharedBuffer
-	relationManager relation.Manager
 	oidSequence     relation.OIDSequence
+	relationManager relation.Manager
+	txManager       transaction.Manager
 }
 
 func (s *stdModule) SharedBuffer() buffer.SharedBuffer {
@@ -71,4 +78,8 @@ func (s *stdModule) SharedBuffer() buffer.SharedBuffer {
 
 func (s *stdModule) RelationManager() relation.Manager {
 	return s.relationManager
+}
+
+func (s *stdModule) TxManager() transaction.Manager {
+	return s.txManager
 }

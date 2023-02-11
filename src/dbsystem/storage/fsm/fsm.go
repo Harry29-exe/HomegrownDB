@@ -11,15 +11,11 @@ import (
 	"HomegrownDB/dbsystem/tx"
 )
 
-// CreateFreeSpaceMap creates new DBObject directory and initializes its data file
-func CreateFreeSpaceMap(
+// InitFreeSpaceMapFile creates new DBObject directory and initializes its data file
+func InitFreeSpaceMapFile(
 	fsmOID dbobj.OID,
 	fs dbfs.FS,
 ) error {
-	err := fs.InitNewPageObjectDir(fsmOID)
-	if err != nil {
-		return err
-	}
 	file, err := fs.OpenPageObjectFile(fsmOID)
 	if err != nil {
 		return err
@@ -34,7 +30,8 @@ func CreateFreeSpaceMap(
 	if io.FlushPage(page.Id(lastPageIndex), make([]byte, page.Size)) != nil {
 		return err
 	}
-	return nil
+
+	return io.Close()
 }
 
 func NewFSM(fsmOID dbobj.OID, buff buffer.SharedBuffer) *FSM {

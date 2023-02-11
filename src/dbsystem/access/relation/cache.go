@@ -80,7 +80,7 @@ func (c *cache) initTable(table table.Definition, loader *loaderCache) error {
 	return nil
 }
 
-var canNotReadPageErr error = canNotReadPage{}
+var canNotReadPageErr = canNotReadPage{}
 
 type canNotReadPage struct {
 	Cause error
