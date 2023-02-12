@@ -43,32 +43,47 @@ func TestSharedBuffer_Overflow(t *testing.T) {
 
 func TestSharedBuffer_ParallelRead(t *testing.T) {
 	//given
-	buffSize := 2
+	threadCount := 32
+	buffSize := threadCount
 	ctx, testBuffer := bootstrapSimpleTCtx_Users(uint(buffSize), t)
 	tableRel := ctx.table
 
-	tCount := 32
-	ctx.TestDBUtils.FillTablePages(10, tt_user.TableName)
+	ctx.TestDBUtils.FillTablePages(100, tt_user.TableName)
 
 	//when
 	waitGroup1 := sync.WaitGroup{}
-	waitGroup1.Add(tCount)
+	waitGroup1.Add(threadCount)
 	waitGroup2 := sync.WaitGroup{}
-	waitGroup2.Add(tCount)
+	waitGroup2.Add(1)
+	waitGroup3 := sync.WaitGroup{}
+	waitGroup3.Add(threadCount)
 
 	tag := page.PageTag{PageId: 0, OwnerID: tableRel.OID()}
-	for i := 0; i < tCount; i++ {
+	for i := 0; i < threadCount; i++ {
 		go func() {
 			_, _ = testBuffer.ReadRPage(tableRel.OID(), 0, RbmReadOrCreate)
 			waitGroup1.Done()
 			waitGroup1.Wait()
+			waitGroup2.Wait()
 			testBuffer.ReleaseRPage(tag)
-			waitGroup2.Done()
+			waitGroup3.Done()
 		}()
 	}
-
+	// wait for all goroutines to be inited
+	waitGroup1.Wait()
+	// lock threadCount - 1 pages (we want to make sure we have threadCount-1 free buffer pages)
+	for i := 1; i < threadCount; i++ {
+		_, err := testBuffer.ReadRPage(tableRel.OID(), page.Id(i), RbmReadOrCreate)
+		assert.ErrIsNil(err, t)
+	}
+	// free locked pages
+	for i := 1; i < threadCount; i++ {
+		_, err := testBuffer.ReadRPage(tableRel.OID(), page.Id(i), RbmReadOrCreate)
+		assert.ErrIsNil(err, t)
+	}
+	waitGroup2.Done()
 	//then
-	waitGroup2.Wait()
+	waitGroup3.Wait()
 }
 
 func TestSharedBuffer_ParallelDifferentRowRead(t *testing.T) {
