@@ -12,7 +12,8 @@ const (
 )
 
 const (
-	HGRelationsOID OID = iota
+	_ OID = iota
+	HGRelationsOID
 	HGRelationsFsmOID
 	HGRelationsVmOID
 

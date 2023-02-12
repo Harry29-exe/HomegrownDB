@@ -41,12 +41,12 @@ type stdSqlHandler struct {
 var _ SqlHandler = &stdSqlHandler{}
 
 func (s stdSqlHandler) Handle(query string, txId tx.Id, authentication auth.Authentication) (SqlResult, error) {
-	user, err := s.AuthManger.Authenticate(authentication)
-	if err != nil {
-		return nil, err
-	}
+	//user, err := s.AuthManger.Authenticate(authentication)
+	//if err != nil {
+	//	return nil, err
+	//}
 	//todo use user in backend.Execute
-	_ = user
+	//_ = user
 
 	var transaction tx.Tx
 	if txId == tx.InvalidId {

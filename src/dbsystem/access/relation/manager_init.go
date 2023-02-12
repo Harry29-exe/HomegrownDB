@@ -22,6 +22,9 @@ func NewManager(
 	if err != nil {
 		return nil, err
 	}
+	for _, relation := range manager.cache.relations {
+		manager.nameMap[relation.Name()] = relation.OID()
+	}
 
 	return manager, nil
 }

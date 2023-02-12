@@ -52,7 +52,7 @@ func (db *DBSystem) FrontendContainer() FrontendContainer {
 	return FrontendContainer{
 		AuthManger:         nil,
 		ExecutionContainer: db.ExecutionContainer(),
-		TxManager:          nil,
+		TxManager:          db.AccessModule().TxManager(),
 	}
 }
 

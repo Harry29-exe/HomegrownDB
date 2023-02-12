@@ -48,7 +48,7 @@ func (c *cache) Reload(buffer buffer.SharedBuffer) error {
 
 func (c *cache) initSpecific(loader *loaderCache) error {
 	var err error
-	for _, relation := range c.relations {
+	for _, relation := range loader.relations {
 		switch relation.Kind() {
 		case reldef.TypeTable:
 			err = c.initTable(relation.(table.Definition), loader)
