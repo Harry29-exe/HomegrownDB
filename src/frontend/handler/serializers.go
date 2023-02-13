@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/lib/bparse"
 	"bytes"
 	"fmt"
 	"log"

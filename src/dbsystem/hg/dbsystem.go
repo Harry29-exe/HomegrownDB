@@ -1,7 +1,6 @@
 package hg
 
 import (
-	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/relation"
@@ -12,6 +11,7 @@ import (
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/lib/datastructs/appsync"
 )
 
 var _ DBModule = &DBSystem{}

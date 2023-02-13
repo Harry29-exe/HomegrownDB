@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/backend/internal/analyser/anlsr"
 	node2 "HomegrownDB/backend/internal/node"
 	pnode2 "HomegrownDB/backend/internal/pnode"
-	"HomegrownDB/common/datastructs/collection/list"
+	"HomegrownDB/lib/datastructs/collection/list"
 )
 
 var FromDelegator = fromDelegator{}

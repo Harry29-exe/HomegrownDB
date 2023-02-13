@@ -1,8 +1,8 @@
 package transaction
 
 import (
-	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/lib/datastructs/appsync"
 	"fmt"
 	"sync"
 )

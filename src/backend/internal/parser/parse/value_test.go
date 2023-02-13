@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/backend/internal/parser/tokenizer"
 	"HomegrownDB/backend/internal/parser/validator"
 	"HomegrownDB/backend/internal/pnode"
-	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/lib/tests/assert"
 	"testing"
 )
 

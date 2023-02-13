@@ -28,12 +28,12 @@ func NewCreateTableStmt(tableName string, columns []ColumnDef) CreateTableStmt {
 	return &createTableStmt{
 		commandStmt: commandStmt{
 			node: node{
-				tag:        0,
+				tag: 0,
 			},
 			Type: CommandCreateTable,
 		},
-		TableName:   tableName,
-		Columns:     columns,
+		TableName: tableName,
+		Columns:   columns,
 	}
 }
 
@@ -44,10 +44,16 @@ var _ CommandStmt = &createTableStmt{}
 type createTableStmt struct {
 	commandStmt
 	TableName string
-	Columns []ColumnDef
+	Columns   []ColumnDef
 }
 
-func (c createTableStmt) Equal(node Node) bool {
-	//TODO implement me
-	panic("implement me")
+func (c CreateTableStmt) Equal(node Node) bool {
+	if nodesEqNil(c, node) {
+		return true
+	} else if !basicNodeEqual(c, node) {
+		return false
+	}
+	raw := node.(CreateTableStmt)
+	return c.TableName == raw.TableName &&
+		cmpNodeArray(c.Columns, raw.Columns)
 }

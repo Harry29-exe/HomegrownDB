@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/backend/internal/parser/parse"
 	"HomegrownDB/backend/internal/parser/validator"
 	pnode2 "HomegrownDB/backend/internal/pnode"
-	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/lib/tests/assert"
 	"testing"
 )
 

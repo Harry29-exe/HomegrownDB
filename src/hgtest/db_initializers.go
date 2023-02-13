@@ -1,10 +1,10 @@
 package hgtest
 
 import (
-	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/lib/tests/assert"
+	"HomegrownDB/lib/tests/tutils/testtable/tt_user"
 	"testing"
 )
 

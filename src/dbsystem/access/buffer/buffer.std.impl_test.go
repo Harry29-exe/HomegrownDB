@@ -1,8 +1,6 @@
 package buffer_test
 
 import (
-	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	. "HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/hg"
@@ -12,6 +10,8 @@ import (
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/hgtest"
+	"HomegrownDB/lib/tests/assert"
+	"HomegrownDB/lib/tests/tutils/testtable/tt_user"
 	"sync"
 	"testing"
 	"time"

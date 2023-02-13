@@ -1,12 +1,12 @@
 package testtable
 
 import (
-	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/lib/random"
 	"fmt"
 	"testing"
 )

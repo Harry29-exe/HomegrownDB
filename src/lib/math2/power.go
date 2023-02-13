@@ -1,6 +1,6 @@
 package math2
 
-import "HomegrownDB/common/datastructs"
+import "HomegrownDB/lib/datastructs"
 
 // Power returns a to power of b
 func Power[T datastructs.Number](a T, b int) (result T) {

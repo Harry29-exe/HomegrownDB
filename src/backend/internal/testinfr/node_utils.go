@@ -5,9 +5,9 @@ import (
 	node2 "HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/planner"
-	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/lib/datastructs/appsync"
+	"HomegrownDB/lib/tests/assert"
 	"testing"
 )
 

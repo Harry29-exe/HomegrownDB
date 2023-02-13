@@ -5,13 +5,13 @@ import (
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/parser"
 	. "HomegrownDB/backend/internal/testinfr"
-	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/hgtest"
+	"HomegrownDB/lib/datastructs/appsync"
+	"HomegrownDB/lib/tests/assert"
+	"HomegrownDB/lib/tests/tutils/testtable/tt_user"
 	"testing"
 )
 

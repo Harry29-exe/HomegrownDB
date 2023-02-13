@@ -1,8 +1,8 @@
 package outtype
 
 import (
-	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/lib/bparse"
 	"log"
 )
 

@@ -1,7 +1,7 @@
 package sequence
 
 import (
-	"HomegrownDB/common/datastructs"
+	"HomegrownDB/lib/datastructs"
 )
 
 func NewInMemSequence[T datastructs.Number](nextVal T) Sequence[T] {

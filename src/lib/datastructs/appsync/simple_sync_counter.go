@@ -1,6 +1,6 @@
 package appsync
 
-import "HomegrownDB/common/datastructs"
+import "HomegrownDB/lib/datastructs"
 
 func NewSimpleCounter[T datastructs.Number](next T) SimpleSyncCounter[T] {
 	return SimpleSyncCounter[T]{

@@ -1,11 +1,11 @@
 package data
 
 import (
-	"HomegrownDB/common/bparse"
-	"HomegrownDB/common/strutils"
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/lib/bparse"
+	"HomegrownDB/lib/strutils"
 	"encoding/binary"
 	"fmt"
 	"strings"

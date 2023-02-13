@@ -1,9 +1,9 @@
 package pageio
 
 import (
-	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/lib/datastructs/appsync"
 )
 
 func NewPageIO(file dbfs.FileLike) (IO, error) {

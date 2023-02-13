@@ -1,13 +1,13 @@
 package hgtest
 
 import (
-	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/lib/random"
 	"testing"
 )
 

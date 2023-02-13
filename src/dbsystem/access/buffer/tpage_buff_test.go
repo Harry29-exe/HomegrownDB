@@ -1,11 +1,6 @@
 package buffer_test
 
 import (
-	"HomegrownDB/common/random"
-	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/tutils/testtable"
-	"HomegrownDB/common/tests/tutils/testtable/tt_user"
-	"HomegrownDB/common/tests/tutils/testtable/ttable1"
 	. "HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/hg"
@@ -14,6 +9,11 @@ import (
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/hgtest"
+	"HomegrownDB/lib/random"
+	"HomegrownDB/lib/tests/assert"
+	"HomegrownDB/lib/tests/tutils/testtable"
+	"HomegrownDB/lib/tests/tutils/testtable/tt_user"
+	"HomegrownDB/lib/tests/tutils/testtable/ttable1"
 	"testing"
 )
 

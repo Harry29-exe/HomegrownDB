@@ -2,7 +2,7 @@ package planner
 
 import (
 	node2 "HomegrownDB/backend/internal/node"
-	"HomegrownDB/common/datastructs/appsync"
+	"HomegrownDB/lib/datastructs/appsync"
 )
 
 type PlanNodeIcCounter = appsync.SimpleSyncCounter[node2.PlanNodeId]

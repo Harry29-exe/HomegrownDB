@@ -1,8 +1,8 @@
 package hgtype
 
 import (
-	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/lib/random"
 )
 
 type (

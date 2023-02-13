@@ -26,7 +26,7 @@ func (c columnDef) Parse(src tkSource, v tkValidator) (pnode.ColumnDef, error) {
 	if err != nil {
 		return nil, err
 	}
-	typeNameTk, err := v.Current().
+	typeNameTk, err := v.Next().
 		Has(token.Identifier).
 		IsTextToken().
 		AsciiOnly().
@@ -36,7 +36,8 @@ func (c columnDef) Parse(src tkSource, v tkValidator) (pnode.ColumnDef, error) {
 		return nil, err
 	}
 	typeName := typeNameTk.Value()
-	_ = v.SkipNextSB()
+	_ = src.Next()
+	_ = v.SkipCurrentSB()
 
 	args, err := c.parseTypeConstrains(src, v)
 	if err != nil {
@@ -50,7 +51,7 @@ func (c columnDef) parseTypeConstrains(src tkSource, v tkValidator) ([]pnode.Typ
 	src.Checkpoint()
 	args := make([]pnode.TypeArg, 0, 5)
 	// checking for length
-	if err := v.CurrentIs(token.OpeningParenthesis); err != nil {
+	if src.Current().Code() == token.OpeningParenthesis {
 		lengthArg, err := c.parseLengthArgs(src, v)
 		if err != nil {
 			src.Rollback()
@@ -58,13 +59,13 @@ func (c columnDef) parseTypeConstrains(src tkSource, v tkValidator) ([]pnode.Typ
 		}
 
 		args = append(args, lengthArg)
-		src.Next()
 	}
 
 	//for c.hasNextArg(src) {
 	//
 	//}
 	//todo add support for more args
+	src.Commit()
 	return args, nil
 }
 
@@ -73,7 +74,7 @@ func (c columnDef) parseLengthArgs(src tkSource, v tkValidator) (pnode.TypeArg, 
 	_ = v.SkipCurrentSB()
 	lenTk := src.Current()
 	if lenTk.Code() != token.Integer {
-		return pnode.TypeArg{}, sqlerr.NewTokenSyntaxError(token.Integer, lenTk.Code(), src)
+		return nil, sqlerr.NewTokenSyntaxError(token.Integer, lenTk.Code(), src)
 	}
 	lenIntTk := lenTk.(*token.IntegerToken)
 	arg := pnode.NewArgLength(int(lenIntTk.Int))

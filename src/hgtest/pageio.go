@@ -1,10 +1,10 @@
 package hgtest
 
 import (
-	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/lib/tests/assert"
 	"testing"
 )
 

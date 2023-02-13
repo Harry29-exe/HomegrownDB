@@ -3,10 +3,10 @@ package anlsr
 import (
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/sqlerr"
-	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/reldef"
 	table "HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/lib/datastructs/appsync"
 )
 
 type Ctx = *ctx

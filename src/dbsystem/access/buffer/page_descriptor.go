@@ -1,8 +1,8 @@
 package buffer
 
 import (
-	"HomegrownDB/common/datastructs/appsync"
 	"HomegrownDB/dbsystem/storage/page"
+	"HomegrownDB/lib/datastructs/appsync"
 	"sync"
 )
 

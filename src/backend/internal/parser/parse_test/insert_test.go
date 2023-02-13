@@ -3,8 +3,8 @@ package parser_test
 import (
 	"HomegrownDB/backend/internal/parser/parse"
 	"HomegrownDB/backend/internal/parser/validator"
-	pnode2 "HomegrownDB/backend/internal/pnode"
-	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/backend/internal/pnode"
+	"HomegrownDB/lib/tests/assert"
 	"testing"
 )
 
@@ -17,16 +17,16 @@ func TestSimpleInsertParse(t *testing.T) {
 		"INSERT INTO users  (  name  ,  age  ) VALUES ('bob',15)  , (  'Alice'   ,   24   )",
 	}
 
-	expectedTree := pnode2.NewInsertStmt()
-	expectedTree.Columns = []pnode2.ResultTarget{
-		pnode2.NewResultTarget("", pnode2.NewColumnRef("name", "")),
-		pnode2.NewResultTarget("", pnode2.NewColumnRef("age", "")),
+	expectedTree := pnode.NewInsertStmt()
+	expectedTree.Columns = []pnode.ResultTarget{
+		pnode.NewResultTarget("", pnode.NewColumnRef("name", "")),
+		pnode.NewResultTarget("", pnode.NewColumnRef("age", "")),
 	}
-	expectedTree.SrcNode = pnode2.NewSelectStmtWithValues([][]pnode2.Node{
-		{pnode2.NewAConstStr("bob"), pnode2.NewAConstInt(15)},
-		{pnode2.NewAConstStr("Alice"), pnode2.NewAConstInt(24)},
+	expectedTree.SrcNode = pnode.NewSelectStmtWithValues([][]pnode.Node{
+		{pnode.NewAConstStr("bob"), pnode.NewAConstInt(15)},
+		{pnode.NewAConstStr("Alice"), pnode.NewAConstInt(24)},
 	})
-	expectedTree.Relation = pnode2.NewRangeVar("users", "")
+	expectedTree.Relation = pnode.NewRangeVar("users", "")
 
 	for _, query := range queries {
 		//when
@@ -49,15 +49,15 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 		"INSERT INTO users VALUES ('bob',15),('Alice',24)",
 	}
 
-	expectedTree := pnode2.NewInsertStmt()
-	expectedTree.Columns = []pnode2.ResultTarget{
-		pnode2.NewAStarResultTarget(),
+	expectedTree := pnode.NewInsertStmt()
+	expectedTree.Columns = []pnode.ResultTarget{
+		pnode.NewAStarResultTarget(),
 	}
-	expectedTree.SrcNode = pnode2.NewSelectStmtWithValues([][]pnode2.Node{
-		{pnode2.NewAConstStr("bob"), pnode2.NewAConstInt(15)},
-		{pnode2.NewAConstStr("Alice"), pnode2.NewAConstInt(24)},
+	expectedTree.SrcNode = pnode.NewSelectStmtWithValues([][]pnode.Node{
+		{pnode.NewAConstStr("bob"), pnode.NewAConstInt(15)},
+		{pnode.NewAConstStr("Alice"), pnode.NewAConstInt(24)},
 	})
-	expectedTree.Relation = pnode2.NewRangeVar("users", "")
+	expectedTree.Relation = pnode.NewRangeVar("users", "")
 
 	for _, query := range queries {
 		//when

@@ -10,10 +10,10 @@ Package ttable2 is following tabdef definition
 package ttable2
 
 import (
-	"HomegrownDB/common/tests/tutils/testtable"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/lib/tests/tutils/testtable"
 	"testing"
 )
 

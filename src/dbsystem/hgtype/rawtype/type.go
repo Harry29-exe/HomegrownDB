@@ -1,7 +1,7 @@
 package rawtype
 
 import (
-	"HomegrownDB/common/random"
+	"HomegrownDB/lib/random"
 	"io"
 )
 

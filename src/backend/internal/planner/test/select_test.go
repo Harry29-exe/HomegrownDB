@@ -6,10 +6,10 @@ import (
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/planner"
 	. "HomegrownDB/backend/internal/testinfr"
-	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/tutils/testtable/tt_user"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/hgtest"
+	"HomegrownDB/lib/tests/assert"
+	"HomegrownDB/lib/tests/tutils/testtable/tt_user"
 	"testing"
 )
 

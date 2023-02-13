@@ -1,9 +1,9 @@
 package rawtype
 
 import (
-	"HomegrownDB/common/bparse"
-	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/hgtype/typeerr"
+	"HomegrownDB/lib/bparse"
+	"HomegrownDB/lib/random"
 	"bytes"
 	"strconv"
 )

@@ -1,6 +1,6 @@
 package rawtype
 
-import "HomegrownDB/common/bparse"
+import "HomegrownDB/lib/bparse"
 
 var VarLenHelper = varLenHelper{}
 

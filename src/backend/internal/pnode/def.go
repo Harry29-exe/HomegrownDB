@@ -60,4 +60,5 @@ const (
 	TagRangeVar
 	TagAStar
 	TagAConst
+	TagTypeArg
 )

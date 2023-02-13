@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef"
@@ -9,6 +8,7 @@ import (
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/lib/bparse"
 	"log"
 )
 

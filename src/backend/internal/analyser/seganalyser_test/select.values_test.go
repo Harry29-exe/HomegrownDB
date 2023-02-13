@@ -5,10 +5,10 @@ import (
 	node "HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/parser"
 	testinfr "HomegrownDB/backend/internal/testinfr"
-	"HomegrownDB/common/datastructs/appsync"
-	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/lib/datastructs/appsync"
+	"HomegrownDB/lib/tests/assert"
 	"testing"
 )
 

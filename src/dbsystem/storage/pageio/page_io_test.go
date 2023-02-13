@@ -1,10 +1,10 @@
 package pageio_test
 
 import (
-	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
+	"HomegrownDB/lib/tests/assert"
 	"github.com/spf13/afero"
 	"testing"
 )

@@ -1,8 +1,8 @@
 package hgtest
 
 import (
-	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/storage/dbfs"
+	"HomegrownDB/lib/tests/assert"
 	"fmt"
 	"os"
 	"strings"

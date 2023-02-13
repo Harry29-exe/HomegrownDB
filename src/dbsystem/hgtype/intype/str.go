@@ -1,8 +1,8 @@
 package intype
 
 import (
-	"HomegrownDB/common/bparse"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/lib/bparse"
 	"fmt"
 )
 

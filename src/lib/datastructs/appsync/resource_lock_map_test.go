@@ -1,7 +1,7 @@
 package appsync
 
 import (
-	"HomegrownDB/common/tests/assert"
+	"HomegrownDB/lib/tests/assert"
 	"testing"
 )
 

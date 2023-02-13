@@ -1,9 +1,9 @@
 package data
 
 import (
-	"HomegrownDB/common/datastructs/bitmap"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/lib/datastructs/bitmap"
 	"bytes"
 	"errors"
 	"log"

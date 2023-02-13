@@ -1,10 +1,10 @@
 package hgtest
 
 import (
-	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
+	"HomegrownDB/lib/random"
 )
 
 var Table = tableUtils{}

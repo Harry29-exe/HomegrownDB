@@ -1,13 +1,13 @@
 package data_test
 
 import (
-	"HomegrownDB/common/random"
-	"HomegrownDB/common/tests"
-	"HomegrownDB/common/tests/assert"
-	"HomegrownDB/common/tests/tutils/testtable/ttable1"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page/internal/data"
 	"HomegrownDB/hgtest"
+	"HomegrownDB/lib/random"
+	"HomegrownDB/lib/tests"
+	"HomegrownDB/lib/tests/assert"
+	"HomegrownDB/lib/tests/tutils/testtable/ttable1"
 	"fmt"
 	"testing"
 )

@@ -1,8 +1,8 @@
 package rawtype
 
 import (
-	"HomegrownDB/common/random"
 	"HomegrownDB/dbsystem/hgtype/typeerr"
+	"HomegrownDB/lib/random"
 )
 
 type Bool struct{}

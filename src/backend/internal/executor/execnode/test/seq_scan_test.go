@@ -3,10 +3,10 @@ package exenode
 import (
 	"HomegrownDB/backend/internal/executor"
 	"HomegrownDB/backend/internal/testinfr"
-	"HomegrownDB/common/bparse"
-	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/hgtest"
+	"HomegrownDB/lib/bparse"
+	"HomegrownDB/lib/tests/assert"
 	"testing"
 )
 

@@ -4,8 +4,8 @@ import (
 	node2 "HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/planner"
 	. "HomegrownDB/backend/internal/testinfr"
-	"HomegrownDB/common/tests/assert"
 	"HomegrownDB/hgtest"
+	"HomegrownDB/lib/tests/assert"
 	"testing"
 )
 

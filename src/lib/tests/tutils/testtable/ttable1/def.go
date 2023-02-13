@@ -12,7 +12,7 @@ Package ttable1 is following tabdef definition
 package ttable1
 
 import (
-	"HomegrownDB/common/tests/tutils/testtable"
+	"HomegrownDB/lib/tests/tutils/testtable"
 	"testing"
 )
 
