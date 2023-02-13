@@ -1,7 +1,7 @@
 package parser_test
 
 import (
-	"HomegrownDB/backend/internal/parser/segparser"
+	"HomegrownDB/backend/internal/parser/parse"
 	"HomegrownDB/backend/internal/parser/validator"
 	pnode2 "HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/common/tests/assert"
@@ -32,7 +32,7 @@ func TestSimpleInsertParse(t *testing.T) {
 		//when
 		source := newTestTokenSource(query)
 		v := validator.NewValidator(source)
-		node, err := segparser.Insert.Parse(source, v)
+		node, err := parse.Insert.Parse(source, v)
 
 		//then
 		assert.ErrIsNil(err, t)
@@ -63,7 +63,7 @@ func TestInsertParseWithDefaultColumn(t *testing.T) {
 		//when
 		source := newTestTokenSource(query)
 		v := validator.NewValidator(source)
-		node, err := segparser.Insert.Parse(source, v)
+		node, err := parse.Insert.Parse(source, v)
 
 		//then
 		assert.ErrIsNil(err, t)
@@ -84,7 +84,7 @@ func TestInsertParseInvalidQuery(t *testing.T) {
 		source := newTestTokenSource(query)
 		v := validator.NewValidator(source)
 
-		_, err := segparser.Insert.Parse(source, v)
+		_, err := parse.Insert.Parse(source, v)
 		assert.ErrNotNil(err, t)
 		assert.Eq(len(source.Checkpoints), 0, t)
 	}

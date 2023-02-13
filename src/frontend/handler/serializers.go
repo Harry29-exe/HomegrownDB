@@ -2,7 +2,9 @@ package handler
 
 import (
 	"HomegrownDB/common/bparse"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"HomegrownDB/dbsystem/storage/page"
 	"bytes"
 	"fmt"
@@ -17,7 +19,10 @@ func ToJsonResult(tuples []page.RTuple) SqlResult {
 
 	json.WriteRune('[')
 	pattern := tuples[0].Pattern()
-	for _, tuple := range tuples {
+	for tupleNo, tuple := range tuples {
+		if tupleNo != 0 {
+			json.WriteByte(',')
+		}
 		json.serializeRow(tuple, pattern.Columns)
 	}
 	json.WriteRune(']')
@@ -33,24 +38,33 @@ func (s *resultJsonSerializer) serializeRow(tuple page.RTuple, columns []page.Pa
 	if s.rowsWritten > 0 {
 		s.Buffer.WriteRune(',')
 	}
-	s.Buffer.WriteRune('{')
-	s.Buffer.WriteString(fmt.Sprintf("\"%s\":", columns[0].Name))
-	s.serializeValue(tuple.ColValue(0), columns[0].Type.Type())
 
-	for _, column := range columns[1:] {
-		s.Buffer.WriteRune(',')
-		s.Buffer.WriteString(fmt.Sprintf("\"%s\":", column.Name))
+	s.Buffer.WriteRune('{')
+	for colNo := range columns {
+		if colNo != 0 {
+			s.Buffer.WriteRune(',')
+		}
+		s.Buffer.WriteString(fmt.Sprintf("\"%s\":", s.columnName(columns[colNo], colNo)))
+		s.serializeValue(tuple.ColValue(column.Order(colNo)), columns[colNo].Type)
 	}
 	s.Buffer.WriteRune('}')
 }
 
-func (s *resultJsonSerializer) serializeValue(value []byte, t rawtype.Type) {
+func (s *resultJsonSerializer) serializeValue(value []byte, t hgtype.ColType) {
 	switch t.Tag() {
 	case rawtype.TypeStr:
-		s.Buffer.WriteString(fmt.Sprintf("\"%s\"", string(value)))
+		s.Buffer.WriteString(fmt.Sprintf("\"%s\"", string(rawtype.TypeOp.GetData(value, t.Args()))))
 	case rawtype.TypeInt8:
 		s.Buffer.WriteString(fmt.Sprintf("%d", bparse.Parse.Int8(value)))
 	default:
 		log.Panic("unsupported hgtype type: " + t.Tag().ToStr())
+	}
+}
+
+func (s *resultJsonSerializer) columnName(column page.PatternCol, colNo int) string {
+	if column.Name != "" {
+		return column.Name
+	} else {
+		return fmt.Sprintf("col%d", colNo)
 	}
 }

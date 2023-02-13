@@ -51,6 +51,7 @@ type Tag = uint16
 const (
 	TagNil Tag = iota
 	TagRawStmt
+	TagCommandStmt
 	TagSelectStmt
 	TagInsertStmt
 	TagAExpr

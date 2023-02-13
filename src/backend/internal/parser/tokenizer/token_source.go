@@ -18,7 +18,7 @@ type TokenSource interface {
 	Get(index uint) token.Token           // Get returns token with given index
 	GetPtrRelative(index int) token.Token // GetPtrRelative returns token at index = ptr + index, so 0 means current, -1 means last, et cetera
 
-	Checkpoint()                       // Checkpoint creates new checkpoint for segparser to rollback
+	Checkpoint()                       // Checkpoint creates new checkpoint for parse to rollback
 	Commit()                           // Commit deletes last checkpoint
 	CommitAndInitNode(node pnode.Node) // CommitAndInitNode invoke commit, and set start and end token of received test
 	Rollback()                         // Rollback to last checkpoint and removes this checkpoint

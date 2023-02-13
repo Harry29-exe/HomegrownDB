@@ -1,7 +1,7 @@
 package parser_test
 
 import (
-	"HomegrownDB/backend/internal/parser/segparser"
+	"HomegrownDB/backend/internal/parser/parse"
 	"HomegrownDB/backend/internal/parser/validator"
 	pnode2 "HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/common/tests/assert"
@@ -22,7 +22,7 @@ func TestSelectParser_Parse_ShouldParse(t *testing.T) {
 	for _, sentence := range queryVariant {
 		source := newTestTokenSource(sentence)
 		v := validator.NewValidator(source)
-		selectNode, err := segparser.Select.Parse(source, v)
+		selectNode, err := parse.Select.Parse(source, v)
 
 		assert.ErrIsNil(err, t)
 		assert.True(selectNode.Equal(expectedStmt), t)
@@ -50,7 +50,7 @@ func TestSelectParser_Parse_ShouldParse2(t *testing.T) {
 	for _, sentence := range queryVariant {
 		source := newTestTokenSource(sentence)
 		v := validator.NewValidator(source)
-		selectNode, err := segparser.Select.Parse(source, v)
+		selectNode, err := parse.Select.Parse(source, v)
 
 		assert.ErrIsNil(err, t)
 		assert.True(selectNode.Equal(expectedStmt), t)
@@ -73,7 +73,7 @@ func TestSelectParser_Parse_ShouldParse3(t *testing.T) {
 	for _, sentence := range sentences {
 		source := newTestTokenSource(sentence)
 		v := validator.NewValidator(source)
-		selectNode, err := segparser.Select.Parse(source, v)
+		selectNode, err := parse.Select.Parse(source, v)
 
 		assert.ErrIsNil(err, t)
 		assert.True(selectNode.Equal(expectedStmt), t)

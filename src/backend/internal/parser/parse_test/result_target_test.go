@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"HomegrownDB/backend/internal/parser/segparser"
+	"HomegrownDB/backend/internal/parser/parse"
 	"HomegrownDB/backend/internal/parser/tokenizer"
 	"HomegrownDB/backend/internal/parser/validator"
 	pnode2 "HomegrownDB/backend/internal/pnode"
@@ -17,7 +17,7 @@ func testResultTargetSelect(query string, expectedTree pnode2.Node, t *testing.T
 	src := tokenizer.NewTokenSource(query)
 	v := validator.NewValidator(src)
 
-	resTarget, err := segparser.ResultTarget.Parse(src, v, segparser.ResultTargetSelect)
+	resTarget, err := parse.ResultTarget.Parse(src, v, parse.ResultTargetSelect)
 
 	assert.ErrIsNil(err, t)
 	assert.True(resTarget.Equal(expectedTree), t)
@@ -78,7 +78,7 @@ func TestResultTarget_Select_Column_Negative(t *testing.T) {
 		src := tokenizer.NewTokenSource(query)
 		v := validator.NewValidator(src)
 
-		res, err := segparser.ResultTarget.Parse(src, v, segparser.ResultTargetSelect)
+		res, err := parse.ResultTarget.Parse(src, v, parse.ResultTargetSelect)
 		_ = res
 
 		assert.ErrNotNil(err, t)
@@ -93,7 +93,7 @@ func testResultTargetInsert(query string, expectedTree pnode2.Node, t *testing.T
 	src := tokenizer.NewTokenSource(query)
 	v := validator.NewValidator(src)
 
-	resTarget, err := segparser.ResultTarget.Parse(src, v, segparser.ResultTargetInsert)
+	resTarget, err := parse.ResultTarget.Parse(src, v, parse.ResultTargetInsert)
 
 	assert.ErrIsNil(err, t)
 	assert.True(resTarget.Equal(expectedTree), t)
@@ -134,7 +134,7 @@ func TestResultTarget_Insert_Column_Negative(t *testing.T) {
 		src := tokenizer.NewTokenSource(query)
 		v := validator.NewValidator(src)
 
-		res, err := segparser.ResultTarget.Parse(src, v, segparser.ResultTargetInsert)
+		res, err := parse.ResultTarget.Parse(src, v, parse.ResultTargetInsert)
 		_ = res
 
 		assert.ErrNotNil(err, t)

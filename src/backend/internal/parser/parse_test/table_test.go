@@ -2,7 +2,7 @@ package parser_test
 
 //
 //import (
-//	"HomegrownDB/backend/internal/parser/internal/segparser"
+//	"HomegrownDB/backend/internal/parser/internal/parse"
 //	"HomegrownDB/backend/internal/parser/internal/validator"
 //	"HomegrownDB/backend/internal/parser/pnode"
 //	"testing"
@@ -47,7 +47,7 @@ package parser_test
 //func _tableParserPositiveTest(t *testing.T, sentence testSentence, expectedNode pnode.TableNode) {
 //	source := createTokenSourceAndTestIt(sentence.str, t)
 //	v := validator.NewValidator(source)
-//	output, err := segparser.Table.Parse(source, v)
+//	output, err := parse.Table.Parse(source, v)
 //
 //	CorrectSentenceParserTestIsSuccessful(
 //		t, source, sentence,

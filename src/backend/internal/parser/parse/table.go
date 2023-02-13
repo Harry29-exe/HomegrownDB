@@ -1,4 +1,4 @@
-package segparser
+package parse
 
 import (
 	"HomegrownDB/backend/internal/parser/tokenizer/token"

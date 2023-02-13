@@ -5,7 +5,7 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 )
 
-// Def describes column config and provides segparser and serializer
+// Def describes column config and provides parse and serializer
 type Def interface {
 	Name() string
 	Nullable() bool
