@@ -1,7 +1,7 @@
-package seganalyser
+package analyse
 
 import (
-	"HomegrownDB/backend/internal/analyser/anlsr"
+	"HomegrownDB/backend/internal/analyser/anlctx"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
 )
@@ -11,8 +11,8 @@ var Query = queryAnlr{}
 type queryAnlr struct {
 }
 
-func (q queryAnlr) Analyse(stmt pnode.Node, ctx anlsr.Ctx) (node.Query, error) {
-	rootCtx := anlsr.NewQueryCtx(nil, ctx)
+func (q queryAnlr) Analyse(stmt pnode.Node, ctx anlctx.Ctx) (node.Query, error) {
+	rootCtx := anlctx.NewQueryCtx(nil, ctx)
 	switch stmt.Tag() {
 	case pnode.TagSelectStmt:
 		return Select.Analyse(stmt.(pnode.SelectStmt), rootCtx)

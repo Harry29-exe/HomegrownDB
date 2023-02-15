@@ -1,7 +1,7 @@
-package seganalyser
+package analyse
 
 import (
-	"HomegrownDB/backend/internal/analyser/anlsr"
+	"HomegrownDB/backend/internal/analyser/anlctx"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/backend/internal/sqlerr"
@@ -17,7 +17,7 @@ type targetEntry struct{}
 
 func (te targetEntry) AnalyseForSelect(
 	resTarget pnode.ResultTarget,
-	currentCtx anlsr.QueryCtx,
+	currentCtx anlctx.QueryCtx,
 ) (node.TargetEntry, error) {
 	valExpr, err := ExprDelegator.DelegateAnalyse(resTarget.Val, currentCtx)
 	if err != nil {
@@ -31,7 +31,7 @@ func (te targetEntry) AnalyseForSelect(
 
 func (te targetEntry) AnalyseForInsert(
 	resTarget pnode.ResultTarget,
-	currentCtx anlsr.QueryCtx,
+	currentCtx anlctx.QueryCtx,
 ) (node.TargetEntry, error) {
 	val := resTarget.Val
 	if val.Tag() != pnode.TagColumnRef {

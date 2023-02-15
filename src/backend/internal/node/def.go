@@ -51,6 +51,9 @@ const (
 	TagFrom
 	TagAlias
 
+	// Commands
+	TagCreateTable
+
 	// TagExpr expressions nodes start
 	TagExpr
 	TagTargetEntry

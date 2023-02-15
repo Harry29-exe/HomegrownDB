@@ -1,7 +1,7 @@
-package seganalyser
+package analyse
 
 import (
-	anlsr2 "HomegrownDB/backend/internal/analyser/anlsr"
+	anlsr2 "HomegrownDB/backend/internal/analyser/anlctx"
 	node2 "HomegrownDB/backend/internal/node"
 	pnode2 "HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/dbsystem/reldef/tabdef/column"

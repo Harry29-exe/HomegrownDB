@@ -1,16 +1,16 @@
 package analyser
 
 import (
-	"HomegrownDB/backend/internal/analyser/anlsr"
-	"HomegrownDB/backend/internal/analyser/seganalyser"
+	"HomegrownDB/backend/internal/analyser/analyse"
+	"HomegrownDB/backend/internal/analyser/anlctx"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/dbsystem/access/relation"
 )
 
 func Analyse(stmt pnode.RawStmt, store relation.AccessMngr) (node.Query, error) {
-	ctx := anlsr.NewCtx(store)
+	ctx := anlctx.NewCtx(store)
 	innerStmt := stmt.Stmt
 
-	return seganalyser.Query.Analyse(innerStmt, ctx)
+	return analyse.Query.Analyse(innerStmt, ctx)
 }

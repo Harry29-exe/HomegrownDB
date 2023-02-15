@@ -1,4 +1,4 @@
-package seganalyser_test
+package analyse_test
 
 import (
 	"HomegrownDB/backend/internal/analyser"

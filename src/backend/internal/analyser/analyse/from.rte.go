@@ -1,7 +1,7 @@
-package seganalyser
+package analyse
 
 import (
-	"HomegrownDB/backend/internal/analyser/anlsr"
+	"HomegrownDB/backend/internal/analyser/anlctx"
 	node "HomegrownDB/backend/internal/node"
 	pnode2 "HomegrownDB/backend/internal/pnode"
 )
@@ -30,7 +30,7 @@ var RteRangeVar = rteRangeVar{}
 
 type rteRangeVar struct{}
 
-func (r rteRangeVar) Analyse(rangeVar pnode2.RangeVar, currentCtx anlsr.QueryCtx) (RteResult, error) {
+func (r rteRangeVar) Analyse(rangeVar pnode2.RangeVar, currentCtx anlctx.QueryCtx) (RteResult, error) {
 	def, err := currentCtx.GetTable(rangeVar.RelName)
 	if err != nil {
 		return RteResult{}, err
@@ -52,7 +52,7 @@ var RteSubquery = rteSelect{}
 
 type rteSelect struct{}
 
-func (rteSelect) Analyse(stmt pnode2.SelectStmt, currentCtx anlsr.QueryCtx) (RteResult, error) {
+func (rteSelect) Analyse(stmt pnode2.SelectStmt, currentCtx anlctx.QueryCtx) (RteResult, error) {
 	subquery, err := Select.Analyse(stmt, currentCtx)
 	if err != nil {
 		return RteResult{}, err

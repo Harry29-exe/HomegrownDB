@@ -1,8 +1,8 @@
-package seganalyser
+package analyse
 
 import (
-	"HomegrownDB/backend/internal/analyser/anlsr"
-	"HomegrownDB/backend/internal/analyser/seganalyser/typanlr"
+	"HomegrownDB/backend/internal/analyser/analyse/typanlr"
+	"HomegrownDB/backend/internal/analyser/anlctx"
 	node "HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
@@ -22,7 +22,7 @@ var RteValues = rteValues{}
 
 type rteValues struct{}
 
-func (v rteValues) Analyse(pnodeValues [][]pnode.Node, currentCtx anlsr.QueryCtx) (RteResult, error) {
+func (v rteValues) Analyse(pnodeValues [][]pnode.Node, currentCtx anlctx.QueryCtx) (RteResult, error) {
 	values := make([][]node.Expr, len(pnodeValues))
 	var err error
 
@@ -40,7 +40,7 @@ func (v rteValues) Analyse(pnodeValues [][]pnode.Node, currentCtx anlsr.QueryCtx
 	return NewSingleRteResult(rte), err
 }
 
-func (v rteValues) analyseFirstRow(row []pnode.Node, currentCtx anlsr.QueryCtx) ([]node.Expr, error) {
+func (v rteValues) analyseFirstRow(row []pnode.Node, currentCtx anlctx.QueryCtx) ([]node.Expr, error) {
 	resultRow := make([]node.Expr, len(row))
 	var err error
 	for i := 0; i < len(row); i++ {
@@ -52,7 +52,7 @@ func (v rteValues) analyseFirstRow(row []pnode.Node, currentCtx anlsr.QueryCtx) 
 	return resultRow, nil
 }
 
-func (v rteValues) analyseRow(row []pnode.Node, firstRow []node.Expr, currentCtx anlsr.QueryCtx) ([]node.Expr, error) {
+func (v rteValues) analyseRow(row []pnode.Node, firstRow []node.Expr, currentCtx anlctx.QueryCtx) ([]node.Expr, error) {
 	resultRow := make([]node.Expr, len(row))
 	for col := 0; col < len(row); col++ {
 		aConst, err := ExprDelegator.DelegateAnalyse(row[col], currentCtx)

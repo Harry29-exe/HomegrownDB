@@ -1,7 +1,7 @@
-package seganalyser
+package analyse
 
 import (
-	"HomegrownDB/backend/internal/analyser/anlsr"
+	"HomegrownDB/backend/internal/analyser/anlctx"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/lib/datastructs/collection/list"
@@ -13,7 +13,7 @@ type fromDelegator struct{}
 type RteList = *list.List[node.RangeTableEntry]
 
 // todo validate result for different operations e.g. select, insert e.t.c
-func (f fromDelegator) Analyse(fromRoot []pnode.Node, currentCtx anlsr.QueryCtx) error {
+func (f fromDelegator) Analyse(fromRoot []pnode.Node, currentCtx anlctx.QueryCtx) error {
 	query := currentCtx.Query
 	fromExpr := node.NewFromExpr(len(fromRoot))
 
@@ -29,7 +29,7 @@ func (f fromDelegator) Analyse(fromRoot []pnode.Node, currentCtx anlsr.QueryCtx)
 	return nil
 }
 
-func (f fromDelegator) analyseSingle(root pnode.Node, currentCtx anlsr.QueryCtx) (node.Node, error) {
+func (f fromDelegator) analyseSingle(root pnode.Node, currentCtx anlctx.QueryCtx) (node.Node, error) {
 	var result RteResult
 	var err error
 

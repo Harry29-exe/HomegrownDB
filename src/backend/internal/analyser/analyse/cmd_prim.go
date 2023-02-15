@@ -1,7 +1,7 @@
-package seganalyser
+package analyse
 
 import (
-	"HomegrownDB/backend/internal/analyser/anlsr"
+	"HomegrownDB/backend/internal/analyser/anlctx"
 	"HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/backend/internal/sqlerr"
 	"HomegrownDB/dbsystem/hgtype"
@@ -14,7 +14,7 @@ var ColumnDef = columnDef{}
 
 type columnDef struct{}
 
-func (c columnDef) Analyse(columnNode pnode.ColumnDef, currentCtx anlsr.QueryCtx) (column.WDef, error) {
+func (c columnDef) Analyse(columnNode pnode.ColumnDef, currentCtx anlctx.QueryCtx) (column.WDef, error) {
 	colType, err := ColumnType.Analyse(columnNode.Type, columnNode.Args)
 	if err != nil {
 		return nil, err

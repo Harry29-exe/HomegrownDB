@@ -1,7 +1,7 @@
-package seganalyser
+package analyse
 
 import (
-	"HomegrownDB/backend/internal/analyser/anlsr"
+	"HomegrownDB/backend/internal/analyser/anlctx"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
 	. "HomegrownDB/backend/internal/sqlerr"
@@ -14,7 +14,7 @@ type exprDelegator struct{}
 
 func (ex exprDelegator) DelegateAnalyse(
 	pnodeExpr pnode.Node,
-	currentCtx anlsr.QueryCtx,
+	currentCtx anlctx.QueryCtx,
 ) (node.Expr, error) {
 	switch pnodeExpr.Tag() {
 	case pnode.TagColumnRef:
@@ -30,7 +30,7 @@ var ExprAnalyser = exprAnalyser{}
 
 type exprAnalyser struct{}
 
-func (ex exprAnalyser) AnalyseColRef(columnRef pnode.ColumnRef, currentCtx anlsr.QueryCtx) (node.Var, error) {
+func (ex exprAnalyser) AnalyseColRef(columnRef pnode.ColumnRef, currentCtx anlctx.QueryCtx) (node.Var, error) {
 	var rTable node.RangeTableEntry
 	var query = currentCtx.Query
 
@@ -54,7 +54,7 @@ func (ex exprAnalyser) AnalyseColRef(columnRef pnode.ColumnRef, currentCtx anlsr
 	return node.NewVar(rTable.Id, col.Order(), col.CType()), nil
 }
 
-func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, currentCtx anlsr.QueryCtx) (node.Const, error) {
+func (ex exprAnalyser) AnalyseConst(aConst pnode.AConst, currentCtx anlctx.QueryCtx) (node.Const, error) {
 	switch aConst.Type {
 	case pnode.AConstInt:
 		return node.NewConstInt8(aConst.Int), nil

@@ -2,7 +2,7 @@ package node
 
 import (
 	"HomegrownDB/backend/internal/pnode"
-	table "HomegrownDB/dbsystem/reldef/tabdef"
+	tabdef "HomegrownDB/dbsystem/reldef/tabdef"
 	"fmt"
 )
 
@@ -108,7 +108,30 @@ func (q Query) AppendRTE(rte RangeTableEntry) {
 //      Commands
 // -------------------------
 
-type CreateTable struct {
+func NewCreateTable(table tabdef.Definition) CreateTable {
+	return &createTable{
+		node: node{
+			tag: TagCreateTable,
+		},
+		FutureTable: table,
+	}
+}
+
+type CreateTable = *createTable
+
+var _ Node = &createTable{}
+
+type createTable struct {
 	node
-	FutureTable table.Definition
+	FutureTable tabdef.Definition
+}
+
+func (c CreateTable) dEqual(node Node) bool {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (c CreateTable) DPrint(nesting int) string {
+	//TODO implement me
+	panic("implement me")
 }

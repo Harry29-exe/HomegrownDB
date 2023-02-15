@@ -1,8 +1,8 @@
-package seganalyser
+package analyse
 
 import (
-	"HomegrownDB/backend/internal/analyser/anlsr"
-	"HomegrownDB/backend/internal/analyser/seganalyser/typanlr"
+	"HomegrownDB/backend/internal/analyser/analyse/typanlr"
+	"HomegrownDB/backend/internal/analyser/anlctx"
 	node2 "HomegrownDB/backend/internal/node"
 	pnode2 "HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/backend/internal/sqlerr"
@@ -13,7 +13,7 @@ var Insert = insert{}
 
 type insert struct{}
 
-func (i insert) Analyse(stmt pnode2.InsertStmt, parentCtx anlsr.QueryCtx) (node2.Query, error) {
+func (i insert) Analyse(stmt pnode2.InsertStmt, parentCtx anlctx.QueryCtx) (node2.Query, error) {
 	query := node2.NewQuery(node2.CommandTypeInsert, stmt)
 	currentCtx := parentCtx.CreateChildCtx(query)
 
@@ -40,7 +40,7 @@ func (i insert) Analyse(stmt pnode2.InsertStmt, parentCtx anlsr.QueryCtx) (node2
 	return query, err
 }
 
-func (i insert) analyseInsertSource(insertStmt pnode2.InsertStmt, currentCtx anlsr.QueryCtx) error {
+func (i insert) analyseInsertSource(insertStmt pnode2.InsertStmt, currentCtx anlctx.QueryCtx) error {
 	srcNode := insertStmt.SrcNode
 	if srcNode == nil {
 		return sqlerr.NewIllegalPNodeErr(nil, "expected insert source")
@@ -69,7 +69,7 @@ func (i insert) analyseInsertSource(insertStmt pnode2.InsertStmt, currentCtx anl
 	return nil
 }
 
-func (i insert) analyseInputTargetList(targets []pnode2.ResultTarget, currentCtx anlsr.QueryCtx) error {
+func (i insert) analyseInputTargetList(targets []pnode2.ResultTarget, currentCtx anlctx.QueryCtx) error {
 	query := currentCtx.Query
 	relation := i.getRelationRTE(query).Ref
 	sourceRTE := i.getSourceRTE(query)
@@ -96,7 +96,7 @@ func (i insert) analyseInputTargetList(targets []pnode2.ResultTarget, currentCtx
 	return nil
 }
 
-func (i insert) extendWithDefaultEntries(currentCtx anlsr.QueryCtx) error {
+func (i insert) extendWithDefaultEntries(currentCtx anlctx.QueryCtx) error {
 	query := currentCtx.Query
 	relation := query.GetRTE(query.ResultRel).Ref
 	columns := relation.Columns()
