@@ -101,3 +101,44 @@ func (t TypeMismatch) Area() dberr.Area {
 func (t TypeMismatch) MsgCanBeReturnedToClient() bool {
 	return true
 }
+
+// -------------------------
+//      TypeArgErr
+// -------------------------
+
+func (anlsr) NewTypeArgErr(illegalArg string, strArgValue any, onType string) dberr.DBError {
+	return GenericAnalyserErr{
+		Msg:          fmt.Sprintf("illegal argument: %s with value: %v on type: %s", illegalArg, strArgValue, onType),
+		SafeToReturn: true,
+	}
+}
+
+func (anlsr) NewInvalidTypeErr(typeName string) dberr.DBError {
+	return GenericAnalyserErr{
+		Msg:          fmt.Sprintf("type: %s does not exist", typeName),
+		SafeToReturn: true,
+	}
+}
+
+// -------------------------
+//      GenericAnalyserErr
+// -------------------------
+
+var _ dberr.DBError = GenericAnalyserErr{}
+
+type GenericAnalyserErr struct {
+	Msg          string
+	SafeToReturn bool
+}
+
+func (g GenericAnalyserErr) Error() string {
+	return g.Msg
+}
+
+func (g GenericAnalyserErr) Area() dberr.Area {
+	return dberr.Analyser
+}
+
+func (g GenericAnalyserErr) MsgCanBeReturnedToClient() bool {
+	return g.SafeToReturn
+}

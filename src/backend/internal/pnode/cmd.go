@@ -1,24 +1,20 @@
 package pnode
 
-type CommandStmt interface {
-	Node
-	CommandType() CommandType
+func NewCommandStmt(stmt Node) CommandStmt {
+	return &commandStmt{
+		node: node{
+			tag: TagCommandStmt,
+		},
+		Stmt: stmt,
+	}
 }
+
+type CommandStmt = *commandStmt
 
 type commandStmt struct {
 	node
-	Type CommandType
+	Stmt Node
 }
-
-func (c *commandStmt) CommandType() CommandType {
-	return c.Type
-}
-
-type CommandType uint8
-
-const (
-	CommandCreateTable CommandType = iota
-)
 
 // -------------------------
 //      CreateTableStmt
@@ -26,11 +22,8 @@ const (
 
 func NewCreateTableStmt(tableName string, columns []ColumnDef) CreateTableStmt {
 	return &createTableStmt{
-		commandStmt: commandStmt{
-			node: node{
-				tag: 0,
-			},
-			Type: CommandCreateTable,
+		node: node{
+			tag: TagCreateTable,
 		},
 		TableName: tableName,
 		Columns:   columns,
@@ -39,10 +32,10 @@ func NewCreateTableStmt(tableName string, columns []ColumnDef) CreateTableStmt {
 
 type CreateTableStmt = *createTableStmt
 
-var _ CommandStmt = &createTableStmt{}
+var _ Node = &createTableStmt{}
 
 type createTableStmt struct {
-	commandStmt
+	node
 	TableName string
 	Columns   []ColumnDef
 }

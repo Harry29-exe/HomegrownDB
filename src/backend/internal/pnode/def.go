@@ -51,9 +51,13 @@ type Tag = uint16
 const (
 	TagNil Tag = iota
 	TagRawStmt
-	TagCommandStmt
+	// Stmt
 	TagSelectStmt
 	TagInsertStmt
+	// Commands
+	TagCommandStmt
+	TagCreateTable
+
 	TagAExpr
 	TagResultTarget
 	TagColumnRef

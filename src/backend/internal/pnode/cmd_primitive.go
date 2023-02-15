@@ -40,22 +40,22 @@ func (c ColumnDef) Equal(node Node) bool {
 // -------------------------
 
 func NewArgLength(len int) TypeArg {
-	return &typeArg{
+	return &typeArgValue{
 		node: node{
 			tag: TagTypeArg,
 		},
-		Arg: ArgTypeLength,
+		Arg: TypeArgTypeLength,
 		Val: len,
 	}
 }
 
-type TypeArg = *typeArg
+type TypeArg = *typeArgValue
 
-var _ Node = &typeArg{}
+var _ Node = &typeArgValue{}
 
-type typeArg struct {
+type typeArgValue struct {
 	node
-	Arg ArgType
+	Arg TypeArgType
 	Val any
 }
 
@@ -70,8 +70,16 @@ func (t TypeArg) Equal(node Node) bool {
 		t.Val == raw.Val
 }
 
-type ArgType uint8
+type TypeArgType uint8
 
 const (
-	ArgTypeLength ArgType = iota
+	TypeArgTypeLength TypeArgType = iota
+	TypeArgTypeNullable
 )
+
+func (t TypeArgType) ToString() string {
+	return []string{
+		"TypeArgTypeLength",
+		"TypeArgTypeNullable",
+	}[t]
+}

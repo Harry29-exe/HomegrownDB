@@ -12,17 +12,22 @@ type command struct{}
 
 func (c command) Parse(src tkSource, v tkValidator) (pnode.CommandStmt, error) {
 	src.Checkpoint()
+	var stmt pnode.Node
+	var err error
 
 	firstTk := src.Current()
 	if firstTk.Code() == token.Create {
-		if err := v.NextIs(token.SpaceBreak); err != nil {
+		if err = v.NextIs(token.SpaceBreak); err != nil {
 			return nil, err
 		}
 		secondTk := src.Next()
 		switch secondTk.Code() {
 		case token.Table:
 			src.Rollback()
-			return CreateTable.Parse(src, v)
+			stmt, err = CreateTable.Parse(src, v)
+			if err != nil {
+				return nil, err
+			}
 		default:
 			return nil, sqlerr.NewSyntaxError("TABLE|?|?", token.ToString(secondTk.Code()), src)
 		}
@@ -30,6 +35,8 @@ func (c command) Parse(src tkSource, v tkValidator) (pnode.CommandStmt, error) {
 		//todo implement me
 		panic("Not implemented")
 	}
+
+	return pnode.NewCommandStmt(stmt), nil
 }
 
 // -------------------------
@@ -80,4 +87,3 @@ func (c createTable) nextColumn(src tkSource, v tkValidator) (success bool) {
 	src.Commit()
 	return true
 }
-

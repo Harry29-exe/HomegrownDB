@@ -2,6 +2,7 @@ package node
 
 import (
 	"HomegrownDB/backend/internal/pnode"
+	table "HomegrownDB/dbsystem/reldef/tabdef"
 	"fmt"
 )
 
@@ -101,4 +102,13 @@ func (q Query) GetRTE(id RteID) RangeTableEntry {
 
 func (q Query) AppendRTE(rte RangeTableEntry) {
 	q.RTables = append(q.RTables, rte)
+}
+
+// -------------------------
+//      Commands
+// -------------------------
+
+type CreateTable struct {
+	node
+	FutureTable table.Definition
 }

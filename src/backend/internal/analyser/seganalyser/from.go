@@ -2,20 +2,20 @@ package seganalyser
 
 import (
 	"HomegrownDB/backend/internal/analyser/anlsr"
-	node2 "HomegrownDB/backend/internal/node"
-	pnode2 "HomegrownDB/backend/internal/pnode"
+	"HomegrownDB/backend/internal/node"
+	"HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/lib/datastructs/collection/list"
 )
 
 var FromDelegator = fromDelegator{}
 
 type fromDelegator struct{}
-type RteList = *list.List[node2.RangeTableEntry]
+type RteList = *list.List[node.RangeTableEntry]
 
 // todo validate result for different operations e.g. select, insert e.t.c
-func (f fromDelegator) Analyse(fromRoot []pnode2.Node, currentCtx anlsr.QueryCtx) error {
+func (f fromDelegator) Analyse(fromRoot []pnode.Node, currentCtx anlsr.QueryCtx) error {
 	query := currentCtx.Query
-	fromExpr := node2.NewFromExpr(len(fromRoot))
+	fromExpr := node.NewFromExpr(len(fromRoot))
 
 	var err error
 	for i, fromNode := range fromRoot {
@@ -29,15 +29,15 @@ func (f fromDelegator) Analyse(fromRoot []pnode2.Node, currentCtx anlsr.QueryCtx
 	return nil
 }
 
-func (f fromDelegator) analyseSingle(root pnode2.Node, currentCtx anlsr.QueryCtx) (node2.Node, error) {
+func (f fromDelegator) analyseSingle(root pnode.Node, currentCtx anlsr.QueryCtx) (node.Node, error) {
 	var result RteResult
 	var err error
 
 	switch root.Tag() {
-	case pnode2.TagRangeVar:
-		result, err = RteRangeVar.Analyse(root.(pnode2.RangeVar), currentCtx)
-	case pnode2.TagSelectStmt:
-		result, err = RteSubquery.Analyse(root.(pnode2.SelectStmt), currentCtx)
+	case pnode.TagRangeVar:
+		result, err = RteRangeVar.Analyse(root.(pnode.RangeVar), currentCtx)
+	case pnode.TagSelectStmt:
+		result, err = RteSubquery.Analyse(root.(pnode.SelectStmt), currentCtx)
 
 	default:
 		//todo implement me
