@@ -18,6 +18,6 @@ func (delegator) Parse(src tkSource, v tkValidator) (pnode.Node, error) {
 	case token2.Values:
 		return ValueStreamSelect.Parse(src, v)
 	default:
-		panic("unsupported type: " + token2.ToString(tk.Code()))
+		return Command.Parse(src, v)
 	}
 }

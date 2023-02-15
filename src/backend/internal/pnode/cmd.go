@@ -11,9 +11,22 @@ func NewCommandStmt(stmt Node) CommandStmt {
 
 type CommandStmt = *commandStmt
 
+var _ Node = &commandStmt{}
+
 type commandStmt struct {
 	node
 	Stmt Node
+}
+
+func (c CommandStmt) Equal(node Node) bool {
+	if nodesEqNil(c, node) {
+		return true
+	} else if !basicNodeEqual(c, node) {
+		return false
+	}
+
+	raw := node.(CommandStmt)
+	return c.Stmt.Equal(raw)
 }
 
 // -------------------------

@@ -4,23 +4,32 @@ import (
 	"HomegrownDB/backend/internal/analyser/anlctx"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
-	tabdef "HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef/tabdef"
+	"log"
 )
 
 var CommandDelegator = commandDelegator{}
 
 type commandDelegator struct{}
 
-func (commandDelegator) Analyse(stmt pnode.CommandStmt, currentCtx anlctx.QueryCtx) error {
-	//cmd := stmt.Stmt
+func (commandDelegator) Analyse(stmt pnode.CommandStmt, currentCtx anlctx.QueryCtx) (node.Query, error) {
+	query := node.NewQuery(node.CommandTypeUtils, stmt)
+	cmd := stmt.Stmt
 
-	//todo implement me
-	panic("Not implemented")
-	//switch cmd.Tag() {
-	//case pnode.TagCreateTable:
-	//
-	//}
+	var commandStmt node.Node
+	var err error
+	switch cmd.Tag() {
+	case pnode.TagCreateTable:
+		commandStmt, err = CreateTable.Analyse(cmd.(pnode.CreateTableStmt), currentCtx)
+	default:
+		log.Panicf("not supported command type %d", cmd.Tag())
+	}
 
+	if err != nil {
+		return nil, err
+	}
+	query.UtilsStmt = commandStmt
+	return query, nil
 }
 
 // -------------------------

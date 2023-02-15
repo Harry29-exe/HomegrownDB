@@ -53,8 +53,9 @@ type Query = *query
 
 type query struct {
 	node
-	Command CommandType
-	SrcStmt pnode.Node // stmt that was used to create this Query
+	Command   CommandType
+	SrcStmt   pnode.Node // stmt that was used to create this Query
+	UtilsStmt Node       // UtilsStmt not nil only when Command == CommandTypeUtils
 
 	TargetList []TargetEntry
 
