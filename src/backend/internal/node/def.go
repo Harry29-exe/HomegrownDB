@@ -64,6 +64,7 @@ const (
 	TagPlan
 	TagPlanedStmt
 	TagModifyTable
+	TagCreateRelationPlan
 	// Scan nodes
 	TagScan
 	TagSeqScan

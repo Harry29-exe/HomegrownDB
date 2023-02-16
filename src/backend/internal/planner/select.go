@@ -1,7 +1,7 @@
 package planner
 
 import (
-	node2 "HomegrownDB/backend/internal/node"
+	"HomegrownDB/backend/internal/node"
 	"errors"
 	"fmt"
 )
@@ -10,7 +10,7 @@ var Select = _select{}
 
 type _select struct{}
 
-func (s _select) Plan(query node2.Query, parentState State) (node2.Plan, error) {
+func (s _select) Plan(query node.Query, parentState State) (node.Plan, error) {
 	fromExpr := query.FromExpr
 	if len(fromExpr.FromList) < 1 {
 		return nil, errors.New("can not parse select query with empty from expr") // todo better err
@@ -21,16 +21,16 @@ func (s _select) Plan(query node2.Query, parentState State) (node2.Plan, error) 
 
 	fromNode := fromExpr.FromList[0]
 	switch fromNode.Tag() {
-	case node2.TagRteRef:
-		rteId := fromNode.(node2.RangeTableRef).Rte
+	case node.TagRteRef:
+		rteId := fromNode.(node.RangeTableRef).Rte
 		rte := query.GetRTE(rteId)
 		if rte == nil {
 			return nil, fmt.Errorf("no rte with id: %+v", rteId)
 		}
 		switch rte.Kind {
-		case node2.RteRelation:
+		case node.RteRelation:
 			return s.planSimpleSelect(query, parentState)
-		case node2.RteValues:
+		case node.RteValues:
 			return s.planValStream(query, parentState)
 		default:
 			//todo implement me
@@ -42,16 +42,16 @@ func (s _select) Plan(query node2.Query, parentState State) (node2.Plan, error) 
 	}
 }
 
-func (s _select) planSimpleSelect(query node2.Query, parentState State) (node2.Plan, error) {
+func (s _select) planSimpleSelect(query node.Query, parentState State) (node.Plan, error) {
 	fromExpr := query.FromExpr
 	fromRoot := fromExpr.FromList[0]
-	if fromRoot.Tag() != node2.TagRteRef {
+	if fromRoot.Tag() != node.TagRteRef {
 		//todo implement me
 		panic("Not implemented")
 	}
-	rteRef := fromRoot.(node2.RangeTableRef)
+	rteRef := fromRoot.(node.RangeTableRef)
 
-	seqScan := node2.NewSeqScan(parentState.NextPlanNodeId(), query)
+	seqScan := node.NewSeqScan(parentState.NextPlanNodeId(), query)
 	seqScan.RteId = rteRef.Rte
 	seqScan.TargetList = query.TargetList
 
@@ -59,9 +59,9 @@ func (s _select) planSimpleSelect(query node2.Query, parentState State) (node2.P
 	return seqScan, nil
 }
 
-func (s _select) planValStream(query node2.Query, parentState State) (node2.Plan, error) {
+func (s _select) planValStream(query node.Query, parentState State) (node.Plan, error) {
 	valuesRTE := query.RTables[0]
-	valScan := node2.NewValueScan(parentState.NextPlanNodeId(), valuesRTE, query)
+	valScan := node.NewValueScan(parentState.NextPlanNodeId(), valuesRTE, query)
 	valScan.RteId = valuesRTE.Id
 
 	parentState.AppendRTE(valuesRTE)

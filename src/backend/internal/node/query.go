@@ -4,6 +4,8 @@ import (
 	"HomegrownDB/backend/internal/pnode"
 	tabdef "HomegrownDB/dbsystem/reldef/tabdef"
 	"fmt"
+	"log"
+	"reflect"
 )
 
 // -------------------------
@@ -68,6 +70,7 @@ func (q Query) dEqual(node Node) bool {
 
 	raw := node.(Query)
 	return q.Command == raw.Command &&
+		DEqual(q.UtilsStmt, raw.UtilsStmt) &&
 		cmpNodeArray(q.TargetList, raw.TargetList) &&
 		q.ResultRel == raw.ResultRel &&
 		cmpNodeArray(q.RTables, raw.RTables) &&
@@ -109,8 +112,8 @@ func (q Query) AppendRTE(rte RangeTableEntry) {
 //      Commands
 // -------------------------
 
-func NewCreateTable(table tabdef.Definition) CreateTable {
-	return &createTable{
+func NewCreateRelationTable(table tabdef.Definition) CreateRelation {
+	return &createRelation{
 		node: node{
 			tag: TagCreateTable,
 		},
@@ -118,21 +121,40 @@ func NewCreateTable(table tabdef.Definition) CreateTable {
 	}
 }
 
-type CreateTable = *createTable
+type CreateRelation = *createRelation
 
-var _ Node = &createTable{}
+var _ Node = &createRelation{}
 
-type createTable struct {
+type createRelation struct {
 	node
 	FutureTable tabdef.Definition
+	FutureIndex any // not supported yet
 }
 
-func (c CreateTable) dEqual(node Node) bool {
-	//TODO implement me
-	panic("implement me")
+func (c CreateRelation) dEqual(node Node) bool {
+	raw := node.(CreateRelation)
+
+	return c.tablesEq(raw)
 }
 
-func (c CreateTable) DPrint(nesting int) string {
+func (c CreateRelation) tablesEq(raw CreateRelation) bool {
+	t1, t2 := c.FutureTable, raw.FutureTable
+	if len(t1.Columns()) != len(t2.Columns()) {
+		log.Printf("CreateTable.FutureTable were not equal: columns length are different")
+		return false
+	}
+	for colNo := 0; colNo < len(t1.Columns()); colNo++ {
+		c1, c2 := t1.Columns()[colNo], t2.Columns()[colNo]
+		if !reflect.DeepEqual(c1, c2) {
+			log.Printf("CreateTable.FutureTable were not equal: \nexpected col: %+v\nactual col: %+v",
+				c1, c2)
+			return false
+		}
+	}
+	return reflect.DeepEqual(t1, t2)
+}
+
+func (c CreateRelation) DPrint(nesting int) string {
 	//TODO implement me
 	panic("implement me")
 }

@@ -87,13 +87,9 @@ func (c columnType) analyseVarchar(inputArgs []pnode.TypeArg) (hgtype.ColType, e
 }
 
 func (columnType) GetLength(args []pnode.TypeArg) (v int, ok bool) {
-	var val int64
 	for _, arg := range args {
 		if arg.Arg == pnode.TypeArgTypeLength {
-			val, ok = arg.Val.(int64)
-			if ok {
-				v = int(val)
-			}
+			v, ok = arg.Val.(int)
 			return
 		}
 	}

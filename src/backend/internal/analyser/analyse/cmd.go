@@ -40,7 +40,7 @@ var CreateTable = createTable{}
 
 type createTable struct{}
 
-func (createTable) Analyse(stmt pnode.CreateTableStmt, currentCtx anlctx.QueryCtx) (node.CreateTable, error) {
+func (createTable) Analyse(stmt pnode.CreateTableStmt, currentCtx anlctx.QueryCtx) (node.CreateRelation, error) {
 	table := tabdef.NewDefinition(stmt.TableName)
 	for i := 0; i < len(stmt.Columns); i++ {
 		column, err := ColumnDef.Analyse(stmt.Columns[i], currentCtx)
@@ -54,5 +54,5 @@ func (createTable) Analyse(stmt pnode.CreateTableStmt, currentCtx anlctx.QueryCt
 		}
 	}
 
-	return node.NewCreateTable(table), nil
+	return node.NewCreateRelationTable(table), nil
 }

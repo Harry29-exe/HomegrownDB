@@ -61,7 +61,7 @@ func (createTable) usersTableATree(t *testing.T) node.Query {
 		})))
 	assert.ErrIsNil(err, t)
 
-	query.UtilsStmt = node.NewCreateTable(table)
+	query.UtilsStmt = node.NewCreateRelationTable(table)
 
 	return query
 }
@@ -113,7 +113,7 @@ func (createTable) usersTableWithAgeATree(t *testing.T) node.Query {
 		})))
 	assert.ErrIsNil(err, t)
 
-	query.UtilsStmt = node.NewCreateTable(table)
+	query.UtilsStmt = node.NewCreateRelationTable(table)
 
 	return query
 }
