@@ -4,6 +4,7 @@ import (
 	"HomegrownDB/backend/internal/executor/exinfr"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/dbsystem/access/relation"
+	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/intype"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
@@ -17,9 +18,11 @@ type createRelationBuilder struct{}
 func (c createRelationBuilder) Create(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 	return &CreateRelation{
 		Plan: plan.(node.CreateRelationPlan),
-		OutputPattern: page.TuplePattern{},
-		Tx:         nil,
-		RelManager: nil,
+		OutputPattern: page.NewPattern([]page.PatternCol{
+			{Type: hgtype.NewInt8(hgtype.Args{Nullable: false}), Name: "rowsAffected"},
+		}),
+		Tx:         ctx.Tx,
+		RelManager: ctx.TableStore,
 		Done:       false,
 	}
 }
@@ -36,7 +39,7 @@ type CreateRelation struct {
 
 var _ ExecNode = &CreateRelation{}
 
-func (c CreateRelation) Next() page.Tuple {
+func (c *CreateRelation) Next() page.Tuple {
 	_, err := c.RelManager.Create(c.Plan.RelationToCreate, c.Tx)
 	if err != nil {
 		log.Panicf("error occured: %s", err.Error())
@@ -46,16 +49,16 @@ func (c CreateRelation) Next() page.Tuple {
 	return page.NewTuple([][]byte{intype.ConvInt8(1)}, c.OutputPattern, c.Tx)
 }
 
-func (c CreateRelation) HasNext() bool {
-	return c.Done
+func (c *CreateRelation) HasNext() bool {
+	return !c.Done
 }
 
-func (c CreateRelation) Init(plan node.Plan) error {
+func (c *CreateRelation) Init(plan node.Plan) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (c CreateRelation) Close() error {
+func (c *CreateRelation) Close() error {
 	//TODO implement me
 	panic("implement me")
 }
