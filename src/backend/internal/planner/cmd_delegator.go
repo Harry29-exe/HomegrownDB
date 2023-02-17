@@ -15,10 +15,11 @@ func (cmdDelegator) Plan(query node.Query, parentState State) (node.Plan, error)
 		log.Panicf("utils statement is nil")
 	}
 
-	//todo implement me
-	panic("Not implemented")
-	//switch stmt.Tag() {
-	//case node.TagCreateTable:
-	//	return CreateRelation.Plan(stmt.(node.CreateTable))
-	//}
+	switch stmt.Tag() {
+	case node.TagCreateRelation:
+		return CreateRelation.Plan(stmt.(node.CreateRelation), parentState)
+	default:
+		log.Panicf("not supported command: %s", stmt.Tag().ToString())
+	}
+	return nil, nil
 }

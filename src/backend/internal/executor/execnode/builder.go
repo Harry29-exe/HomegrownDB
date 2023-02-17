@@ -20,7 +20,8 @@ func CreateFromPlan(plan node.Plan, ctx exinfr.ExCtx) ExecNode {
 }
 
 var buildersMap map[node.Tag]Builder = map[node.Tag]Builder{
-	node.TagValueScan:   valuesScanBuilder{},
-	node.TagModifyTable: modifyTableBuilder{},
-	node.TagSeqScan:     seqScanBuilder{},
+	node.TagValueScan:          valuesScanBuilder{},
+	node.TagModifyTable:        modifyTableBuilder{},
+	node.TagSeqScan:            seqScanBuilder{},
+	node.TagCreateRelationPlan: createRelationBuilder{},
 }

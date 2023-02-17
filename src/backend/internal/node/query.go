@@ -115,7 +115,7 @@ func (q Query) AppendRTE(rte RangeTableEntry) {
 func NewCreateRelationTable(table tabdef.Definition) CreateRelation {
 	return &createRelation{
 		node: node{
-			tag: TagCreateTable,
+			tag: TagCreateRelation,
 		},
 		FutureTable: table,
 	}

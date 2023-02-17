@@ -26,6 +26,8 @@ func delegate(query node.Query, parentState State) (node.Plan, error) {
 		return Select.Plan(query, parentState)
 	case node.CommandTypeInsert:
 		return Insert.Plan(query, parentState)
+	case node.CommandTypeUtils:
+		return CmdDelegator.Plan(query, parentState)
 	default:
 		//todo implement me
 		panic("Not implemented")

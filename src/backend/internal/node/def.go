@@ -52,7 +52,7 @@ const (
 	TagAlias
 
 	// Commands
-	TagCreateTable
+	TagCreateRelation
 
 	// TagExpr expressions nodes start
 	TagExpr
@@ -64,11 +64,12 @@ const (
 	TagPlan
 	TagPlanedStmt
 	TagModifyTable
-	TagCreateRelationPlan
 	// Scan nodes
 	TagScan
 	TagSeqScan
 	TagValueScan
+	// Cmd plan nodes
+	TagCreateRelationPlan
 )
 
 func (t Tag) ToString() string {
