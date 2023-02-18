@@ -43,7 +43,15 @@ func registerSendQueryEndpoint(app *fiber.App, handlers handler.Handlers) {
 		if err != nil {
 			return err
 		}
+		ctx.Response().Header.Add("Access-Control-Allow-Origin", "*")
 		return ctx.Send(result.Result())
+	})
+
+	app.Options("/db-api/query", func(ctx *fiber.Ctx) error {
+		ctx.Response().Header.Add("Access-Control-Allow-Origin", "*")
+		ctx.Response().Header.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		ctx.Response().Header.Add("Access-Control-Allow-Headers", "*")
+		return ctx.Send(nil)
 	})
 }
 
