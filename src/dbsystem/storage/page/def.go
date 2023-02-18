@@ -1,7 +1,7 @@
 package page
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page/internal"
 	"math"
@@ -27,7 +27,7 @@ func NewTablePageTag(pageIndex Id, tableDef tabdef.RDefinition) PageTag {
 	}
 }
 
-func NewPageTag(pageIndex Id, objID dbobj.OID) PageTag {
+func NewPageTag(pageIndex Id, objID hglib.OID) PageTag {
 	return PageTag{
 		PageId:  pageIndex,
 		OwnerID: objID,

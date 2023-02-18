@@ -1,4 +1,4 @@
-package dbobj
+package hglib
 
 import "math"
 

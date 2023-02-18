@@ -1,7 +1,7 @@
 package column
 
 import (
-	. "HomegrownDB/dbsystem/dbobj"
+	. "HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/hgtype"
 )
 

@@ -1,8 +1,10 @@
 package fsm
 
-import "HomegrownDB/dbsystem/dberr"
+import (
+	"HomegrownDB/dbsystem/hglib"
+)
 
-var _ dberr.DBError = NoFreeSpace{}
+var _ hglib.DBError = NoFreeSpace{}
 
 type NoFreeSpace struct {
 }
@@ -12,7 +14,7 @@ func (n NoFreeSpace) Error() string {
 	panic("implement me")
 }
 
-func (n NoFreeSpace) Area() dberr.Area {
+func (n NoFreeSpace) Area() hglib.Area {
 	//TODO implement me
 	panic("implement me")
 }

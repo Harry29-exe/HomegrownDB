@@ -1,24 +1,24 @@
 package reldef
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 )
 
-type OID = dbobj.OID
+type OID = hglib.OID
 
 var (
-	InvalidRelId OID = dbobj.InvalidOID
-	MaxRelId     OID = dbobj.MaxOID
+	InvalidRelId OID = hglib.InvalidOID
+	MaxRelId     OID = hglib.MaxOID
 )
 
 type Relation interface {
-	dbobj.Obj
+	hglib.Obj
 	SetOID(id OID)
 	Kind() Kind
 	Name() string
 
-	FsmOID() dbobj.OID
-	VmOID() dbobj.OID
+	FsmOID() hglib.OID
+	VmOID() hglib.OID
 	InitRel(id OID, fsmID OID, vmID OID)
 }
 

@@ -6,11 +6,13 @@ import (
 	"HomegrownDB/dbsystem/access/sequence"
 	"HomegrownDB/dbsystem/access/transaction"
 	"HomegrownDB/dbsystem/config"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage"
 )
 
 type Module interface {
+	hglib.Module
 	SharedBuffer() buffer.SharedBuffer
 	RelationManager() relation.Manager
 	TxManager() transaction.Manager
@@ -82,4 +84,8 @@ func (s *stdModule) RelationManager() relation.Manager {
 
 func (s *stdModule) TxManager() transaction.Manager {
 	return s.txManager
+}
+
+func (s *stdModule) Shutdown() error {
+	return s.sharedBuffer.FlushAll()
 }

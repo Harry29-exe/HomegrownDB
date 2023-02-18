@@ -2,7 +2,7 @@ package creator
 
 import (
 	"HomegrownDB/dbsystem/access/systable"
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
@@ -40,7 +40,7 @@ type sysTablesCreator struct {
 	err   error
 }
 
-func (c *sysTablesCreator) createTable(oid dbobj.OID, fsmOID dbobj.OID, vmOID dbobj.OID) *sysTablesCreator {
+func (c *sysTablesCreator) createTable(oid hglib.OID, fsmOID hglib.OID, vmOID hglib.OID) *sysTablesCreator {
 	if c.hasErr() {
 		return c
 	}
@@ -64,7 +64,7 @@ func (c *sysTablesCreator) createTable(oid dbobj.OID, fsmOID dbobj.OID, vmOID db
 	return c
 }
 
-func (c *sysTablesCreator) insertTuples(tableOID dbobj.OID, tuples ...page.WTuple) *sysTablesCreator {
+func (c *sysTablesCreator) insertTuples(tableOID hglib.OID, tuples ...page.WTuple) *sysTablesCreator {
 	if c.hasErr() {
 		return c
 	}

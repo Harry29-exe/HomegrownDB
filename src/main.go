@@ -7,6 +7,7 @@ import (
 	"HomegrownDB/starter"
 	"log"
 	"os"
+	"os/signal"
 	"time"
 )
 
@@ -18,13 +19,14 @@ func main() {
 		os.Exit(-1)
 	case os.Args[1] == "install":
 		install()
+	case os.Args[1] == "uninstall":
+		uninstall()
 	case os.Args[1] == "start":
 		start()
 	default:
 		println("not supported command: " + os.Args[0])
 		os.Exit(-1)
 	}
-
 }
 
 func start() {
@@ -35,7 +37,8 @@ func start() {
 		println(err.Error())
 		os.Exit(1)
 	}
-	_ = db
+	setUpShutdownFunction(db)
+
 	frontendServer := server.CreateDefaultServer(
 		"0.0.0.0",
 		"8080",
@@ -56,8 +59,29 @@ func start() {
 	time.Sleep(time.Duration(1<<63 - 1))
 }
 
+func setUpShutdownFunction(db hg.DB) {
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt)
+	go func() {
+		<-signalChan
+		err := db.Shutdown()
+		if err != nil {
+			log.Printf("Could not shutdown database. Reason:\n%s", err.Error())
+		}
+	}()
+}
+
 func install() {
 	err := starter.InstallDefault()
+	if err != nil {
+		println(err.Error())
+		os.Exit(1)
+	}
+	os.Exit(0)
+}
+
+func uninstall() {
+	err := starter.UninstallDefault()
 	if err != nil {
 		println(err.Error())
 		os.Exit(1)

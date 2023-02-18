@@ -63,7 +63,7 @@ func (e ExCtx) GetRTE(id node.RteID) node.RangeTableEntry {
 	return e.rteMap[id]
 }
 
-func (e ExCtx) Close() error {
+func (e ExCtx) Shutdown() error {
 	//for i, tableDef := range e.Tables {
 	//	e.RelationManager.AccessTable()
 	//}

@@ -5,7 +5,7 @@ package data
 // which shows how page's binary representations looks like
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"encoding/binary"
@@ -33,7 +33,7 @@ func EmptyTablePage(pattern TuplePattern, relationId reldef.OID) Page {
 	return newPage
 }
 
-func InitNewPage(pageSlot []byte, ownerId dbobj.OID, pageId page.Id, pattern TuplePattern) Page {
+func InitNewPage(pageSlot []byte, ownerId hglib.OID, pageId page.Id, pattern TuplePattern) Page {
 	uint16Zero := make([]byte, 2)
 	binary.BigEndian.PutUint16(uint16Zero, 0)
 
@@ -46,7 +46,7 @@ func InitNewPage(pageSlot []byte, ownerId dbobj.OID, pageId page.Id, pattern Tup
 	return page
 }
 
-func AsPage(data []byte, ownerId dbobj.OID, pageId page.Id, pattern TuplePattern) Page {
+func AsPage(data []byte, ownerId hglib.OID, pageId page.Id, pattern TuplePattern) Page {
 	return Page{
 		pattern:    pattern,
 		bytes:      data,

@@ -1,7 +1,7 @@
 package testtable
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef"
@@ -11,7 +11,7 @@ import (
 type Builder struct {
 	table        tabdef.Definition
 	NexColtOrder column.Order
-	NextOID      dbobj.OID
+	NextOID      hglib.OID
 }
 
 func NewTestTableBuilder(name string) *Builder {

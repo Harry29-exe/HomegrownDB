@@ -1,7 +1,7 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
 	"HomegrownDB/dbsystem/storage/page"
@@ -44,7 +44,7 @@ func (b *bufferProxy) WTablePage(table tabdef.RDefinition, pageId page.Id) (page
 	}
 }
 
-func (b *bufferProxy) RFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page, error) {
+func (b *bufferProxy) RFsmPage(ownerID hglib.OID, pageId page.Id) (fsmpage.Page, error) {
 	rPage, err := b.buffer.ReadRPage(ownerID, pageId, RbmRead)
 	if err != nil {
 		return fsmpage.Page{}, err
@@ -52,7 +52,7 @@ func (b *bufferProxy) RFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page,
 	return fsmpage.Page{Bytes: rPage.Bytes}, nil
 }
 
-func (b *bufferProxy) WFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page, error) {
+func (b *bufferProxy) WFsmPage(ownerID hglib.OID, pageId page.Id) (fsmpage.Page, error) {
 	wPage, err := b.buffer.ReadWPage(ownerID, pageId, RbmReadOrCreate)
 	if err != nil {
 		return fsmpage.Page{}, err
@@ -70,4 +70,8 @@ func (b *bufferProxy) WPageRelease(tag page.PageTag) {
 
 func (b *bufferProxy) RPageRelease(tag page.PageTag) {
 	b.buffer.ReleaseRPage(tag)
+}
+
+func (b *bufferProxy) FlushAll() error {
+	return b.buffer.FlushAll()
 }

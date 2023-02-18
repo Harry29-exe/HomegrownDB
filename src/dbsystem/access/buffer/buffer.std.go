@@ -1,17 +1,18 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/storage/page"
 )
 
 // todo change methods to operate on ArrayIndexes
 type StdBuffer interface {
-	ReadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error)
-	ReadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error)
+	ReadRPage(ownerID hglib.OID, pageId page.Id, strategy rbm) (stdPage, error)
+	ReadWPage(ownerID hglib.OID, pageId page.Id, strategy rbm) (stdPage, error)
 
 	ReleaseWPage(tag page.PageTag)
 	ReleaseRPage(tag page.PageTag)
+	FlushAll() error
 }
 
 // rbm  read buffer mode

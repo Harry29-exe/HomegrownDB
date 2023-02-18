@@ -1,4 +1,4 @@
-package dberr
+package hglib
 
 func NewInvalidColumnArg(argName string, reason string) InvalidColumnArg {
 	return InvalidColumnArg{

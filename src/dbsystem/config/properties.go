@@ -1,7 +1,7 @@
 package config
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/tx"
 	"encoding/json"
@@ -23,7 +23,7 @@ func SerializeProperties(properties DBProperties) []byte {
 
 type DBProperties struct {
 	NextTxID tx.Id
-	NextOID  dbobj.OID
+	NextOID  hglib.OID
 }
 
 func DefaultDBProperties() DBProperties {

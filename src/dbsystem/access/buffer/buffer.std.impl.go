@@ -1,7 +1,7 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"errors"
@@ -52,7 +52,7 @@ type buffer struct {
 	ioStore pageio.Store
 }
 
-func (b *buffer) ReadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
+func (b *buffer) ReadRPage(ownerID hglib.OID, pageId page.Id, strategy rbm) (stdPage, error) {
 	tag := page.PageTag{PageId: pageId, OwnerID: ownerID}
 	b.bufferMapLock.RLock()
 
@@ -75,7 +75,7 @@ func (b *buffer) ReadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (std
 	}
 }
 
-func (b *buffer) ReadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
+func (b *buffer) ReadWPage(ownerID hglib.OID, pageId page.Id, strategy rbm) (stdPage, error) {
 	tag := page.PageTag{PageId: pageId, OwnerID: ownerID}
 	b.bufferMapLock.RLock()
 
@@ -124,7 +124,21 @@ func (b *buffer) ReleaseRPage(tag page.PageTag) {
 	descriptor.unpin()
 }
 
-func (b *buffer) loadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
+func (b *buffer) FlushAll() error {
+	b.bufferMapLock.Lock()
+	for _, index := range b.bufferMap {
+		descriptor := &b.descriptorArray[index]
+		if descriptor.isDirty {
+			err := b.flushPage(descriptor, b.getArraySlot(index))
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (b *buffer) loadWPage(ownerID hglib.OID, pageId page.Id, strategy rbm) (stdPage, error) {
 	descriptor, err := b.loadPage(ownerID, pageId)
 	pageIsNew := false
 	if err != nil {
@@ -144,7 +158,11 @@ func (b *buffer) loadWPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (std
 	}, nil
 }
 
-func (b *buffer) loadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (stdPage, error) {
+func (b *buffer) loadRPage(ownerID hglib.OID, pageId page.Id, strategy rbm) (stdPage, error) {
+	pageCount := b.ioStore.GetOrLoad(ownerID).PageCount()
+	if pageId >= pageCount {
+		return stdPage{}, pageio.NoPageErrorType
+	}
 	descriptor, err := b.loadPage(ownerID, pageId)
 	if err != nil {
 		descriptor.unpin()
@@ -164,7 +182,7 @@ func (b *buffer) loadRPage(ownerID dbobj.OID, pageId page.Id, strategy rbm) (std
 //
 // todo 1) razem z https://www.interdb.jp/pg/pgsql08.html#_8.4. 8.4.3 do chabra z pytaniami
 // 2) prawdopodobnie zaimplementować własną hash mape
-func (b *buffer) loadPage(ownerID dbobj.OID, pageId page.Id) (*pageDescriptor, error) {
+func (b *buffer) loadPage(ownerID hglib.OID, pageId page.Id) (*pageDescriptor, error) {
 	pageTag := page.PageTag{OwnerID: ownerID, PageId: pageId}
 
 	for {

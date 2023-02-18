@@ -3,11 +3,11 @@ package sqlerr
 import (
 	"HomegrownDB/backend/internal/parser/tokenizer"
 	token2 "HomegrownDB/backend/internal/parser/tokenizer/token"
-	"HomegrownDB/dbsystem/dberr"
+	"HomegrownDB/dbsystem/hglib"
 	"strings"
 )
 
-func NewSyntaxError(expected string, actual string, source tokenizer.TokenSource) dberr.DBError {
+func NewSyntaxError(expected string, actual string, source tokenizer.TokenSource) hglib.DBError {
 	current := source.Current()
 	if current.Code() == token2.Error {
 		errorToken := current.(token2.ErrorToken)
@@ -20,7 +20,7 @@ func NewSyntaxError(expected string, actual string, source tokenizer.TokenSource
 	}
 }
 
-func NewTokenSyntaxError(expected, actual token2.Code, source tokenizer.TokenSource) dberr.DBError {
+func NewTokenSyntaxError(expected, actual token2.Code, source tokenizer.TokenSource) hglib.DBError {
 	current := source.Current()
 	if current.Code() == token2.Error {
 		errorToken := current.(token2.ErrorToken)
@@ -43,11 +43,11 @@ func (s *syntaxError) MsgCanBeReturnedToClient() bool {
 	return true
 }
 
-func (s *syntaxError) Area() dberr.Area {
-	return dberr.Parser
+func (s *syntaxError) Area() hglib.Area {
+	return hglib.Parser
 }
 
-func NewSyntaxTextError(reason string, source tokenizer.TokenSource) dberr.DBError {
+func NewSyntaxTextError(reason string, source tokenizer.TokenSource) hglib.DBError {
 	return syntaxTextError{
 		reason:       reason,
 		currentQuery: recreateQuery(source),
@@ -63,8 +63,8 @@ func (s syntaxTextError) Error() string {
 	return s.currentQuery + " <- " + s.reason
 }
 
-func (s syntaxTextError) Area() dberr.Area {
-	return dberr.Parser
+func (s syntaxTextError) Area() hglib.Area {
+	return hglib.Parser
 }
 
 func (s syntaxTextError) MsgCanBeReturnedToClient() bool {

@@ -43,6 +43,68 @@ func SetOsEnv(envName string, envValue string) error {
 	return err
 }
 
+func ClearRootPathEnv() error {
+	return ClearOsEnv(dbHomeVarName)
+}
+
+func ClearOsEnv(envName string) error {
+	homeDir, err := os.UserHomeDir()
+	file, err := os.OpenFile(homeDir+"/"+".zprofile", os.O_RDWR, os.ModeType)
+	if err == nil {
+		return clearOsEnvAndCloseFile(envName, file)
+	}
+	file, err = os.OpenFile(homeDir+"/.bash_profile", os.O_RDWR, os.ModeType)
+	if err == nil {
+		return clearOsEnvAndCloseFile(envName, file)
+	}
+
+	return errors.New("could not file env file")
+}
+
+func clearOsEnvAndCloseFile(envName string, file *os.File) error {
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			panic("unexpected err: " + err.Error())
+		}
+	}()
+	return clearOsEnv(envName, file)
+}
+
+func clearOsEnv(envName string, file *os.File) error {
+	stats, err := file.Stat()
+	if err != nil {
+		return err
+	}
+	rawFileData := make([]byte, stats.Size())
+	_, err = file.Read(rawFileData)
+	if err != nil {
+		return err
+	}
+	fileData := string(rawFileData)
+
+	index := strings.Index(fileData, envName)
+	if index < 0 {
+		return fmt.Errorf("file: %s does not contain env: %s", file.Name(), envName)
+	}
+	endIndex := strings.Index(fileData[index:], "\n")
+
+	var newContent string
+	if endIndex < 0 {
+		newContent = fileData[:index]
+	} else {
+		newContent = fileData[:index] + fileData[endIndex+1:]
+	}
+
+	err = file.Truncate(int64(len(newContent)))
+	if err != nil {
+		return err
+	}
+
+	_, err = file.Write([]byte(newContent))
+	return err
+}
+
 func writeOsEnv(file *os.File, envName, envValue string) error {
 	stat, err := file.Stat()
 	if err != nil {

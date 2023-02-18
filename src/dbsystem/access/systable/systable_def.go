@@ -1,10 +1,10 @@
 package systable
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 )
 
-type OID = dbobj.OID
+type OID = hglib.OID
 
 const (
 	RelationsName = "sys_relations"

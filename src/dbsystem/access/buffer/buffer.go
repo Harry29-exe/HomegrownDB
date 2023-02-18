@@ -1,7 +1,7 @@
 package buffer
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
 	"HomegrownDB/dbsystem/storage/page"
@@ -13,6 +13,7 @@ type SharedBuffer interface {
 
 	WPageRelease(tag page.PageTag)
 	RPageRelease(tag page.PageTag)
+	FlushAll() error
 }
 
 type TableBuffer interface {
@@ -21,8 +22,8 @@ type TableBuffer interface {
 }
 
 type FsmBuffer interface {
-	RFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page, error)
-	WFsmPage(ownerID dbobj.OID, pageId page.Id) (fsmpage.Page, error)
+	RFsmPage(ownerID hglib.OID, pageId page.Id) (fsmpage.Page, error)
+	WFsmPage(ownerID hglib.OID, pageId page.Id) (fsmpage.Page, error)
 }
 
 const NewPage page.Id = page.InvalidId

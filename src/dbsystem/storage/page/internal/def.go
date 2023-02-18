@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"math"
 )
 
@@ -18,5 +18,5 @@ const Size uint16 = 8192
 
 type PageTag struct {
 	PageId  Id
-	OwnerID dbobj.OID
+	OwnerID hglib.OID
 }

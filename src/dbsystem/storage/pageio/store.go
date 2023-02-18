@@ -1,16 +1,16 @@
 package pageio
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"log"
 )
 
 type Store interface {
-	GetOrLoad(id dbobj.OID) IO
-	Load(rel dbobj.OID) error
-	Register(id dbobj.OID, io IO)
+	GetOrLoad(id hglib.OID) IO
+	Load(rel hglib.OID) error
+	Register(id hglib.OID, io IO)
 }
 
 func NewStore(fs dbfs.FS) Store {
@@ -38,7 +38,7 @@ func (s *StdStore) GetOrLoad(id reldef.OID) IO {
 	}
 }
 
-func (s *StdStore) Register(id dbobj.OID, io IO) {
+func (s *StdStore) Register(id hglib.OID, io IO) {
 	_, ok := s.ioMap[id]
 	if ok {
 		panic("Can't register io when io with same reldef id is already registerd")
@@ -47,7 +47,7 @@ func (s *StdStore) Register(id dbobj.OID, io IO) {
 	s.ioMap[id] = io
 }
 
-func (s *StdStore) Load(oid dbobj.OID) error {
+func (s *StdStore) Load(oid hglib.OID) error {
 	file, err := s.FS.OpenPageObjectFile(oid)
 	if err != nil {
 		return err

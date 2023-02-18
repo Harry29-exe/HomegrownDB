@@ -1,7 +1,7 @@
 package page
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/storage/page/internal/data"
@@ -17,7 +17,7 @@ type (
 	WPage = data.WPage
 )
 
-func InitNewPage(pageSlot []byte, ownerId dbobj.OID, pageId page.Id, pattern TuplePattern) WPage {
+func InitNewPage(pageSlot []byte, ownerId hglib.OID, pageId page.Id, pattern TuplePattern) WPage {
 	return data.InitNewPage(pageSlot, ownerId, pageId, pattern)
 }
 
@@ -25,7 +25,7 @@ func InitNewTablePage(pageSlot []byte, table tabdef.RDefinition, pageId page.Id)
 	return data.InitNewPage(pageSlot, table.OID(), pageId, data.PatternFromTable(table))
 }
 
-func AsPage(pageData []byte, ownerId dbobj.OID, pageId Id, pattern TuplePattern) WPage {
+func AsPage(pageData []byte, ownerId hglib.OID, pageId Id, pattern TuplePattern) WPage {
 	return data.AsPage(pageData, ownerId, pageId, pattern)
 }
 

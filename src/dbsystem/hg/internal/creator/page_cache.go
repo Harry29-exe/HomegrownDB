@@ -1,7 +1,7 @@
 package creator
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
@@ -10,8 +10,8 @@ import (
 func newPageCache(fs dbfs.FS, tables ...tabdef.RDefinition) *pageCache {
 	cache := pageCache{
 		fs:     fs,
-		tables: map[dbobj.OID]tabdef.RDefinition{},
-		cache:  map[dbobj.OID][]page.WPage{},
+		tables: map[hglib.OID]tabdef.RDefinition{},
+		cache:  map[hglib.OID][]page.WPage{},
 	}
 	for _, table := range tables {
 		cache.tables[table.OID()] = table
@@ -22,11 +22,11 @@ func newPageCache(fs dbfs.FS, tables ...tabdef.RDefinition) *pageCache {
 
 type pageCache struct {
 	fs     dbfs.FS
-	tables map[dbobj.OID]tabdef.RDefinition
-	cache  map[dbobj.OID][]page.WPage
+	tables map[hglib.OID]tabdef.RDefinition
+	cache  map[hglib.OID][]page.WPage
 }
 
-func (c *pageCache) insert(oid dbobj.OID, tuple page.WTuple) error {
+func (c *pageCache) insert(oid hglib.OID, tuple page.WTuple) error {
 	tupleBytes := tuple.Bytes()
 
 	pages := c.cache[oid]

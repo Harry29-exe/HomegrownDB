@@ -1,4 +1,4 @@
-package dberr
+package hglib
 
 type DBError interface {
 	error

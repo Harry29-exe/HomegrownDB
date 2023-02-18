@@ -2,7 +2,7 @@ package sqlerr
 
 import (
 	"HomegrownDB/backend/internal/node"
-	"HomegrownDB/dbsystem/dberr"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"fmt"
 )
@@ -81,7 +81,7 @@ func NewTypeMismatch(expectedType rawtype.Tag, actualType rawtype.Tag, value any
 	}
 }
 
-var _ dberr.DBError = TypeMismatch{}
+var _ hglib.DBError = TypeMismatch{}
 
 type TypeMismatch struct {
 	ExpectedType rawtype.Tag
@@ -94,8 +94,8 @@ func (t TypeMismatch) Error() string {
 		t.ExpectedType.ToStr(), t.Value, t.ActualType.ToStr())
 }
 
-func (t TypeMismatch) Area() dberr.Area {
-	return dberr.DBSystem
+func (t TypeMismatch) Area() hglib.Area {
+	return hglib.DBSystem
 }
 
 func (t TypeMismatch) MsgCanBeReturnedToClient() bool {
@@ -106,14 +106,14 @@ func (t TypeMismatch) MsgCanBeReturnedToClient() bool {
 //      TypeArgErr
 // -------------------------
 
-func (anlsr) NewTypeArgErr(illegalArg string, strArgValue any, onType string) dberr.DBError {
+func (anlsr) NewTypeArgErr(illegalArg string, strArgValue any, onType string) hglib.DBError {
 	return GenericAnalyserErr{
 		Msg:          fmt.Sprintf("illegal argument: %s with value: %v on type: %s", illegalArg, strArgValue, onType),
 		SafeToReturn: true,
 	}
 }
 
-func (anlsr) NewInvalidTypeErr(typeName string) dberr.DBError {
+func (anlsr) NewInvalidTypeErr(typeName string) hglib.DBError {
 	return GenericAnalyserErr{
 		Msg:          fmt.Sprintf("type: %s does not exist", typeName),
 		SafeToReturn: true,
@@ -124,7 +124,7 @@ func (anlsr) NewInvalidTypeErr(typeName string) dberr.DBError {
 //      GenericAnalyserErr
 // -------------------------
 
-var _ dberr.DBError = GenericAnalyserErr{}
+var _ hglib.DBError = GenericAnalyserErr{}
 
 type GenericAnalyserErr struct {
 	Msg          string
@@ -135,8 +135,8 @@ func (g GenericAnalyserErr) Error() string {
 	return g.Msg
 }
 
-func (g GenericAnalyserErr) Area() dberr.Area {
-	return dberr.Analyser
+func (g GenericAnalyserErr) Area() hglib.Area {
+	return hglib.Analyser
 }
 
 func (g GenericAnalyserErr) MsgCanBeReturnedToClient() bool {

@@ -1,7 +1,7 @@
 package tabdef
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
@@ -51,7 +51,7 @@ func (t *StdTable) ColumnName(columnId column.Order) string {
 	return t.columnsNames[columnId]
 }
 
-func (t *StdTable) ColumnId(order column.Order) dbobj.OID {
+func (t *StdTable) ColumnId(order column.Order) hglib.OID {
 	return t.columns[order].Id()
 }
 
@@ -75,7 +75,7 @@ func (t *StdTable) ColumnByName(name string) (col column.Def, ok bool) {
 }
 
 // ColumnById todo rewrite this: create columnId_Ordermap initialize it and use it
-func (t *StdTable) ColumnById(id dbobj.OID) column.Def {
+func (t *StdTable) ColumnById(id hglib.OID) column.Def {
 	for _, def := range t.columns {
 		if def.Id() == id {
 			return def

@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/access/transaction"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
@@ -17,7 +17,7 @@ import (
 var _ DBModule = &DBSystem{}
 
 type State struct {
-	NextOID dbobj.OID
+	NextOID hglib.OID
 }
 
 type DBSystem struct {
@@ -25,7 +25,15 @@ type DBSystem struct {
 	configModule  config.Module
 	accessModule  access.Module
 
-	oidCounter appsync.SyncCounter[dbobj.OID]
+	oidCounter appsync.SyncCounter[hglib.OID]
+}
+
+func (db *DBSystem) Shutdown() error {
+	return db.accessModule.Shutdown()
+}
+
+func (db *DBSystem) Destroy() error {
+	return db.FS().DestroyDB()
 }
 
 func (db *DBSystem) StorageModule() storage.Module {
@@ -56,10 +64,6 @@ func (db *DBSystem) FrontendContainer() FrontendContainer {
 	}
 }
 
-func (db *DBSystem) Destroy() error {
-	return db.FS().DestroyDB()
-}
-
 func (db *DBSystem) RelationManager() relation.Manager {
 	return db.accessModule.RelationManager()
 }
@@ -84,7 +88,7 @@ func (db *DBSystem) TxManager() transaction.Manager {
 	return db.accessModule.TxManager()
 }
 
-func (db *DBSystem) NextOID() dbobj.OID {
+func (db *DBSystem) NextOID() hglib.OID {
 	return db.oidCounter.GetAndIncr()
 }
 

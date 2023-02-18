@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/access/transaction"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
@@ -14,6 +14,8 @@ import (
 )
 
 type DBModule interface {
+	Shutdown() error
+
 	StorageModule() storage.Module
 	ConfigModule() config.Module
 	AccessModule() access.Module
@@ -28,11 +30,11 @@ type DBModule interface {
 	ExecutionContainer() ExecutionContainer
 	FrontendContainer() FrontendContainer
 
-	NextOID() dbobj.OID
+	NextOID() hglib.OID
 }
 
 type DB interface {
-	DBModule
 	//io.Closer
 	Destroy() error
+	DBModule
 }

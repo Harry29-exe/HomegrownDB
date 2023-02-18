@@ -58,7 +58,7 @@ func (c *CreateRelation) Init(plan node.Plan) error {
 	panic("implement me")
 }
 
-func (c *CreateRelation) Close() error {
+func (c *CreateRelation) Shutdown() error {
 	//TODO implement me
 	panic("implement me")
 }

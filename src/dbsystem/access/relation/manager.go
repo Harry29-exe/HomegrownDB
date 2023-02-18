@@ -4,9 +4,10 @@ import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/systable"
 	"HomegrownDB/dbsystem/access/table"
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
@@ -51,8 +52,11 @@ type stdManager struct {
 var _ Manager = &stdManager{}
 
 func (s *stdManager) Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation, error) {
-	if relation.OID() == dbobj.InvalidOID {
-		relation.InitRel(s.OIDSequence.Next(), s.OIDSequence.Next(), s.OIDSequence.Next())
+	if relation.OID() == hglib.InvalidOID {
+		err := s.initRelation(relation)
+		if err != nil {
+			return relation, err
+		}
 	}
 	if err := s.createRelationOnDisc(relation); err != nil {
 		return nil, err
@@ -68,6 +72,19 @@ func (s *stdManager) Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation
 		//todo implement me
 		panic("Not implemented")
 	}
+}
+
+func (s *stdManager) initRelation(relation reldef.Relation) error {
+	relation.InitRel(s.OIDSequence.Next(), s.OIDSequence.Next(), s.OIDSequence.Next())
+	switch relation.Kind() {
+	case reldef.TypeTable:
+		tableDef := relation.(tabdef.Definition)
+		for _, col := range tableDef.Columns() {
+			(col.(column.WDef)).SetId(s.OIDSequence.Next())
+		}
+	}
+
+	return nil
 }
 
 func (s *stdManager) createTableInSysTables(definition tabdef.Definition, tx tx.Tx) error {

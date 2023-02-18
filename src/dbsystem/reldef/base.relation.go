@@ -1,7 +1,7 @@
 package reldef
 
 import (
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"log"
 )
 
@@ -32,7 +32,7 @@ func (s *BaseRelation) OID() OID {
 }
 
 func (s *BaseRelation) InitRel(id OID, fsmID OID, vmID OID) {
-	if s.ID != dbobj.InvalidOID {
+	if s.ID != hglib.InvalidOID {
 		log.Panic("reldef can not be initialized multiple times")
 	}
 	s.ID = id

@@ -4,7 +4,7 @@ package fsm
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/dbobj"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
@@ -13,7 +13,7 @@ import (
 
 // InitFreeSpaceMapFile creates new DBObject directory and initializes its data file
 func InitFreeSpaceMapFile(
-	fsmOID dbobj.OID,
+	fsmOID hglib.OID,
 	fs dbfs.FS,
 ) error {
 	file, err := fs.OpenPageObjectFile(fsmOID)
@@ -34,7 +34,7 @@ func InitFreeSpaceMapFile(
 	return io.Close()
 }
 
-func NewFSM(fsmOID dbobj.OID, buff buffer.SharedBuffer) *FSM {
+func NewFSM(fsmOID hglib.OID, buff buffer.SharedBuffer) *FSM {
 	return &FSM{
 		fsmOID: fsmOID,
 		buff:   buff,
@@ -58,7 +58,7 @@ func initNewFsmIO(fsm *FSM) error {
 // page has and helps find one with enough
 // space to fit inserting tuple
 type FSM struct {
-	fsmOID dbobj.OID
+	fsmOID hglib.OID
 	buff   buffer.SharedBuffer
 }
 

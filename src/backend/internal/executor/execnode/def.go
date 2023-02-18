@@ -9,5 +9,5 @@ type ExecNode interface {
 	Next() page.Tuple
 	HasNext() bool
 	Init(plan node.Plan) error
-	Close() error
+	Shutdown() error
 }
