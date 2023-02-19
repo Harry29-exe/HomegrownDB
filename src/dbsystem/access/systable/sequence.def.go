@@ -14,7 +14,7 @@ func SequencesTableDef() tabdef.RDefinition {
 }
 
 func createHGSequences() tabdef.RDefinition {
-	columns := []column.WDef{
+	columns := []column.ColumnDefinition{
 		sequencesCols.oid(),
 		sequencesCols.typeTag(),
 		sequencesCols.seqStart(),
@@ -60,8 +60,8 @@ var sequencesCols = sequencesColBuilder{}
 
 type sequencesColBuilder struct{}
 
-func (s sequencesColBuilder) oid() column.WDef {
-	return column.NewDefinition(
+func (s sequencesColBuilder) oid() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		SequencesColNameOID,
 		HGSequencesColOID,
 		SequencesOrderOID,
@@ -69,8 +69,8 @@ func (s sequencesColBuilder) oid() column.WDef {
 	)
 }
 
-func (sequencesColBuilder) typeTag() column.WDef {
-	return column.NewDefinition(
+func (sequencesColBuilder) typeTag() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		SequencesColNameTypeTag,
 		HGSequencesColTypeTag,
 		SequencesOrderTypeTag,
@@ -78,8 +78,8 @@ func (sequencesColBuilder) typeTag() column.WDef {
 	)
 }
 
-func (sequencesColBuilder) seqStart() column.WDef {
-	return column.NewDefinition(
+func (sequencesColBuilder) seqStart() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		SequencesColNameSeqStart,
 		HGSequencesColSeqStart,
 		SequencesOrderSeqStart,
@@ -87,8 +87,8 @@ func (sequencesColBuilder) seqStart() column.WDef {
 	)
 }
 
-func (sequencesColBuilder) seqIncrement() column.WDef {
-	return column.NewDefinition(
+func (sequencesColBuilder) seqIncrement() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		SequencesColNameSeqIncrement,
 		HGSequencesColSeqIncrement,
 		SequencesOrderSeqIncrement,
@@ -96,8 +96,8 @@ func (sequencesColBuilder) seqIncrement() column.WDef {
 	)
 }
 
-func (sequencesColBuilder) seqMax() column.WDef {
-	return column.NewDefinition(
+func (sequencesColBuilder) seqMax() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		SequencesColNameSeqMax,
 		HGSequencesColSeqMax,
 		SequencesOrderSeqMax,
@@ -105,8 +105,8 @@ func (sequencesColBuilder) seqMax() column.WDef {
 	)
 }
 
-func (sequencesColBuilder) seqMin() column.WDef {
-	return column.NewDefinition(
+func (sequencesColBuilder) seqMin() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		SequencesColNameSeqMin,
 		HGSequencesColSeqMin,
 		SequencesOrderSeqMin,
@@ -114,8 +114,8 @@ func (sequencesColBuilder) seqMin() column.WDef {
 	)
 }
 
-func (sequencesColBuilder) seqCache() column.WDef {
-	return column.NewDefinition(
+func (sequencesColBuilder) seqCache() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		SequencesColNameSeqCache,
 		HGSequencesColSeqCache,
 		SequencesOrderSeqCache,
@@ -123,8 +123,8 @@ func (sequencesColBuilder) seqCache() column.WDef {
 	)
 }
 
-func (sequencesColBuilder) seqCycle() column.WDef {
-	return column.NewDefinition(
+func (sequencesColBuilder) seqCycle() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		SequencesColNameSeqCycle,
 		HGSequencesColSeqCycle,
 		SequencesOrderSeqCycle,

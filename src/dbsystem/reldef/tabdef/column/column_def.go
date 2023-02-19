@@ -5,8 +5,8 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 )
 
-// Def describes column config and provides parse and serializer
-type Def interface {
+// ColumnRDefinition describes column config and provides parse and serializer
+type ColumnRDefinition interface {
 	Name() string
 	Nullable() bool
 	Id() OID
@@ -14,16 +14,10 @@ type Def interface {
 	CType() hgtype.ColType
 
 	DefaultValue() []byte
-	//// Serialize should save all important Data to byte stream.
-	//// It has to start with MdString of column.ColTag.
-	//Serialize() []byte
-	//// Deserialize takes the same Data that Serialize returned
-	//// and set this column definitions to match given Data
-	//Deserialize(data []byte) (subsequent []byte)
 }
 
-type WDef interface {
-	Def
+type ColumnDefinition interface {
+	ColumnRDefinition
 	SetId(id OID)
 	SetOrder(order Order)
 }
@@ -36,11 +30,53 @@ type Order = uint16
 // InnerOrder describes order of column in tuple
 type InnerOrder = uint16
 
-func NewDefinition(name string, oid OID, order Order, columnType hgtype.ColType) WDef {
+func NewColumnDefinition(name string, oid OID, order Order, columnType hgtype.ColType) ColumnDefinition {
 	return &column{
 		name:   name,
 		id:     oid,
 		order:  order,
 		hgType: columnType,
 	}
+}
+
+var _ ColumnDefinition = &column{}
+
+type column struct {
+	name     string
+	nullable bool
+	id       OID
+	order    Order
+	hgType   hgtype.ColType
+}
+
+func (c *column) Name() string {
+	return c.name
+}
+
+func (c *column) Nullable() bool {
+	return c.nullable
+}
+
+func (c *column) Id() OID {
+	return c.id
+}
+
+func (c *column) SetId(id OID) {
+	c.id = id
+}
+
+func (c *column) Order() Order {
+	return c.order
+}
+
+func (c *column) SetOrder(order Order) {
+	c.order = order
+}
+
+func (c *column) CType() hgtype.ColType {
+	return c.hgType
+}
+
+func (c *column) DefaultValue() []byte {
+	return nil
 }

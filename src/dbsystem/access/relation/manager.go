@@ -80,7 +80,7 @@ func (s *stdManager) initRelation(relation reldef.Relation) error {
 	case reldef.TypeTable:
 		tableDef := relation.(tabdef.Definition)
 		for _, col := range tableDef.Columns() {
-			(col.(column.WDef)).SetId(s.OIDSequence.Next())
+			(col.(column.ColumnDefinition)).SetId(s.OIDSequence.Next())
 		}
 	}
 

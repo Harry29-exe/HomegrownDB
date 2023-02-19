@@ -19,7 +19,7 @@ func NewTestTableBuilder(name string) *Builder {
 }
 
 func (ttb *Builder) AddColumn(name string, nullable bool, typeData hgtype.ColumnType) *Builder {
-	col := column.NewDefinition(name, ttb.NextOID, ttb.NexColtOrder, typeData)
+	col := column.NewColumnDefinition(name, ttb.NextOID, ttb.NexColtOrder, typeData)
 	ttb.NextOID++
 	ttb.NexColtOrder++
 	if err := ttb.table.AddColumn(col); err != nil {

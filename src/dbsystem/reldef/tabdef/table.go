@@ -23,10 +23,10 @@ type RDefinition interface {
 	ColumnId(order column.Order) hglib.OID
 
 	ColumnType(id column.Order) hgtype.ColType
-	ColumnByName(name string) (col column.Def, ok bool)
-	ColumnById(id hglib.OID) column.Def
-	Column(index column.Order) column.Def
-	Columns() []column.Def
+	ColumnByName(name string) (col column.ColumnRDefinition, ok bool)
+	ColumnById(id hglib.OID) column.ColumnRDefinition
+	Column(index column.Order) column.ColumnRDefinition
+	Columns() []column.ColumnRDefinition
 }
 
 type Definition interface {
@@ -34,7 +34,7 @@ type Definition interface {
 
 	SetName(name string)
 
-	AddColumn(definition column.WDef) error
+	AddColumn(definition column.ColumnDefinition) error
 	RemoveColumn(name string) error
 }
 
@@ -47,8 +47,8 @@ func NewDefinition(name string) Definition {
 			RelName: name,
 			RelKind: reldef.TypeTable,
 		},
-		columns:  []column.WDef{},
-		rColumns: []column.Def{},
+		columns:  []column.ColumnDefinition{},
+		rColumns: []column.ColumnRDefinition{},
 
 		columnName_OrderMap: map[string]column.Order{},
 		columnsNames:        nil,

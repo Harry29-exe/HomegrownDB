@@ -14,13 +14,13 @@ var ColumnDef = columnDef{}
 
 type columnDef struct{}
 
-func (c columnDef) Analyse(columnNode pnode.ColumnDef, currentCtx anlctx.QueryCtx) (column.WDef, error) {
+func (c columnDef) Analyse(columnNode pnode.ColumnDef, currentCtx anlctx.QueryCtx) (column.ColumnDefinition, error) {
 	colType, err := ColumnType.Analyse(columnNode.Type, columnNode.Args)
 	if err != nil {
 		return nil, err
 	}
 
-	return column.NewDefinition(columnNode.Name, 0, 0, colType), nil
+	return column.NewColumnDefinition(columnNode.Name, 0, 0, colType), nil
 }
 
 // -------------------------

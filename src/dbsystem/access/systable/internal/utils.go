@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OID, columns []column.WDef) tabdef.RDefinition {
+func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OID, columns []column.ColumnDefinition) tabdef.RDefinition {
 	tableDef := tabdef.NewDefinition(name)
 	tableDef.InitRel(oid, fsmOID, vmOID)
 
@@ -26,8 +26,8 @@ func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OI
 	return tableDef
 }
 
-func NewColumnDef(name string, oid reldef.OID, order column.Order, ctype hgtype.ColType) column.WDef {
-	return column.NewDefinition(name, oid, order, ctype)
+func NewColumnDef(name string, oid reldef.OID, order column.Order, ctype hgtype.ColType) column.ColumnDefinition {
+	return column.NewColumnDefinition(name, oid, order, ctype)
 }
 
 // -------------------------

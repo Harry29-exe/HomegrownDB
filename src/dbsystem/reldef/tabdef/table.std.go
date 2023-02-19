@@ -16,8 +16,8 @@ var (
 
 type StdTable struct {
 	reldef.BaseRelation
-	columns  []column.WDef
-	rColumns []column.Def
+	columns  []column.ColumnDefinition
+	rColumns []column.ColumnRDefinition
 
 	columnName_OrderMap map[string]column.Order
 	columnsNames        []string
@@ -65,7 +65,7 @@ func (t *StdTable) ColumnType(id column.Order) hgtype.ColType {
 	return t.columns[id].CType()
 }
 
-func (t *StdTable) ColumnByName(name string) (col column.Def, ok bool) {
+func (t *StdTable) ColumnByName(name string) (col column.ColumnRDefinition, ok bool) {
 	var id column.Order
 	id, ok = t.columnName_OrderMap[name]
 	if !ok {
@@ -75,7 +75,7 @@ func (t *StdTable) ColumnByName(name string) (col column.Def, ok bool) {
 }
 
 // ColumnById todo rewrite this: create columnId_Ordermap initialize it and use it
-func (t *StdTable) ColumnById(id hglib.OID) column.Def {
+func (t *StdTable) ColumnById(id hglib.OID) column.ColumnRDefinition {
 	for _, def := range t.columns {
 		if def.Id() == id {
 			return def
@@ -84,15 +84,15 @@ func (t *StdTable) ColumnById(id hglib.OID) column.Def {
 	panic("no column with provided id")
 }
 
-func (t *StdTable) Column(index column.Order) column.Def {
+func (t *StdTable) Column(index column.Order) column.ColumnRDefinition {
 	return t.columns[index]
 }
 
-func (t *StdTable) Columns() []column.Def {
+func (t *StdTable) Columns() []column.ColumnRDefinition {
 	return t.rColumns
 }
 
-func (t *StdTable) AddColumn(definition column.WDef) error {
+func (t *StdTable) AddColumn(definition column.ColumnDefinition) error {
 	_, ok := t.columnName_OrderMap[definition.Name()]
 	if ok {
 		return errors.New("tabdef already contains column with name:" + definition.Name())

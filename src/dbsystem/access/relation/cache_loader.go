@@ -13,14 +13,14 @@ func newLoaderCache(buffer buffer.SharedBuffer) *loaderCache {
 	return &loaderCache{
 		buffer:    buffer,
 		relations: []reldef.Relation{},
-		columns:   map[reldef.OID][]column.WDef{},
+		columns:   map[reldef.OID][]column.ColumnDefinition{},
 	}
 }
 
 type loaderCache struct {
 	buffer    buffer.SharedBuffer
 	relations []reldef.Relation
-	columns   map[reldef.OID][]column.WDef
+	columns   map[reldef.OID][]column.ColumnDefinition
 }
 
 func (c *loaderCache) loadRelations() error {
@@ -90,7 +90,7 @@ func (c *loaderCache) loadColPage(pageID page.Id) error {
 
 		columns, ok := c.columns[relOID]
 		if !ok {
-			c.columns[relOID] = []column.WDef{columnDef}
+			c.columns[relOID] = []column.ColumnDefinition{columnDef}
 		} else {
 			c.columns[relOID] = append(columns, columnDef)
 		}

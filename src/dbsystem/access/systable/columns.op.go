@@ -16,7 +16,7 @@ var ColumnsOps = columnsOps{}
 
 type columnsOps struct{}
 
-func (columnsOps) DataToRow(tableId OID, col column.Def, tx tx.Tx) page.WTuple {
+func (columnsOps) DataToRow(tableId OID, col column.ColumnRDefinition, tx tx.Tx) page.WTuple {
 	builder := internal.NewTupleBuilder(columnsDef)
 
 	builder.WriteValue(intype.ConvInt8Value(int64(col.Id())))
@@ -39,7 +39,7 @@ func (columnsOps) DataToRow(tableId OID, col column.Def, tx tx.Tx) page.WTuple {
 	return builder.Tuple(tx)
 }
 
-func (o columnsOps) DataToRows(tableOID OID, columns []column.Def, tx tx.Tx) []page.WTuple {
+func (o columnsOps) DataToRows(tableOID OID, columns []column.ColumnRDefinition, tx tx.Tx) []page.WTuple {
 	tuples := make([]page.WTuple, len(columns))
 	for i, colDef := range columns {
 		tuples[i] = o.DataToRow(tableOID, colDef, tx)
@@ -47,7 +47,7 @@ func (o columnsOps) DataToRows(tableOID OID, columns []column.Def, tx tx.Tx) []p
 	return tuples
 }
 
-func (o columnsOps) RowToData(row page.RTuple) column.WDef {
+func (o columnsOps) RowToData(row page.RTuple) column.ColumnDefinition {
 	name := internal.GetString(ColumnsOrderColName, row)
 	colOID := internal.GetInt8(ColumnsOrderOID, row)
 	order := internal.GetInt8(ColumnsOrderColOrder, row)

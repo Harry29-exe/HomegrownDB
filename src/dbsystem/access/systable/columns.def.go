@@ -17,7 +17,7 @@ func ColumnsTableDef() tabdef.RDefinition {
 func createColumnsTableDef() tabdef.RDefinition {
 	colBuilder := columnsBuilder{}
 
-	tableCols := []column.WDef{
+	tableCols := []column.ColumnDefinition{
 		colBuilder.oid(),
 		colBuilder.relationOID(),
 		colBuilder.colName(),
@@ -52,8 +52,8 @@ const (
 
 type columnsBuilder struct{}
 
-func (c *columnsBuilder) oid() (col column.WDef) {
-	return column.NewDefinition(
+func (c *columnsBuilder) oid() (col column.ColumnDefinition) {
+	return column.NewColumnDefinition(
 		"id",
 		HGColumnsColOID,
 		ColumnsOrderOID,
@@ -61,8 +61,8 @@ func (c *columnsBuilder) oid() (col column.WDef) {
 	)
 }
 
-func (c *columnsBuilder) relationOID() column.WDef {
-	return column.NewDefinition(
+func (c *columnsBuilder) relationOID() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		"relation_oid",
 		HGColumnsColRelationOID,
 		ColumnsOrderRelationOID,
@@ -70,8 +70,8 @@ func (c *columnsBuilder) relationOID() column.WDef {
 	)
 }
 
-func (c *columnsBuilder) colName() column.WDef {
-	return column.NewDefinition(
+func (c *columnsBuilder) colName() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		"col_name",
 		HGColumnsColColName,
 		ColumnsOrderColName,
@@ -83,8 +83,8 @@ func (c *columnsBuilder) colName() column.WDef {
 		}))
 }
 
-func (c *columnsBuilder) colOrder() column.WDef {
-	return column.NewDefinition(
+func (c *columnsBuilder) colOrder() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		"col_order",
 		HGColumnsColColOrder,
 		ColumnsOrderColOrder,
@@ -92,8 +92,8 @@ func (c *columnsBuilder) colOrder() column.WDef {
 	)
 }
 
-func (c *columnsBuilder) typeTag() column.WDef {
-	return column.NewDefinition(
+func (c *columnsBuilder) typeTag() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		"type_tag",
 		HGColumnsColTypeTag,
 		ColumnsOrderTypeTag,
@@ -101,8 +101,8 @@ func (c *columnsBuilder) typeTag() column.WDef {
 	)
 }
 
-func (c *columnsBuilder) argsLength() column.WDef {
-	return column.NewDefinition(
+func (c *columnsBuilder) argsLength() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		"arg_length",
 		HGColumnsColArgsLength,
 		ColumnsOrderArgsLength,
@@ -110,8 +110,8 @@ func (c *columnsBuilder) argsLength() column.WDef {
 	)
 }
 
-func (c *columnsBuilder) argsNullable() column.WDef {
-	return column.NewDefinition(
+func (c *columnsBuilder) argsNullable() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		"arg_nullable",
 		HGColumnsColArgsNullable,
 		ColumnsOrderArgsNullable,
@@ -119,8 +119,8 @@ func (c *columnsBuilder) argsNullable() column.WDef {
 	)
 }
 
-func (c *columnsBuilder) argsVarLen() column.WDef {
-	return column.NewDefinition(
+func (c *columnsBuilder) argsVarLen() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		"arg_VarLen",
 		HGColumnsColArgsVarLen,
 		ColumnsOrderArgsVarLen,
@@ -128,8 +128,8 @@ func (c *columnsBuilder) argsVarLen() column.WDef {
 	)
 }
 
-func (c *columnsBuilder) argsUTF8() column.WDef {
-	return column.NewDefinition(
+func (c *columnsBuilder) argsUTF8() column.ColumnDefinition {
+	return column.NewColumnDefinition(
 		"arg_UTF8",
 		HGColumnsColArgsUTF8,
 		ColumnsOrderArgsUTF8,
