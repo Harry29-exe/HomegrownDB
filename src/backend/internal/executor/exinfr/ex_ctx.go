@@ -30,7 +30,9 @@ func NewExCtx(
 	}
 }
 
-func createCache(rteList []node.RangeTableEntry, store relation.Manager) (tabdef.Cache, map[node.RteID]node.RangeTableEntry) {
+type tableCache = map[tabdef.Id]tabdef.RDefinition
+
+func createCache(rteList []node.RangeTableEntry, store relation.Manager) (tableCache, map[node.RteID]node.RangeTableEntry) {
 	cache := map[tabdef.Id]tabdef.RDefinition{}
 	rteMap := map[node.RteID]node.RangeTableEntry{}
 	for _, rte := range rteList {
@@ -52,7 +54,7 @@ type executionCtx struct {
 	Stmt       node.PlanedStmt
 	Buff       buffer.SharedBuffer
 	FsmStore   fsm.Store
-	Tables     tabdef.Cache
+	Tables     tableCache
 	TableStore relation.Manager
 	Tx         tx.Tx
 

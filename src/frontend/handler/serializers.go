@@ -3,7 +3,7 @@ package handler
 import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/lib/bparse"
 	"bytes"
@@ -45,7 +45,7 @@ func (s *resultJsonSerializer) serializeRow(tuple page.RTuple, columns []page.Pa
 			s.Buffer.WriteRune(',')
 		}
 		s.Buffer.WriteString(fmt.Sprintf("\"%s\":", s.columnName(columns[colNo], colNo)))
-		s.serializeValue(tuple.ColValue(column.Order(colNo)), columns[colNo].Type)
+		s.serializeValue(tuple.ColValue(tabdef.Order(colNo)), columns[colNo].Type)
 	}
 	s.Buffer.WriteRune('}')
 }

@@ -1,7 +1,7 @@
 package data
 
 import (
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/lob"
 )
 
@@ -14,7 +14,7 @@ type TupleToSave struct {
 // BgValueToSave value to save in background tabdef see documentation/storage_types.svg
 type BgValueToSave struct {
 	Value    []byte
-	ColumnId column.Id
+	ColumnId tabdef.Id
 }
 
 type LobValueToSave struct {

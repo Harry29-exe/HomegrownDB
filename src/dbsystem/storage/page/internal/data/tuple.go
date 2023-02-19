@@ -1,7 +1,7 @@
 package data
 
 import (
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -11,8 +11,8 @@ type RTuple interface {
 	ModifiedByTx() tx.Id
 	TxCommandCounter() uint16
 	TID() TID
-	IsNull(id column.Order) bool
-	ColValue(id column.Order) []byte
+	IsNull(id tabdef.Order) bool
+	ColValue(id tabdef.Order) []byte
 	DataSize() int
 	TupleSize() int
 

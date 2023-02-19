@@ -4,7 +4,6 @@ import (
 	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"errors"
 	"math"
 )
@@ -16,10 +15,10 @@ var (
 
 type StdTable struct {
 	reldef.BaseRelation
-	columns  []column.ColumnDefinition
-	rColumns []column.ColumnRDefinition
+	columns  []ColumnDefinition
+	rColumns []ColumnRDefinition
 
-	columnName_OrderMap map[string]column.Order
+	columnName_OrderMap map[string]Order
 	columnsNames        []string
 	columnsCount        uint16
 }
@@ -47,26 +46,26 @@ func (t *StdTable) CTypePattern() []hgtype.ColType {
 	panic("Not implemented")
 }
 
-func (t *StdTable) ColumnName(columnId column.Order) string {
+func (t *StdTable) ColumnName(columnId Order) string {
 	return t.columnsNames[columnId]
 }
 
-func (t *StdTable) ColumnId(order column.Order) hglib.OID {
+func (t *StdTable) ColumnId(order Order) hglib.OID {
 	return t.columns[order].Id()
 }
 
-func (t *StdTable) ColumnOrder(name string) (order column.Order, ok bool) {
+func (t *StdTable) ColumnOrder(name string) (order Order, ok bool) {
 	order, ok = t.columnName_OrderMap[name]
 	return
 }
 
 // todo array of ctypes?
-func (t *StdTable) ColumnType(id column.Order) hgtype.ColType {
+func (t *StdTable) ColumnType(id Order) hgtype.ColType {
 	return t.columns[id].CType()
 }
 
-func (t *StdTable) ColumnByName(name string) (col column.ColumnRDefinition, ok bool) {
-	var id column.Order
+func (t *StdTable) ColumnByName(name string) (col ColumnRDefinition, ok bool) {
+	var id Order
 	id, ok = t.columnName_OrderMap[name]
 	if !ok {
 		return nil, false
@@ -75,7 +74,7 @@ func (t *StdTable) ColumnByName(name string) (col column.ColumnRDefinition, ok b
 }
 
 // ColumnById todo rewrite this: create columnId_Ordermap initialize it and use it
-func (t *StdTable) ColumnById(id hglib.OID) column.ColumnRDefinition {
+func (t *StdTable) ColumnById(id hglib.OID) ColumnRDefinition {
 	for _, def := range t.columns {
 		if def.Id() == id {
 			return def
@@ -84,15 +83,15 @@ func (t *StdTable) ColumnById(id hglib.OID) column.ColumnRDefinition {
 	panic("no column with provided id")
 }
 
-func (t *StdTable) Column(index column.Order) column.ColumnRDefinition {
+func (t *StdTable) Column(index Order) ColumnRDefinition {
 	return t.columns[index]
 }
 
-func (t *StdTable) Columns() []column.ColumnRDefinition {
+func (t *StdTable) Columns() []ColumnRDefinition {
 	return t.rColumns
 }
 
-func (t *StdTable) AddColumn(definition column.ColumnDefinition) error {
+func (t *StdTable) AddColumn(definition ColumnDefinition) error {
 	_, ok := t.columnName_OrderMap[definition.Name()]
 	if ok {
 		return errors.New("tabdef already contains column with name:" + definition.Name())
@@ -136,11 +135,11 @@ func (t *StdTable) RemoveColumn(name string) error {
 func (t *StdTable) initInMemoryFields() {
 	colCount := len(t.columns)
 	t.columnsNames = make([]string, colCount)
-	t.columnName_OrderMap = map[string]column.Order{}
+	t.columnName_OrderMap = map[string]Order{}
 
 	for i, col := range t.columns {
 		t.columnsNames[i] = col.Name()
-		t.columnName_OrderMap[col.Name()] = column.Order(i)
+		t.columnName_OrderMap[col.Name()] = Order(i)
 	}
 	t.columnsCount = uint16(colCount)
 }

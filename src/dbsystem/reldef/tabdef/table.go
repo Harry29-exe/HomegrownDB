@@ -4,7 +4,6 @@ import (
 	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/hgtype"
 	reldef "HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
 type RDefinition interface {
@@ -18,15 +17,15 @@ type RDefinition interface {
 
 	CTypePattern() []hgtype.ColType
 
-	ColumnName(columnId column.Order) string
-	ColumnOrder(name string) (order column.Order, ok bool)
-	ColumnId(order column.Order) hglib.OID
+	ColumnName(columnId Order) string
+	ColumnOrder(name string) (order Order, ok bool)
+	ColumnId(order Order) hglib.OID
 
-	ColumnType(id column.Order) hgtype.ColType
-	ColumnByName(name string) (col column.ColumnRDefinition, ok bool)
-	ColumnById(id hglib.OID) column.ColumnRDefinition
-	Column(index column.Order) column.ColumnRDefinition
-	Columns() []column.ColumnRDefinition
+	ColumnType(id Order) hgtype.ColType
+	ColumnByName(name string) (col ColumnRDefinition, ok bool)
+	ColumnById(id hglib.OID) ColumnRDefinition
+	Column(index Order) ColumnRDefinition
+	Columns() []ColumnRDefinition
 }
 
 type Definition interface {
@@ -34,7 +33,7 @@ type Definition interface {
 
 	SetName(name string)
 
-	AddColumn(definition column.ColumnDefinition) error
+	AddColumn(definition ColumnDefinition) error
 	RemoveColumn(name string) error
 }
 
@@ -47,10 +46,10 @@ func NewDefinition(name string) Definition {
 			RelName: name,
 			RelKind: reldef.TypeTable,
 		},
-		columns:  []column.ColumnDefinition{},
-		rColumns: []column.ColumnRDefinition{},
+		columns:  []ColumnDefinition{},
+		rColumns: []ColumnRDefinition{},
 
-		columnName_OrderMap: map[string]column.Order{},
+		columnName_OrderMap: map[string]Order{},
 		columnsNames:        nil,
 		columnsCount:        0,
 	}

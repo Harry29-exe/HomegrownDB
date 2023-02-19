@@ -5,7 +5,6 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef/tabdef"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
 var relationsDef = createHGRelations()
@@ -15,7 +14,7 @@ func RelationsTableDef() tabdef.RDefinition {
 }
 
 func createHGRelations() tabdef.RDefinition {
-	columns := []column.ColumnDefinition{
+	columns := []tabdef.ColumnDefinition{
 		relations.oid(),
 		relations.relKind(),
 		relations.relName(),
@@ -33,7 +32,7 @@ func createHGRelations() tabdef.RDefinition {
 }
 
 const (
-	RelationsOrderOID column.Order = iota
+	RelationsOrderOID tabdef.Order = iota
 	RelationsOrderRelKind
 	RelationsOrderRelName
 	RelationsOrderFsmOID
@@ -44,8 +43,8 @@ var relations = relationsBuilder{}
 
 type relationsBuilder struct{}
 
-func (relationsBuilder) oid() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (relationsBuilder) oid() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"id",
 		HGRelationsColOID,
 		RelationsOrderOID,
@@ -53,8 +52,8 @@ func (relationsBuilder) oid() column.ColumnDefinition {
 	)
 }
 
-func (relationsBuilder) relKind() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (relationsBuilder) relKind() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"rel_kind",
 		HGRelationsColRelKind,
 		RelationsOrderRelKind,
@@ -62,8 +61,8 @@ func (relationsBuilder) relKind() column.ColumnDefinition {
 	)
 }
 
-func (relationsBuilder) relName() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (relationsBuilder) relName() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"rel_name",
 		HGRelationsColRelName,
 		RelationsOrderRelName,
@@ -71,8 +70,8 @@ func (relationsBuilder) relName() column.ColumnDefinition {
 	)
 }
 
-func (relationsBuilder) fsmOID() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (relationsBuilder) fsmOID() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"fsm_oid",
 		HGRelationsColFsmOID,
 		RelationsOrderFsmOID,
@@ -80,8 +79,8 @@ func (relationsBuilder) fsmOID() column.ColumnDefinition {
 	)
 }
 
-func (relationsBuilder) vmOID() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (relationsBuilder) vmOID() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"vm_oid",
 		HGRelationsColVmOID,
 		RelationsOrderVmOID,

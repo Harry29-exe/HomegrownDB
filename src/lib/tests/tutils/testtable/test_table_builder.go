@@ -5,12 +5,11 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
 type Builder struct {
 	table        tabdef.Definition
-	NexColtOrder column.Order
+	NexColtOrder tabdef.Order
 	NextOID      hglib.OID
 }
 
@@ -19,7 +18,7 @@ func NewTestTableBuilder(name string) *Builder {
 }
 
 func (ttb *Builder) AddColumn(name string, nullable bool, typeData hgtype.ColumnType) *Builder {
-	col := column.NewColumnDefinition(name, ttb.NextOID, ttb.NexColtOrder, typeData)
+	col := tabdef.NewColumnDefinition(name, ttb.NextOID, ttb.NexColtOrder, typeData)
 	ttb.NextOID++
 	ttb.NexColtOrder++
 	if err := ttb.table.AddColumn(col); err != nil {

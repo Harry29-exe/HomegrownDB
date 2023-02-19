@@ -5,7 +5,6 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef/tabdef"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
 )
 
 var columnsDef = createColumnsTableDef()
@@ -17,7 +16,7 @@ func ColumnsTableDef() tabdef.RDefinition {
 func createColumnsTableDef() tabdef.RDefinition {
 	colBuilder := columnsBuilder{}
 
-	tableCols := []column.ColumnDefinition{
+	tableCols := []tabdef.ColumnDefinition{
 		colBuilder.oid(),
 		colBuilder.relationOID(),
 		colBuilder.colName(),
@@ -39,7 +38,7 @@ func createColumnsTableDef() tabdef.RDefinition {
 }
 
 const (
-	ColumnsOrderOID column.Order = iota
+	ColumnsOrderOID tabdef.Order = iota
 	ColumnsOrderRelationOID
 	ColumnsOrderColName
 	ColumnsOrderColOrder
@@ -52,8 +51,8 @@ const (
 
 type columnsBuilder struct{}
 
-func (c *columnsBuilder) oid() (col column.ColumnDefinition) {
-	return column.NewColumnDefinition(
+func (c *columnsBuilder) oid() (col tabdef.ColumnDefinition) {
+	return tabdef.NewColumnDefinition(
 		"id",
 		HGColumnsColOID,
 		ColumnsOrderOID,
@@ -61,8 +60,8 @@ func (c *columnsBuilder) oid() (col column.ColumnDefinition) {
 	)
 }
 
-func (c *columnsBuilder) relationOID() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (c *columnsBuilder) relationOID() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"relation_oid",
 		HGColumnsColRelationOID,
 		ColumnsOrderRelationOID,
@@ -70,8 +69,8 @@ func (c *columnsBuilder) relationOID() column.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) colName() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (c *columnsBuilder) colName() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"col_name",
 		HGColumnsColColName,
 		ColumnsOrderColName,
@@ -83,8 +82,8 @@ func (c *columnsBuilder) colName() column.ColumnDefinition {
 		}))
 }
 
-func (c *columnsBuilder) colOrder() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (c *columnsBuilder) colOrder() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"col_order",
 		HGColumnsColColOrder,
 		ColumnsOrderColOrder,
@@ -92,8 +91,8 @@ func (c *columnsBuilder) colOrder() column.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) typeTag() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (c *columnsBuilder) typeTag() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"type_tag",
 		HGColumnsColTypeTag,
 		ColumnsOrderTypeTag,
@@ -101,8 +100,8 @@ func (c *columnsBuilder) typeTag() column.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) argsLength() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (c *columnsBuilder) argsLength() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"arg_length",
 		HGColumnsColArgsLength,
 		ColumnsOrderArgsLength,
@@ -110,8 +109,8 @@ func (c *columnsBuilder) argsLength() column.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) argsNullable() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (c *columnsBuilder) argsNullable() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"arg_nullable",
 		HGColumnsColArgsNullable,
 		ColumnsOrderArgsNullable,
@@ -119,8 +118,8 @@ func (c *columnsBuilder) argsNullable() column.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) argsVarLen() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (c *columnsBuilder) argsVarLen() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"arg_VarLen",
 		HGColumnsColArgsVarLen,
 		ColumnsOrderArgsVarLen,
@@ -128,8 +127,8 @@ func (c *columnsBuilder) argsVarLen() column.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) argsUTF8() column.ColumnDefinition {
-	return column.NewColumnDefinition(
+func (c *columnsBuilder) argsUTF8() tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(
 		"arg_UTF8",
 		HGColumnsColArgsUTF8,
 		ColumnsOrderArgsUTF8,

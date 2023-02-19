@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/access/systable"
 	"HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"errors"
 )
@@ -13,14 +13,14 @@ func newLoaderCache(buffer buffer.SharedBuffer) *loaderCache {
 	return &loaderCache{
 		buffer:    buffer,
 		relations: []reldef.Relation{},
-		columns:   map[reldef.OID][]column.ColumnDefinition{},
+		columns:   map[reldef.OID][]tabdef.ColumnDefinition{},
 	}
 }
 
 type loaderCache struct {
 	buffer    buffer.SharedBuffer
 	relations []reldef.Relation
-	columns   map[reldef.OID][]column.ColumnDefinition
+	columns   map[reldef.OID][]tabdef.ColumnDefinition
 }
 
 func (c *loaderCache) loadRelations() error {
@@ -90,7 +90,7 @@ func (c *loaderCache) loadColPage(pageID page.Id) error {
 
 		columns, ok := c.columns[relOID]
 		if !ok {
-			c.columns[relOID] = []column.ColumnDefinition{columnDef}
+			c.columns[relOID] = []tabdef.ColumnDefinition{columnDef}
 		} else {
 			c.columns[relOID] = append(columns, columnDef)
 		}

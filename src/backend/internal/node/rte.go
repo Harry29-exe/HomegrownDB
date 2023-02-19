@@ -5,7 +5,6 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef/tabdef"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"fmt"
 )
 
@@ -94,8 +93,8 @@ type rangeTableEntry struct {
 	//Kind = RteJoin
 	JoinType     JoinType
 	ResultCols   []Var          // list of columns in result tuples
-	LeftColumns  []column.Order // columns
-	RightColumns []column.Order
+	LeftColumns  []tabdef.Order // columns
+	RightColumns []tabdef.Order
 
 	//Kind = RteValues
 	ValuesList [][]Expr // list of expression node lists
@@ -115,7 +114,7 @@ func (r RangeTableEntry) CreateRef() RangeTableRef {
 	}
 }
 
-func (r RangeTableEntry) CreateVarTargetEntry(col column.Order, attribNo AttribNo, colName string) TargetEntry {
+func (r RangeTableEntry) CreateVarTargetEntry(col tabdef.Order, attribNo AttribNo, colName string) TargetEntry {
 	return NewTargetEntry(NewVar(r.Id, col, r.ColTypes[col]), attribNo, colName)
 }
 

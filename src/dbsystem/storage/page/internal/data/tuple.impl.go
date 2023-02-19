@@ -1,7 +1,7 @@
 package data
 
 import (
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	page "HomegrownDB/dbsystem/storage/page/internal"
 	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/lib/bparse"
@@ -32,7 +32,7 @@ func NewTuple(values [][]byte, pattern TuplePattern, tx tx.Tx) Tuple {
 	var copiedBytes int
 	for i, value := range values {
 		if value == nil {
-			tuple.SetIsNull(column.Order(i))
+			tuple.SetIsNull(tabdef.Order(i))
 			continue
 		}
 
@@ -90,14 +90,14 @@ func (t Tuple) TID() TID {
 	}
 }
 
-func (t Tuple) IsNull(id column.Order) bool {
+func (t Tuple) IsNull(id tabdef.Order) bool {
 	var byteNumber = id / 8
 	value := t.bytes[toNullBitmap+byteNumber]
 	divRest := id % 8
 	return value&nullBitmapMasks[divRest] > 0
 }
 
-func (t Tuple) SetIsNull(id column.Order) {
+func (t Tuple) SetIsNull(id tabdef.Order) {
 	byteNumber := id / 8
 	bytePos := toNullBitmap + byteNumber
 
@@ -105,7 +105,7 @@ func (t Tuple) SetIsNull(id column.Order) {
 	t.bytes[bytePos] = bparse.Bit.SetBit(t.bytes[bytePos], uint8(divRest))
 }
 
-func (t Tuple) SetIsNotNull(id column.Order) {
+func (t Tuple) SetIsNotNull(id tabdef.Order) {
 	byteNumber := id / 8
 	bytePos := toNullBitmap + byteNumber
 
@@ -113,7 +113,7 @@ func (t Tuple) SetIsNotNull(id column.Order) {
 	t.bytes[bytePos] = bparse.Bit.ClearBit(t.bytes[bytePos], uint8(divRest))
 }
 
-func (t Tuple) ColValue(id column.Order) []byte {
+func (t Tuple) ColValue(id tabdef.Order) []byte {
 	if t.IsNull(id) {
 		return nil
 	}
@@ -264,7 +264,7 @@ func (t tupleDebugger) stringifyColumnValues(tuple Tuple, arr *strutils.StrArray
 	var value []byte
 	for i := 0; i < len(pattern.Columns); i++ {
 		col := pattern.Columns[i]
-		if tuple.IsNull(column.Order(i)) {
+		if tuple.IsNull(tabdef.Order(i)) {
 			arr.FormatAndAdd("%s: null", col.Name)
 			continue
 		}

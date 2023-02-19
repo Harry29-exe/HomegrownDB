@@ -12,7 +12,7 @@ package ttable2
 import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/lib/tests/tutils/testtable"
 	"testing"
 )
@@ -30,11 +30,11 @@ func Def(t *testing.T) testtable.TestTable {
 const (
 	TableName                  = "birds"
 	C0Id          string       = "id"
-	C0IdOrder     column.Order = 0
+	C0IdOrder     tabdef.Order = 0
 	C1Name        string       = "name"
-	C1NameOrder   column.Order = 1
+	C1NameOrder   tabdef.Order = 1
 	C2Specie      string       = "specie"
-	C2SpecieOrder column.Order = 2
+	C2SpecieOrder tabdef.Order = 2
 )
 
 var (

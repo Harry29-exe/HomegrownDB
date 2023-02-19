@@ -7,7 +7,6 @@ import (
 	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
@@ -80,7 +79,7 @@ func (s *stdManager) initRelation(relation reldef.Relation) error {
 	case reldef.TypeTable:
 		tableDef := relation.(tabdef.Definition)
 		for _, col := range tableDef.Columns() {
-			(col.(column.ColumnDefinition)).SetId(s.OIDSequence.Next())
+			(col.(tabdef.ColumnDefinition)).SetId(s.OIDSequence.Next())
 		}
 	}
 

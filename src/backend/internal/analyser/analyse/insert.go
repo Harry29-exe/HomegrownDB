@@ -6,7 +6,7 @@ import (
 	node2 "HomegrownDB/backend/internal/node"
 	pnode2 "HomegrownDB/backend/internal/pnode"
 	"HomegrownDB/backend/internal/sqlerr"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 )
 
 var Insert = insert{}
@@ -88,7 +88,7 @@ func (i insert) analyseInputTargetList(targets []pnode2.ResultTarget, currentCtx
 			return err
 		}
 
-		entry.ExprToExec = node2.NewVar(sourceRTE.Id, column.Order(sourceColId), destType)
+		entry.ExprToExec = node2.NewVar(sourceRTE.Id, tabdef.Order(sourceColId), destType)
 		targetList[entry.AttribNo] = entry
 	}
 	query.TargetList = targetList

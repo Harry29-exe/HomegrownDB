@@ -13,7 +13,7 @@ package tt_user
 import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
+	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/lib/tests/tutils/testtable"
 	"testing"
 )
@@ -33,16 +33,16 @@ const (
 	TableName = "users"
 
 	C0Id      string       = "id"
-	C0IdOrder column.Order = 0
+	C0IdOrder tabdef.Order = 0
 
 	C1Age      string       = "age"
-	C1AgeOrder column.Order = 1
+	C1AgeOrder tabdef.Order = 1
 
 	C2Name      string       = "name"
-	C2NameOrder column.Order = 2
+	C2NameOrder tabdef.Order = 2
 
 	C3Surname      string       = "surname"
-	C3SurnameOrder column.Order = 3
+	C3SurnameOrder tabdef.Order = 3
 )
 
 var (

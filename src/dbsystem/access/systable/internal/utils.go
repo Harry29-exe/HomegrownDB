@@ -5,14 +5,13 @@ import (
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef"
-	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/lib/bparse"
 	"log"
 )
 
-func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OID, columns []column.ColumnDefinition) tabdef.RDefinition {
+func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OID, columns []tabdef.ColumnDefinition) tabdef.RDefinition {
 	tableDef := tabdef.NewDefinition(name)
 	tableDef.InitRel(oid, fsmOID, vmOID)
 
@@ -26,8 +25,8 @@ func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OI
 	return tableDef
 }
 
-func NewColumnDef(name string, oid reldef.OID, order column.Order, ctype hgtype.ColType) column.ColumnDefinition {
-	return column.NewColumnDefinition(name, oid, order, ctype)
+func NewColumnDef(name string, oid reldef.OID, order tabdef.Order, ctype hgtype.ColType) tabdef.ColumnDefinition {
+	return tabdef.NewColumnDefinition(name, oid, order, ctype)
 }
 
 // -------------------------
@@ -59,19 +58,19 @@ func (o OptimisticTupleBuilder) Tuple(tx tx.Tx) page.Tuple {
 //      DataConv
 // -------------------------
 
-func GetString(order column.Order, tuple page.RTuple) string {
+func GetString(order tabdef.Order, tuple page.RTuple) string {
 	value := tuple.ColValue(order)
 	args := tuple.Pattern().Columns[order].Type.Args()
 	return string(rawtype.TypeOp.GetData(value, args))
 }
 
-func GetInt8(order column.Order, tuple page.RTuple) int64 {
+func GetInt8(order tabdef.Order, tuple page.RTuple) int64 {
 	value := tuple.ColValue(order)
 	args := tuple.Pattern().Columns[order].Type.Args()
 	return bparse.Parse.Int8(rawtype.TypeOp.GetData(value, args))
 }
 
-func GetBool(order column.Order, tuple page.RTuple) bool {
+func GetBool(order tabdef.Order, tuple page.RTuple) bool {
 	value := tuple.ColValue(order)
 	args := tuple.Pattern().Columns[order].Type.Args()
 	return bparse.Parse.Bool(rawtype.TypeOp.GetData(value, args))

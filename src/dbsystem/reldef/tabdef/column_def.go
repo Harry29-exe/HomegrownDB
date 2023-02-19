@@ -1,4 +1,4 @@
-package column
+package tabdef
 
 import (
 	. "HomegrownDB/dbsystem/hglib"
@@ -21,8 +21,6 @@ type ColumnDefinition interface {
 	SetId(id OID)
 	SetOrder(order Order)
 }
-
-type Id = uint32
 
 // Order describes order of column in tabdef
 type Order = uint16
