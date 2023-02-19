@@ -9,11 +9,11 @@ import (
 
 var columnsDef = createColumnsTableDef()
 
-func ColumnsTableDef() tabdef.RDefinition {
+func ColumnsTableDef() tabdef.TableRDefinition {
 	return columnsDef
 }
 
-func createColumnsTableDef() tabdef.RDefinition {
+func createColumnsTableDef() tabdef.TableRDefinition {
 	colBuilder := columnsBuilder{}
 
 	tableCols := []tabdef.ColumnDefinition{

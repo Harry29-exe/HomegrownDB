@@ -11,7 +11,7 @@ var Table = tableUtils{}
 
 type tableUtils struct{}
 
-func (t tableUtils) RandTPageTuple(table tabdef.RDefinition, rand random.Random) page.Tuple {
+func (t tableUtils) RandTPageTuple(table tabdef.TableRDefinition, rand random.Random) page.Tuple {
 	values := make([][]byte, table.ColumnCount())
 	for i := uint16(0); i < table.ColumnCount(); i++ {
 		col := table.Column(i)
@@ -23,7 +23,7 @@ func (t tableUtils) RandTPageTuple(table tabdef.RDefinition, rand random.Random)
 	return tuple
 }
 
-func (t tableUtils) RandTuple(table tabdef.RDefinition, rand random.Random) page.Tuple {
+func (t tableUtils) RandTuple(table tabdef.TableRDefinition, rand random.Random) page.Tuple {
 	values := make([][]byte, table.ColumnCount())
 	for i := uint16(0); i < table.ColumnCount(); i++ {
 		col := table.Column(i)

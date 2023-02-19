@@ -26,7 +26,7 @@ type RelationsAccessManager struct {
 func (r *RelationsAccessManager) FindByName(name string) reldef.OID {
 	for _, rel := range r.Relations {
 		if rel.Kind() == reldef.TypeTable &&
-			rel.(tabdef.RDefinition).Name() == name {
+			rel.(tabdef.TableRDefinition).Name() == name {
 			return rel.OID()
 		}
 	}

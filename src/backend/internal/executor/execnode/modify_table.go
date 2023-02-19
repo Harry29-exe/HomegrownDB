@@ -49,7 +49,7 @@ type ModifyTable struct {
 
 	txCtx       tx.Tx
 	buff        buffer.SharedBuffer
-	resultTable tabdef.RDefinition
+	resultTable tabdef.TableRDefinition
 	fsm         *fsm.FSM
 	done        bool
 }

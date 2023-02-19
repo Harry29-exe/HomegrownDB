@@ -40,7 +40,7 @@ func (k rteKind) ToString() string {
 	}[k]
 }
 
-func NewRelationRTE(rteID RteID, ref tabdef.RDefinition) RangeTableEntry {
+func NewRelationRTE(rteID RteID, ref tabdef.TableRDefinition) RangeTableEntry {
 	return &rangeTableEntry{
 		node:    node{tag: TagRTE},
 		Kind:    RteRelation,
@@ -85,7 +85,7 @@ type rangeTableEntry struct {
 	// Kind = RteRelation
 	LockMode relation.LockMode
 	TableId  tabdef.Id
-	Ref      tabdef.RDefinition
+	Ref      tabdef.TableRDefinition
 
 	// Kind = RteSubQuery
 	Subquery *query

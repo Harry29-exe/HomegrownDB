@@ -9,11 +9,11 @@ import (
 
 var relationsDef = createHGRelations()
 
-func RelationsTableDef() tabdef.RDefinition {
+func RelationsTableDef() tabdef.TableRDefinition {
 	return relationsDef
 }
 
-func createHGRelations() tabdef.RDefinition {
+func createHGRelations() tabdef.TableRDefinition {
 	columns := []tabdef.ColumnDefinition{
 		relations.oid(),
 		relations.relKind(),

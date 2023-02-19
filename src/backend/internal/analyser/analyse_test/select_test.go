@@ -33,7 +33,7 @@ func TestSelect_u_name_FROM_users(t *testing.T) {
 	NodeAssert.Eq(expectedQuery, queryNode, t)
 }
 
-func expectedTree_u_name_FROM_users(users tabdef.Definition) node2.Query {
+func expectedTree_u_name_FROM_users(users tabdef.TableDefinition) node2.Query {
 	expectedQuery := node2.NewQuery(node2.CommandTypeSelect, nil)
 	rte := node2.NewRelationRTE(0, users)
 	rte.Alias = node2.NewAlias("u")

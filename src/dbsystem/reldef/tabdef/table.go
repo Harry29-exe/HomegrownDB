@@ -6,7 +6,7 @@ import (
 	reldef "HomegrownDB/dbsystem/reldef"
 )
 
-type RDefinition interface {
+type TableRDefinition interface {
 	reldef.Relation
 
 	Name() string
@@ -15,12 +15,6 @@ type RDefinition interface {
 	BitmapLen() uint16
 	ColumnCount() uint16
 
-	CTypePattern() []hgtype.ColType
-
-	ColumnName(columnId Order) string
-	ColumnOrder(name string) (order Order, ok bool)
-	ColumnId(order Order) hglib.OID
-
 	ColumnType(id Order) hgtype.ColType
 	ColumnByName(name string) (col ColumnRDefinition, ok bool)
 	ColumnById(id hglib.OID) ColumnRDefinition
@@ -28,8 +22,8 @@ type RDefinition interface {
 	Columns() []ColumnRDefinition
 }
 
-type Definition interface {
-	RDefinition
+type TableDefinition interface {
+	TableRDefinition
 
 	SetName(name string)
 
@@ -40,8 +34,8 @@ type Definition interface {
 // Id of tabdef object, 0 if id is invalid
 type Id = reldef.OID
 
-func NewDefinition(name string) Definition {
-	table := &StdTable{
+func NewTableDefinition(name string) TableDefinition {
+	table := &Table{
 		BaseRelation: reldef.BaseRelation{
 			RelName: name,
 			RelKind: reldef.TypeTable,
@@ -50,7 +44,6 @@ func NewDefinition(name string) Definition {
 		rColumns: []ColumnRDefinition{},
 
 		columnName_OrderMap: map[string]Order{},
-		columnsNames:        nil,
 		columnsCount:        0,
 	}
 	table.initInMemoryFields()

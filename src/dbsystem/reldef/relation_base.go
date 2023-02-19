@@ -33,7 +33,7 @@ func (s *BaseRelation) OID() OID {
 
 func (s *BaseRelation) InitRel(id OID, fsmID OID, vmID OID) {
 	if s.ID != hglib.InvalidOID {
-		log.Panic("reldef can not be initialized multiple times")
+		log.Panic("relation can not be initialized multiple times")
 	}
 	s.ID = id
 	s.FreeSpaceMapOID = fsmID

@@ -14,7 +14,7 @@ var RelationsOps = relationsOps{}
 type relationsOps struct{}
 
 func (relationsOps) TableAsRelationsRow(
-	table tabdef.RDefinition,
+	table tabdef.TableRDefinition,
 	tx tx.Tx,
 ) (page.Tuple, error) {
 	builder := internal.NewTupleBuilder(relationsDef)
@@ -41,7 +41,7 @@ func (relationsOps) RowAsData(tuple page.Tuple) reldef.Relation {
 
 	switch kind {
 	case reldef.TypeTable:
-		rel := tabdef.NewDefinition(name)
+		rel := tabdef.NewTableDefinition(name)
 		rel.InitRel(reldef.OID(oid), reldef.OID(fsmOID), reldef.OID(vmOID))
 		return rel
 	default:

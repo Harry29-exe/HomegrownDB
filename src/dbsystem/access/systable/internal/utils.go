@@ -11,8 +11,8 @@ import (
 	"log"
 )
 
-func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OID, columns []tabdef.ColumnDefinition) tabdef.RDefinition {
-	tableDef := tabdef.NewDefinition(name)
+func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OID, columns []tabdef.ColumnDefinition) tabdef.TableRDefinition {
+	tableDef := tabdef.NewTableDefinition(name)
 	tableDef.InitRel(oid, fsmOID, vmOID)
 
 	for _, colDef := range columns {
@@ -33,7 +33,7 @@ func NewColumnDef(name string, oid reldef.OID, order tabdef.Order, ctype hgtype.
 //      TupleBuilder
 // -------------------------
 
-func NewTupleBuilder(table tabdef.RDefinition) OptimisticTupleBuilder {
+func NewTupleBuilder(table tabdef.TableRDefinition) OptimisticTupleBuilder {
 	builder := page.NewTupleBuilder()
 	builder.Init(page.PatternFromTable(table))
 	return OptimisticTupleBuilder{builder}

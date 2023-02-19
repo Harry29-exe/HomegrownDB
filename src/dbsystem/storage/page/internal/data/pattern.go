@@ -10,7 +10,7 @@ type WithPattern interface {
 	Pattern() TuplePattern
 }
 
-func PatternFromTable(def tabdef.RDefinition) TuplePattern {
+func PatternFromTable(def tabdef.TableRDefinition) TuplePattern {
 	tableColumns := def.Columns()
 	columns := make([]PatternCol, len(tableColumns))
 	for c := 0; c < len(columns); c++ {

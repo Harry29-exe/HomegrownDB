@@ -49,7 +49,7 @@ func (u TestDBUtils) FillTablePages(pagesToFill int, tableName string) {
 	}
 }
 
-func (u TestDBUtils) TableByName(tableName string) tabdef.Definition {
+func (u TestDBUtils) TableByName(tableName string) tabdef.TableDefinition {
 	id := u.DB.RelationManager().FindByName(tableName)
 	if id == reldef.InvalidRelId {
 		u.T.Errorf("not tabdef: " + tableName)
@@ -58,10 +58,10 @@ func (u TestDBUtils) TableByName(tableName string) tabdef.Definition {
 	if rel.Kind() != reldef.TypeTable {
 		u.T.Errorf("relation is not table")
 	}
-	return rel.(tabdef.Definition)
+	return rel.(tabdef.TableDefinition)
 }
 
-func (u TestDBUtils) RandTuple(tableRel tabdef.Definition) page.Tuple {
+func (u TestDBUtils) RandTuple(tableRel tabdef.TableDefinition) page.Tuple {
 	return Table.RandTPageTuple(tableRel, u.Rand)
 }
 

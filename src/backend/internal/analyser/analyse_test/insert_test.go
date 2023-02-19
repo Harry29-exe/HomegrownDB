@@ -37,7 +37,7 @@ func TestInsertAnalyse_SimplePositive1(t *testing.T) {
 	NodeAssert.Eq(expectedNode, queryNode, t)
 }
 
-func (insertTest) expectedSimplePositive1(users tabdef.RDefinition, t *testing.T) node.Query {
+func (insertTest) expectedSimplePositive1(users tabdef.TableRDefinition, t *testing.T) node.Query {
 	rteIdCounter := appsync.NewSimpleCounter[node.RteID](0)
 
 	query := node.NewQuery(node.CommandTypeInsert, nil)

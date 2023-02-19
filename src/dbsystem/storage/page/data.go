@@ -21,7 +21,7 @@ func InitNewPage(pageSlot []byte, ownerId hglib.OID, pageId page.Id, pattern Tup
 	return data.InitNewPage(pageSlot, ownerId, pageId, pattern)
 }
 
-func InitNewTablePage(pageSlot []byte, table tabdef.RDefinition, pageId page.Id) WPage {
+func InitNewTablePage(pageSlot []byte, table tabdef.TableRDefinition, pageId page.Id) WPage {
 	return data.InitNewPage(pageSlot, table.OID(), pageId, data.PatternFromTable(table))
 }
 
@@ -29,7 +29,7 @@ func AsPage(pageData []byte, ownerId hglib.OID, pageId Id, pattern TuplePattern)
 	return data.AsPage(pageData, ownerId, pageId, pattern)
 }
 
-func AsTablePage(pageData []byte, pageId page.Id, table tabdef.RDefinition) WPage {
+func AsTablePage(pageData []byte, pageId page.Id, table tabdef.TableRDefinition) WPage {
 	return data.AsPage(pageData, table.OID(), pageId, data.PatternFromTable(table))
 }
 
@@ -57,7 +57,7 @@ func NewPattern(columns []PatternCol) TuplePattern {
 	return data.NewPattern(columns)
 }
 
-func PatternFromTable(table tabdef.RDefinition) TuplePattern {
+func PatternFromTable(table tabdef.TableRDefinition) TuplePattern {
 	return data.PatternFromTable(table)
 }
 

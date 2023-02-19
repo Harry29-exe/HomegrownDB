@@ -11,7 +11,7 @@ import (
 func Insert(
 	tuple page.WTuple,
 	tx tx.Tx,
-	table tabdef.RDefinition,
+	table tabdef.TableRDefinition,
 	fsm *fsm.FSM,
 	buffer buffer.SharedBuffer,
 ) error {

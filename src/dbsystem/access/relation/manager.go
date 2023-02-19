@@ -66,7 +66,7 @@ func (s *stdManager) Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation
 
 	switch relation.Kind() {
 	case reldef.TypeTable:
-		return relation, s.createTableInSysTables(relation.(tabdef.Definition), tx)
+		return relation, s.createTableInSysTables(relation.(tabdef.TableDefinition), tx)
 	default:
 		//todo implement me
 		panic("Not implemented")
@@ -77,7 +77,7 @@ func (s *stdManager) initRelation(relation reldef.Relation) error {
 	relation.InitRel(s.OIDSequence.Next(), s.OIDSequence.Next(), s.OIDSequence.Next())
 	switch relation.Kind() {
 	case reldef.TypeTable:
-		tableDef := relation.(tabdef.Definition)
+		tableDef := relation.(tabdef.TableDefinition)
 		for _, col := range tableDef.Columns() {
 			(col.(tabdef.ColumnDefinition)).SetId(s.OIDSequence.Next())
 		}
@@ -86,7 +86,7 @@ func (s *stdManager) initRelation(relation reldef.Relation) error {
 	return nil
 }
 
-func (s *stdManager) createTableInSysTables(definition tabdef.Definition, tx tx.Tx) error {
+func (s *stdManager) createTableInSysTables(definition tabdef.TableDefinition, tx tx.Tx) error {
 	tuple, err := systable.RelationsOps.TableAsRelationsRow(definition, tx)
 	if err != nil {
 		return err

@@ -41,7 +41,7 @@ func TestCreateTable_SimpleUsersTable(t *testing.T) {
 
 func (createTable) usersTableATree(t *testing.T) node.Query {
 	query := node.NewQuery(node.CommandTypeUtils, nil)
-	table := tabdef.NewDefinition("users")
+	table := tabdef.NewTableDefinition("users")
 	err := table.AddColumn(tabdef.NewColumnDefinition(
 		"username", 0, 0, hgtype.NewStr(hgtype.Args{
 			Length:   255,
@@ -87,7 +87,7 @@ func TestCreateTable_UsersTableWithAge(t *testing.T) {
 
 func (createTable) usersTableWithAgeATree(t *testing.T) node.Query {
 	query := node.NewQuery(node.CommandTypeUtils, nil)
-	table := tabdef.NewDefinition("users")
+	table := tabdef.NewTableDefinition("users")
 	err := table.AddColumn(tabdef.NewColumnDefinition(
 		"username", 0, 0, hgtype.NewStr(hgtype.Args{
 			Length:   255,

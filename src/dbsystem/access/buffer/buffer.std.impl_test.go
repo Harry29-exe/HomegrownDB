@@ -211,7 +211,7 @@ type usersTCtx struct {
 	hgtest.TestDBUtils
 	testBuffer StdBuffer
 
-	table tabdef.Definition
+	table tabdef.TableDefinition
 
 	tableIO pageio.IO
 }

@@ -51,7 +51,7 @@ func (c *cache) initSpecific(loader *loaderCache) error {
 	for _, relation := range loader.relations {
 		switch relation.Kind() {
 		case reldef.TypeTable:
-			err = c.initTable(relation.(table.Definition), loader)
+			err = c.initTable(relation.(table.TableDefinition), loader)
 		default:
 			//todo implement me
 			panic("Not implemented")
@@ -64,7 +64,7 @@ func (c *cache) initSpecific(loader *loaderCache) error {
 	return nil
 }
 
-func (c *cache) initTable(table table.Definition, loader *loaderCache) error {
+func (c *cache) initTable(table table.TableDefinition, loader *loaderCache) error {
 	tableCols := loader.columns[table.OID()]
 	for _, col := range tableCols {
 		err := table.AddColumn(col)

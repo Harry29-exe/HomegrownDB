@@ -27,4 +27,5 @@ type Kind uint8
 const (
 	TypeTable Kind = iota
 	TypeIndex
+	TypeSequence
 )

@@ -13,7 +13,7 @@ import (
 )
 
 func TestCreateEmptyPage(t *testing.T) {
-	tableDef := tabdef.NewDefinition(
+	tableDef := tabdef.NewTableDefinition(
 		"test_table")
 	tableDef.SetOID(32)
 	tableDef.SetOID(12)
@@ -118,7 +118,7 @@ func TestPage_DeleteTuple_Last(t *testing.T) {
 	}
 }
 
-func putRandomTupleToPage(tupleCount int, page data.Page, table tabdef.RDefinition, t *testing.T) []data.Tuple {
+func putRandomTupleToPage(tupleCount int, page data.Page, table tabdef.TableRDefinition, t *testing.T) []data.Tuple {
 	rand := random.NewRandom(0)
 	tuples := make([]data.Tuple, tupleCount)
 	for i := 0; i < tupleCount; i++ {

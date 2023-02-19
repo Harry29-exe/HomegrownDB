@@ -40,7 +40,7 @@ type SeqScan struct {
 
 	txCtx tx.Tx
 	buff  buffer.SharedBuffer
-	table tabdef.RDefinition
+	table tabdef.TableRDefinition
 
 	nextPageId  page.Id
 	nextTupleId page.TupleIndex

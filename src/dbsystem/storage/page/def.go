@@ -20,7 +20,7 @@ const Size uint16 = internal.Size
 
 type PageTag = internal.PageTag
 
-func NewTablePageTag(pageIndex Id, tableDef tabdef.RDefinition) PageTag {
+func NewTablePageTag(pageIndex Id, tableDef tabdef.TableRDefinition) PageTag {
 	return PageTag{
 		PageId:  pageIndex,
 		OwnerID: tableDef.OID(),

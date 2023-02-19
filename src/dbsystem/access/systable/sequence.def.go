@@ -8,11 +8,11 @@ import (
 
 var sequenceDef = createHGSequences()
 
-func SequencesTableDef() tabdef.RDefinition {
+func SequencesTableDef() tabdef.TableRDefinition {
 	return sequenceDef
 }
 
-func createHGSequences() tabdef.RDefinition {
+func createHGSequences() tabdef.TableRDefinition {
 	columns := []tabdef.ColumnDefinition{
 		sequencesCols.oid(),
 		sequencesCols.typeTag(),

@@ -7,10 +7,10 @@ import (
 	"HomegrownDB/dbsystem/storage/page"
 )
 
-func newPageCache(fs dbfs.FS, tables ...tabdef.RDefinition) *pageCache {
+func newPageCache(fs dbfs.FS, tables ...tabdef.TableRDefinition) *pageCache {
 	cache := pageCache{
 		fs:     fs,
-		tables: map[hglib.OID]tabdef.RDefinition{},
+		tables: map[hglib.OID]tabdef.TableRDefinition{},
 		cache:  map[hglib.OID][]page.WPage{},
 	}
 	for _, table := range tables {
@@ -22,7 +22,7 @@ func newPageCache(fs dbfs.FS, tables ...tabdef.RDefinition) *pageCache {
 
 type pageCache struct {
 	fs     dbfs.FS
-	tables map[hglib.OID]tabdef.RDefinition
+	tables map[hglib.OID]tabdef.TableRDefinition
 	cache  map[hglib.OID][]page.WPage
 }
 

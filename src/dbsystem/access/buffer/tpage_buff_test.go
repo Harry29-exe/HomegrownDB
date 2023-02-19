@@ -54,7 +54,7 @@ func TestTableBufferWriteRead(t *testing.T) {
 	checkIfPageIsSaved(1, wPage1Copy, table1, tableIO, buff, t)
 }
 
-func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 tabdef.Definition, io pageio.IO, buff SharedBuffer, t *testing.T) {
+func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 tabdef.TableDefinition, io pageio.IO, buff SharedBuffer, t *testing.T) {
 	wPage, err := buff.WTablePage(table1, pageId)
 	assert.IsNil(err, t)
 	assert.EqArray(expectedPage, wPage.Bytes(), t)
@@ -65,7 +65,7 @@ func checkIfPageIsSaved(pageId page.Id, expectedPage []byte, table1 tabdef.Defin
 	assert.EqArray(wPage.Bytes(), wPage0FromIO, t)
 }
 
-func insertTPageWithSingleTuple(pageId page.Id, table1 tabdef.Definition, buff SharedBuffer, rand random.Random, t *testing.T) page.WPage {
+func insertTPageWithSingleTuple(pageId page.Id, table1 tabdef.TableDefinition, buff SharedBuffer, rand random.Random, t *testing.T) page.WPage {
 	wPage0, err := buff.WTablePage(table1, pageId)
 	assert.IsNil(err, t)
 	p0Tuple0 := hgtest.Table.RandTPageTuple(table1, rand).Bytes()

@@ -8,13 +8,13 @@ import (
 )
 
 type Builder struct {
-	table        tabdef.Definition
+	table        tabdef.TableDefinition
 	NexColtOrder tabdef.Order
 	NextOID      hglib.OID
 }
 
 func NewTestTableBuilder(name string) *Builder {
-	return &Builder{table: tabdef.NewDefinition(name)}
+	return &Builder{table: tabdef.NewTableDefinition(name)}
 }
 
 func (ttb *Builder) AddColumn(name string, nullable bool, typeData hgtype.ColumnType) *Builder {
@@ -35,7 +35,7 @@ func (ttb *Builder) SetIds(tableId tabdef.Id, objectId reldef.OID) *Builder {
 	return ttb
 }
 
-func (ttb *Builder) GetTable() tabdef.Definition {
+func (ttb *Builder) GetTable() tabdef.TableDefinition {
 	table := ttb.table
 	ttb.table = nil
 

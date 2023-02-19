@@ -112,7 +112,7 @@ func (q Query) AppendRTE(rte RangeTableEntry) {
 //      Commands
 // -------------------------
 
-func NewCreateRelationTable(table tabdef.Definition) CreateRelation {
+func NewCreateRelationTable(table tabdef.TableDefinition) CreateRelation {
 	return &createRelation{
 		node: node{
 			tag: TagCreateRelation,
@@ -127,7 +127,7 @@ var _ Node = &createRelation{}
 
 type createRelation struct {
 	node
-	FutureTable tabdef.Definition
+	FutureTable tabdef.TableDefinition
 	FutureIndex any // not supported yet
 }
 

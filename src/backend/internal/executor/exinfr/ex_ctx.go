@@ -30,10 +30,10 @@ func NewExCtx(
 	}
 }
 
-type tableCache = map[tabdef.Id]tabdef.RDefinition
+type tableCache = map[tabdef.Id]tabdef.TableRDefinition
 
 func createCache(rteList []node.RangeTableEntry, store relation.Manager) (tableCache, map[node.RteID]node.RangeTableEntry) {
-	cache := map[tabdef.Id]tabdef.RDefinition{}
+	cache := map[tabdef.Id]tabdef.TableRDefinition{}
 	rteMap := map[node.RteID]node.RangeTableEntry{}
 	for _, rte := range rteList {
 		if rte.Kind == node.RteRelation {
@@ -41,7 +41,7 @@ func createCache(rteList []node.RangeTableEntry, store relation.Manager) (tableC
 			if rel.Kind() != reldef.TypeTable {
 				panic("illegal type")
 			}
-			tableDef := rel.(tabdef.RDefinition)
+			tableDef := rel.(tabdef.TableRDefinition)
 			cache[rte.TableId] = tableDef
 			rte.Ref = tableDef
 		}
