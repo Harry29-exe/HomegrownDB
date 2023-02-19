@@ -68,5 +68,3 @@ func NewTuple(values [][]byte, pattern TuplePattern, tx tx.Tx) Tuple {
 func NewTempTuple(values [][]byte, pattern TuplePattern) Tuple {
 	return data.NewTuple(values, pattern, nil)
 }
-
-var TupleDebugger = data.TupleDebugger

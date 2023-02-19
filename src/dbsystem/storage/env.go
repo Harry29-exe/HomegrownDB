@@ -83,25 +83,25 @@ func clearOsEnv(envName string, file *os.File) error {
 	}
 	fileData := string(rawFileData)
 
-	index := strings.Index(fileData, envName)
+	index := strings.Index(fileData, "export "+envName)
 	if index < 0 {
 		return fmt.Errorf("file: %s does not contain env: %s", file.Name(), envName)
 	}
-	endIndex := strings.Index(fileData[index:], "\n")
+	endIndex := index + strings.Index(fileData[index:], "\n")
 
 	var newContent string
-	if endIndex < 0 {
+	if endIndex <= index {
 		newContent = fileData[:index]
 	} else {
 		newContent = fileData[:index] + fileData[endIndex+1:]
 	}
 
-	err = file.Truncate(int64(len(newContent)))
+	_, err = file.WriteAt([]byte(newContent), 0)
 	if err != nil {
 		return err
 	}
 
-	_, err = file.Write([]byte(newContent))
+	err = file.Truncate(int64(len(newContent)))
 	return err
 }
 
@@ -134,7 +134,7 @@ func writeOsEnv(file *os.File, envName, envValue string) error {
 func envExportExist(envFile string, envName string) (startIndex, endIndex int) {
 	str := envFile
 	offset := 0
-	for index := strings.Index(str, envName); index >= 0; {
+	for index := strings.Index(str, "export "+envName); index >= 0; {
 		startIndex = strings.LastIndex(str[:index], "\n") + 1
 		endIndex = strings.Index(str[index:], "\n")
 		if endIndex < 0 {
