@@ -9,6 +9,7 @@ type OID = hglib.OID
 const (
 	RelationsName = "sys_relations"
 	ColumnsName   = "sys_columns"
+	SequencesName = "sys_sequences"
 )
 
 const (
@@ -38,4 +39,19 @@ const (
 	HGColumnsColArgsNullable
 	HGColumnsColArgsVarLen
 	HGColumnsColArgsUTF8
+
+	//HGSequencesOID start of sys_sequences
+
+	HGSequencesOID
+	HGSequencesFsmOID
+	HGSequencesVmOID
+
+	HGSequencesColOID
+	HGSequencesColTypeTag
+	HGSequencesColSeqStart
+	HGSequencesColSeqIncrement
+	HGSequencesColSeqMax
+	HGSequencesColSeqMin
+	HGSequencesColSeqCache
+	HGSequencesColSeqCycle
 )
