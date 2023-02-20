@@ -2,7 +2,6 @@ package buffer
 
 import (
 	"HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/fsm/fsmpage"
 	"HomegrownDB/dbsystem/storage/page"
 )
@@ -17,8 +16,8 @@ type SharedBuffer interface {
 }
 
 type TableBuffer interface {
-	RTablePage(table tabdef.TableRDefinition, pageId page.Id) (page.RPage, error)
-	WTablePage(table tabdef.TableRDefinition, pageId page.Id) (page.WPage, error)
+	RTablePage(table reldef.TableRDefinition, pageId page.Id) (page.RPage, error)
+	WTablePage(table reldef.TableRDefinition, pageId page.Id) (page.WPage, error)
 }
 
 type FsmBuffer interface {
@@ -29,7 +28,7 @@ type FsmBuffer interface {
 const NewPage page.Id = page.InvalidId
 
 type TableSrc interface {
-	Table(id tabdef.Id) tabdef.TableRDefinition
+	Table(id reldef.OID) reldef.TableRDefinition
 }
 
 type slotIndex = uint

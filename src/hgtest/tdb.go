@@ -4,7 +4,6 @@ import (
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/lib/random"
@@ -49,7 +48,7 @@ func (u TestDBUtils) FillTablePages(pagesToFill int, tableName string) {
 	}
 }
 
-func (u TestDBUtils) TableByName(tableName string) tabdef.TableDefinition {
+func (u TestDBUtils) TableByName(tableName string) reldef.TableDefinition {
 	id := u.DB.RelationManager().FindByName(tableName)
 	if id == reldef.InvalidRelId {
 		u.T.Errorf("not tabdef: " + tableName)
@@ -58,10 +57,10 @@ func (u TestDBUtils) TableByName(tableName string) tabdef.TableDefinition {
 	if rel.Kind() != reldef.TypeTable {
 		u.T.Errorf("relation is not table")
 	}
-	return rel.(tabdef.TableDefinition)
+	return rel.(reldef.TableDefinition)
 }
 
-func (u TestDBUtils) RandTuple(tableRel tabdef.TableDefinition) page.Tuple {
+func (u TestDBUtils) RandTuple(tableRel reldef.TableDefinition) page.Tuple {
 	return Table.RandTPageTuple(tableRel, u.Rand)
 }
 

@@ -4,15 +4,14 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/lib/bparse"
 	"log"
 )
 
-func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OID, columns []tabdef.ColumnDefinition) tabdef.TableRDefinition {
-	tableDef := tabdef.NewTableDefinition(name)
+func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OID, columns []reldef.ColumnDefinition) reldef.TableRDefinition {
+	tableDef := reldef.NewTableDefinition(name)
 	tableDef.InitRel(oid, fsmOID, vmOID)
 
 	for _, colDef := range columns {
@@ -25,15 +24,15 @@ func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OI
 	return tableDef
 }
 
-func NewColumnDef(name string, oid reldef.OID, order tabdef.Order, ctype hgtype.ColType) tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(name, oid, order, ctype)
+func NewColumnDef(name string, oid reldef.OID, order reldef.Order, ctype hgtype.ColType) reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(name, oid, order, ctype)
 }
 
 // -------------------------
 //      TupleBuilder
 // -------------------------
 
-func NewTupleBuilder(table tabdef.TableRDefinition) OptimisticTupleBuilder {
+func NewTupleBuilder(table reldef.TableRDefinition) OptimisticTupleBuilder {
 	builder := page.NewTupleBuilder()
 	builder.Init(page.PatternFromTable(table))
 	return OptimisticTupleBuilder{builder}
@@ -58,19 +57,19 @@ func (o OptimisticTupleBuilder) Tuple(tx tx.Tx) page.Tuple {
 //      DataConv
 // -------------------------
 
-func GetString(order tabdef.Order, tuple page.RTuple) string {
+func GetString(order reldef.Order, tuple page.RTuple) string {
 	value := tuple.ColValue(order)
 	args := tuple.Pattern().Columns[order].Type.Args()
 	return string(rawtype.TypeOp.GetData(value, args))
 }
 
-func GetInt8(order tabdef.Order, tuple page.RTuple) int64 {
+func GetInt8(order reldef.Order, tuple page.RTuple) int64 {
 	value := tuple.ColValue(order)
 	args := tuple.Pattern().Columns[order].Type.Args()
 	return bparse.Parse.Int8(rawtype.TypeOp.GetData(value, args))
 }
 
-func GetBool(order tabdef.Order, tuple page.RTuple) bool {
+func GetBool(order reldef.Order, tuple page.RTuple) bool {
 	value := tuple.ColValue(order)
 	args := tuple.Pattern().Columns[order].Type.Args()
 	return bparse.Parse.Bool(rawtype.TypeOp.GetData(value, args))

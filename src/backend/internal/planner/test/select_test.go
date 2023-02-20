@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/backend/internal/parser"
 	"HomegrownDB/backend/internal/planner"
 	. "HomegrownDB/backend/internal/testinfr"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/hgtest"
 	"HomegrownDB/lib/tests/assert"
 	"HomegrownDB/lib/tests/tutils/testtable/tt_user"
@@ -35,7 +35,7 @@ func TestSelectPlanner_SimpleSelect(t *testing.T) {
 	NodeAssert.Eq(expectedPlannedStmt, planedStmt, t)
 }
 
-func expectedPlan_SimpleSelect(usersTab tabdef.TableDefinition, t *testing.T) node2.PlanedStmt {
+func expectedPlan_SimpleSelect(usersTab reldef.TableDefinition, t *testing.T) node2.PlanedStmt {
 	planedStmt := node2.NewPlanedStmt(node2.CommandTypeSelect)
 	rootState := planner.NewRootState(planedStmt)
 

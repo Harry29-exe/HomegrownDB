@@ -3,7 +3,6 @@ package relation
 import (
 	"HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/reldef"
-	table "HomegrownDB/dbsystem/reldef/tabdef"
 	"fmt"
 	"log"
 )
@@ -51,7 +50,7 @@ func (c *cache) initSpecific(loader *loaderCache) error {
 	for _, relation := range loader.relations {
 		switch relation.Kind() {
 		case reldef.TypeTable:
-			err = c.initTable(relation.(table.TableDefinition), loader)
+			err = c.initTable(relation.(reldef.TableDefinition), loader)
 		default:
 			//todo implement me
 			panic("Not implemented")
@@ -64,7 +63,7 @@ func (c *cache) initSpecific(loader *loaderCache) error {
 	return nil
 }
 
-func (c *cache) initTable(table table.TableDefinition, loader *loaderCache) error {
+func (c *cache) initTable(table reldef.TableDefinition, loader *loaderCache) error {
 	tableCols := loader.columns[table.OID()]
 	for _, col := range tableCols {
 		err := table.AddColumn(col)

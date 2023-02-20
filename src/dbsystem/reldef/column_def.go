@@ -1,7 +1,6 @@
-package tabdef
+package reldef
 
 import (
-	. "HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/hgtype"
 )
 

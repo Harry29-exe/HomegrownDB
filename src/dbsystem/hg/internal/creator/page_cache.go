@@ -2,15 +2,15 @@ package creator
 
 import (
 	"HomegrownDB/dbsystem/hglib"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/page"
 )
 
-func newPageCache(fs dbfs.FS, tables ...tabdef.TableRDefinition) *pageCache {
+func newPageCache(fs dbfs.FS, tables ...reldef.TableRDefinition) *pageCache {
 	cache := pageCache{
 		fs:     fs,
-		tables: map[hglib.OID]tabdef.TableRDefinition{},
+		tables: map[hglib.OID]reldef.TableRDefinition{},
 		cache:  map[hglib.OID][]page.WPage{},
 	}
 	for _, table := range tables {
@@ -22,7 +22,7 @@ func newPageCache(fs dbfs.FS, tables ...tabdef.TableRDefinition) *pageCache {
 
 type pageCache struct {
 	fs     dbfs.FS
-	tables map[hglib.OID]tabdef.TableRDefinition
+	tables map[hglib.OID]reldef.TableRDefinition
 	cache  map[hglib.OID][]page.WPage
 }
 

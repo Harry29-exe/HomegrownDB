@@ -2,7 +2,7 @@ package page
 
 import (
 	"HomegrownDB/dbsystem/hglib"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage/page/internal"
 	"math"
 )
@@ -20,7 +20,7 @@ const Size uint16 = internal.Size
 
 type PageTag = internal.PageTag
 
-func NewTablePageTag(pageIndex Id, tableDef tabdef.TableRDefinition) PageTag {
+func NewTablePageTag(pageIndex Id, tableDef reldef.TableRDefinition) PageTag {
 	return PageTag{
 		PageId:  pageIndex,
 		OwnerID: tableDef.OID(),

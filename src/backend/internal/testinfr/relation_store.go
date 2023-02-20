@@ -3,7 +3,6 @@ package testinfr
 import (
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef"
 	"sync"
 )
 
@@ -26,7 +25,7 @@ type RelationsAccessManager struct {
 func (r *RelationsAccessManager) FindByName(name string) reldef.OID {
 	for _, rel := range r.Relations {
 		if rel.Kind() == reldef.TypeTable &&
-			rel.(tabdef.TableRDefinition).Name() == name {
+			rel.(reldef.TableRDefinition).Name() == name {
 			return rel.OID()
 		}
 	}

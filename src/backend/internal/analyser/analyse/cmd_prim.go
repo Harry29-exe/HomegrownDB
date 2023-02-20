@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/backend/internal/sqlerr"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"strings"
 )
 
@@ -14,13 +14,13 @@ var ColumnDef = columnDef{}
 
 type columnDef struct{}
 
-func (c columnDef) Analyse(columnNode pnode.ColumnDef, currentCtx anlctx.QueryCtx) (tabdef.ColumnDefinition, error) {
+func (c columnDef) Analyse(columnNode pnode.ColumnDef, currentCtx anlctx.QueryCtx) (reldef.ColumnDefinition, error) {
 	colType, err := ColumnType.Analyse(columnNode.Type, columnNode.Args)
 	if err != nil {
 		return nil, err
 	}
 
-	return tabdef.NewColumnDefinition(columnNode.Name, 0, 0, colType), nil
+	return reldef.NewColumnDefinition(columnNode.Name, 0, 0, colType), nil
 }
 
 // -------------------------

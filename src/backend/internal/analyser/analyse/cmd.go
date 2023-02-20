@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/backend/internal/analyser/anlctx"
 	"HomegrownDB/backend/internal/node"
 	"HomegrownDB/backend/internal/pnode"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"log"
 )
 
@@ -41,7 +41,7 @@ var CreateTable = createTable{}
 type createTable struct{}
 
 func (createTable) Analyse(stmt pnode.CreateTableStmt, currentCtx anlctx.QueryCtx) (node.CreateRelation, error) {
-	table := tabdef.NewTableDefinition(stmt.TableName)
+	table := reldef.NewTableDefinition(stmt.TableName)
 	for i := 0; i < len(stmt.Columns); i++ {
 		column, err := ColumnDef.Analyse(stmt.Columns[i], currentCtx)
 		if err != nil {

@@ -2,7 +2,7 @@ package testtable
 
 import (
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
 	"HomegrownDB/dbsystem/tx"
@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func NewTestTable(def tabdef.TableDefinition, t *testing.T) TestTable {
+func NewTestTable(def reldef.TableDefinition, t *testing.T) TestTable {
 	return TestTable{
 		TableDefinition: def,
 		TUtils: TUtils{
@@ -23,7 +23,7 @@ func NewTestTable(def tabdef.TableDefinition, t *testing.T) TestTable {
 }
 
 type TestTable struct {
-	tabdef.TableDefinition
+	reldef.TableDefinition
 	TUtils TUtils
 	T      *testing.T
 }
@@ -32,7 +32,7 @@ var pageSize = config.PageSize
 
 type TUtils struct {
 	rand  random.Random
-	table tabdef.TableDefinition
+	table reldef.TableDefinition
 }
 
 func (t *TUtils) SetRand(rand random.Random) {

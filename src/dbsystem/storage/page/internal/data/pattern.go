@@ -2,7 +2,7 @@ package data
 
 import (
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"math"
 )
 
@@ -10,7 +10,7 @@ type WithPattern interface {
 	Pattern() TuplePattern
 }
 
-func PatternFromTable(def tabdef.TableRDefinition) TuplePattern {
+func PatternFromTable(def reldef.TableRDefinition) TuplePattern {
 	tableColumns := def.Columns()
 	columns := make([]PatternCol, len(tableColumns))
 	for c := 0; c < len(columns); c++ {

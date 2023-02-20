@@ -6,7 +6,6 @@ import (
 	"HomegrownDB/dbsystem/hgtype/intype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
 	"HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
 	"log"
@@ -16,7 +15,7 @@ var ColumnsOps = columnsOps{}
 
 type columnsOps struct{}
 
-func (columnsOps) DataToRow(tableId OID, col tabdef.ColumnRDefinition, tx tx.Tx) page.WTuple {
+func (columnsOps) DataToRow(tableId OID, col reldef.ColumnRDefinition, tx tx.Tx) page.WTuple {
 	builder := internal.NewTupleBuilder(columnsDef)
 
 	builder.WriteValue(intype.ConvInt8Value(int64(col.Id())))
@@ -39,7 +38,7 @@ func (columnsOps) DataToRow(tableId OID, col tabdef.ColumnRDefinition, tx tx.Tx)
 	return builder.Tuple(tx)
 }
 
-func (o columnsOps) DataToRows(tableOID OID, columns []tabdef.ColumnRDefinition, tx tx.Tx) []page.WTuple {
+func (o columnsOps) DataToRows(tableOID OID, columns []reldef.ColumnRDefinition, tx tx.Tx) []page.WTuple {
 	tuples := make([]page.WTuple, len(columns))
 	for i, colDef := range columns {
 		tuples[i] = o.DataToRow(tableOID, colDef, tx)
@@ -47,7 +46,7 @@ func (o columnsOps) DataToRows(tableOID OID, columns []tabdef.ColumnRDefinition,
 	return tuples
 }
 
-func (o columnsOps) RowToData(row page.RTuple) tabdef.ColumnDefinition {
+func (o columnsOps) RowToData(row page.RTuple) reldef.ColumnDefinition {
 	name := internal.GetString(ColumnsOrderColName, row)
 	colOID := internal.GetInt8(ColumnsOrderOID, row)
 	order := internal.GetInt8(ColumnsOrderColOrder, row)
@@ -60,7 +59,7 @@ func (o columnsOps) RowToData(row page.RTuple) tabdef.ColumnDefinition {
 	return internal.NewColumnDef(
 		name,
 		OID(colOID),
-		tabdef.Order(order),
+		reldef.Order(order),
 		hgtype.NewColType(rawtype.Tag(typeTag), hgtype.Args{
 			Length:   int(argsLength),
 			Nullable: argsNullable,

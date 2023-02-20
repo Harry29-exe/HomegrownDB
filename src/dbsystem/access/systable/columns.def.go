@@ -4,19 +4,19 @@ import (
 	"HomegrownDB/dbsystem/access/systable/internal"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 )
 
 var columnsDef = createColumnsTableDef()
 
-func ColumnsTableDef() tabdef.TableRDefinition {
+func ColumnsTableDef() reldef.TableRDefinition {
 	return columnsDef
 }
 
-func createColumnsTableDef() tabdef.TableRDefinition {
+func createColumnsTableDef() reldef.TableRDefinition {
 	colBuilder := columnsBuilder{}
 
-	tableCols := []tabdef.ColumnDefinition{
+	tableCols := []reldef.ColumnDefinition{
 		colBuilder.oid(),
 		colBuilder.relationOID(),
 		colBuilder.colName(),
@@ -38,7 +38,7 @@ func createColumnsTableDef() tabdef.TableRDefinition {
 }
 
 const (
-	ColumnsOrderOID tabdef.Order = iota
+	ColumnsOrderOID reldef.Order = iota
 	ColumnsOrderRelationOID
 	ColumnsOrderColName
 	ColumnsOrderColOrder
@@ -51,8 +51,8 @@ const (
 
 type columnsBuilder struct{}
 
-func (c *columnsBuilder) oid() (col tabdef.ColumnDefinition) {
-	return tabdef.NewColumnDefinition(
+func (c *columnsBuilder) oid() (col reldef.ColumnDefinition) {
+	return reldef.NewColumnDefinition(
 		"id",
 		HGColumnsColOID,
 		ColumnsOrderOID,
@@ -60,8 +60,8 @@ func (c *columnsBuilder) oid() (col tabdef.ColumnDefinition) {
 	)
 }
 
-func (c *columnsBuilder) relationOID() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (c *columnsBuilder) relationOID() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		"relation_oid",
 		HGColumnsColRelationOID,
 		ColumnsOrderRelationOID,
@@ -69,8 +69,8 @@ func (c *columnsBuilder) relationOID() tabdef.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) colName() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (c *columnsBuilder) colName() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		"col_name",
 		HGColumnsColColName,
 		ColumnsOrderColName,
@@ -82,8 +82,8 @@ func (c *columnsBuilder) colName() tabdef.ColumnDefinition {
 		}))
 }
 
-func (c *columnsBuilder) colOrder() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (c *columnsBuilder) colOrder() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		"col_order",
 		HGColumnsColColOrder,
 		ColumnsOrderColOrder,
@@ -91,8 +91,8 @@ func (c *columnsBuilder) colOrder() tabdef.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) typeTag() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (c *columnsBuilder) typeTag() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		"type_tag",
 		HGColumnsColTypeTag,
 		ColumnsOrderTypeTag,
@@ -100,8 +100,8 @@ func (c *columnsBuilder) typeTag() tabdef.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) argsLength() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (c *columnsBuilder) argsLength() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		"arg_length",
 		HGColumnsColArgsLength,
 		ColumnsOrderArgsLength,
@@ -109,8 +109,8 @@ func (c *columnsBuilder) argsLength() tabdef.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) argsNullable() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (c *columnsBuilder) argsNullable() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		"arg_nullable",
 		HGColumnsColArgsNullable,
 		ColumnsOrderArgsNullable,
@@ -118,8 +118,8 @@ func (c *columnsBuilder) argsNullable() tabdef.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) argsVarLen() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (c *columnsBuilder) argsVarLen() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		"arg_VarLen",
 		HGColumnsColArgsVarLen,
 		ColumnsOrderArgsVarLen,
@@ -127,8 +127,8 @@ func (c *columnsBuilder) argsVarLen() tabdef.ColumnDefinition {
 	)
 }
 
-func (c *columnsBuilder) argsUTF8() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (c *columnsBuilder) argsUTF8() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		"arg_UTF8",
 		HGColumnsColArgsUTF8,
 		ColumnsOrderArgsUTF8,

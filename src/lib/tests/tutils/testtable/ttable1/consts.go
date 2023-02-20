@@ -3,20 +3,20 @@ package ttable1
 import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 )
 
 const (
 	TableName = "awesome_table1"
 
 	C0AwesomeKey      string       = "awesome_key"
-	C0AwesomeKeyOrder tabdef.Order = 0
+	C0AwesomeKeyOrder reldef.Order = 0
 
 	C1NullableCol      string       = "nullable_col"
-	C1NullableColOrder tabdef.Order = 1
+	C1NullableColOrder reldef.Order = 1
 
 	C2NonNullColl      string       = "non_null_coll"
-	C2NonNullCollOrder tabdef.Order = 2
+	C2NonNullCollOrder reldef.Order = 2
 )
 
 var (

@@ -2,7 +2,7 @@ package node
 
 import (
 	"HomegrownDB/backend/internal/pnode"
-	tabdef "HomegrownDB/dbsystem/reldef/tabdef"
+	tabdef "HomegrownDB/dbsystem/reldef"
 	"fmt"
 	"log"
 	"reflect"

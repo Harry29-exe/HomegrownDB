@@ -1,20 +1,19 @@
-package tabdef
+package reldef
 
 import (
 	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/reldef"
 	"errors"
 	"math"
 )
 
 var (
 	_ TableDefinition = &Table{}
-	_ reldef.Relation = &Table{}
+	_ Relation        = &Table{}
 )
 
 type Table struct {
-	reldef.BaseRelation
+	BaseRelation
 	columns  []ColumnDefinition
 	rColumns []ColumnRDefinition
 

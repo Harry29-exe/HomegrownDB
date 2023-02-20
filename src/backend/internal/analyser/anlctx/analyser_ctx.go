@@ -5,7 +5,6 @@ import (
 	"HomegrownDB/backend/internal/sqlerr"
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/reldef"
-	table "HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/lib/datastructs/appsync"
 )
 
@@ -16,7 +15,7 @@ func NewCtx(store relation.AccessMngr) Ctx {
 		RteIdCounter: appsync.NewSimpleCounter[node.RteID](0),
 
 		TableStore: store,
-		TableCache: map[reldef.OID]table.TableRDefinition{},
+		TableCache: map[reldef.OID]reldef.TableRDefinition{},
 		TableIdMap: map[string]reldef.OID{},
 	}
 }
@@ -25,11 +24,11 @@ type ctx struct {
 	RteIdCounter RteIdCounter
 
 	TableStore relation.AccessMngr
-	TableCache map[reldef.OID]table.TableRDefinition
+	TableCache map[reldef.OID]reldef.TableRDefinition
 	TableIdMap map[string]reldef.OID // TableIdMap map[tableName] = tableId
 }
 
-func (c Ctx) GetTableById(id reldef.OID) table.TableRDefinition {
+func (c Ctx) GetTableById(id reldef.OID) reldef.TableRDefinition {
 	cachedTable, ok := c.TableCache[id]
 	if ok {
 		return cachedTable
@@ -39,12 +38,12 @@ func (c Ctx) GetTableById(id reldef.OID) table.TableRDefinition {
 	if rel.Kind() != reldef.TypeTable {
 
 	}
-	tab := rel.(table.TableRDefinition)
+	tab := rel.(reldef.TableRDefinition)
 	c.TableCache[id] = tab
 	return tab
 }
 
-func (c Ctx) GetTable(name string) (table.TableRDefinition, error) {
+func (c Ctx) GetTable(name string) (reldef.TableRDefinition, error) {
 	tableId, ok := c.TableIdMap[name]
 	if ok {
 		return c.TableCache[tableId], nil
@@ -59,7 +58,7 @@ func (c Ctx) GetTable(name string) (table.TableRDefinition, error) {
 	if rel.Kind() != reldef.TypeTable {
 		return nil, sqlerr.NewNoTableWithNameErr(name)
 	}
-	tableDef := rel.(table.TableDefinition)
+	tableDef := rel.(reldef.TableDefinition)
 	c.TableCache[tableId] = tableDef
 	return tableDef, nil
 }

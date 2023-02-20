@@ -7,7 +7,7 @@ import (
 	. "HomegrownDB/backend/internal/testinfr"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/hgtest"
 	"HomegrownDB/lib/datastructs/appsync"
 	"HomegrownDB/lib/tests/assert"
@@ -37,7 +37,7 @@ func TestInsertAnalyse_SimplePositive1(t *testing.T) {
 	NodeAssert.Eq(expectedNode, queryNode, t)
 }
 
-func (insertTest) expectedSimplePositive1(users tabdef.TableRDefinition, t *testing.T) node.Query {
+func (insertTest) expectedSimplePositive1(users reldef.TableRDefinition, t *testing.T) node.Query {
 	rteIdCounter := appsync.NewSimpleCounter[node.RteID](0)
 
 	query := node.NewQuery(node.CommandTypeInsert, nil)

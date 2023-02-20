@@ -6,7 +6,7 @@ import (
 	"HomegrownDB/backend/internal/parser"
 	. "HomegrownDB/backend/internal/testinfr"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/hgtest"
 	"HomegrownDB/lib/tests/assert"
 	"testing"
@@ -41,8 +41,8 @@ func TestCreateTable_SimpleUsersTable(t *testing.T) {
 
 func (createTable) usersTableATree(t *testing.T) node.Query {
 	query := node.NewQuery(node.CommandTypeUtils, nil)
-	table := tabdef.NewTableDefinition("users")
-	err := table.AddColumn(tabdef.NewColumnDefinition(
+	table := reldef.NewTableDefinition("users")
+	err := table.AddColumn(reldef.NewColumnDefinition(
 		"username", 0, 0, hgtype.NewStr(hgtype.Args{
 			Length:   255,
 			Nullable: true,
@@ -51,7 +51,7 @@ func (createTable) usersTableATree(t *testing.T) node.Query {
 		})))
 	assert.ErrIsNil(err, t)
 
-	err = table.AddColumn(tabdef.NewColumnDefinition(
+	err = table.AddColumn(reldef.NewColumnDefinition(
 		"surname", 0, 0, hgtype.NewStr(hgtype.Args{
 			Length:   255,
 			Nullable: true,
@@ -87,8 +87,8 @@ func TestCreateTable_UsersTableWithAge(t *testing.T) {
 
 func (createTable) usersTableWithAgeATree(t *testing.T) node.Query {
 	query := node.NewQuery(node.CommandTypeUtils, nil)
-	table := tabdef.NewTableDefinition("users")
-	err := table.AddColumn(tabdef.NewColumnDefinition(
+	table := reldef.NewTableDefinition("users")
+	err := table.AddColumn(reldef.NewColumnDefinition(
 		"username", 0, 0, hgtype.NewStr(hgtype.Args{
 			Length:   255,
 			Nullable: true,
@@ -97,7 +97,7 @@ func (createTable) usersTableWithAgeATree(t *testing.T) node.Query {
 		})))
 	assert.ErrIsNil(err, t)
 
-	err = table.AddColumn(tabdef.NewColumnDefinition(
+	err = table.AddColumn(reldef.NewColumnDefinition(
 		"surname", 0, 0, hgtype.NewStr(hgtype.Args{
 			Length:   255,
 			Nullable: true,
@@ -106,7 +106,7 @@ func (createTable) usersTableWithAgeATree(t *testing.T) node.Query {
 		})))
 	assert.ErrIsNil(err, t)
 
-	err = table.AddColumn(tabdef.NewColumnDefinition(
+	err = table.AddColumn(reldef.NewColumnDefinition(
 		"age", 0, 0, hgtype.NewInt8(hgtype.Args{
 			Nullable: true,
 		})))

@@ -2,7 +2,7 @@ package table
 
 import (
 	"HomegrownDB/dbsystem/access/buffer"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
@@ -11,7 +11,7 @@ import (
 func Insert(
 	tuple page.WTuple,
 	tx tx.Tx,
-	table tabdef.TableRDefinition,
+	table reldef.TableRDefinition,
 	fsm *fsm.FSM,
 	buffer buffer.SharedBuffer,
 ) error {

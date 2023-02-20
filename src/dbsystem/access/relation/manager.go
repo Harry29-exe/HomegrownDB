@@ -6,7 +6,6 @@ import (
 	"HomegrownDB/dbsystem/access/table"
 	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
@@ -66,7 +65,7 @@ func (s *stdManager) Create(relation reldef.Relation, tx tx.Tx) (reldef.Relation
 
 	switch relation.Kind() {
 	case reldef.TypeTable:
-		return relation, s.createTableInSysTables(relation.(tabdef.TableDefinition), tx)
+		return relation, s.createTableInSysTables(relation.(reldef.TableDefinition), tx)
 	default:
 		//todo implement me
 		panic("Not implemented")
@@ -77,16 +76,16 @@ func (s *stdManager) initRelation(relation reldef.Relation) error {
 	relation.InitRel(s.OIDSequence.Next(), s.OIDSequence.Next(), s.OIDSequence.Next())
 	switch relation.Kind() {
 	case reldef.TypeTable:
-		tableDef := relation.(tabdef.TableDefinition)
+		tableDef := relation.(reldef.TableDefinition)
 		for _, col := range tableDef.Columns() {
-			(col.(tabdef.ColumnDefinition)).SetId(s.OIDSequence.Next())
+			(col.(reldef.ColumnDefinition)).SetId(s.OIDSequence.Next())
 		}
 	}
 
 	return nil
 }
 
-func (s *stdManager) createTableInSysTables(definition tabdef.TableDefinition, tx tx.Tx) error {
+func (s *stdManager) createTableInSysTables(definition reldef.TableDefinition, tx tx.Tx) error {
 	tuple, err := systable.RelationsOps.TableAsRelationsRow(definition, tx)
 	if err != nil {
 		return err

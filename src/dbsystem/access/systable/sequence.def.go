@@ -3,17 +3,17 @@ package systable
 import (
 	"HomegrownDB/dbsystem/access/systable/internal"
 	"HomegrownDB/dbsystem/hgtype"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 )
 
 var sequenceDef = createHGSequences()
 
-func SequencesTableDef() tabdef.TableRDefinition {
+func SequencesTableDef() reldef.TableRDefinition {
 	return sequenceDef
 }
 
-func createHGSequences() tabdef.TableRDefinition {
-	columns := []tabdef.ColumnDefinition{
+func createHGSequences() reldef.TableRDefinition {
+	columns := []reldef.ColumnDefinition{
 		sequencesCols.oid(),
 		sequencesCols.typeTag(),
 		sequencesCols.seqStart(),
@@ -34,7 +34,7 @@ func createHGSequences() tabdef.TableRDefinition {
 }
 
 const (
-	SequencesOrderOID tabdef.Order = iota
+	SequencesOrderOID reldef.Order = iota
 	SequencesOrderTypeTag
 	SequencesOrderSeqStart
 	SequencesOrderSeqIncrement
@@ -59,8 +59,8 @@ var sequencesCols = sequencesColBuilder{}
 
 type sequencesColBuilder struct{}
 
-func (s sequencesColBuilder) oid() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (s sequencesColBuilder) oid() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		SequencesColNameOID,
 		HGSequencesColOID,
 		SequencesOrderOID,
@@ -68,8 +68,8 @@ func (s sequencesColBuilder) oid() tabdef.ColumnDefinition {
 	)
 }
 
-func (sequencesColBuilder) typeTag() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (sequencesColBuilder) typeTag() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		SequencesColNameTypeTag,
 		HGSequencesColTypeTag,
 		SequencesOrderTypeTag,
@@ -77,8 +77,8 @@ func (sequencesColBuilder) typeTag() tabdef.ColumnDefinition {
 	)
 }
 
-func (sequencesColBuilder) seqStart() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (sequencesColBuilder) seqStart() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		SequencesColNameSeqStart,
 		HGSequencesColSeqStart,
 		SequencesOrderSeqStart,
@@ -86,8 +86,8 @@ func (sequencesColBuilder) seqStart() tabdef.ColumnDefinition {
 	)
 }
 
-func (sequencesColBuilder) seqIncrement() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (sequencesColBuilder) seqIncrement() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		SequencesColNameSeqIncrement,
 		HGSequencesColSeqIncrement,
 		SequencesOrderSeqIncrement,
@@ -95,8 +95,8 @@ func (sequencesColBuilder) seqIncrement() tabdef.ColumnDefinition {
 	)
 }
 
-func (sequencesColBuilder) seqMax() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (sequencesColBuilder) seqMax() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		SequencesColNameSeqMax,
 		HGSequencesColSeqMax,
 		SequencesOrderSeqMax,
@@ -104,8 +104,8 @@ func (sequencesColBuilder) seqMax() tabdef.ColumnDefinition {
 	)
 }
 
-func (sequencesColBuilder) seqMin() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (sequencesColBuilder) seqMin() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		SequencesColNameSeqMin,
 		HGSequencesColSeqMin,
 		SequencesOrderSeqMin,
@@ -113,8 +113,8 @@ func (sequencesColBuilder) seqMin() tabdef.ColumnDefinition {
 	)
 }
 
-func (sequencesColBuilder) seqCache() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (sequencesColBuilder) seqCache() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		SequencesColNameSeqCache,
 		HGSequencesColSeqCache,
 		SequencesOrderSeqCache,
@@ -122,8 +122,8 @@ func (sequencesColBuilder) seqCache() tabdef.ColumnDefinition {
 	)
 }
 
-func (sequencesColBuilder) seqCycle() tabdef.ColumnDefinition {
-	return tabdef.NewColumnDefinition(
+func (sequencesColBuilder) seqCycle() reldef.ColumnDefinition {
+	return reldef.NewColumnDefinition(
 		SequencesColNameSeqCycle,
 		HGSequencesColSeqCycle,
 		SequencesOrderSeqCycle,

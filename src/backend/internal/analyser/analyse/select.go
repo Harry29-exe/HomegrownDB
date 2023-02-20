@@ -4,7 +4,7 @@ import (
 	anlsr2 "HomegrownDB/backend/internal/analyser/anlctx"
 	node2 "HomegrownDB/backend/internal/node"
 	pnode2 "HomegrownDB/backend/internal/pnode"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 )
 
 var Select = _select{}
@@ -55,7 +55,7 @@ func (s _select) analyseValuesSelect(stmt pnode2.SelectStmt, currentCtx anlsr2.Q
 	query.RTables = append(query.RTables, rte)
 	query.TargetList = make([]node2.TargetEntry, len(rte.ColTypes))
 	for col := 0; col < len(rte.ColTypes); col++ {
-		colRef := node2.NewVar(rte.Id, tabdef.Order(col), rte.ColTypes[col])
+		colRef := node2.NewVar(rte.Id, reldef.Order(col), rte.ColTypes[col])
 		query.TargetList[col] = node2.NewTargetEntry(colRef, node2.AttribNo(col), "")
 	}
 

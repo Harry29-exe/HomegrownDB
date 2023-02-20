@@ -1,7 +1,7 @@
 package main
 
 import (
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/reldef/tabdef/column"
 	"HomegrownDB/dbsystem/reldef/tabdef/column/ctypes"
 	"HomegrownDB/dbsystem/reldef/tabdef/column/factory"
@@ -30,7 +30,7 @@ func main() {
 }
 
 func testTuplePrint() {
-	tableDef := tabdef.NewTableDefinition("ttable1")
+	tableDef := reldef.NewTableDefinition("ttable1")
 	tableDef.SetOID(231)
 	tableDef.SetOID(4352)
 

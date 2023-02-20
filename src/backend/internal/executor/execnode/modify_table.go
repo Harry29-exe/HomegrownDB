@@ -7,7 +7,7 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/intype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/tx"
@@ -49,7 +49,7 @@ type ModifyTable struct {
 
 	txCtx       tx.Tx
 	buff        buffer.SharedBuffer
-	resultTable tabdef.TableRDefinition
+	resultTable reldef.TableRDefinition
 	fsm         *fsm.FSM
 	done        bool
 }

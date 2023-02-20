@@ -2,7 +2,6 @@ package fsm
 
 import (
 	"HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef"
 )
 
 // todo thought if this should be deleted as fsm generaly don't need to be locked
@@ -10,7 +9,7 @@ type Store interface {
 	Register(fsm *FSM)
 
 	GetFSM(fsmId reldef.OID) *FSM
-	DeleteFSM(id tabdef.Id)
+	DeleteFSM(id reldef.OID)
 }
 
 func NewStore() Store {
@@ -29,11 +28,11 @@ func (s StdStore) Register(fsm *FSM) {
 	s.fsmMap[fsm.fsmOID] = fsm
 }
 
-func (s StdStore) GetFSM(fsmId tabdef.Id) *FSM {
+func (s StdStore) GetFSM(fsmId reldef.OID) *FSM {
 	return s.fsmMap[fsmId]
 }
 
-func (s StdStore) DeleteFSM(id tabdef.Id) {
+func (s StdStore) DeleteFSM(id reldef.OID) {
 	//TODO implement me
 	panic("implement me")
 }

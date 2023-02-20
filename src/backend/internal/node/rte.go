@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"fmt"
 )
 
@@ -40,7 +40,7 @@ func (k rteKind) ToString() string {
 	}[k]
 }
 
-func NewRelationRTE(rteID RteID, ref tabdef.TableRDefinition) RangeTableEntry {
+func NewRelationRTE(rteID RteID, ref reldef.TableRDefinition) RangeTableEntry {
 	return &rangeTableEntry{
 		node:    node{tag: TagRTE},
 		Kind:    RteRelation,
@@ -84,8 +84,8 @@ type rangeTableEntry struct {
 
 	// Kind = RteRelation
 	LockMode relation.LockMode
-	TableId  tabdef.Id
-	Ref      tabdef.TableRDefinition
+	TableId  reldef.OID
+	Ref      reldef.TableRDefinition
 
 	// Kind = RteSubQuery
 	Subquery *query
@@ -93,8 +93,8 @@ type rangeTableEntry struct {
 	//Kind = RteJoin
 	JoinType     JoinType
 	ResultCols   []Var          // list of columns in result tuples
-	LeftColumns  []tabdef.Order // columns
-	RightColumns []tabdef.Order
+	LeftColumns  []reldef.Order // columns
+	RightColumns []reldef.Order
 
 	//Kind = RteValues
 	ValuesList [][]Expr // list of expression node lists
@@ -114,7 +114,7 @@ func (r RangeTableEntry) CreateRef() RangeTableRef {
 	}
 }
 
-func (r RangeTableEntry) CreateVarTargetEntry(col tabdef.Order, attribNo AttribNo, colName string) TargetEntry {
+func (r RangeTableEntry) CreateVarTargetEntry(col reldef.Order, attribNo AttribNo, colName string) TargetEntry {
 	return NewTargetEntry(NewVar(r.Id, col, r.ColTypes[col]), attribNo, colName)
 }
 

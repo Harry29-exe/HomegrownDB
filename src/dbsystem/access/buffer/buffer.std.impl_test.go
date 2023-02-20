@@ -4,7 +4,7 @@ import (
 	. "HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/hg"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/page"
 	"HomegrownDB/dbsystem/storage/pageio"
@@ -211,7 +211,7 @@ type usersTCtx struct {
 	hgtest.TestDBUtils
 	testBuffer StdBuffer
 
-	table tabdef.TableDefinition
+	table reldef.TableDefinition
 
 	tableIO pageio.IO
 }

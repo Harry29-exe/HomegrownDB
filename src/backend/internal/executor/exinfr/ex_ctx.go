@@ -6,7 +6,6 @@ import (
 	"HomegrownDB/dbsystem/access/relation"
 	"HomegrownDB/dbsystem/hg"
 	"HomegrownDB/dbsystem/reldef"
-	"HomegrownDB/dbsystem/reldef/tabdef"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/tx"
 )
@@ -30,10 +29,10 @@ func NewExCtx(
 	}
 }
 
-type tableCache = map[tabdef.Id]tabdef.TableRDefinition
+type tableCache = map[reldef.OID]reldef.TableRDefinition
 
 func createCache(rteList []node.RangeTableEntry, store relation.Manager) (tableCache, map[node.RteID]node.RangeTableEntry) {
-	cache := map[tabdef.Id]tabdef.TableRDefinition{}
+	cache := map[reldef.OID]reldef.TableRDefinition{}
 	rteMap := map[node.RteID]node.RangeTableEntry{}
 	for _, rte := range rteList {
 		if rte.Kind == node.RteRelation {
@@ -41,7 +40,7 @@ func createCache(rteList []node.RangeTableEntry, store relation.Manager) (tableC
 			if rel.Kind() != reldef.TypeTable {
 				panic("illegal type")
 			}
-			tableDef := rel.(tabdef.TableRDefinition)
+			tableDef := rel.(reldef.TableRDefinition)
 			cache[rte.TableId] = tableDef
 			rte.Ref = tableDef
 		}

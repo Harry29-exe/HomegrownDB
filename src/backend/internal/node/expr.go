@@ -4,7 +4,7 @@ import (
 	"HomegrownDB/dbsystem/hgtype"
 	"HomegrownDB/dbsystem/hgtype/intype"
 	"HomegrownDB/dbsystem/hgtype/rawtype"
-	"HomegrownDB/dbsystem/reldef/tabdef"
+	"HomegrownDB/dbsystem/reldef"
 	"fmt"
 )
 
@@ -32,7 +32,7 @@ func (e expr) ExprTag() Tag {
 //      Var
 // -------------------------
 
-func NewVar(id RteID, colOrder tabdef.Order, typeData hgtype.ColType) Var {
+func NewVar(id RteID, colOrder reldef.Order, typeData hgtype.ColType) Var {
 	return &_var{
 		expr:     newExpr(TagVar),
 		RteID:    id,
@@ -48,7 +48,7 @@ type Var = *_var
 type _var struct {
 	expr
 	RteID    RteID
-	ColOrder tabdef.Order
+	ColOrder reldef.Order
 	TypeData hgtype.ColType
 }
 
