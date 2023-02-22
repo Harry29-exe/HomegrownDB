@@ -20,7 +20,7 @@ func createHGSequences() reldef.TableRDefinition {
 		sequencesCols.seqIncrement(),
 		sequencesCols.seqMax(),
 		sequencesCols.seqMin(),
-		sequencesCols.seqCache(),
+		sequencesCols.seqCacheSize(),
 		sequencesCols.seqCycle(),
 	}
 
@@ -40,7 +40,7 @@ const (
 	SequencesOrderSeqIncrement
 	SequencesOrderSeqMax
 	SequencesOrderSeqMin
-	SequencesOrderSeqCache
+	SequencesOrderSeqCacheSize
 	SequencesOrderSeqCycle
 )
 
@@ -51,7 +51,7 @@ const (
 	SequencesColNameSeqIncrement = "seq_increment"
 	SequencesColNameSeqMax       = "seq_max"
 	SequencesColNameSeqMin       = "seq_min"
-	SequencesColNameSeqCache     = "seq_cache"
+	SequencesColNameSeqCacheSize = "seq_cache_size"
 	SequencesColNameSeqCycle     = "seq_cycle"
 )
 
@@ -113,11 +113,13 @@ func (sequencesColBuilder) seqMin() reldef.ColumnDefinition {
 	)
 }
 
-func (sequencesColBuilder) seqCache() reldef.ColumnDefinition {
+// seqCacheSize is not used at this moment, it was created as
+// postgresql has this but for simplicity is not used for now
+func (sequencesColBuilder) seqCacheSize() reldef.ColumnDefinition {
 	return reldef.NewColumnDefinition(
-		SequencesColNameSeqCache,
-		HGSequencesColSeqCache,
-		SequencesOrderSeqCache,
+		SequencesColNameSeqCacheSize,
+		HGSequencesColSeqCacheSize,
+		SequencesOrderSeqCacheSize,
 		hgtype.NewInt8(hgtype.Args{Nullable: false}),
 	)
 }

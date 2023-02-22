@@ -22,7 +22,7 @@ type bufferProxy struct {
 
 var _ SharedBuffer = &bufferProxy{}
 
-func (b *bufferProxy) RTablePage(table reldef.TableRDefinition, pageId page.Id) (page.RPage, error) {
+func (b *bufferProxy) RTablePage(table reldef.TableRDefinition, pageId page.Id) (page.TableRPage, error) {
 	rPage, err := b.buffer.ReadRPage(table.OID(), pageId, RbmRead)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (b *bufferProxy) RTablePage(table reldef.TableRDefinition, pageId page.Id) 
 	return page.AsTablePage(rPage.Bytes, pageId, table), nil
 }
 
-func (b *bufferProxy) WTablePage(table reldef.TableRDefinition, pageId page.Id) (page.WPage, error) {
+func (b *bufferProxy) WTablePage(table reldef.TableRDefinition, pageId page.Id) (page.TablePage, error) {
 	wPage, err := b.buffer.ReadWPage(table.OID(), pageId, RbmReadOrCreate)
 	if err != nil {
 		return nil, err
@@ -57,11 +57,19 @@ func (b *bufferProxy) WFsmPage(ownerID hglib.OID, pageId page.Id) (fsmpage.Page,
 	if err != nil {
 		return fsmpage.Page{}, err
 	} else if wPage.IsNew {
-		for i := 0; i < int(pageSize); i++ {
+		for i := 0; i < int(page.Size); i++ {
 			wPage.Bytes[i] = 0
 		}
 	}
 	return fsmpage.Page{Bytes: wPage.Bytes}, nil
+}
+
+func (b *bufferProxy) SeqPage(seqOID reldef.OID) (page.SequencePage, error) {
+	wPage, err := b.buffer.ReadWPage(seqOID, 0, RbmReadOrCreate)
+	if err != nil {
+		return page.SequencePage{}, err
+	}
+	return page.AsSequencePage(seqOID, wPage.Bytes), nil
 }
 
 func (b *bufferProxy) WPageRelease(tag page.PageTag) {

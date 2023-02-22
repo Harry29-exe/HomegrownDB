@@ -11,11 +11,11 @@ func newPageCache(fs dbfs.FS, tables ...reldef.TableRDefinition) *pageCache {
 	cache := pageCache{
 		fs:     fs,
 		tables: map[hglib.OID]reldef.TableRDefinition{},
-		cache:  map[hglib.OID][]page.WPage{},
+		cache:  map[hglib.OID][]page.TablePage{},
 	}
 	for _, table := range tables {
 		cache.tables[table.OID()] = table
-		cache.cache[table.OID()] = []page.WPage{}
+		cache.cache[table.OID()] = []page.TablePage{}
 	}
 	return &cache
 }
@@ -23,7 +23,7 @@ func newPageCache(fs dbfs.FS, tables ...reldef.TableRDefinition) *pageCache {
 type pageCache struct {
 	fs     dbfs.FS
 	tables map[hglib.OID]reldef.TableRDefinition
-	cache  map[hglib.OID][]page.WPage
+	cache  map[hglib.OID][]page.TablePage
 }
 
 func (c *pageCache) insert(oid hglib.OID, tuple page.WTuple) error {

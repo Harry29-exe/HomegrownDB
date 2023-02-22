@@ -18,6 +18,8 @@ type StdBuffer interface {
 // rbm  read buffer mode
 type rbm = uint8
 
+type slotIndex = uint
+
 const (
 	// RbmReadOrCreate if page exist in buffer or in disc read it,
 	// otherwise create page filled with zero in buffer

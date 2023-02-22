@@ -52,6 +52,6 @@ const (
 	HGSequencesColSeqIncrement
 	HGSequencesColSeqMax
 	HGSequencesColSeqMin
-	HGSequencesColSeqCache
+	HGSequencesColSeqCacheSize
 	HGSequencesColSeqCycle
 )

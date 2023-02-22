@@ -9,6 +9,7 @@ import (
 type SharedBuffer interface {
 	TableBuffer
 	FsmBuffer
+	SequenceBuffer
 
 	WPageRelease(tag page.PageTag)
 	RPageRelease(tag page.PageTag)
@@ -16,8 +17,8 @@ type SharedBuffer interface {
 }
 
 type TableBuffer interface {
-	RTablePage(table reldef.TableRDefinition, pageId page.Id) (page.RPage, error)
-	WTablePage(table reldef.TableRDefinition, pageId page.Id) (page.WPage, error)
+	RTablePage(table reldef.TableRDefinition, pageId page.Id) (page.TableRPage, error)
+	WTablePage(table reldef.TableRDefinition, pageId page.Id) (page.TablePage, error)
 }
 
 type FsmBuffer interface {
@@ -25,12 +26,8 @@ type FsmBuffer interface {
 	WFsmPage(ownerID reldef.OID, pageId page.Id) (fsmpage.Page, error)
 }
 
-const NewPage page.Id = page.InvalidId
-
-type TableSrc interface {
-	Table(id reldef.OID) reldef.TableRDefinition
+type SequenceBuffer interface {
+	SeqPage(seqOID reldef.OID) (page.SequencePage, error)
 }
 
-type slotIndex = uint
-
-var pageSize = int64(page.Size)
+const NewPage page.Id = page.InvalidId

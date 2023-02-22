@@ -58,7 +58,7 @@ func (t *TUtils) FillPages(pagesToFill int, tableIO pageio.IO) {
 	}
 }
 
-func (t *TUtils) PutRandomTupleToPage(tupleCount int, tablePage page.WPage) []page.Tuple {
+func (t *TUtils) PutRandomTupleToPage(tupleCount int, tablePage page.TablePage) []page.Tuple {
 	tuples := make([]page.Tuple, tupleCount)
 	for i := 0; i < tupleCount; i++ {
 		tuple := t.RandTuple()
