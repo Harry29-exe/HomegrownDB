@@ -3,20 +3,8 @@ package hg
 import (
 	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/config"
-	"HomegrownDB/dbsystem/hg/internal/creator"
 	"HomegrownDB/dbsystem/storage"
 )
-
-type CreateArgs = creator.Props
-
-const (
-	CreatorModeDBInitializer creator.Mode = creator.DBInstaller
-	CreatorModeTest          creator.Mode = creator.Test
-)
-
-func Create(args CreateArgs) error {
-	return creator.CreateDB(args)
-}
 
 // Load create DB object with provided FutureContainer, if fc is nil then Load
 // will create default

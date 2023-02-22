@@ -6,8 +6,8 @@ import (
 )
 
 func Install(rootPath string) error {
-	err := hg.Create(hg.CreateArgs{
-		Mode:     hg.CreatorModeDBInitializer,
+	err := hg.CreateDB(hg.CreateArgs{
+		Mode:     hg.InstallerModeDB,
 		RootPath: rootPath,
 	})
 

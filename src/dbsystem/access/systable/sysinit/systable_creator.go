@@ -1,38 +1,12 @@
-package creator
+package sysinit
 
 import (
-	"HomegrownDB/dbsystem/access/systable"
 	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/storage/dbfs"
 	"HomegrownDB/dbsystem/storage/fsm"
 	"HomegrownDB/dbsystem/storage/page"
-	"HomegrownDB/dbsystem/tx"
 	"log"
 )
-
-func createSysTables(fs dbfs.FS) error {
-	creator := sysTablesCreator{FS: fs}
-	relationsTable := systable.RelationsTableDef()
-	columnsTable := systable.ColumnsTableDef()
-	creator.cache = newPageCache(creator.FS, relationsTable, columnsTable)
-
-	creatorTX := tx.StdTx{Id: 0}
-	return creator.
-		createTable(systable.HGRelationsOID, systable.HGRelationsFsmOID, systable.HGRelationsVmOID).
-		createTable(systable.HGColumnsOID, systable.HGColumnsFsmOID, systable.HGColumnsVmOID).
-		insertTuples(relationsTable.OID(),
-			panicOnErr(systable.RelationsOps.TableAsRelationsRow(relationsTable, creatorTX)),
-			panicOnErr(systable.RelationsOps.TableAsRelationsRow(columnsTable, creatorTX)),
-		).
-		insertTuples(systable.HGColumnsOID,
-			systable.ColumnsOps.DataToRows(systable.HGRelationsOID, relationsTable.Columns(), creatorTX)...,
-		).
-		insertTuples(systable.HGColumnsOID,
-			systable.ColumnsOps.DataToRows(systable.HGColumnsOID, columnsTable.Columns(), creatorTX)...,
-		).
-		flushPages().
-		getError()
-}
 
 type sysTablesCreator struct {
 	FS    dbfs.FS
@@ -74,6 +48,13 @@ func (c *sysTablesCreator) insertTuples(tableOID hglib.OID, tuples ...page.WTupl
 		if err != nil {
 			return c.error(err)
 		}
+	}
+	return c
+}
+
+func (c *sysTablesCreator) insertTuplesArr(tableOID hglib.OID, tuples ...[]page.WTuple) *sysTablesCreator {
+	for _, tupleArray := range tuples {
+		c.insertTuples(tableOID, tupleArray...)
 	}
 	return c
 }

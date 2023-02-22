@@ -1,4 +1,4 @@
-package creator
+package sysinit
 
 import (
 	"HomegrownDB/dbsystem/hglib"

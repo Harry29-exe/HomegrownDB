@@ -218,7 +218,7 @@ type usersTCtx struct {
 
 func bootstrapTCtx_Users(provider func(storageModule storage.Module, configModule config.Module) (SharedBuffer, error), t *testing.T) *usersTCtx {
 	rootPath := hgtest.TestRootPath(t)
-	err := hg.Create(hg.CreateArgs{Mode: hg.CreatorModeTest, RootPath: rootPath})
+	err := hg.CreateDB(hg.CreateArgs{Mode: hg.InstallerModeTest, RootPath: rootPath})
 	assert.ErrIsNil(err, t)
 
 	container := hg.DefaultMBuilders()

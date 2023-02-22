@@ -1,13 +1,14 @@
-package creator
+package hg
 
 import (
+	"HomegrownDB/dbsystem/access/systable/sysinit"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/dbfs"
 )
 
-func CreateDB(props Props) error {
-	ctx := creatorCtx{Props: props}
+func CreateDB(args CreateArgs) error {
+	ctx := creatorCtx{Props: args}
 	ctx.initRootPath().
 		initConfigurationAndProperties().
 		initDBFilesystem()
@@ -15,7 +16,7 @@ func CreateDB(props Props) error {
 		return ctx.err
 	}
 
-	err := createSysTables(ctx.FS)
+	err := sysinit.CreateSysTables(ctx.FS)
 	if err != nil {
 		return err
 	}
@@ -23,17 +24,17 @@ func CreateDB(props Props) error {
 }
 
 // -------------------------
-//      Props
+//      CreateArgs
 // -------------------------
 
 type Mode uint8
 
 const (
-	DBInstaller Mode = iota
-	Test
+	InstallerModeDB Mode = iota
+	InstallerModeTest
 )
 
-type Props struct {
+type CreateArgs struct {
 	Mode     Mode
 	RootPath string // RootPath path where db will be initialized (nullable)
 	Config   config.Configuration
@@ -45,7 +46,7 @@ type Props struct {
 // -------------------------
 
 type creatorCtx struct {
-	Props Props
+	Props CreateArgs
 
 	RootPath string
 	Config   config.Configuration
@@ -98,11 +99,11 @@ func (c *creatorCtx) initDBFilesystem() *creatorCtx {
 }
 
 func (c *creatorCtx) modeEqTest() bool {
-	return c.Props.Mode == Test
+	return c.Props.Mode == InstallerModeTest
 }
 
 func (c *creatorCtx) modeEqDBInstaller() bool {
-	return c.Props.Mode == DBInstaller
+	return c.Props.Mode == InstallerModeDB
 }
 
 func (c *creatorCtx) error(err error) *creatorCtx {
