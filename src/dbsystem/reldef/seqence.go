@@ -24,6 +24,28 @@ type RSequenceDef interface {
 	SeqCycle() bool
 }
 
+func NewSequenceDef(
+	relation Relation,
+	typeTag rawtype.Tag,
+	seqStart int64,
+	seqIncrement int64,
+	seqMax int64,
+	seqMin int64,
+	seqCacheSize int64,
+	seqCycle bool,
+) SequenceDef {
+	return &Sequence{
+		Relation:     relation,
+		typeTag:      typeTag,
+		seqStart:     seqStart,
+		seqIncrement: seqIncrement,
+		seqMax:       seqMax,
+		seqMin:       seqMin,
+		seqCacheSize: seqCacheSize,
+		seqCycle:     seqCycle,
+	}
+}
+
 type Sequence struct {
 	Relation
 	typeTag      rawtype.Tag
