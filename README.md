@@ -3,6 +3,7 @@
 ## Used Sources
 ### Main DB sources
 - base tutorial https://cstack.github.io/db_tutorial/
+- base in deept explanation on how postgres works: https://www.interdb.jp/pg/
 - how db works long article http://coding-geek.com/how-databases-work/
 - SQLite docs https://www.sqlite.org/arch.html
 - SQLite vde https://www.sqlite.org/vdbe.html
