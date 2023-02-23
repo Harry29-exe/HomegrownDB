@@ -2,12 +2,13 @@ package starter
 
 import (
 	"HomegrownDB/dbsystem/hg"
+	"HomegrownDB/dbsystem/hglib"
 	"os"
 )
 
 func Install(rootPath string) error {
-	err := hg.CreateDB(hg.CreateArgs{
-		Mode:     hg.InstallerModeDB,
+	err := hg.CreateDB(hglib.ModuleInstallerArgs{
+		Mode:     hglib.InstallerModeDB,
 		RootPath: rootPath,
 	})
 

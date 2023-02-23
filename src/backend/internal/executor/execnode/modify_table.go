@@ -95,7 +95,7 @@ func (m *ModifyTable) Init(plan node.Plan) error {
 	return nil
 }
 
-func (m *ModifyTable) Shutdown() error {
+func (m *ModifyTable) Close() error {
 	// // ModifyTable does not need to be closed
 	return nil
 }

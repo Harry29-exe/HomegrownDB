@@ -7,18 +7,15 @@ import (
 
 type Module interface {
 	Config() *Configuration
-	Props() DBProperties
 }
 
 type ModuleBuilder struct {
-	ConfigProvider    func(fs dbfs.FS) (*Configuration, error)
-	PropertiesProvide func(fs dbfs.FS) (DBProperties, error)
+	ConfigProvider func(fs dbfs.FS) (*Configuration, error)
 }
 
 func DefaultBuilder() ModuleBuilder {
 	return ModuleBuilder{
-		ConfigProvider:    ConfigProvider,
-		PropertiesProvide: PropertiesProvider,
+		ConfigProvider: ConfigProvider,
 	}
 }
 
@@ -33,10 +30,6 @@ func NewModule(builder ModuleBuilder, deps ModuleDeps) (Module, error) {
 	if err != nil {
 		return nil, err
 	}
-	module.props, err = builder.PropertiesProvide(deps.StorageModule.FS())
-	if err != nil {
-		return nil, err
-	}
 
 	return module, nil
 }
@@ -47,13 +40,8 @@ func NewModule(builder ModuleBuilder, deps ModuleDeps) (Module, error) {
 
 type stdModule struct {
 	config *Configuration
-	props  DBProperties
 }
 
 func (s *stdModule) Config() *Configuration {
 	return s.config
-}
-
-func (s *stdModule) Props() DBProperties {
-	return s.props
 }

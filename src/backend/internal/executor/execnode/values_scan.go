@@ -64,7 +64,7 @@ func (v *ValuesScan) Init(plan node.Plan) error {
 	panic("implement me")
 }
 
-func (v *ValuesScan) Shutdown() error {
+func (v *ValuesScan) Close() error {
 	//TODO implement me
 	panic("implement me")
 }

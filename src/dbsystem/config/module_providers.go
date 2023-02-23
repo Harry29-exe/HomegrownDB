@@ -9,7 +9,3 @@ func ConfigProvider(fs dbfs.FS) (*Configuration, error) {
 	}
 	return DeserializeConfig(data)
 }
-
-func PropertiesProvider(fs dbfs.FS) (DBProperties, error) {
-	return ReadInitProperties(fs)
-}

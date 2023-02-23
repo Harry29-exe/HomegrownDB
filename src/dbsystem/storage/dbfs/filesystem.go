@@ -24,7 +24,7 @@ type PropertiesFS interface {
 
 type DBInitializerFS interface {
 	InitDBSystemDirs() error
-	InitDBSystemConfigAndProps(configData []byte, propertiesData []byte) error
+	InitDBSystemConfig(configData []byte) error
 
 	DestroyDB() error
 }
@@ -109,15 +109,12 @@ func (fs *StdFS) InitDBSystemDirs() error {
 	return nil
 }
 
-func (fs *StdFS) InitDBSystemConfigAndProps(configData []byte, propertiesData []byte) error {
+func (fs *StdFS) InitDBSystemConfig(configData []byte) error {
 	err := fs.createFile(Path(fs.RootPath, ConfigFilename), configData)
 	if err != nil {
 		return err
 	}
-	err = fs.createFile(Path(fs.RootPath, PropertiesFilename), propertiesData)
-	if err != nil {
-		return err
-	}
+
 	return nil
 }
 

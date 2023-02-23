@@ -2,6 +2,7 @@ package hgtest
 
 import (
 	"HomegrownDB/dbsystem/hg"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/tx"
 	"HomegrownDB/lib/tests/assert"
 	"HomegrownDB/lib/tests/tutils/testtable/tt_user"
@@ -18,7 +19,7 @@ type TestDBBuilder struct {
 
 func CreateAndLoadDBWith(builders *hg.MBuilders, t *testing.T) *TestDBBuilder {
 	rootPath := TestRootPath(t)
-	err := hg.CreateDB(hg.CreateArgs{Mode: hg.InstallerModeTest, RootPath: rootPath})
+	err := hg.CreateDB(hglib.ModuleInstallerArgs{Mode: hglib.InstallerModeTest, RootPath: rootPath})
 	assert.ErrIsNil(err, t)
 
 	if builders == nil {

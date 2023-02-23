@@ -80,7 +80,7 @@ func (s *SeqScan) Init(plan node.Plan) error {
 	panic("implement me")
 }
 
-func (s *SeqScan) Shutdown() error {
+func (s *SeqScan) Close() error {
 	//TODO implement me
 	panic("implement me")
 }

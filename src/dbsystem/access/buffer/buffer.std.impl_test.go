@@ -4,6 +4,7 @@ import (
 	. "HomegrownDB/dbsystem/access/buffer"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/hg"
+	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/reldef"
 	"HomegrownDB/dbsystem/storage"
 	"HomegrownDB/dbsystem/storage/page"
@@ -218,7 +219,7 @@ type usersTCtx struct {
 
 func bootstrapTCtx_Users(provider func(storageModule storage.Module, configModule config.Module) (SharedBuffer, error), t *testing.T) *usersTCtx {
 	rootPath := hgtest.TestRootPath(t)
-	err := hg.CreateDB(hg.CreateArgs{Mode: hg.InstallerModeTest, RootPath: rootPath})
+	err := hg.CreateDB(hglib.ModuleInstallerArgs{Mode: hglib.InstallerModeTest, RootPath: rootPath})
 	assert.ErrIsNil(err, t)
 
 	container := hg.DefaultMBuilders()

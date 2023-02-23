@@ -22,8 +22,8 @@ type Configuration struct {
 	SharedBufferSize uint
 }
 
-func DefaultConfiguration(rootPath string) Configuration {
-	return Configuration{
+func DefaultConfiguration(rootPath string) *Configuration {
+	return &Configuration{
 		DBHomePath:       rootPath,
 		SharedBufferSize: 10_000,
 	}
