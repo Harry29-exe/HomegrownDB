@@ -22,5 +22,8 @@ func InstallModule(args hglib.ModuleInstallerArgs) (Module, error) {
 		return nil, err
 	}
 
-	return NewModule(DefaultModuleBuilder())
+	modBuilder := DefaultModuleBuilder()
+	modBuilder.RootPathProvider = func() (string, error) { return args.RootPath, nil }
+
+	return NewModule(modBuilder)
 }
