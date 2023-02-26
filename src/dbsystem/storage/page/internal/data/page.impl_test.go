@@ -13,7 +13,7 @@ import (
 )
 
 func TestCreateEmptyPage(t *testing.T) {
-	tableDef := reldef.NewTableDefinition(
+	tableDef := reldef.CreateTableDefinition(
 		"test_table")
 	tableDef.SetOID(32)
 	tableDef.SetOID(12)

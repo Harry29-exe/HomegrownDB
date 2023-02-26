@@ -21,7 +21,7 @@ type Module interface {
 type ModuleBuilder struct {
 	SharedBufferProvider   func(storageModule storage.Module, configModule config.Module) (buffer.SharedBuffer, error)
 	OIDSequenceProvider    func(module config.Module) (sequence.Sequence[reldef.OID], error)
-	RelationMangerProvider func(module storage.Module, buff buffer.SharedBuffer, sequence relation.OIDSequence) (relation.Manager, error)
+	RelationMangerProvider func(module storage.Module, buff buffer.SharedBuffer) (relation.Manager, error)
 	TxManagerProvider      func(configModule config.Module, buffer buffer.SharedBuffer) (transaction.Manager, error)
 }
 
@@ -29,7 +29,6 @@ func DefaultModuleBuilder() ModuleBuilder {
 	return ModuleBuilder{
 		SharedBufferProvider:   SharedBufferProvider,
 		RelationMangerProvider: RelationManagerProvider,
-		OIDSequenceProvider:    OIDSequenceProvider,
 		TxManagerProvider:      TxManagerProvider,
 	}
 }
@@ -48,12 +47,7 @@ func NewModule(builder ModuleBuilder, deps ModuleDeps) (Module, error) {
 		return nil, err
 	}
 
-	module.oidSequence, err = builder.OIDSequenceProvider(deps.ConfigModule)
-	if err != nil {
-		return nil, err
-	}
-
-	module.relationManager, err = builder.RelationMangerProvider(deps.StorageModule, module.sharedBuffer, module.oidSequence)
+	module.relationManager, err = builder.RelationMangerProvider(deps.StorageModule, module.sharedBuffer)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +63,6 @@ func NewModule(builder ModuleBuilder, deps ModuleDeps) (Module, error) {
 
 type stdModule struct {
 	sharedBuffer    buffer.SharedBuffer
-	oidSequence     relation.OIDSequence
 	relationManager relation.Manager
 	txManager       transaction.Manager
 }

@@ -13,14 +13,14 @@ type Builder struct {
 }
 
 func NewTestTableBuilder(name string) *Builder {
-	return &Builder{table: reldef.NewTableDefinition(name)}
+	return &Builder{table: reldef.CreateTableDefinition(name)}
 }
 
 func (ttb *Builder) AddColumn(name string, nullable bool, typeData hgtype.ColumnType) *Builder {
 	col := reldef.NewColumnDefinition(name, ttb.NextOID, ttb.NexColtOrder, typeData)
 	ttb.NextOID++
 	ttb.NexColtOrder++
-	if err := ttb.table.AddColumn(col); err != nil {
+	if err := ttb.table.AddNewColumn(col); err != nil {
 		panic("could not add column to tabdef during tests")
 	}
 

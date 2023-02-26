@@ -11,12 +11,12 @@ import (
 
 func TestRelationsOps_SerializeDeserialize(t *testing.T) {
 	// given
-	oldTable := reldef.NewTableDefinition("super_table")
+	oldTable := reldef.CreateTableDefinition("super_table")
 	oldTable.InitRel(56, 58, 66)
-	err := oldTable.AddColumn(reldef.NewColumnDefinition(
+	err := oldTable.AddNewColumn(reldef.NewColumnDefinition(
 		"col1", 67, 0, hgtype.NewInt8(hgtype.Args{Nullable: true})))
 	assert.ErrIsNil(err, t)
-	err = oldTable.AddColumn(reldef.NewColumnDefinition(
+	err = oldTable.AddNewColumn(reldef.NewColumnDefinition(
 		"col2", 69, 1, hgtype.NewStr(hgtype.Args{UTF8: true, VarLen: true})))
 	assert.ErrIsNil(err, t)
 
@@ -30,12 +30,13 @@ func TestRelationsOps_SerializeDeserialize(t *testing.T) {
 	assert.ErrIsNil(err, t)
 	columnTuples := ColumnsOps.DataToRows(oldTable.OID(), oldTable.Columns(), currentTx)
 
-	newTable := RelationsOps.RowAsData(tableTuple).(reldef.TableDefinition)
-	for _, colTuple := range columnTuples {
-		colDef := ColumnsOps.RowToData(colTuple)
-		err = newTable.AddColumn(colDef)
-		assert.ErrIsNil(err, t)
+	tableRel := RelationsOps.RowAsData(tableTuple)
+	columns := make([]reldef.ColumnDefinition, len(columnTuples))
+	for i, colTuple := range columnTuples {
+		columns[i] = ColumnsOps.RowToData(colTuple)
 	}
+	newTable, err := reldef.NewTableDefinition(tableRel, columns)
+	assert.ErrIsNil(err, t)
 
 	// then
 	assert.True(reflect.DeepEqual(oldTable, newTable), t)

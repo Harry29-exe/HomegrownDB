@@ -65,7 +65,7 @@ func (f FutureSequence) OID() reldef.OID {
 	return f.oid
 }
 
-func (f FutureSequence) Init(relation reldef.Relation) reldef.SequenceDef {
+func (f FutureSequence) Init(relation reldef.BaseRelation) reldef.SequenceDef {
 	return reldef.NewSequenceDef(
 		relation,
 		f.typeTag,

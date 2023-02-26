@@ -35,22 +35,22 @@ func (c *cache) Get(oid reldef.OID) reldef.Relation {
 func (c *cache) Reload(buffer buffer.SharedBuffer) error {
 	loader := newLoaderCache(buffer)
 
-	if err := loader.loadRelations(); err != nil {
-		return err
-	} else if err = loader.loadColumns(); err != nil {
+	if err := loader.load(); err != nil {
 		return err
 	}
 
 	c.relations = map[reldef.OID]reldef.Relation{}
-	return c.initSpecific(loader)
+	return c.load(loader)
 }
 
-func (c *cache) initSpecific(loader *loaderCache) error {
+func (c *cache) load(loader *loaderCache) error {
 	var err error
 	for _, relation := range loader.relations {
 		switch relation.Kind() {
 		case reldef.TypeTable:
-			err = c.initTable(relation.(reldef.TableDefinition), loader)
+			err = c.loadTable(relation, loader)
+		case reldef.TypeSequence:
+			err = c.loadSequence(relation, loader)
 		default:
 			//todo implement me
 			panic("Not implemented")
@@ -63,13 +63,11 @@ func (c *cache) initSpecific(loader *loaderCache) error {
 	return nil
 }
 
-func (c *cache) initTable(table reldef.TableDefinition, loader *loaderCache) error {
-	tableCols := loader.columns[table.OID()]
-	for _, col := range tableCols {
-		err := table.AddColumn(col)
-		if err != nil {
-			return err
-		}
+func (c *cache) loadTable(tableRel reldef.BaseRelation, loader *loaderCache) error {
+	tableCols := loader.columns[tableRel.OID()]
+	table, err := reldef.NewTableDefinition(tableRel, tableCols)
+	if err != nil {
+		return err
 	}
 
 	if _, ok := c.relations[table.OID()]; ok {
@@ -79,6 +77,21 @@ func (c *cache) initTable(table reldef.TableDefinition, loader *loaderCache) err
 	return nil
 }
 
+func (c *cache) loadSequence(seqRel reldef.BaseRelation, loader *loaderCache) error {
+	futureSeq := loader.sequences[seqRel.ID]
+	sequence := futureSeq.Init(seqRel)
+
+	if _, ok := c.relations[sequence.OID()]; ok {
+		log.Panicf("loaded sequence with duplicated oids")
+	}
+	c.relations[sequence.OID()] = sequence
+	return nil
+}
+
+// -------------------------
+//      errors
+// -------------------------
+
 var canNotReadPageErr = canNotReadPage{}
 
 type canNotReadPage struct {
@@ -87,4 +100,9 @@ type canNotReadPage struct {
 
 func (c canNotReadPage) Error() string {
 	return fmt.Sprintf("can not read page becouse: %s", c.Cause.Error())
+}
+
+func (c canNotReadPage) Is(err error) bool {
+	_, ok := err.(canNotReadPage)
+	return ok
 }

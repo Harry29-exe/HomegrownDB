@@ -25,7 +25,7 @@ type RSequenceDef interface {
 }
 
 func NewSequenceDef(
-	relation Relation,
+	relation BaseRelation,
 	typeTag rawtype.Tag,
 	seqStart int64,
 	seqIncrement int64,
@@ -35,7 +35,7 @@ func NewSequenceDef(
 	seqCycle bool,
 ) SequenceDef {
 	return &Sequence{
-		Relation:     relation,
+		BaseRelation: relation,
 		typeTag:      typeTag,
 		seqStart:     seqStart,
 		seqIncrement: seqIncrement,
@@ -47,7 +47,7 @@ func NewSequenceDef(
 }
 
 type Sequence struct {
-	Relation
+	BaseRelation
 	typeTag      rawtype.Tag
 	seqStart     int64
 	seqIncrement int64

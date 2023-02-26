@@ -3,6 +3,7 @@ package reldef
 import (
 	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/hgtype"
+	"log"
 )
 
 type TableRDefinition interface {
@@ -26,11 +27,12 @@ type TableDefinition interface {
 
 	SetName(name string)
 
-	AddColumn(definition ColumnDefinition) error
+	AddNewColumn(definition ColumnDefinition) error
 	RemoveColumn(name string) error
 }
 
-func NewTableDefinition(name string) TableDefinition {
+// CreateTableDefinition returns new not initialized TableDefinition
+func CreateTableDefinition(name string) TableDefinition {
 	table := &Table{
 		BaseRelation: BaseRelation{
 			RelName: name,
@@ -44,4 +46,28 @@ func NewTableDefinition(name string) TableDefinition {
 	}
 	table.initInMemoryFields()
 	return table
+}
+
+// NewTableDefinition returns initialized TableDefinitions based on provided arguments
+func NewTableDefinition(relation BaseRelation, columns []ColumnDefinition) (TableDefinition, error) {
+	if relation.Kind() != TypeTable {
+		log.Panicf("NewTableDefinition was invoked with relation.Kind() == %s",
+			relation.Kind().ToString())
+	}
+	table := &Table{
+		BaseRelation: relation,
+		columns:      []ColumnDefinition{},
+		rColumns:     []ColumnRDefinition{},
+
+		columnName_OrderMap: map[string]Order{},
+		columnsCount:        0,
+	}
+	table.initInMemoryFields()
+	for _, col := range columns {
+		err := table.AddColumn(col)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return table, nil
 }

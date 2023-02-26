@@ -44,10 +44,11 @@ func nextValueINT8(sequence reldef.RSequenceDef, seqPage page.SequencePage) (raw
 		nextVal = currentVal + increment
 		if increment > 0 && nextVal < currentVal {
 			return value, hglib.IntegerOverflowErr
-		} else if nextVal > currentVal {
+		} else if increment < 0 && nextVal > currentVal {
 			return value, hglib.IntegerOverflowErr
 		}
 		value.NormValue = bparse.Serialize.Int8(nextVal)
+		copy(seqPage.Bytes, value.NormValue)
 		return value, nil
 	}
 }

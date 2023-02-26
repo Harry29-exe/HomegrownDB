@@ -1,4 +1,4 @@
-package sysinit
+package internal
 
 import (
 	"HomegrownDB/dbsystem/hglib"
@@ -8,13 +8,13 @@ import (
 	"log"
 )
 
-type sysTablesCreator struct {
+type SysTablesCreator struct {
 	FS    dbfs.FS
-	cache *pageCache
+	Cache *pageCache
 	err   error
 }
 
-func (c *sysTablesCreator) createTable(oid hglib.OID, fsmOID hglib.OID, vmOID hglib.OID) *sysTablesCreator {
+func (c *SysTablesCreator) CreateTable(oid hglib.OID, fsmOID hglib.OID, vmOID hglib.OID) *SysTablesCreator {
 	if c.hasErr() {
 		return c
 	}
@@ -38,13 +38,13 @@ func (c *sysTablesCreator) createTable(oid hglib.OID, fsmOID hglib.OID, vmOID hg
 	return c
 }
 
-func (c *sysTablesCreator) insertTuples(tableOID hglib.OID, tuples ...page.WTuple) *sysTablesCreator {
+func (c *SysTablesCreator) InsertTuples(tableOID hglib.OID, tuples ...page.WTuple) *SysTablesCreator {
 	if c.hasErr() {
 		return c
 	}
 
 	for _, tuple := range tuples {
-		err := c.cache.insert(tableOID, tuple)
+		err := c.Cache.insert(tableOID, tuple)
 		if err != nil {
 			return c.error(err)
 		}
@@ -52,39 +52,39 @@ func (c *sysTablesCreator) insertTuples(tableOID hglib.OID, tuples ...page.WTupl
 	return c
 }
 
-func (c *sysTablesCreator) insertTuplesArr(tableOID hglib.OID, tuples ...[]page.WTuple) *sysTablesCreator {
+func (c *SysTablesCreator) InsertTuplesArr(tableOID hglib.OID, tuples ...[]page.WTuple) *SysTablesCreator {
 	for _, tupleArray := range tuples {
-		c.insertTuples(tableOID, tupleArray...)
+		c.InsertTuples(tableOID, tupleArray...)
 	}
 	return c
 }
 
-func (c *sysTablesCreator) flushPages() *sysTablesCreator {
+func (c *SysTablesCreator) FlushPages() *SysTablesCreator {
 	if c.hasErr() {
 		return c
 	}
 
-	if err := c.cache.flush(); err != nil {
+	if err := c.Cache.flush(); err != nil {
 		return c.error(err)
 	}
 	return c
 }
 
-func (c *sysTablesCreator) error(err error) *sysTablesCreator {
+func (c *SysTablesCreator) error(err error) *SysTablesCreator {
 	log.Println(err.Error())
 	c.err = err
 	return c
 }
 
-func (c *sysTablesCreator) hasErr() bool {
+func (c *SysTablesCreator) hasErr() bool {
 	return c.err != nil
 }
 
-func (c *sysTablesCreator) getError() error {
+func (c *SysTablesCreator) GetError() error {
 	return c.err
 }
 
-func panicOnErr[T any](val T, err error) T {
+func PanicOnErr[T any](val T, err error) T {
 	if err != nil {
 		log.Panic(err.Error())
 	}

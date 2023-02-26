@@ -11,31 +11,33 @@ import (
 func newLoaderCache(buffer buffer.SharedBuffer) *loaderCache {
 	return &loaderCache{
 		buffer:    buffer,
-		relations: []reldef.Relation{},
+		relations: []reldef.BaseRelation{},
 		columns:   map[reldef.OID][]reldef.ColumnDefinition{},
+		sequences: map[reldef.OID]systable.FutureSequence{},
 	}
 }
 
 type loaderCache struct {
 	buffer    buffer.SharedBuffer
-	relations []reldef.Relation
+	relations []reldef.BaseRelation
 	columns   map[reldef.OID][]reldef.ColumnDefinition
+	sequences map[reldef.OID]systable.FutureSequence
 }
 
-func (c *loaderCache) loadRelations() error {
-	nextPageId := page.Id(0)
-
-	for {
-		err := c.loadRelPage(nextPageId)
-		if err != nil {
-			if errors.As(err, &canNotReadPageErr) {
-				break
-			} else {
-				return err
-			}
-		}
-		nextPageId++
+func (c *loaderCache) load() error {
+	err := c.loadPages(c.loadRelPage)
+	if err != nil {
+		return err
 	}
+	err = c.loadPages(c.loadColPage)
+	if err != nil {
+		return err
+	}
+	err = c.loadPages(c.loadSequencePage)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -54,23 +56,6 @@ func (c *loaderCache) loadRelPage(
 		c.relations = append(c.relations, relation)
 	}
 
-	return nil
-}
-
-func (c *loaderCache) loadColumns() error {
-	nextPageId := page.Id(0)
-
-	for {
-		err := c.loadColPage(nextPageId)
-		if err != nil {
-			if errors.Is(err, canNotReadPageErr) {
-				break
-			} else {
-				return err
-			}
-		}
-		nextPageId++
-	}
 	return nil
 }
 
@@ -95,5 +80,40 @@ func (c *loaderCache) loadColPage(pageID page.Id) error {
 		}
 	}
 
+	return nil
+}
+
+func (c *loaderCache) loadSequencePage(pageID page.Id) error {
+	rPage, err := c.buffer.RTablePage(systable.SequencesTableDef(), pageID)
+	if err != nil {
+		return canNotReadPage{err}
+	}
+
+	defer c.buffer.RPageRelease(rPage.PageTag())
+
+	for tupleIndex := page.TupleIndex(0); tupleIndex < rPage.TupleCount(); tupleIndex++ {
+		tuple := rPage.Tuple(tupleIndex)
+		futureSeq := systable.SequencesOps.RowToData(tuple)
+
+		c.sequences[futureSeq.OID()] = futureSeq
+	}
+
+	return nil
+}
+
+func (c *loaderCache) loadPages(handler func(pageID page.Id) error) error {
+	nextPageId := page.Id(0)
+
+	for {
+		err := handler(nextPageId)
+		if err != nil {
+			if errors.Is(err, canNotReadPageErr) {
+				break
+			} else {
+				return err
+			}
+		}
+		nextPageId++
+	}
 	return nil
 }

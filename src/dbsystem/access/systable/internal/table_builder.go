@@ -7,11 +7,11 @@ import (
 )
 
 func NewTableDef(name string, oid reldef.OID, fsmOID reldef.OID, vmOID reldef.OID, columns []reldef.ColumnDefinition) reldef.TableRDefinition {
-	tableDef := reldef.NewTableDefinition(name)
+	tableDef := reldef.CreateTableDefinition(name)
 	tableDef.InitRel(oid, fsmOID, vmOID)
 
 	for _, colDef := range columns {
-		err := tableDef.AddColumn(colDef)
+		err := tableDef.AddNewColumn(colDef)
 		if err != nil {
 			log.Panicf("unexpected error while creating Relations tabdef: %s", err.Error())
 		}

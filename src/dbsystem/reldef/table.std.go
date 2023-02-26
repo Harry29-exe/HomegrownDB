@@ -71,12 +71,26 @@ func (t *Table) Columns() []ColumnRDefinition {
 	return t.rColumns
 }
 
+func (t *Table) AddNewColumn(definition ColumnDefinition) error {
+	_, ok := t.columnName_OrderMap[definition.Name()]
+	if ok {
+		return errors.New("tabdef already contains column with name:" + definition.Name())
+	}
+	definition.SetOrder(t.columnsCount)
+
+	t.columns = append(t.columns, definition)
+	t.rColumns = append(t.rColumns, definition)
+	t.columnName_OrderMap[definition.Name()] = t.columnsCount
+	t.columnsCount++
+
+	return nil
+}
+
 func (t *Table) AddColumn(definition ColumnDefinition) error {
 	_, ok := t.columnName_OrderMap[definition.Name()]
 	if ok {
 		return errors.New("tabdef already contains column with name:" + definition.Name())
 	}
-	//definition.SetOrder(t.columnsCount)
 
 	t.columns = append(t.columns, definition)
 	t.rColumns = append(t.rColumns, definition)

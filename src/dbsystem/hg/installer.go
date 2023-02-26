@@ -1,7 +1,7 @@
 package hg
 
 import (
-	"HomegrownDB/dbsystem/access/systable/sysinit"
+	"HomegrownDB/dbsystem/access"
 	"HomegrownDB/dbsystem/config"
 	"HomegrownDB/dbsystem/hglib"
 	"HomegrownDB/dbsystem/storage"
@@ -17,11 +17,19 @@ func CreateDB(args hglib.ModuleInstallerArgs) error {
 	if err != nil {
 		return err
 	}
-	_ = configModule
 
-	err = sysinit.CreateSysTables(storageModule.FS())
+	accessModule, err := access.InstallModule(args.Mode, access.ModuleDeps{
+		StorageModule: storageModule,
+		ConfigModule:  configModule,
+	})
+	//err = sysinit.createSysTables(storageModule.FS())
+	//if err != nil {
+	//	return err
+	//}
+	_ = accessModule
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

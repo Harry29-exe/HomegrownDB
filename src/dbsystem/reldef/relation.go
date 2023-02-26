@@ -29,3 +29,11 @@ const (
 	TypeIndex
 	TypeSequence
 )
+
+func (k Kind) ToString() string {
+	return []string{
+		"TypeTable",
+		"TypeIndex",
+		"TypeSequence",
+	}[k]
+}

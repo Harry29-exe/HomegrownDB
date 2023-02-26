@@ -54,4 +54,6 @@ const (
 	HGSequencesColSeqMin
 	HGSequencesColSeqCacheSize
 	HGSequencesColSeqCycle
+
+	HGObjectsOIDsStart
 )

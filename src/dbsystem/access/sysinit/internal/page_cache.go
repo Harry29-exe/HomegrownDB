@@ -1,4 +1,4 @@
-package sysinit
+package internal
 
 import (
 	"HomegrownDB/dbsystem/hglib"
@@ -7,7 +7,7 @@ import (
 	"HomegrownDB/dbsystem/storage/page"
 )
 
-func newPageCache(fs dbfs.FS, tables ...reldef.TableRDefinition) *pageCache {
+func NewPageCache(fs dbfs.FS, tables ...reldef.TableRDefinition) *pageCache {
 	cache := pageCache{
 		fs:     fs,
 		tables: map[hglib.OID]reldef.TableRDefinition{},

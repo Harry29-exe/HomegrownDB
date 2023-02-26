@@ -30,17 +30,17 @@ func main() {
 }
 
 func testTuplePrint() {
-	tableDef := reldef.NewTableDefinition("ttable1")
+	tableDef := reldef.CreateTableDefinition("ttable1")
 	tableDef.SetOID(231)
 	tableDef.SetOID(4352)
 
-	tableDef.AddColumn(factory.CreateDefinition(column.ArgsBuilder("col1", ctypes.Int2).Build()))
-	tableDef.AddColumn(factory.CreateDefinition(column.ArgsBuilder("col2", ctypes.Int2).Build()))
-	tableDef.AddColumn(factory.CreateDefinition(
+	tableDef.AddNewColumn(factory.CreateDefinition(column.ArgsBuilder("col1", ctypes.Int2).Build()))
+	tableDef.AddNewColumn(factory.CreateDefinition(column.ArgsBuilder("col2", ctypes.Int2).Build()))
+	tableDef.AddNewColumn(factory.CreateDefinition(
 		column.ArgsBuilder("col3", ctypes.Int2).
 			Nullable(true).
 			Build()))
-	tableDef.AddColumn(factory.CreateDefinition(
+	tableDef.AddNewColumn(factory.CreateDefinition(
 		column.ArgsBuilder("col4", ctypes.Int2).
 			Nullable(true).
 			Build()))
